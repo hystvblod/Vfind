@@ -110,7 +110,7 @@ h1 {
   h1 {
     font-size: 1.5em;
   }
-} /* <<<<<< ICI JE FERME CORRECTEMENT LE MEDIA */
+}
 
 /* Styles pour Paramètres (menu) */
 .settings-button {
@@ -133,6 +133,10 @@ h1 {
   padding: 20px;
   width: 260px;
   z-index: 1000;
+}
+
+#settings-menu.visible {
+  display: block;
 }
 
 #settings-menu h2 {
