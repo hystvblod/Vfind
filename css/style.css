@@ -1,0 +1,113 @@
+/* Reset basique */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 10px;
+}
+
+.points {
+  font-size: 1.2em;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+main {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+#challenges-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Style pour chaque défi */
+.challenge {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 15px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.challenge.completed {
+  background: rgba(0, 255, 0, 0.3);
+}
+
+.challenge p {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.challenge button {
+  background: #ffffff;
+  color: #2575fc;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.challenge button:hover {
+  transform: scale(1.05);
+  background: #e0e0e0;
+}
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+}

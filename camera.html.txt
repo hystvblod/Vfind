@@ -1,0 +1,23 @@
+<video id="camera" autoplay playsinline width="300"></video>
+<canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
+<button id="captureBtn">📸 Capturer la photo</button>
+
+<script>
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    document.getElementById('camera').srcObject = stream;
+  });
+
+document.getElementById('captureBtn').onclick = function() {
+  const video = document.getElementById('camera');
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Optionnel : convertir en image
+  const photoData = canvas.toDataURL('image/png');
+
+  // Tu peux stocker cette image ici :
+  localStorage.setItem("photoChallenge1", photoData);
+};
+</script>
