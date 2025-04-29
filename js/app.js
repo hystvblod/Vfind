@@ -6,7 +6,7 @@ let videoWatchedToday = false;
 let history = [];
 let likedPhotos = [];
 
-// Simulation pour les publicités
+// Simulation pour pub
 function showInterstitialAd() {
   alert("⚡ Publicité interstitielle (simulateur)");
 }
@@ -20,6 +20,7 @@ function showRewardedVideoAd() {
   });
 }
 
+// Fonctions principales
 function getRandomChallenges() {
   const shuffled = [...allChallenges].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, 3);
@@ -38,12 +39,6 @@ function displayChallenges() {
     `;
     container.appendChild(challengeDiv);
   });
-
-  const bonusButton = document.createElement('button');
-  bonusButton.innerText = "⏳ Rallonger de 1h en regardant une pub";
-  bonusButton.className = "bonus-button";
-  bonusButton.onclick = watchRewardedVideo;
-  container.appendChild(bonusButton);
 }
 
 function updatePointsDisplay() {
@@ -52,58 +47,38 @@ function updatePointsDisplay() {
 }
 
 function takePhoto(index) {
-  alert('📸 Photo prise pour le défi : ' + challenges[index]);
+  alert('📸 Photo prise pour : ' + challenges[index]);
 
   document.getElementsByClassName('challenge')[index].classList.add('completed');
 
   points += 10;
   completedChallenges += 1;
   history.push(challenges[index]);
-  updateHistoryDisplay();
-  updateFullHistoryDisplay();
   updatePointsDisplay();
-
-  showInterstitialAd();
-
-  if (completedChallenges === 3) {
-    setTimeout(() => {
-      alert('🎉 Félicitations, tu as terminé les 3 défis du jour !');
-      showInterstitialAd();
-    }, 500);
-  }
+  updateHistory();
 }
 
-function updateHistoryDisplay() {
-  const historyContainer = document.getElementById('history-container');
-  historyContainer.innerHTML = '';
-  history.forEach(h => {
+function updateHistory() {
+  const container = document.getElementById('history-container');
+  container.innerHTML = '';
+  history.forEach(item => {
+    const p = document.createElement('p');
+    p.textContent = item;
+    container.appendChild(p);
+  });
+
+  const fullList = document.getElementById('full-history-list');
+  fullList.innerHTML = '';
+  history.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = h;
-    historyContainer.appendChild(li);
+    li.textContent = item;
+    fullList.appendChild(li);
   });
 }
 
-function updateFullHistoryDisplay() {
-  const fullHistory = document.getElementById('full-history-list');
-  fullHistory.innerHTML = '';
-  history.forEach(h => {
-    const li = document.createElement('li');
-    li.textContent = h;
-    fullHistory.appendChild(li);
-  });
-}
-
-async function watchRewardedVideo() {
-  if (videoWatchedToday) {
-    alert("⛔ Tu as déjà utilisé ton bonus d'1h aujourd'hui !");
-    return;
-  }
-
-  const success = await showRewardedVideoAd();
-  if (success) {
-    alert("⏳ 1 heure supplémentaire ajoutée !");
-    videoWatchedToday = true;
-  }
+function toggleHistory() {
+  const history = document.getElementById('history-container');
+  history.classList.toggle('hidden');
 }
 
 function toggleSettingsMenu() {
@@ -114,14 +89,13 @@ function toggleSettingsMenu() {
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
+  challenges = getRandomChallenges();
   completedChallenges = 0;
   history = [];
   likedPhotos = [];
-  challenges = getRandomChallenges();
   displayChallenges();
-  updateHistoryDisplay();
-  updateFullHistoryDisplay();
   updatePointsDisplay();
+  updateHistory();
 }
 
 // Initialisation
@@ -131,5 +105,6 @@ window.onload = () => {
   updatePointsDisplay();
 
   document.getElementById('settings-button').addEventListener('click', toggleSettingsMenu);
+  document.getElementById('toggle-history').addEventListener('click', toggleHistory);
   document.getElementById('reset-button').addEventListener('click', resetAll);
 };

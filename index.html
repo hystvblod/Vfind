@@ -11,22 +11,28 @@
 <header>
   <img src="assets/img/logo.png" alt="VFind Logo" class="logo">
   <div class="points">Points : <span id="points">0</span></div>
-  <button id="settings-button" class="settings-button">⚙️</button>
 </header>
+
+<!-- Zone cliquable pour Paramètres -->
+<div id="settings-zone">
+  <button id="settings-button" class="settings-button">⚙️</button>
+</div>
 
 <main>
   <h1>Défis du jour</h1>
+  
   <div id="challenges-container">
     <!-- Les défis seront injectés ici -->
   </div>
 
-  <h2 class="history-title">Historique des défis</h2>
-  <div id="history-container">
-    <!-- Historique injecté ici -->
+  <button id="toggle-history" class="history-button">🧠 Voir l'historique</button>
+
+  <div id="history-container" class="hidden">
+    <!-- Historique des défis -->
   </div>
 </main>
 
-<!-- Menu Paramètres -->
+<!-- Menu Paramètres caché -->
 <div id="settings-menu" class="hidden">
   <h2>Profil</h2>
   <p>Pseudo : <span id="pseudo">Invité</span></p>

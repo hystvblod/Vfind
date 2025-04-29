@@ -27,7 +27,7 @@ header {
 }
 
 .logo {
-  width: 150px;
+  width: 180px; /* Agrandi */
   margin-bottom: 10px;
 }
 
@@ -37,6 +37,28 @@ header {
   padding: 8px 15px;
   border-radius: 10px;
   margin-top: 10px;
+}
+
+#settings-zone {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 0, 0, 0.3); /* Zone rouge cliquable */
+  border: 2px solid red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 12px;
+}
+
+.settings-button {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #a259ff;
 }
 
 main {
@@ -60,28 +82,8 @@ h1 {
   gap: 15px;
 }
 
-/* Style pour chaque défi */
-.challenge {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 15px;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: background 0.3s;
-}
-
-.challenge.completed {
-  background: rgba(0, 255, 0, 0.3);
-}
-
-.challenge p {
-  margin-bottom: 10px;
-  font-size: 1.1em;
-}
-
-.challenge button {
+/* Historique */
+.history-button {
   background: #ffffff;
   color: #2575fc;
   border: none;
@@ -89,39 +91,17 @@ h1 {
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
+  margin-top: 20px;
 }
 
-.challenge button:hover {
-  transform: scale(1.05);
-  background: #e0e0e0;
+#history-container {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 15px;
 }
 
-/* Responsive mobile */
-@media (max-width: 600px) {
-  body {
-    padding: 10px;
-  }
-
-  .logo {
-    width: 120px;
-  }
-
-  h1 {
-    font-size: 1.5em;
-  }
-}
-
-/* Styles pour Paramètres (menu) */
-.settings-button {
-  background: none;
-  border: none;
-  font-size: 26px;
-  cursor: pointer;
-  color: #a259ff;
-  margin-left: auto;
-}
-
+/* Menu Paramètres */
 #settings-menu {
   display: none;
   position: fixed;
@@ -139,17 +119,6 @@ h1 {
   display: block;
 }
 
-#settings-menu h2 {
-  margin-top: 0;
-  font-size: 20px;
-  color: #333;
-}
-
-#settings-menu p {
-  font-size: 16px;
-  color: #555;
-}
-
 .settings-button-close {
   background: #f7b731;
   border: none;
@@ -160,9 +129,4 @@ h1 {
   margin-top: 15px;
   width: 100%;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.settings-button-close:hover {
-  background-color: #e0a102;
 }
