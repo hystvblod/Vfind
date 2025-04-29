@@ -2,9 +2,11 @@
 let points = 0;
 let challenges = [];
 let completedChallenges = 0;
-let videoWatchedToday = false; // Savoir si l'utilisateur a déjà utilisé son bonus du jour
+let videoWatchedToday = false;
+let history = [];
+let likedPhotos = [];
 
-// Simulation pour les publicités (remplacer par vrais appels pub plus tard)
+// Simulation pour les publicités
 function showInterstitialAd() {
   alert("⚡ Publicité interstitielle (simulateur)");
 }
@@ -13,18 +15,16 @@ function showRewardedVideoAd() {
   return new Promise((resolve) => {
     alert("🎬 Publicité Rewarded Video (simulateur, durée 30s)");
     setTimeout(() => {
-      resolve(true); // Simuler qu'on a regardé la vidéo entière
-    }, 3000); // Simulation rapide de 3 secondes (à remplacer par vrai 30s sur app finale)
+      resolve(true);
+    }, 3000);
   });
 }
 
-// Tirage aléatoire de 3 défis
 function getRandomChallenges() {
   const shuffled = [...allChallenges].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, 3);
 }
 
-// Affichage des défis dans la page
 function displayChallenges() {
   const container = document.getElementById('challenges-container');
   container.innerHTML = '';
@@ -39,7 +39,6 @@ function displayChallenges() {
     container.appendChild(challengeDiv);
   });
 
-  // Ajouter le bouton pour regarder une vidéo et prolonger de 1h
   const bonusButton = document.createElement('button');
   bonusButton.innerText = "⏳ Rallonger de 1h en regardant une pub";
   bonusButton.className = "bonus-button";
@@ -47,36 +46,53 @@ function displayChallenges() {
   container.appendChild(bonusButton);
 }
 
-// Action quand on prend une photo pour un défi
+function updatePointsDisplay() {
+  document.getElementById('points').innerText = points;
+  document.getElementById('points-profile').innerText = points;
+}
+
 function takePhoto(index) {
   alert('📸 Photo prise pour le défi : ' + challenges[index]);
-  
-  // Marquer le défi comme terminé
+
   document.getElementsByClassName('challenge')[index].classList.add('completed');
-  
-  // Ajouter les points
+
   points += 10;
   completedChallenges += 1;
+  history.push(challenges[index]);
+  updateHistoryDisplay();
+  updateFullHistoryDisplay();
   updatePointsDisplay();
 
-  // Déclencher une pub interstitielle
   showInterstitialAd();
 
-  // Vérifier si tous les défis sont terminés
   if (completedChallenges === 3) {
     setTimeout(() => {
       alert('🎉 Félicitations, tu as terminé les 3 défis du jour !');
-      showInterstitialAd(); // Pub de fin après avoir complété tous les défis
+      showInterstitialAd();
     }, 500);
   }
 }
 
-// Mise à jour de l'affichage des points
-function updatePointsDisplay() {
-  document.getElementById('points').innerText = points;
+function updateHistoryDisplay() {
+  const historyContainer = document.getElementById('history-container');
+  historyContainer.innerHTML = '';
+  history.forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = h;
+    historyContainer.appendChild(li);
+  });
 }
 
-// Fonction pour regarder une pub Rewarded Video et prolonger 1h
+function updateFullHistoryDisplay() {
+  const fullHistory = document.getElementById('full-history-list');
+  fullHistory.innerHTML = '';
+  history.forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = h;
+    fullHistory.appendChild(li);
+  });
+}
+
 async function watchRewardedVideo() {
   if (videoWatchedToday) {
     alert("⛔ Tu as déjà utilisé ton bonus d'1h aujourd'hui !");
@@ -87,13 +103,33 @@ async function watchRewardedVideo() {
   if (success) {
     alert("⏳ 1 heure supplémentaire ajoutée !");
     videoWatchedToday = true;
-    // (À relier au vrai système de chrono/jour si besoin plus tard)
   }
 }
 
-// Initialisation à l'ouverture de la page
+function toggleSettingsMenu() {
+  const menu = document.getElementById('settings-menu');
+  menu.classList.toggle('visible');
+}
+
+function resetAll() {
+  if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
+  points = 0;
+  completedChallenges = 0;
+  history = [];
+  likedPhotos = [];
+  challenges = getRandomChallenges();
+  displayChallenges();
+  updateHistoryDisplay();
+  updateFullHistoryDisplay();
+  updatePointsDisplay();
+}
+
+// Initialisation
 window.onload = () => {
   challenges = getRandomChallenges();
   displayChallenges();
   updatePointsDisplay();
+
+  document.getElementById('settings-button').addEventListener('click', toggleSettingsMenu);
+  document.getElementById('reset-button').addEventListener('click', resetAll);
 };

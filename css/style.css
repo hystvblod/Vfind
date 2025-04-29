@@ -110,4 +110,55 @@ h1 {
   h1 {
     font-size: 1.5em;
   }
+} /* <<<<<< ICI JE FERME CORRECTEMENT LE MEDIA */
+
+/* Styles pour Paramètres (menu) */
+.settings-button {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #a259ff;
+  margin-left: auto;
+}
+
+#settings-menu {
+  display: none;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 20px;
+  width: 260px;
+  z-index: 1000;
+}
+
+#settings-menu h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+#settings-menu p {
+  font-size: 16px;
+  color: #555;
+}
+
+.settings-button-close {
+  background: #f7b731;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 15px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.settings-button-close:hover {
+  background-color: #e0a102;
 }
