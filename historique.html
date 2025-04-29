@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historique - VFind</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: linear-gradient(145deg, #a3bdfd, #c8d8ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #333;
+    }
+
+    .history-container {
+      width: 90%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+
+    .history-item {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .history-item h3 {
+      margin-top: 0;
+      color: #4a66ff;
+    }
+
+    .history-photo {
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .empty {
+      margin-top: 50px;
+      color: #777;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Historique</h1>
+
+  <div class="history-container" id="historyContainer">
+    <!-- Historique sera chargé ici -->
+  </div>
+
+  <script>
+    const historyContainer = document.getElementById('historyContainer');
+
+    // Simuler la récupération des 7 derniers défis stockés
+    const historique = JSON.parse(localStorage.getItem('historiqueVFind')) || [];
+
+    if (historique.length === 0) {
+      historyContainer.innerHTML = "<p class='empty'>Pas encore de défis réalisés...</p>";
+    } else {
+      historique.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+
+        div.innerHTML = `
+          <h3>Défis du ${item.date}</h3>
+          <ul>
+            ${item.challenges.map(ch => `<li>${ch}</li>`).join('')}
+          </ul>
+          ${item.photos.map(photo => `<img class="history-photo" src="${photo}" alt="Photo défi">`).join('')}
+        `;
+
+        historyContainer.appendChild(div);
+      });
+    }
+  </script>
+
+</body>
+</html>
