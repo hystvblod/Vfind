@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Boutique</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
+<body class="vfind-bg">
+  <header>
+    <h1>🛍️ Boutique</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="profil.html">👤 Profil</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="points-display">
+      <p>💰 Tes pièces : <span id="points">0</span></p>
+      <button onclick="showAd('rewarded')" class="btn-secondary">🎁 Gagner des pièces</button>
+    </section>
+
+    <section class="cadres-list">
+      <h2>🎨 Cadres disponibles</h2>
+      <div id="cadres-container" class="grid-cadres">
+        <!-- Les cadres seront chargés depuis cadres.json -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/userData.js"></script>
+  <script src="js/pub.js"></script>
+  <script src="js/boutique.js"></script>
+</body>
+</html>

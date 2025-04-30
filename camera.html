@@ -1,23 +1,60 @@
-<video id="camera" autoplay playsinline width="300"></video>
-<canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
-<button id="captureBtn">📸 Capturer la photo</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Caméra</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
+<body class="vfind-bg">
+  <header>
+    <h1>📸 Prendre une Photo</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="profil.html">👤 Profil</a>
+    </nav>
+  </header>
 
-<script>
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    document.getElementById('camera').srcObject = stream;
-  });
+  <main>
+    <section class="photo-zone">
+      <video id="camera" autoplay playsinline width="320"></video>
+      <canvas id="canvas" width="320" height="320" style="display: none;"></canvas>
+      <button id="captureBtn" class="btn-photo">📸 Capturer la photo</button>
+    </section>
 
-document.getElementById('captureBtn').onclick = function() {
-  const video = document.getElementById('camera');
-  const canvas = document.getElementById('canvas');
-  const context = canvas.getContext('2d');
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    <section class="cadre-zone">
+      <h3>🖼️ Cadre actif</h3>
+      <canvas id="polaroidCanvas" width="320" height="400"></canvas>
+    </section>
+  </main>
 
-  // Optionnel : convertir en image
-  const photoData = canvas.toDataURL('image/png');
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
 
-  // Tu peux stocker cette image ici :
-  localStorage.setItem("photoChallenge1", photoData);
-};
-</script>
+  <script src="js/polaroid.js"></script>
+  <script src="js/userData.js"></script>
+  <script>
+    const video = document.getElementById("camera");
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+    const polaroidCanvas = document.getElementById("polaroidCanvas");
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
+
+    document.getElementById("captureBtn").onclick = () => {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const photoData = canvas.toDataURL("image/png");
+
+      // Charger le cadre actif depuis userData
+      const cadre = getCadreSelectionne() || "polaroid_1";
+      drawPolaroid(photoData, cadre, polaroidCanvas);
+
+      // Stocker la photo capturée pour historique ou duel
+      sauvegarderPhoto(photoData);
+    };
+  </script>
+</body>
+</html>

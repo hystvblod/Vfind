@@ -1,91 +1,50 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Historique - VFind</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background: linear-gradient(145deg, #a3bdfd, #c8d8ff);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    h1 {
-      margin-top: 30px;
-      color: #333;
-    }
-
-    .history-container {
-      width: 90%;
-      max-width: 600px;
-      margin-top: 20px;
-    }
-
-    .history-item {
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .history-item h3 {
-      margin-top: 0;
-      color: #4a66ff;
-    }
-
-    .history-photo {
-      margin-top: 10px;
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .empty {
-      margin-top: 50px;
-      color: #777;
-      font-size: 18px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Historique</title>
+  <link rel="stylesheet" href="style/main.css" />
 </head>
-<body>
+<body class="vfind-bg">
+  <header>
+    <h1>📜 Historique des Défis</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="profil.html">👤 Profil</a>
+    </nav>
+  </header>
 
-  <h1>Historique</h1>
+  <main>
+    <section class="historique-section">
+      <h2>🗂️ Tes anciens défis</h2>
+      <div id="historique-gallery" class="photo-gallery">
+        <!-- Les photos sauvegardées seront affichées ici -->
+      </div>
+    </section>
+  </main>
 
-  <div class="history-container" id="historyContainer">
-    <!-- Historique sera chargé ici -->
-  </div>
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
 
+  <script src="js/userData.js"></script>
+  <script src="js/polaroid.js"></script>
   <script>
-    const historyContainer = document.getElementById('historyContainer');
+    const container = document.getElementById("historique-gallery");
+    const photos = getHistoriquePhotos(); // supposée fonction dans userData.js
 
-    // Simuler la récupération des 7 derniers défis stockés
-    const historique = JSON.parse(localStorage.getItem('historiqueVFind')) || [];
-
-    if (historique.length === 0) {
-      historyContainer.innerHTML = "<p class='empty'>Pas encore de défis réalisés...</p>";
+    if (photos.length === 0) {
+      container.innerHTML = "<p>Aucun défi encore réalisé.</p>";
     } else {
-      historique.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-
-        div.innerHTML = `
-          <h3>Défis du ${item.date}</h3>
-          <ul>
-            ${item.challenges.map(ch => `<li>${ch}</li>`).join('')}
-          </ul>
-          ${item.photos.map(photo => `<img class="history-photo" src="${photo}" alt="Photo défi">`).join('')}
-        `;
-
-        historyContainer.appendChild(div);
+      photos.forEach(entry => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 320;
+        canvas.height = 400;
+        drawPolaroid(entry.photo, entry.cadre, canvas);
+        container.appendChild(canvas);
       });
     }
   </script>
-
 </body>
 </html>

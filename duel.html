@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Duel</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
+<body class="vfind-bg">
+  <header>
+    <h1>⚔️ Mode Duel</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="profil.html">👤 Profil</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="pub-zone">
+      <p>🔒 Une pub est requise pour lancer le duel</p>
+      <button onclick="showAd('interstitial')" class="btn-secondary">▶️ Voir la pub</button>
+    </section>
+
+    <section class="defi-zone">
+      <h2 id="defi-duel-texte">Défi en cours de chargement...</h2>
+      <button id="nouveau-duel" class="btn-main">🔁 Nouveau duel</button>
+    </section>
+
+    <section class="duel-photos">
+      <div class="duel-photo">
+        <h3>👤 Joueur A</h3>
+        <canvas id="photoA" width="320" height="400"></canvas>
+        <button class="btn-flag" onclick="signalerPhoto('A')">🚩 Signaler</button>
+      </div>
+      <div class="duel-photo">
+        <h3>👤 Joueur B</h3>
+        <canvas id="photoB" width="320" height="400"></canvas>
+        <button class="btn-flag" onclick="signalerPhoto('B')">🚩 Signaler</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/userData.js"></script>
+  <script src="js/polaroid.js"></script>
+  <script src="js/pub.js"></script>
+  <script src="js/duel.js"></script>
+</body>
+</html>

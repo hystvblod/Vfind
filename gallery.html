@@ -1,0 +1,36 @@
+function drawPolaroid(photoSrc, styleName, canvasTarget) {
+  const ctx = canvasTarget.getContext("2d");
+
+  // Nettoyer le canvas
+  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  // Créer l'image photo (peut être base64 ou URL)
+  const imgPhoto = new Image();
+  imgPhoto.crossOrigin = "anonymous";
+  imgPhoto.src = photoSrc;
+
+  imgPhoto.onload = () => {
+    // Dessiner fond blanc
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+    // Dessiner la photo (centrée, carré 240x240)
+    ctx.drawImage(imgPhoto, 40, 40, 240, 240);
+
+    // Dessiner le cadre par-dessus
+    const imgCadre = new Image();
+    imgCadre.src = `polaroid_canvas/${styleName}.png`;
+
+    imgCadre.onload = () => {
+      ctx.drawImage(imgCadre, 0, 0, canvasTarget.width, canvasTarget.height);
+    };
+
+    imgCadre.onerror = () => {
+      console.warn(`❌ Cadre manquant : ${styleName}.png`);
+    };
+  };
+
+  imgPhoto.onerror = () => {
+    console.warn("❌ Erreur de chargement de la photo source :", photoSrc);
+  };
+}

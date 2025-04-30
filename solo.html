@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Défi Solo</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
+<body class="vfind-bg">
+  <header>
+    <h1>📸 Défi Solo</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="profil.html">👤 Profil</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="defi-zone">
+      <h2 id="defi-texte">Chargement du défi...</h2>
+      <button id="nouveau-defi" class="btn-main">🔁 Nouveau défi</button>
+    </section>
+
+    <section class="photo-zone">
+      <video id="camera" autoplay playsinline></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <button id="prendre-photo" class="btn-photo">📷 Prendre la photo</button>
+    </section>
+
+    <section class="cadre-zone">
+      <h3>🖼️ Cadre sélectionné</h3>
+      <canvas id="polaroid-canvas" width="320" height="400"></canvas>
+    </section>
+
+    <section class="pub-zone">
+      <button onclick="showAd('rewarded')" class="btn-secondary">🎁 Gagner +30s avec une pub</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/userData.js"></script>
+  <script src="js/polaroid.js"></script>
+  <script src="js/pub.js"></script>
+  <script src="js/solo.js"></script>
+</body>
+</html>
