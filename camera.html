@@ -17,9 +17,9 @@
 
   <main>
     <section class="photo-zone">
-      <video id="camera" autoplay playsinline width="320"></video>
-      <canvas id="canvas" width="320" height="320" style="display: none;"></canvas>
-      <button id="captureBtn" class="btn-photo">📸 Capturer la photo</button>
+      <video id="video" autoplay playsinline width="320"></video>
+      <canvas id="photoCanvas" width="320" height="320" style="display: none;"></canvas>
+      <button id="btn-photo" class="btn-photo">📸 Capturer la photo</button>
     </section>
 
     <section class="cadre-zone">
@@ -32,29 +32,9 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
   <script src="js/polaroid.js"></script>
   <script src="js/userData.js"></script>
-  <script>
-    const video = document.getElementById("camera");
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
-    const polaroidCanvas = document.getElementById("polaroidCanvas");
-
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      video.srcObject = stream;
-    });
-
-    document.getElementById("captureBtn").onclick = () => {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const photoData = canvas.toDataURL("image/png");
-
-      // Charger le cadre actif depuis userData
-      const cadre = getCadreSelectionne() || "polaroid_1";
-      drawPolaroid(photoData, cadre, polaroidCanvas);
-
-      // Stocker la photo capturée pour historique ou duel
-      sauvegarderPhoto(photoData);
-    };
-  </script>
+  <script src="js/camera.js"></script>
 </body>
 </html>

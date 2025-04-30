@@ -1,103 +1,124 @@
-// ----- Initialisation des données utilisateur -----
 
-// Récupération ou création des données
-let userData = JSON.parse(localStorage.getItem("vfindUserData")) || {
-  pseudo: "Invité",
-  points: 0,
-  cadre: "polaroid_1",
-  historique: [],         // [{photo, cadre, date}]
-  likedPhotos: [],        // [{photo, cadre}]
-  signaledPhotos: []      // [{photo, cadre}]
-};
-
-// Sauvegarder dans localStorage
-function saveUserData() {
-  localStorage.setItem("vfindUserData", JSON.stringify(userData));
-}
-
-// ----- Fonctions de base -----
-
-function getPseudo() {
-  return userData.pseudo;
-}
-
-function setPseudo(nom) {
-  userData.pseudo = nom;
-  saveUserData();
-}
-
-function getPoints() {
-  return userData.points;
-}
-
-function addPoints(qty) {
-  userData.points += qty;
-  saveUserData();
-}
-
-function removePoints(qty) {
-  userData.points = Math.max(0, userData.points - qty);
-  saveUserData();
-}
-
-// ----- Cadre sélectionné -----
-
-function getCadreSelectionne() {
-  return userData.cadre;
-}
-
-function setCadreSelectionne(styleName) {
-  userData.cadre = styleName;
-  saveUserData();
-}
-
-// ----- Historique des photos -----
-
-function sauvegarderPhoto(photoBase64) {
-  const date = new Date().toLocaleDateString();
-  const entry = {
-    photo: photoBase64,
-    cadre: getCadreSelectionne(),
-    date: date
+// Chargement et sauvegarde des données utilisateur
+function getUserData() {
+  return JSON.parse(localStorage.getItem("vfindUserData")) || {
+    pseudo: "Toi",
+    coins: 0,
+    cadres: ["polaroid_1"],
+    cadreActif: "polaroid_1",
+    historique: [],
+    likedPhotos: [],
+    signaledPhotos: [],
+    premium: false
   };
-  userData.historique.unshift(entry); // Ajout au début
-  saveUserData();
 }
 
+function saveUserData(data) {
+  localStorage.setItem("vfindUserData", JSON.stringify(data));
+}
+
+// Pseudo
+function getPseudo() {
+  return getUserData().pseudo;
+}
+function setPseudo(pseudo) {
+  const data = getUserData();
+  data.pseudo = pseudo;
+  saveUserData(data);
+}
+
+// Points
+function getPoints() {
+  return getUserData().coins;
+}
+function addPoints(n) {
+  const data = getUserData();
+  data.coins += n;
+  saveUserData(data);
+}
+function removePoints(n) {
+  const data = getUserData();
+  if (data.coins >= n) {
+    data.coins -= n;
+    saveUserData(data);
+    return true;
+  }
+  return false;
+}
+
+// Cadres
+function getCadresPossedes() {
+  return getUserData().cadres;
+}
+function possedeCadre(id) {
+  return getUserData().cadres.includes(id);
+}
+function acheterCadre(id) {
+  const data = getUserData();
+  if (!data.cadres.includes(id)) {
+    data.cadres.push(id);
+    saveUserData(data);
+  }
+}
+function getCadreSelectionne() {
+  return getUserData().cadreActif || "polaroid_1";
+}
+function setCadreSelectionne(id) {
+  const data = getUserData();
+  data.cadreActif = id;
+  saveUserData(data);
+}
+
+// Historique
+function sauvegarderPhoto(base64, defi) {
+  const data = getUserData();
+  data.historique.push({ base64, defi, date: new Date().toISOString() });
+  saveUserData(data);
+}
 function getHistoriquePhotos() {
-  return userData.historique;
+  return getUserData().historique;
 }
 
-// ----- Photos aimées ❤️ -----
-
-function likePhoto(photoData) {
-  userData.likedPhotos.push(photoData);
-  saveUserData();
+// Likes
+function likePhoto(photoId) {
+  const data = getUserData();
+  if (!data.likedPhotos.includes(photoId)) {
+    data.likedPhotos.push(photoId);
+    saveUserData(data);
+  }
 }
-
+function unlikePhoto(photoId) {
+  const data = getUserData();
+  data.likedPhotos = data.likedPhotos.filter(id => id !== photoId);
+  saveUserData(data);
+}
 function getLikedPhotos() {
-  return userData.likedPhotos;
+  return getUserData().likedPhotos;
 }
 
-function unlikePhoto(index) {
-  userData.likedPhotos.splice(index, 1);
-  saveUserData();
+// Signalements
+function signalerPhoto(photoId) {
+  const data = getUserData();
+  if (!data.signaledPhotos.includes(photoId)) {
+    data.signaledPhotos.push(photoId);
+    saveUserData(data);
+  }
 }
-
-// ----- Signalement de photo 🚩 -----
-
-function signalerPhoto(photoData) {
-  userData.signaledPhotos.push(photoData);
-  saveUserData();
-}
-
 function getSignaledPhotos() {
-  return userData.signaledPhotos;
+  return getUserData().signaledPhotos;
 }
 
-// ----- Réinitialisation -----
+// Premium
+function isPremium() {
+  return getUserData().premium === true;
+}
+function setPremium(status) {
+  const data = getUserData();
+  data.premium = status;
+  saveUserData(data);
+}
 
+// Réinitialisation
 function resetUserData() {
   localStorage.removeItem("vfindUserData");
-  location.reload();
 }

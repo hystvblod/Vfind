@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,20 +21,17 @@
       <p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
       <p><strong>Points :</strong> <span id="points">0</span></p>
       <p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
+      <p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
     </section>
 
     <section class="likes-section">
       <h2>❤️ Photos aimées</h2>
-      <div id="liked-photos-gallery" class="photo-gallery">
-        <!-- Les photos aimées s'afficheront ici -->
-      </div>
+      <div id="liked-photos-gallery" class="photo-gallery"></div>
     </section>
 
     <section class="signaled-section">
       <h2>🚩 Photos signalées</h2>
-      <div id="signaled-photos-gallery" class="photo-gallery">
-        <!-- Les photos signalées s'afficheront ici -->
-      </div>
+      <div id="signaled-photos-gallery" class="photo-gallery"></div>
     </section>
   </main>
 
@@ -42,5 +40,12 @@
   </footer>
 
   <script src="js/userData.js"></script>
+  <script>
+    const data = getUserData();
+    document.getElementById("pseudo").textContent = data.pseudo;
+    document.getElementById("points").textContent = data.coins;
+    document.getElementById("cadre-actuel").textContent = data.cadreActif;
+    document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
+  </script>
 </body>
 </html>
