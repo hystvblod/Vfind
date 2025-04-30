@@ -5,6 +5,7 @@ let completedChallenges = 0;
 let videoWatchedToday = false;
 let history = [];
 let likedPhotos = [];
+let allChallenges = []; // Ajout essentiel
 
 // Simulation pour pub
 function showInterstitialAd() {
@@ -34,77 +35,45 @@ function displayChallenges() {
     const challengeDiv = document.createElement('div');
     challengeDiv.className = 'challenge';
     challengeDiv.innerHTML = `
-      <p>${challenge}</p>
-      <button onclick="takePhoto(${index})">Prendre une photo</button>
+      <p>${challenge.description}</p>
+      <button onclick="takePhoto(${index})">📸 Prendre une photo</button>
     `;
     container.appendChild(challengeDiv);
   });
 }
 
-function updatePointsDisplay() {
-  document.getElementById('points').innerText = points;
-  document.getElementById('points-profile').innerText = points;
-}
-
 function takePhoto(index) {
-  alert('📸 Photo prise pour : ' + challenges[index]);
-
-  document.getElementsByClassName('challenge')[index].classList.add('completed');
-
-  points += 10;
-  completedChallenges += 1;
-  history.push(challenges[index]);
-  updatePointsDisplay();
-  updateHistory();
+  sessionStorage.setItem("currentChallenge", JSON.stringify(challenges[index]));
+  window.location.href = "camera.html";
 }
 
-function updateHistory() {
-  const container = document.getElementById('history-container');
-  container.innerHTML = '';
-  history.forEach(item => {
-    const p = document.createElement('p');
-    p.textContent = item;
-    container.appendChild(p);
-  });
+function loadUserData() {
+  const storedPoints = localStorage.getItem("vfind_points");
+  if (storedPoints) points = parseInt(storedPoints);
 
-  const fullList = document.getElementById('full-history-list');
-  fullList.innerHTML = '';
-  history.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    fullList.appendChild(li);
-  });
+  const storedHistory = localStorage.getItem("vfind_history");
+  if (storedHistory) history = JSON.parse(storedHistory);
+
+  const storedLiked = localStorage.getItem("vfind_likes");
+  if (storedLiked) likedPhotos = JSON.parse(storedLiked);
 }
 
-function toggleHistory() {
-  const history = document.getElementById('history-container');
-  history.classList.toggle('hidden');
+function updatePointsDisplay() {
+  const pointsDisplay = document.getElementById("points-display");
+  if (pointsDisplay) pointsDisplay.textContent = `Points : ${points}`;
 }
 
-function toggleSettingsMenu() {
-  const menu = document.getElementById('settings-menu');
-  menu.classList.toggle('visible');
-}
+// Chargement des défis depuis le fichier JSON
+window.onload = async () => {
+  try {
+    const response = await fetch("../data/defis.json");
+    allChallenges = await response.json();
 
-function resetAll() {
-  if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
-  points = 0;
-  challenges = getRandomChallenges();
-  completedChallenges = 0;
-  history = [];
-  likedPhotos = [];
-  displayChallenges();
-  updatePointsDisplay();
-  updateHistory();
-}
-
-// Initialisation
-window.onload = () => {
-  challenges = getRandomChallenges();
-  displayChallenges();
-  updatePointsDisplay();
-
-  document.getElementById('settings-button').addEventListener('click', toggleSettingsMenu);
-  document.getElementById('toggle-history').addEventListener('click', toggleHistory);
-  document.getElementById('reset-button').addEventListener('click', resetAll);
+    challenges = getRandomChallenges();
+    displayChallenges();
+    loadUserData();
+    updatePointsDisplay();
+  } catch (error) {
+    console.error("Erreur de chargement des défis :", error);
+  }
 };
