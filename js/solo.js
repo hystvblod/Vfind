@@ -1,3 +1,4 @@
+const basePath = location.hostname.includes("github.io") ? "Vfind2/" : "";
 // Variables principales
 let points = 0;
 let challenges = [];
