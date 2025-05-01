@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mode Solo - vFind</title>
-  <link rel="stylesheet" href="/Vfind2/style/style.css">
+  <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
   <header>
@@ -32,11 +32,9 @@
 
   <footer>
     <button onclick="showInterstitialAd()">📺 Voir une pub</button>
-    <button onclick="showRewardedVideoAd().then(() => { points += 5; updatePointsDisplay(); });">
-      🎁 Pub récompense (+5 pts)
-    </button>
+    <button onclick="showRewardedVideoAd().then(() => { points += 5; updatePointsDisplay(); });">🎁 Pub récompense (+5 pts)</button>
   </footer>
 
-  <script src="/Vfind2/js/solo.js"></script>
+  <script src="js/solo.js"></script>
 </body>
 </html>
