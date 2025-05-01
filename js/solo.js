@@ -25,7 +25,8 @@ function showRewardedVideoAd() {
 
 // Fonctions principales
 function getRandomChallenges() {
-  const shuffled = [...allChallenges].sort(() => 0.5 - Math.random());
+  const descriptions = allChallenges.map(c => c.description);
+  const shuffled = [...descriptions].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, 3);
 }
 
