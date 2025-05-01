@@ -1,46 +1,42 @@
 
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Profil</title>
-  <link rel="stylesheet" href="style/main.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VFind - Profil</title>
+<link href="style/main.css" rel="stylesheet"/>
 </head>
 <body class="vfind-bg">
-  <header>
-    <h1>👤 Mon Profil</h1>
-    <nav>
-      <a href="index.html">🏠 Accueil</a>
-      <a href="historique.html">📜 Historique</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="profil-info">
-      <p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
-      <p><strong>Points :</strong> <span id="points">0</span></p>
-      <p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
-      <p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
-    </section>
-
-    <section class="likes-section">
-      <h2>❤️ Photos aimées</h2>
-      <div id="liked-photos-gallery" class="photo-gallery"></div>
-    </section>
-
-    <section class="signaled-section">
-      <h2>🚩 Photos signalées</h2>
-      <div id="signaled-photos-gallery" class="photo-gallery"></div>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 VFind</p>
-  </footer>
-
-  <script src="js/userData.js"></script>
-  <script>
+<header>
+<h1>👤 Mon Profil</h1>
+<nav>
+<a href="index.html">🏠 Accueil</a>
+<a href="historique.html">📜 Historique</a>
+</nav>
+</header>
+<main>
+<section class="profil-info">
+<p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
+<p><strong>Points :</strong> <span id="points">0</span></p>
+<p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
+<p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
+</section><div id="user-nickname">Chargement du pseudo...</div>
+<section class="likes-section">
+<h2>❤️ Photos aimées</h2>
+<div class="photo-gallery" id="liked-photos-gallery"></div>
+</section>
+<section class="signaled-section">
+<h2>🚩 Photos signalées</h2>
+<div class="photo-gallery" id="signaled-photos-gallery"></div>
+</section>
+</main>
+<footer>
+<p>© 2025 VFind</p>
+</footer>
+<script src="js/userData.js"></script>
+<script>
     const data = getUserData();
     document.getElementById("pseudo").textContent = data.pseudo;
     document.getElementById("points").textContent = data.coins;

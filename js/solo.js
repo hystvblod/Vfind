@@ -1,3 +1,5 @@
+let allChallenges = [];
+
 const basePath = location.hostname.includes("github.io") ? "Vfind2/" : "";
 // Variables principales
 let points = 0;
@@ -90,7 +92,17 @@ function toggleSettingsMenu() {
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
-  challenges = getRandomChallenges();
+  fetch("data/defis.json")
+  .then(response => response.json())
+  .then(data => {
+    allChallenges = data;
+    challenges = getRandomChallenges();
+    displayChallenges();
+    updatePointsDisplay();
+  })
+  .catch(error => {
+    console.error("Erreur de chargement des défis :", error);
+  });
   completedChallenges = 0;
   history = [];
   likedPhotos = [];
@@ -101,7 +113,17 @@ function resetAll() {
 
 // Initialisation
 window.onload = () => {
-  challenges = getRandomChallenges();
+  fetch("data/defis.json")
+  .then(response => response.json())
+  .then(data => {
+    allChallenges = data;
+    challenges = getRandomChallenges();
+    displayChallenges();
+    updatePointsDisplay();
+  })
+  .catch(error => {
+    console.error("Erreur de chargement des défis :", error);
+  });
   displayChallenges();
   updatePointsDisplay();
 
