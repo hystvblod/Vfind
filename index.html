@@ -4,39 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Accueil - VFind</title>
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
-  <header class="top-bar">
-    <img src="img/logo-vfind.png" alt="VFind" class="logo">
-    <div class="top-buttons">
-      <button id="profile-btn">👤 Profil</button>
-      <button id="settings-btn">⚙️ Paramètres</button>
+  <header class="header">
+    <div class="logo-title">
+      <img src="assets/logo_vfind.png" alt="VFind Logo" class="logo">
+      <h1>VFind</h1>
+    </div>
+    <div class="nav-buttons">
+      <button onclick="location.href='profil.html'" class="btn-icon">👤 Profil</button>
+      <button onclick="location.href='settings.html'" class="btn-icon">⚙️ Paramètres</button>
     </div>
   </header>
 
-  <main class="main-menu">
-    <h1>Bienvenue sur <strong>VFind</strong></h1>
-    <button id="start-btn" class="btn-primary">🚀 Lancer une partie</button>
-    <button id="continue-btn" class="btn-secondary hidden">➡️ Continuer</button>
+  <main class="main-content">
+    <h2>Bienvenue sur <strong>VFind</strong></h2>
+    <div class="action-buttons">
+      <button onclick="location.href='solo.html'" class="btn-primary">🎮 Lancer une partie</button>
+      <button onclick="location.href='solo.html'" class="btn-secondary">▶️ Continuer</button>
+    </div>
   </main>
 
-  <script>
-    // Vérifie si une partie est en cours (timestamp encore actif)
-    const activeSession = localStorage.getItem('vfind_session_end');
-    if (activeSession && new Date().getTime() < parseInt(activeSession)) {
-      document.getElementById("continue-btn").classList.remove("hidden");
-    }
-
-    document.getElementById("start-btn").onclick = () => {
-      localStorage.removeItem("vfind_session_end");
-      localStorage.removeItem("vfind_completed");
-      window.location.href = "solo.html";
-    };
-
-    document.getElementById("continue-btn").onclick = () => {
-      window.location.href = "solo.html";
-    };
-  </script>
+  <footer class="footer">
+    <p>© 2025 VFind. Tous droits réservés.</p>
+  </footer>
 </body>
 </html>
