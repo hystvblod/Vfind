@@ -1,8 +1,9 @@
 
 let allChallenges = [];
 
-const basePath = ""; // Pas de sous-dossier
+const basePath = ""; // Corrigé : pas de sous-dossier GitHub
 
+// Variables principales
 let points = 0;
 let challenges = [];
 let completedChallenges = 0;
@@ -10,6 +11,7 @@ let videoWatchedToday = false;
 let history = [];
 let likedPhotos = [];
 
+// Simulation pour pub
 function showInterstitialAd() {
   alert("⚡ Publicité interstitielle (simulateur)");
 }
@@ -23,6 +25,7 @@ function showRewardedVideoAd() {
   });
 }
 
+// Fonctions principales
 function getRandomChallenges() {
   const descriptions = allChallenges.map(c => c.description);
   const shuffled = [...descriptions].sort(() => 0.5 - Math.random());
@@ -31,6 +34,8 @@ function getRandomChallenges() {
 
 function displayChallenges() {
   const container = document.getElementById('challenges-container');
+  if (!container) return;
+
   container.innerHTML = '';
 
   challenges.forEach((challenge, index) => {
@@ -45,16 +50,19 @@ function displayChallenges() {
 }
 
 function updatePointsDisplay() {
-  const p1 = document.getElementById('points');
-  const p2 = document.getElementById('points-profile');
-  if (p1) p1.innerText = points;
-  if (p2) p2.innerText = points;
+  const el1 = document.getElementById('points');
+  const el2 = document.getElementById('points-profile');
+  if (el1) el1.innerText = points;
+  if (el2) el2.innerText = points;
 }
 
 function takePhoto(index) {
   alert('📸 Photo prise pour : ' + challenges[index]);
 
-  document.getElementsByClassName('challenge')[index].classList.add('completed');
+  const challengeElements = document.getElementsByClassName('challenge');
+  if (challengeElements[index]) {
+    challengeElements[index].classList.add('completed');
+  }
 
   points += 10;
   completedChallenges += 1;
@@ -86,23 +94,25 @@ function updateHistory() {
 }
 
 function toggleHistory() {
-  const history = document.getElementById('history-container');
-  if (history) history.classList.toggle('hidden');
+  const historyDiv = document.getElementById('history-container');
+  if (historyDiv) {
+    historyDiv.classList.toggle('hidden');
+  }
 }
 
 function toggleSettingsMenu() {
   const menu = document.getElementById('settings-menu');
-  if (menu) menu.classList.toggle('visible');
+  if (menu) {
+    menu.classList.toggle('visible');
+  }
 }
 
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
-
   fetch(basePath + "data/defis.json")
     .then(response => response.text())
     .then(text => {
-      console.log("🔍 Contenu reçu :", text);
       const data = JSON.parse(text);
       allChallenges = data;
       challenges = getRandomChallenges();
@@ -122,7 +132,6 @@ window.onload = () => {
   fetch(basePath + "data/defis.json")
     .then(response => response.text())
     .then(text => {
-      console.log("🔍 Contenu reçu :", text);
       const data = JSON.parse(text);
       allChallenges = data;
       challenges = getRandomChallenges();
