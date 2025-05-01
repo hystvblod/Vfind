@@ -1,3 +1,4 @@
+
 // === CONSTANTES ===
 const DEFI_STORAGE_KEY = "vfind_defis";
 const TIMER_STORAGE_KEY = "vfind_timer";
@@ -159,7 +160,6 @@ function endGame() {
   const score = parseInt(localStorage.getItem(SCORE_STORAGE_KEY)) || 0;
   const date = new Date().toLocaleString("fr-FR");
 
-  // Historique
   const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
   historique.unshift({
     date,
@@ -168,13 +168,11 @@ function endGame() {
   });
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
 
-  // Reset
   localStorage.removeItem(DEFI_STORAGE_KEY);
   localStorage.removeItem(TIMER_STORAGE_KEY);
   localStorage.removeItem(PUB_USED_KEY);
   localStorage.removeItem(SCORE_STORAGE_KEY);
 
-  // Affichage
   gameSection.classList.add("hidden");
   endSection.classList.remove("hidden");
   finalMessage.textContent = `Tu as gagné ${score} VCoins sur 40 possibles !`;
