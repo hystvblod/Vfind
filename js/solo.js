@@ -107,7 +107,7 @@ function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
 
-  fetch("a/data/defis.json")
+  fetch("data/defis.json")
     .then(response => response.text())
     .then(text => {
       try {
@@ -130,7 +130,7 @@ function resetAll() {
 }
 
 window.onload = () => {
-  fetch("a/data/defis.json")
+  fetch("data/defis.json")
     .then(response => response.text())
     .then(text => {
       try {

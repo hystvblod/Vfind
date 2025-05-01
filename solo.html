@@ -1,45 +1,41 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>VFind - Défi Solo</title>
-<link href="style/main.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mode Solo - vFind</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="vfind-bg"><div>Points : <span id="points">0</span></div>
-<header>
-<h1>📸 Défi Solo</h1>
-<nav>
-<a href="index.html">🏠 Accueil</a>
-<a href="profil.html">👤 Profil</a>
-</nav>
-<span id="points-profile">0</span></header>
-<main><div id="points-display-duplicate">Points : 0</div>
-<section class="defi-zone">
-<h2 id="defi-texte">Chargement du défi...</h2>
-<button class="btn-main" id="nouveau-defi">🔁 Nouveau défi</button>
-</section>
-<section class="photo-zone">
-<video autoplay="" id="camera" playsinline=""></video>
-<canvas id="canvas" style="display:none;"></canvas>
-<button class="btn-photo" id="prendre-photo">📷 Prendre la photo</button>
-</section>
-<section class="cadre-zone">
-<h3>🖼️ Cadre sélectionné</h3>
-<canvas height="400" id="polaroid-canvas" width="320"></canvas>
-</section>
-<section class="pub-zone">
-<button class="btn-secondary" onclick="showAd('rewarded')">🎁 Gagner +30s avec une pub</button>
-</section>
-<div id="challenges-container"></div></main>
-<footer>
-<p>© 2025 VFind</p>
-</footer>
-<script src="js/storage.js"></script>
-<script src="js/userData.js"></script>
-<script src="js/polaroid.js"></script>
-<script src="js/pub.js"></script>
-<script src="js/solo.js"></script>
+<body>
+  <header>
+    <h1>🎯 Mode Solo</h1>
+    <span id="points">0</span> pts
+    <button id="reset-button" class="btn-secondary">♻️ Réinitialiser</button>
+    <button id="toggle-history" class="btn-secondary">📜 Voir l'historique</button>
+  </header>
+
+  <main>
+    <div id="challenges-container" class="challenge-list">
+      <!-- Défis affichés ici -->
+    </div>
+
+    <div id="history-container" class="history hidden">
+      <h2>Historique des défis</h2>
+      <!-- Historique JS -->
+    </div>
+
+    <div id="profile">
+      <h2>Profil</h2>
+      <p>Points cumulés : <span id="points-profile">0</span></p>
+    </div>
+  </main>
+
+  <footer>
+    <button onclick="showInterstitialAd()">📺 Voir une pub</button>
+    <button onclick="showRewardedVideoAd().then(() => { points += 5; updatePointsDisplay(); });">🎁 Pub récompense (+5 pts)</button>
+  </footer>
+
+  <script src="js/solo.js"></script>
 </body>
 </html>
