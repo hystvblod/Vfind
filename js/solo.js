@@ -1,9 +1,8 @@
 
 let allChallenges = [];
 
-const basePath = ""; // Corrigé : pas de dossier en plus
+const basePath = ""; // Pas de sous-dossier
 
-// Variables principales
 let points = 0;
 let challenges = [];
 let completedChallenges = 0;
@@ -11,7 +10,6 @@ let videoWatchedToday = false;
 let history = [];
 let likedPhotos = [];
 
-// Simulation pour pub
 function showInterstitialAd() {
   alert("⚡ Publicité interstitielle (simulateur)");
 }
@@ -25,7 +23,6 @@ function showRewardedVideoAd() {
   });
 }
 
-// Fonctions principales
 function getRandomChallenges() {
   const descriptions = allChallenges.map(c => c.description);
   const shuffled = [...descriptions].sort(() => 0.5 - Math.random());
@@ -101,9 +98,12 @@ function toggleSettingsMenu() {
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
+
   fetch(basePath + "data/defis.json")
-    .then(response => response.json())
-    .then(data => {
+    .then(response => response.text())
+    .then(text => {
+      console.log("🔍 Contenu reçu :", text);
+      const data = JSON.parse(text);
       allChallenges = data;
       challenges = getRandomChallenges();
       displayChallenges();
@@ -118,11 +118,12 @@ function resetAll() {
   updateHistory();
 }
 
-// Initialisation
 window.onload = () => {
   fetch(basePath + "data/defis.json")
-    .then(response => response.json())
-    .then(data => {
+    .then(response => response.text())
+    .then(text => {
+      console.log("🔍 Contenu reçu :", text);
+      const data = JSON.parse(text);
       allChallenges = data;
       challenges = getRandomChallenges();
       displayChallenges();
