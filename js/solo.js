@@ -16,13 +16,13 @@ const defiList = document.getElementById("defi-list");
 const vcoinScore = document.getElementById("vcoin-score");
 const finalMessage = document.getElementById("final-message");
 
-// === CHARGEMENT DES DÉFIS JSON ===
+// === CHARGEMENT DES DÉFIS JSON (ADAPTÉ À TON FICHIER) ===
 let allDefis = [];
 
 fetch("data/defis.json")
   .then((res) => res.json())
   .then((data) => {
-    allDefis = data.defis;
+    allDefis = data.map(d => ({ texte: d.description, done: false }));
     init();
   });
 
