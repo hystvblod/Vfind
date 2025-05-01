@@ -98,8 +98,7 @@ function resetAll() {
   .then(data => {
     allChallenges = data;
     challenges = getRandomChallenges();
-    displayChallenges();
-    updatePointsDisplay();
+    
   })
   .catch(error => {
     console.error("Erreur de chargement des défis :", error);
