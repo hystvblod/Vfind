@@ -106,8 +106,7 @@ function resetAll() {
   completedChallenges = 0;
   history = [];
   likedPhotos = [];
-  displayChallenges();
-  updatePointsDisplay();
+  
   updateHistory();
 }
 
@@ -118,14 +117,12 @@ window.onload = () => {
   .then(data => {
     allChallenges = data;
     challenges = getRandomChallenges();
-    displayChallenges();
-    updatePointsDisplay();
+    
   })
   .catch(error => {
     console.error("Erreur de chargement des défis :", error);
   });
-  displayChallenges();
-  updatePointsDisplay();
+  
 
   document.getElementById('settings-button').addEventListener('click', toggleSettingsMenu);
   document.getElementById('toggle-history').addEventListener('click', toggleHistory);
