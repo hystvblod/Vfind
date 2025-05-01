@@ -1,39 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mode Solo - vFind</title>
+  <title>Mode Photo - vFind</title>
   <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
-  <header>
-    <h1>🎯 Mode Solo</h1>
-    <span id="points">0</span> pts
-    <button id="reset-button" class="btn-secondary">♻️ Réinitialiser</button>
-    <button id="toggle-history" class="btn-secondary">📜 Voir l'historique</button>
+  <header class="top-bar">
+    <div class="left">
+      <h1>📷 Mode Photo</h1>
+    </div>
+    <div class="right">
+      <a href="profil.html" class="icon-button">👤 Profil</a>
+      <a href="settings.html" class="icon-button">⚙️ Paramètres</a>
+    </div>
   </header>
 
   <main>
     <div id="challenges-container" class="challenge-list">
       <!-- Défis affichés ici -->
     </div>
-
-    <div id="history-container" class="history hidden">
-      <h2>Historique des défis</h2>
-      <!-- Historique JS -->
-    </div>
-
-    <div id="profile">
-      <h2>Profil</h2>
-      <p>Points cumulés : <span id="points-profile">0</span></p>
-    </div>
   </main>
-
-  <footer>
-    <button onclick="showInterstitialAd()">📺 Voir une pub</button>
-    <button onclick="showRewardedVideoAd().then(() => { points += 5; updatePointsDisplay(); });">🎁 Pub récompense (+5 pts)</button>
-  </footer>
 
   <script src="js/solo.js"></script>
 </body>
