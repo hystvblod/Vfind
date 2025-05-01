@@ -1,29 +1,40 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mode Photo - vFind</title>
-  <link rel="stylesheet" href="style/main.css">
+  <title>VFind - Mode Solo</title>
+  <link rel="stylesheet" href="style/main.css" />
+  <link rel="stylesheet" href="style/mode-solo.css" />
 </head>
 <body>
-  <header class="top-bar">
-    <div class="left">
-      <h1>📷 Mode Photo</h1>
-    </div>
-    <div class="right">
-      <a href="profil.html" class="icon-button">👤 Profil</a>
-      <a href="settings.html" class="icon-button">⚙️ Paramètres</a>
+  <header class="header-solo">
+    <img src="assets/img/logo.png" alt="VFind Logo" class="logo-vfind" />
+    <div class="top-buttons">
+      <a href="profil.html" class="btn-icon">👤</a>
+      <a href="index.html" class="btn-icon">⚙️</a>
     </div>
   </header>
 
-  <main>
-    <div id="challenges-container" class="challenge-list">
-      <!-- Défis affichés ici -->
-    </div>
+  <main class="solo-container">
+    <section id="pre-game" class="centered">
+      <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
+    </section>
+
+    <section id="game-section" class="hidden">
+      <div class="timer-box">⏱️ Temps restant : <span id="timer">--:--:--</span></div>
+      <ul id="defi-list" class="defi-list"></ul>
+      <div class="score-box">💰 VCoins gagnés : <span id="vcoin-score">0</span>/40</div>
+    </section>
+
+    <section id="end-section" class="hidden">
+      <h2>🎉 Bravo !</h2>
+      <p id="final-message"></p>
+      <button id="replayBtn" class="main-button">🔁 Rejouer</button>
+    </section>
   </main>
 
+  <script src="js/storage.js"></script>
   <script src="js/solo.js"></script>
 </body>
 </html>
