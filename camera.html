@@ -1,40 +1,37 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Caméra</title>
-  <link rel="stylesheet" href="style/main.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VFind - Caméra</title>
+<link href="style/main.css" rel="stylesheet"/>
 </head>
 <body class="vfind-bg">
-  <header>
-    <h1>📸 Prendre une Photo</h1>
-    <nav>
-      <a href="index.html">🏠 Accueil</a>
-      <a href="profil.html">👤 Profil</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="photo-zone">
-      <video id="video" autoplay playsinline width="320"></video>
-      <canvas id="photoCanvas" width="320" height="320" style="display: none;"></canvas>
-      <button id="btn-photo" class="btn-photo">📸 Capturer la photo</button>
-    </section>
-
-    <section class="cadre-zone">
-      <h3>🖼️ Cadre actif</h3>
-      <canvas id="polaroidCanvas" width="320" height="400"></canvas>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 VFind</p>
-  </footer>
-
-  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
-  <script src="js/polaroid.js"></script>
-  <script src="js/userData.js"></script>
-  <script src="js/camera.js"></script>
+<header>
+<h1>📸 Prendre une Photo</h1>
+<nav>
+<a href="index.html">🏠 Accueil</a>
+<a href="profil.html">👤 Profil</a>
+</nav>
+</header>
+<main>
+<section class="photo-zone">
+<video autoplay="" id="video" playsinline="" width="320"></video>
+<canvas height="320" id="photoCanvas" style="display: none;" width="320"></canvas>
+<button class="btn-photo" id="btn-photo">📸 Capturer la photo</button>
+</section>
+<section class="cadre-zone">
+<h3>🖼️ Cadre actif</h3>
+<canvas height="400" id="polaroidCanvas" width="320"></canvas>
+</section>
+<img alt="Aperçu de la photo" id="photo-preview"/></main>
+<footer>
+<p>© 2025 VFind</p>
+</footer>
+<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+<script src="js/polaroid.js"></script>
+<script src="js/userData.js"></script>
+<script src="js/camera.js"></script>
 </body>
 </html>
