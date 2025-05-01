@@ -1,4 +1,3 @@
-
 let allChallenges = [];
 
 let points = 0;
@@ -107,7 +106,7 @@ function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
 
-  fetch("data/defis.json")
+  fetch("/Vfind2/data/defis.json")
     .then(response => response.text())
     .then(text => {
       try {
@@ -130,7 +129,7 @@ function resetAll() {
 }
 
 window.onload = () => {
-  fetch("data/defis.json")
+  fetch("/Vfind2/data/defis.json")
     .then(response => response.text())
     .then(text => {
       try {
