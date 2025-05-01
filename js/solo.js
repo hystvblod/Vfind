@@ -1,9 +1,6 @@
 
 let allChallenges = [];
 
-const basePath = ""; // Corrigé : pas de sous-dossier GitHub
-
-// Variables principales
 let points = 0;
 let challenges = [];
 let completedChallenges = 0;
@@ -25,7 +22,6 @@ function showRewardedVideoAd() {
   });
 }
 
-// Fonctions principales
 function getRandomChallenges() {
   const descriptions = allChallenges.map(c => c.description);
   const shuffled = [...descriptions].sort(() => 0.5 - Math.random());
@@ -34,7 +30,7 @@ function getRandomChallenges() {
 
 function displayChallenges() {
   const container = document.getElementById('challenges-container');
-  if (!container) return;
+  if (!container || challenges.length === 0) return;
 
   container.innerHTML = '';
 
@@ -110,13 +106,18 @@ function toggleSettingsMenu() {
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
-  fetch(basePath + "data/defis.json")
+
+  fetch("a/data/defis.json")
     .then(response => response.text())
     .then(text => {
-      const data = JSON.parse(text);
-      allChallenges = data;
-      challenges = getRandomChallenges();
-      displayChallenges();
+      try {
+        const data = JSON.parse(text);
+        allChallenges = data;
+        challenges = getRandomChallenges();
+        displayChallenges();
+      } catch (e) {
+        console.error("❌ Le contenu JSON est invalide :", text);
+      }
     })
     .catch(error => {
       console.error("Erreur de chargement des défis :", error);
@@ -129,13 +130,17 @@ function resetAll() {
 }
 
 window.onload = () => {
-  fetch(basePath + "data/defis.json")
+  fetch("a/data/defis.json")
     .then(response => response.text())
     .then(text => {
-      const data = JSON.parse(text);
-      allChallenges = data;
-      challenges = getRandomChallenges();
-      displayChallenges();
+      try {
+        const data = JSON.parse(text);
+        allChallenges = data;
+        challenges = getRandomChallenges();
+        displayChallenges();
+      } catch (e) {
+        console.error("❌ Le contenu JSON est invalide :", text);
+      }
     })
     .catch(error => {
       console.error("Erreur de chargement des défis :", error);
