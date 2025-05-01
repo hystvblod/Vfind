@@ -1,6 +1,8 @@
+
 let allChallenges = [];
 
-const basePath = location.hostname.includes("github.io") ? "Vfind2/" : "";
+const basePath = ""; // Corrigé : pas de dossier en plus
+
 // Variables principales
 let points = 0;
 let challenges = [];
@@ -46,8 +48,10 @@ function displayChallenges() {
 }
 
 function updatePointsDisplay() {
-  document.getElementById('points').innerText = points;
-  document.getElementById('points-profile').innerText = points;
+  const p1 = document.getElementById('points');
+  const p2 = document.getElementById('points-profile');
+  if (p1) p1.innerText = points;
+  if (p2) p2.innerText = points;
 }
 
 function takePhoto(index) {
@@ -64,67 +68,75 @@ function takePhoto(index) {
 
 function updateHistory() {
   const container = document.getElementById('history-container');
-  container.innerHTML = '';
-  history.forEach(item => {
-    const p = document.createElement('p');
-    p.textContent = item;
-    container.appendChild(p);
-  });
+  if (container) {
+    container.innerHTML = '';
+    history.forEach(item => {
+      const p = document.createElement('p');
+      p.textContent = item;
+      container.appendChild(p);
+    });
+  }
 
   const fullList = document.getElementById('full-history-list');
-  fullList.innerHTML = '';
-  history.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    fullList.appendChild(li);
-  });
+  if (fullList) {
+    fullList.innerHTML = '';
+    history.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      fullList.appendChild(li);
+    });
+  }
 }
 
 function toggleHistory() {
   const history = document.getElementById('history-container');
-  history.classList.toggle('hidden');
+  if (history) history.classList.toggle('hidden');
 }
 
 function toggleSettingsMenu() {
   const menu = document.getElementById('settings-menu');
-  menu.classList.toggle('visible');
+  if (menu) menu.classList.toggle('visible');
 }
 
 function resetAll() {
   if (!confirm("⚠️ Es-tu sûr de vouloir tout réinitialiser ?")) return;
   points = 0;
   fetch(basePath + "data/defis.json")
-  .then(response => response.json())
-  .then(data => {
-    allChallenges = data;
-    challenges = getRandomChallenges();
-    
-  })
-  .catch(error => {
-    console.error("Erreur de chargement des défis :", error);
-  });
+    .then(response => response.json())
+    .then(data => {
+      allChallenges = data;
+      challenges = getRandomChallenges();
+      displayChallenges();
+    })
+    .catch(error => {
+      console.error("Erreur de chargement des défis :", error);
+    });
+
   completedChallenges = 0;
   history = [];
   likedPhotos = [];
-  
   updateHistory();
 }
 
 // Initialisation
 window.onload = () => {
   fetch(basePath + "data/defis.json")
-  .then(response => response.json())
-  .then(data => {
-    allChallenges = data;
-    challenges = getRandomChallenges();
-    
-  })
-  .catch(error => {
-    console.error("Erreur de chargement des défis :", error);
-  });
-  
+    .then(response => response.json())
+    .then(data => {
+      allChallenges = data;
+      challenges = getRandomChallenges();
+      displayChallenges();
+    })
+    .catch(error => {
+      console.error("Erreur de chargement des défis :", error);
+    });
 
-  document.getElementById('settings-button').addEventListener('click', toggleSettingsMenu);
-  document.getElementById('toggle-history').addEventListener('click', toggleHistory);
-  document.getElementById('reset-button').addEventListener('click', resetAll);
+  const settingsBtn = document.getElementById('settings-button');
+  if (settingsBtn) settingsBtn.addEventListener('click', toggleSettingsMenu);
+
+  const toggleHist = document.getElementById('toggle-history');
+  if (toggleHist) toggleHist.addEventListener('click', toggleHistory);
+
+  const resetBtn = document.getElementById('reset-button');
+  if (resetBtn) resetBtn.addEventListener('click', resetAll);
 };
