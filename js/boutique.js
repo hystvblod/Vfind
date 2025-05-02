@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function afficherCadres(cadres) {
   const listeCadres = document.getElementById("boutique-container");
+  if (!listeCadres) return;
 
   cadres.forEach(cadre => {
     const container = document.createElement("div");
@@ -32,9 +33,8 @@ function afficherCadres(cadres) {
 
     listeCadres.appendChild(container);
 
-    // Affichage du cadre
+    // Affichage du cadre avec image
     drawPolaroid("img/logo.png", cadre.id, canvas);
-
   });
 }
 
@@ -47,6 +47,6 @@ function drawPolaroidPreview(styleName, canvasTarget) {
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-  // Affiche le cadre sans attendre d’image
+  // Affiche uniquement le cadre sans image
   drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
 }
