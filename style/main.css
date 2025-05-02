@@ -1,87 +1,176 @@
-/* Fond général */
-body.vfind-bg {
-  background: linear-gradient(to bottom right, #f5f5f5, #e0e0e0);
-  font-family: 'Arial', sans-serif;
+/* === RÉINITIALISATION DE BASE === */
+* {
   margin: 0;
   padding: 0;
-  color: #333;
+  box-sizing: border-box;
 }
 
-/* En-tête */
-header {
-  background-color: #ffffff;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: center;
+/* === FOND GLOBAL === */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom right, #6a0dad, #1e90ff);
+  color: white;
+  min-height: 100vh;
 }
 
-header h1 {
-  margin: 0;
+/* === EN-TÊTE === */
+.header-solo {
+  padding: 1rem;
+  position: relative;
+}
+
+.mode-title {
   font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
 }
 
-nav a {
-  margin: 0 10px;
-  color: #0077cc;
+.top-buttons {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.7rem;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
   text-decoration: none;
+}
+
+.back-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+/* === CONTAINERS === */
+.solo-container {
+  padding: 1rem;
+}
+
+/* === BOUTON PRINCIPAL === */
+.main-button {
+  background: #fdd44a; /* Jaune VBlocks */
+  color: #000;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem auto;
+}
+
+.main-button:hover {
+  transform: scale(1.05);
+}
+
+/* === BOUTONS DÉFIS === */
+button {
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* === TIMER === */
+.timer-box {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 15px;
+  margin: 1rem auto;
+  width: fit-content;
+  font-size: 1.1rem;
+}
+
+/* === LISTE DES DÉFIS === */
+.defi-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.defi-list li {
+  background-color: #fdd44a; /* Jaune VBlocks */
+  border-radius: 15px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  color: black;
+  transition: background 0.3s, opacity 0.3s;
+}
+
+.defi-list li.done {
+  background-color: #a2d2ff; /* Bleu VBlocks */
+  opacity: 0.7;
+}
+
+.defi-list p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
-/* Section des points */
-.points-display {
-  background-color: #fff;
-  padding: 15px;
+/* === FIN DE PARTIE === */
+#end-section {
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  margin: 20px;
-  border-radius: 12px;
+  padding: 2rem;
 }
 
-/* Boutons */
-.btn-secondary {
-  background-color: #ffcc00;
-  border: none;
-  color: #333;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
+#final-message {
+  margin: 1rem 0;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
-.btn-secondary:hover {
-  background-color: #ffdb4d;
+/* === MASQUER === */
+.hidden {
+  display: none !important;
 }
-
-/* Section des cadres */
-.cadres-list {
-  padding: 20px;
-  text-align: center;
-}
-
-.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-/* Canvas Polaroid */
-canvas {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.cadre-item canvas {
   display: block;
-  margin: 0 auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  margin: 0 auto 1rem;
+}
+.cadre-item {
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  text-align: center;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+.cadre-item h3, .cadre-item p {
+  margin: 0.5rem 0;
+}
+.cadre-item button {
+  background-color: #ffffff22;
+  color: white;
+  border: 1px solid white;
+}
+.cadre-item button:hover {
+  background-color: #ffffff44;
 }
 
-/* Pied de page */
-footer {
-  background-color: #fafafa;
-  text-align: center;
-  padding: 10px;
-  margin-top: 40px;
-  font-size: 0.9rem;
-  color: #888;
-}
