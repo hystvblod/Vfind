@@ -76,10 +76,10 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 function drawPolaroidFrame(styleName, ctx, w, h) {
   switch (styleName) {
     case "polaroid_1": // Blanc Classique
-      ctx.lineWidth = 40; // ou 40 si tu veux encore plus épais
-ctx.strokeStyle = "#000";
-ctx.strokeRect(15, 15, w - 30, h - 30); // Décalage pour compenser l'épaisseur
-      break;
+  ctx.lineWidth = 40;
+  ctx.strokeStyle = "#000";
+  ctx.strokeRect(15, 15, w - 30, h - 30); // marge de 15 = moitié du lineWidth
+  break;
     case "polaroid_2": // Noir Mat
       ctx.lineWidth = 7;
       ctx.strokeStyle = "#111";
