@@ -1,57 +1,10 @@
-// Polaroid complet : affichage image + cadre stylisé
-
-function drawPolaroid(photoSrc, styleName, canvasTarget) {
-  const ctx = canvasTarget.getContext("2d");
-  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
-
-  const imgPhoto = new Image();
-  imgPhoto.src = photoSrc;
-
-  imgPhoto.onload = () => {
-    // Fond blanc
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-
-    // Marges façon Polaroïd
-    const paddingTop = 60;
-    const paddingSides = 60;
-    const paddingBottom = 80;
-
-    const photoWidth = canvasTarget.width - 2 * paddingSides;
-    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
-
-    // Effet ombre douce
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    // Coins arrondis
-    ctx.beginPath();
-    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
-    ctx.clip();
-
-    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
-    ctx.restore();
-
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-  };
-
-  imgPhoto.onerror = () => {
-    ctx.fillStyle = "#eee";
-    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-  };
-}
-
-// Ajoute roundRect si manquant
+// Ajout roundRect si manquant
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (typeof r === 'number') {
-      r = {tl: r, tr: r, br: r, bl: r};
+      r = { tl: r, tr: r, br: r, bl: r };
     } else {
-      const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+      const defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
       for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
     }
     this.beginPath();
@@ -69,10 +22,47 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
   };
 }
 
-// Et ici, le drawPolaroidFrame avec les 60 styles
-// (déjà collé depuis e68e62f6-e9d3-4f76-8a2b-6251af668612.js)
-function drawPolaroidFrame(styleName, ctx, w, h) {
-  ctx.lineWidth = 25;
+// Fonction principale d'affichage Polaroïd
+function drawPolaroid(photoSrc, styleName, canvasTarget) {
+  const ctx = canvasTarget.getContext("2d");
+  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  const imgPhoto = new Image();
+  imgPhoto.src = photoSrc;
+
+  imgPhoto.onload = () => {
+    const paddingTop = 30;
+    const paddingSides = 30;
+    const paddingBottom = 50;
+
+    const photoWidth = canvasTarget.width - 2 * paddingSides;
+    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
+
+    // Appliquer cadre autour
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+
+    // Affichage de la photo au centre
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    ctx.beginPath();
+    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
+    ctx.clip();
+
+    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
+    ctx.restore();
+  };
+
+  imgPhoto.onerror = () => {
+    ctx.fillStyle = "#eee";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+  };
+}
+
 
   switch (styleName) {
     case "polaroid_1": // Blanc Classique
