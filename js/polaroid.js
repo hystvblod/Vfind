@@ -13,9 +13,9 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
 
     // Marges façon Polaroïd
-    const paddingTop = 150;
-    const paddingSides = 150;
-    const paddingBottom = 250;
+    const paddingTop = 60;
+    const paddingSides = 60;
+    const paddingBottom = 80;
 
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
