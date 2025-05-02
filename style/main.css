@@ -153,4 +153,24 @@ button {
   height: auto;
   margin: 0 auto 1rem;
 }
+.cadre-item {
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  text-align: center;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+.cadre-item h3, .cadre-item p {
+  margin: 0.5rem 0;
+}
+.cadre-item button {
+  background-color: #ffffff22;
+  color: white;
+  border: 1px solid white;
+}
+.cadre-item button:hover {
+  background-color: #ffffff44;
+}
 
