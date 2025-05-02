@@ -1,5 +1,4 @@
-// Polaroid complet : affichage image + cadre stylisé
-
+// Fonction générique de tracé de cadre
 function strokePolaroidFrame(ctx, color, width = 40) {
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
@@ -11,7 +10,7 @@ function strokePolaroidFrame(ctx, color, width = 40) {
   );
 }
 
-// Fonction principale d'affichage d'une image avec cadre stylisé
+// Fonction principale : afficher une photo avec cadre
 function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
@@ -24,7 +23,7 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-    // Marges façon Polaroïd
+    // Marges Polaroïd
     const paddingTop = 60;
     const paddingSides = 60;
     const paddingBottom = 80;
@@ -32,14 +31,13 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
 
-    // Effet ombre douce
+    // Ombre et arrondi
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
 
-    // Coins arrondis
     ctx.beginPath();
     ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
     ctx.clip();
@@ -47,14 +45,31 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
     ctx.restore();
 
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height, {
+      paddingTop: 60,
+      paddingSides: 60,
+      paddingBottom: 80
+    });
   };
 
-   imgPhoto.onerror = () => {
+  imgPhoto.onerror = () => {
     ctx.fillStyle = "#eee";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height, {
+      paddingTop: 60,
+      paddingSides: 60,
+      paddingBottom: 80
+    });
   };
+}
+
+// Fonction d'affichage du cadre seul (avec marges respectées)
+function drawPolaroidFrame(styleName, ctx, w, h, padding = {}) {
+  const { paddingTop = 0, paddingSides = 0, paddingBottom = 0 } = padding;
+  const x = paddingSides;
+  const y = paddingTop;
+  const frameWidth = w - paddingSides * 2;
+  const frameHeight = h - paddingTop - paddingBottom;
 }
 
 
