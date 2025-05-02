@@ -1,71 +1,87 @@
-function drawPolaroid(photoSrc, styleName, canvasTarget) {
-  const ctx = canvasTarget.getContext("2d");
-  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
-
-  const imgPhoto = new Image();
-  imgPhoto.src = photoSrc;
-
-  imgPhoto.onload = () => {
-    // Fond blanc du cadre
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-
-    // Marges façon Polaroïd
-    const paddingTop = 20;
-    const paddingSides = 20;
-    const paddingBottom = 70;
-
-    const photoWidth = canvasTarget.width - 2 * paddingSides;
-    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
-
-    // Effet ombre douce sous la photo
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    // Zone arrondie pour moderniser légèrement (clip path simulé)
-    ctx.beginPath();
-    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
-    ctx.clip();
-
-    // Dessin image
-    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
-
-    // Restaure le contexte pour désactiver l'ombre
-    ctx.restore();
-
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-  };
-
-  imgPhoto.onerror = () => {
-    ctx.fillStyle = "#eee";
-    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-  };
+/* Fond général */
+body.vfind-bg {
+  background: linear-gradient(to bottom right, #f5f5f5, #e0e0e0);
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
 }
 
-// Ajout d'une méthode roundRect si elle n'existe pas encore
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    if (typeof r === 'number') {
-      r = {tl: r, tr: r, br: r, bl: r};
-    } else {
-      const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
-      for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
-    }
-    this.beginPath();
-    this.moveTo(x + r.tl, y);
-    this.lineTo(x + w - r.tr, y);
-    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-    this.lineTo(x + w, y + h - r.br);
-    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-    this.lineTo(x + r.bl, y + h);
-    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-    this.lineTo(x, y + r.tl);
-    this.quadraticCurveTo(x, y, x + r.tl, y);
-    this.closePath();
-    return this;
-  };
+/* En-tête */
+header {
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+nav a {
+  margin: 0 10px;
+  color: #0077cc;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Section des points */
+.points-display {
+  background-color: #fff;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin: 20px;
+  border-radius: 12px;
+}
+
+/* Boutons */
+.btn-secondary {
+  background-color: #ffcc00;
+  border: none;
+  color: #333;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #ffdb4d;
+}
+
+/* Section des cadres */
+.cadres-list {
+  padding: 20px;
+  text-align: center;
+}
+
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Canvas Polaroid */
+canvas {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+/* Pied de page */
+footer {
+  background-color: #fafafa;
+  text-align: center;
+  padding: 10px;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #888;
 }
