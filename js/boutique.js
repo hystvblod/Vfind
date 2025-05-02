@@ -17,8 +17,8 @@ function afficherCadres(cadres) {
 
 
     const canvas = document.createElement("canvas");
-    canvas.width = 300;
-    canvas.height = 360;
+    canvas.width = 600;
+    canvas.height = 800;
 
     const nom = document.createElement("div");
     nom.className = "nom-cadre";
