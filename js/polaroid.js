@@ -71,85 +71,53 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 
 // Et ici, le drawPolaroidFrame avec les 60 styles
 // (déjà collé depuis e68e62f6-e9d3-4f76-8a2b-6251af668612.js)
-
-
 function drawPolaroidFrame(styleName, ctx, w, h) {
-  switch (styleName) {
-    case "polaroid_1": // Blanc Classique
   ctx.lineWidth = 40;
-  ctx.strokeStyle = "#000";
-  ctx.strokeRect(15, 15, w - 30, h - 30); // marge de 15 = moitié du lineWidth
-  break;
-    case "polaroid_2": // Noir Mat
-      ctx.lineWidth = 7;
+
+  switch (styleName) {
+    case "polaroid_1":
+      ctx.strokeStyle = "#ffffff";
+      break;
+    case "polaroid_2":
       ctx.strokeStyle = "#111";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_3": // Sépia
-      ctx.lineWidth = 7;
+    case "polaroid_3":
       ctx.strokeStyle = "#704214";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_4": // Bois Clair
-      ctx.lineWidth = 6;
+    case "polaroid_4":
       ctx.strokeStyle = "#c4a484";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_5": // Bois Foncé
-      ctx.lineWidth = 6;
+    case "polaroid_5":
       ctx.strokeStyle = "#5b3a29";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_6": // Gris Béton
-      ctx.lineWidth = 5;
+    case "polaroid_6":
       ctx.strokeStyle = "#999999";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_7": // Rose Poudré
-      ctx.lineWidth = 5;
+    case "polaroid_7":
       ctx.strokeStyle = "#e8b2c8";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_8": // Bleu Pastel
-      ctx.lineWidth = 5;
+    case "polaroid_8":
       ctx.strokeStyle = "#b2d8f8";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_9": // Vert Menthe
-      ctx.lineWidth = 5;
+    case "polaroid_9":
       ctx.strokeStyle = "#b2f8d0";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_10": // Jaune Doux
-      ctx.lineWidth = 5;
+    case "polaroid_10":
       ctx.strokeStyle = "#fff7b2";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_11": // Nuage Sky
-      ctx.lineWidth = 5;
+    case "polaroid_11":
       ctx.strokeStyle = "#dbeeff";
-      ctx.setLineDash([3, 3]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_12": // Aquarelle
-      ctx.lineWidth = 7;
+    case "polaroid_12":
       const grad12 = ctx.createLinearGradient(0, 0, w, h);
       grad12.addColorStop(0, "#fcd5ce");
       grad12.addColorStop(1, "#a2d2ff");
       ctx.strokeStyle = grad12;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_13": // Fluo Violet
-      ctx.lineWidth = 6;
+    case "polaroid_13":
       ctx.strokeStyle = "#cc33ff";
-      ctx.shadowColor = "#cc33ff";
-      ctx.shadowBlur = 12;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_14": // Arc-en-ciel
-      ctx.lineWidth = 8;
+    case "polaroid_14":
       const grad14 = ctx.createLinearGradient(0, 0, w, 0);
       grad14.addColorStop(0, "red");
       grad14.addColorStop(0.17, "orange");
@@ -159,363 +127,191 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
       grad14.addColorStop(0.85, "indigo");
       grad14.addColorStop(1, "violet");
       ctx.strokeStyle = grad14;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_15": // Pixels Rétro
-      ctx.lineWidth = 4;
+    case "polaroid_15":
       ctx.strokeStyle = "#ff66cc";
-      ctx.setLineDash([1, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_16": // Papier Froissé
-      ctx.lineWidth = 6;
+    case "polaroid_16":
       ctx.strokeStyle = "#dddddd";
-      ctx.setLineDash([8, 4]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_17": // Néon Rose
-      ctx.lineWidth = 6;
+    case "polaroid_17":
       ctx.strokeStyle = "#ff00cc";
-      ctx.shadowColor = "#ff00cc";
-      ctx.shadowBlur = 15;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_18": // Ombres Douces
-      ctx.lineWidth = 5;
+    case "polaroid_18":
       ctx.strokeStyle = "#cccccc";
-      ctx.shadowColor = "#999";
-      ctx.shadowBlur = 8;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_19": // Gomme Crayonnée
-      ctx.lineWidth = 5;
+    case "polaroid_19":
       ctx.strokeStyle = "#f4c2c2";
-      ctx.setLineDash([2, 6]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_20": // Coups de pinceau
-      ctx.lineWidth = 7;
+    case "polaroid_20":
       ctx.strokeStyle = "#b2967d";
-      ctx.setLineDash([6, 2, 1, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_21": // Emoji Jaune
-      ctx.lineWidth = 6;
+    case "polaroid_21":
       ctx.strokeStyle = "#ffeb3b";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_22": // Petit Chat
-      ctx.lineWidth = 6;
+    case "polaroid_22":
       ctx.strokeStyle = "#f8c8dc";
-      ctx.setLineDash([2, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_23": // Cœurs Roses
-      ctx.lineWidth = 6;
+    case "polaroid_23":
       ctx.strokeStyle = "#ff99cc";
-      ctx.setLineDash([1, 5]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_24": // Bulles Bleues
-      ctx.lineWidth = 5;
+    case "polaroid_24":
       ctx.strokeStyle = "#b2ebf2";
-      ctx.setLineDash([4, 4]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_25": // Ballons
-      ctx.lineWidth = 5;
+    case "polaroid_25":
       const grad25 = ctx.createLinearGradient(0, 0, w, h);
       grad25.addColorStop(0, "#ff9999");
       grad25.addColorStop(0.5, "#ffcc99");
       grad25.addColorStop(1, "#99ccff");
       ctx.strokeStyle = grad25;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_26": // Nuages & Soleil
-      ctx.lineWidth = 5;
+    case "polaroid_26":
       ctx.strokeStyle = "#fef3bd";
-      ctx.setLineDash([6, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_27": // Papier à Carreaux
-      ctx.lineWidth = 6;
+    case "polaroid_27":
       ctx.strokeStyle = "#cfd8dc";
-      ctx.setLineDash([3, 3]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_28": // Stickers Fun
-      ctx.lineWidth = 7;
+    case "polaroid_28":
       ctx.strokeStyle = "#ffccff";
-      ctx.setLineDash([5, 1]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_29": // Arc-en-ciel Cartoon
-      ctx.lineWidth = 6;
+    case "polaroid_29":
       const grad29 = ctx.createLinearGradient(0, 0, w, 0);
       grad29.addColorStop(0, "#ff6699");
       grad29.addColorStop(0.5, "#ffff66");
       grad29.addColorStop(1, "#66ccff");
       ctx.strokeStyle = grad29;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_30": // Lapinou Violeta
-      ctx.lineWidth = 6;
+    case "polaroid_30":
       ctx.strokeStyle = "#d1c4e9";
-      ctx.setLineDash([4, 1]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_31": // Japon Traditionnel
-      ctx.lineWidth = 7;
+    case "polaroid_31":
       ctx.strokeStyle = "#b71c1c";
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_32": // Asiatique Kawaii
-      ctx.lineWidth = 6;
+    case "polaroid_32":
       ctx.strokeStyle = "#ffccf9";
-      ctx.setLineDash([2, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_33": // Oriental Or & Rouge
-      ctx.lineWidth = 7;
+    case "polaroid_33":
       const grad33 = ctx.createLinearGradient(0, 0, w, h);
       grad33.addColorStop(0, "#ffcc00");
       grad33.addColorStop(1, "#b30000");
       ctx.strokeStyle = grad33;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_34": // Gothique
-      ctx.lineWidth = 8;
+    case "polaroid_34":
       ctx.strokeStyle = "#2c2c2c";
-      ctx.setLineDash([3, 3]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_35": // Années 80
-      ctx.lineWidth = 6;
+    case "polaroid_35":
       ctx.strokeStyle = "#ff66cc";
-      ctx.setLineDash([5, 2, 1, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_36": // Disco
-      ctx.lineWidth = 7;
+    case "polaroid_36":
       const grad36 = ctx.createLinearGradient(0, 0, w, 0);
       grad36.addColorStop(0, "#ffd700");
       grad36.addColorStop(1, "#e75480");
       ctx.strokeStyle = grad36;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_37": // Journal Papier
-      ctx.lineWidth = 5;
+    case "polaroid_37":
       ctx.strokeStyle = "#bbbbbb";
-      ctx.setLineDash([4, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_38": // Glamour Paillettes
-      ctx.lineWidth = 6;
+    case "polaroid_38":
       ctx.strokeStyle = "#ff99ff";
-      ctx.shadowColor = "#ff99ff";
-      ctx.shadowBlur = 10;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_39": // Bois Gravé
-      ctx.lineWidth = 6;
+    case "polaroid_39":
       ctx.strokeStyle = "#8d6e63";
-      ctx.setLineDash([2, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_40": // Cybermetal
-      ctx.lineWidth = 7;
+    case "polaroid_40":
       const grad40 = ctx.createLinearGradient(0, 0, w, h);
       grad40.addColorStop(0, "#00ffff");
       grad40.addColorStop(1, "#333333");
       ctx.strokeStyle = grad40;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_41": // Doré Deluxe
-      ctx.lineWidth = 8;
+    case "polaroid_41":
       const grad41 = ctx.createLinearGradient(0, 0, w, h);
       grad41.addColorStop(0, "#ffe08a");
       grad41.addColorStop(1, "#c99800");
       ctx.strokeStyle = grad41;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_42": // Diamant Cristal
-      ctx.lineWidth = 6;
+    case "polaroid_42":
       ctx.strokeStyle = "#ccffff";
-      ctx.shadowColor = "#ccffff";
-      ctx.shadowBlur = 15;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_43": // Noir & Or
-      ctx.lineWidth = 7;
+    case "polaroid_43":
       const grad43 = ctx.createLinearGradient(0, 0, w, 0);
       grad43.addColorStop(0, "#000");
       grad43.addColorStop(1, "#ffd700");
       ctx.strokeStyle = grad43;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_44": // VIP Étoilé
-      ctx.lineWidth = 7;
+    case "polaroid_44":
       ctx.strokeStyle = "#ffffff";
-      ctx.shadowColor = "#ffd700";
-      ctx.shadowBlur = 18;
-      ctx.setLineDash([2, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_45": // Halo Animé
-      ctx.lineWidth = 6;
+    case "polaroid_45":
       ctx.strokeStyle = "#a0c4ff";
-      ctx.shadowColor = "#a0c4ff";
-      ctx.shadowBlur = 20;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_46": // Champion Médaille
-      ctx.lineWidth = 7;
+    case "polaroid_46":
       const grad46 = ctx.createLinearGradient(0, 0, w, h);
       grad46.addColorStop(0, "#ffcc00");
       grad46.addColorStop(1, "#cc0000");
       ctx.strokeStyle = grad46;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_47": // Flamme Dynamique
-      ctx.lineWidth = 6;
+    case "polaroid_47":
       const grad47 = ctx.createLinearGradient(0, 0, w, 0);
       grad47.addColorStop(0, "#ff6600");
       grad47.addColorStop(1, "#ff0000");
       ctx.strokeStyle = grad47;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_48": // Ice Blue Animé
-      ctx.lineWidth = 6;
+    case "polaroid_48":
       ctx.strokeStyle = "#66ccff";
-      ctx.shadowColor = "#66ccff";
-      ctx.shadowBlur = 12;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_49": // Royal Violet
-      ctx.lineWidth = 6;
+    case "polaroid_49":
       const grad49 = ctx.createLinearGradient(0, 0, w, h);
       grad49.addColorStop(0, "#a678f0");
       grad49.addColorStop(1, "#5d3fd3");
       ctx.strokeStyle = grad49;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_50": // Édition Limitée (VFind)
-      ctx.lineWidth = 7;
+    case "polaroid_50":
       ctx.strokeStyle = "#ffffff";
-      ctx.shadowColor = "#ffd700";
-      ctx.shadowBlur = 25;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_51": // Flocons de Neige
-      ctx.lineWidth = 6;
+    case "polaroid_51":
       ctx.strokeStyle = "#e0f7fa";
-      ctx.shadowColor = "#b2ebf2";
-      ctx.shadowBlur = 12;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_52": // Citrouille Halloween
-      ctx.lineWidth = 6;
+    case "polaroid_52":
       ctx.strokeStyle = "#ff7518";
-      ctx.setLineDash([4, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_53": // Sapin de Noël
-      ctx.lineWidth = 6;
+    case "polaroid_53":
       ctx.strokeStyle = "#2e7d32";
-      ctx.shadowColor = "#cfd8dc";
-      ctx.shadowBlur = 10;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_54": // Feuilles d’Automne
-      ctx.lineWidth = 6;
+    case "polaroid_54":
       const grad54 = ctx.createLinearGradient(0, 0, w, h);
       grad54.addColorStop(0, "#ff9966");
       grad54.addColorStop(1, "#cc6600");
       ctx.strokeStyle = grad54;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_55": // Été Tropical
-      ctx.lineWidth = 6;
+    case "polaroid_55":
       ctx.strokeStyle = "#ffe066";
-      ctx.shadowColor = "#00cc99";
-      ctx.shadowBlur = 10;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_56": // Bord de Mer
-      ctx.lineWidth = 5;
+    case "polaroid_56":
       ctx.strokeStyle = "#40c4ff";
-      ctx.setLineDash([2, 2]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_57": // Printemps Fleuris
-      ctx.lineWidth = 5;
+    case "polaroid_57":
       ctx.strokeStyle = "#f48fb1";
-      ctx.setLineDash([3, 1, 1, 1]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
       break;
-    case "polaroid_58": // Carnaval
-      ctx.lineWidth = 6;
+    case "polaroid_58":
       const grad58 = ctx.createLinearGradient(0, 0, w, 0);
       grad58.addColorStop(0, "#ff4081");
       grad58.addColorStop(0.5, "#ffea00");
       grad58.addColorStop(1, "#40c4ff");
       ctx.strokeStyle = grad58;
-      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_59": // Nouvel An Brillant
-      ctx.lineWidth = 6;
+    case "polaroid_59":
       ctx.strokeStyle = "#fff59d";
-      ctx.shadowColor = "#ffffff";
-      ctx.shadowBlur = 18;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
-    case "polaroid_60": // Gel Magique
-      ctx.lineWidth = 6;
+    case "polaroid_60":
       const grad60 = ctx.createLinearGradient(0, 0, w, h);
       grad60.addColorStop(0, "#b3e5fc");
       grad60.addColorStop(1, "#ffffff");
       ctx.strokeStyle = grad60;
-      ctx.shadowColor = "#b3e5fc";
-      ctx.shadowBlur = 10;
-      ctx.strokeRect(0, 0, w, h);
-      ctx.shadowBlur = 0;
       break;
     default:
-      ctx.lineWidth = 5;
       ctx.strokeStyle = "#999";
-      ctx.strokeRect(0, 0, w, h);
       break;
   }
+
+  ctx.strokeRect(0, 0, w, h);
 }
