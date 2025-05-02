@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function afficherCadres(cadres) {
-  const listeCadres = document.getElementById("liste-cadres");
+  const listeCadres = document.getElementById("boutique-container");
 
   cadres.forEach(cadre => {
     const container = document.createElement("div");
