@@ -1,44 +1,64 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("boutique-container");
-  const userData = JSON.parse(localStorage.getItem("vfind_user")) || {
-    coins: 100,
-    cadres: ["polaroid_1"]
-  };
+  const boutiqueContainer = document.getElementById("boutique-container");
+  const pointsDisplay = document.getElementById("points");
+
+  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
+  pointsDisplay.textContent = userPoints;
+
+  const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
 
   fetch("data/cadres.json")
     .then(res => res.json())
-    .then(cadres => {
-      cadres.forEach(cadre => {
-        const div = document.createElement("div");
-        div.className = "cadre-item";
-        div.innerHTML = `
-          <canvas width="100" height="120" id="canvas-${cadre.id}"></canvas>
-          <p>${cadre.nom}</p>
-          <button ${userData.cadres.includes(cadre.id) ? "disabled" : ""} data-id="${cadre.id}">
-            ${userData.cadres.includes(cadre.id) ? "Déjà acheté" : "Acheter (10 coins)"}
-          </button>
-        `;
-        container.appendChild(div);
+    .then(data => {
+      data.forEach(cadre => {
+        const item = document.createElement("div");
+        item.classList.add("cadre-item");
 
-        const canvas = document.getElementById("canvas-" + cadre.id);
-        drawPolaroid("logo.png", cadre.id, canvas); // Utilise une image par défaut
-      });
+        // Mini canvas pour aperçu
+        const preview = document.createElement("canvas");
+        preview.width = 160;
+        preview.height = 200;
+        drawPolaroid(preview.getContext("2d"), cadre.nom);
 
-      container.addEventListener("click", e => {
-        if (e.target.tagName === "BUTTON") {
-          const cadreId = e.target.dataset.id;
-          if (userData.coins >= 10 && !userData.cadres.includes(cadreId)) {
-            userData.coins -= 10;
-            userData.cadres.push(cadreId);
-            localStorage.setItem("vfind_user", JSON.stringify(userData));
-            alert("Cadre acheté !");
-            e.target.disabled = true;
-            e.target.textContent = "Déjà acheté";
-          } else {
-            alert("Pas assez de coins ou déjà possédé.");
-          }
+        const title = document.createElement("h3");
+        title.textContent = cadre.nom;
+
+        const price = document.createElement("p");
+        price.textContent = `${cadre.prix} pièces`;
+
+        const button = document.createElement("button");
+
+        if (ownedFrames.includes(cadre.nom)) {
+          button.textContent = "✅ Acheté";
+          button.disabled = true;
+        } else {
+          button.textContent = "Acheter";
+          button.addEventListener("click", () => acheterCadre(cadre.nom, cadre.prix));
         }
+
+        item.appendChild(preview);
+        item.appendChild(title);
+        item.appendChild(price);
+        item.appendChild(button);
+
+        boutiqueContainer.appendChild(item);
       });
     });
+
+  function acheterCadre(nom, prix) {
+    if (userPoints < prix) {
+      alert("❌ Pas assez de pièces !");
+      return;
+    }
+
+    userPoints -= prix;
+    pointsDisplay.textContent = userPoints;
+    localStorage.setItem("vfind_points", userPoints.toString());
+
+    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+    owned.push(nom);
+    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
+
+    location.reload();
+  }
 });
