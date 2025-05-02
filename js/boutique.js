@@ -14,11 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = document.createElement("div");
         item.classList.add("cadre-item");
 
-        // Mini canvas pour aperçu
-        const preview = document.createElement("canvas");
-        preview.width = 160;
-        preview.height = 200;
-        drawPolaroid(preview.getContext("2d"), cadre.nom);
+        const canvas = document.createElement("canvas");
+        canvas.width = 320;
+        canvas.height = 400;
+        drawPolaroid("assets/img/exemple.jpg", cadre.nom, canvas); // visuel fictif
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
@@ -36,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
           button.addEventListener("click", () => acheterCadre(cadre.nom, cadre.prix));
         }
 
-        item.appendChild(preview);
+        item.appendChild(canvas);
         item.appendChild(title);
         item.appendChild(price);
         item.appendChild(button);
