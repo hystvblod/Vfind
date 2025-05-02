@@ -114,19 +114,34 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
     default:
       ctx.strokeStyle = "#999";
       break;
-    case "polaroid_11":
+        case "polaroid_11": // Nuage Sky
+      ctx.lineWidth = 5;
       ctx.strokeStyle = "#dbeeff";
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(0, 0, w, h);
+      ctx.setLineDash([]);
       break;
-    case "polaroid_12":
+
+    case "polaroid_12": // Aquarelle
+      ctx.lineWidth = 7;
       const grad12 = ctx.createLinearGradient(0, 0, w, h);
       grad12.addColorStop(0, "#fcd5ce");
       grad12.addColorStop(1, "#a2d2ff");
       ctx.strokeStyle = grad12;
+      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_13":
+
+    case "polaroid_13": // Fluo Violet
+      ctx.lineWidth = 6;
       ctx.strokeStyle = "#cc33ff";
+      ctx.shadowColor = "#cc33ff";
+      ctx.shadowBlur = 12;
+      ctx.strokeRect(0, 0, w, h);
+      ctx.shadowBlur = 0;
       break;
-    case "polaroid_14":
+
+    case "polaroid_14": // Arc-en-ciel
+      ctx.lineWidth = 8;
       const grad14 = ctx.createLinearGradient(0, 0, w, 0);
       grad14.addColorStop(0, "red");
       grad14.addColorStop(0.17, "orange");
@@ -136,24 +151,57 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
       grad14.addColorStop(0.85, "indigo");
       grad14.addColorStop(1, "violet");
       ctx.strokeStyle = grad14;
+      ctx.strokeRect(0, 0, w, h);
       break;
-    case "polaroid_15":
+
+    case "polaroid_15": // Pixels Rétro
+      ctx.lineWidth = 4;
       ctx.strokeStyle = "#ff66cc";
+      ctx.setLineDash([1, 2]);
+      ctx.strokeRect(0, 0, w, h);
+      ctx.setLineDash([]);
       break;
-    case "polaroid_16":
+
+    case "polaroid_16": // Papier Froissé
+      ctx.lineWidth = 6;
       ctx.strokeStyle = "#dddddd";
+      ctx.setLineDash([8, 4]);
+      ctx.strokeRect(0, 0, w, h);
+      ctx.setLineDash([]);
       break;
-    case "polaroid_17":
+
+    case "polaroid_17": // Néon Rose
+      ctx.lineWidth = 6;
       ctx.strokeStyle = "#ff00cc";
+      ctx.shadowColor = "#ff00cc";
+      ctx.shadowBlur = 15;
+      ctx.strokeRect(0, 0, w, h);
+      ctx.shadowBlur = 0;
       break;
-    case "polaroid_18":
+
+    case "polaroid_18": // Ombres Douces
+      ctx.lineWidth = 5;
       ctx.strokeStyle = "#cccccc";
+      ctx.shadowColor = "#999";
+      ctx.shadowBlur = 8;
+      ctx.strokeRect(0, 0, w, h);
+      ctx.shadowBlur = 0;
       break;
-    case "polaroid_19":
+
+    case "polaroid_19": // Gomme Crayonnée
+      ctx.lineWidth = 5;
       ctx.strokeStyle = "#f4c2c2";
+      ctx.setLineDash([2, 6]);
+      ctx.strokeRect(0, 0, w, h);
+      ctx.setLineDash([]);
       break;
-    case "polaroid_20":
+
+    case "polaroid_20": // Coups de pinceau
+      ctx.lineWidth = 7;
       ctx.strokeStyle = "#b2967d";
+      ctx.setLineDash([6, 2, 1, 2]);
+      ctx.strokeRect(0, 0, w, h);
+      ctx.setLineDash([]);
       break;
     case "polaroid_21":
       ctx.strokeStyle = "#ffeb3b";
