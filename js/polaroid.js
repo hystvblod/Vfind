@@ -1,4 +1,4 @@
-// Ajout roundRect si manquant
+// Ajoute roundRect si manquant
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (typeof r === 'number') {
@@ -10,57 +10,8 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     this.beginPath();
     this.moveTo(x + r.tl, y);
     this.lineTo(x + w - r.tr, y);
-    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-    this.lineTo(x + w, y + h - r.br);
-    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-    this.lineTo(x + r.bl, y + h);
-    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-    this.lineTo(x, y + r.tl);
-    this.quadraticCurveTo(x, y, x + r.tl, y);
-    this.closePath();
-    return this;
-  };
-}
+    this.quadraticCurveTo(x + w, y
 
-// Fonction principale d'affichage Polaroïd
-function drawPolaroid(photoSrc, styleName, canvasTarget) {
-  const ctx = canvasTarget.getContext("2d");
-  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
-
-  const imgPhoto = new Image();
-  imgPhoto.src = photoSrc;
-
-  imgPhoto.onload = () => {
-    const paddingTop = 30;
-    const paddingSides = 30;
-    const paddingBottom = 50;
-
-    const photoWidth = canvasTarget.width - 2 * paddingSides;
-    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
-
-    // Appliquer cadre autour
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-
-    // Affichage de la photo au centre
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-
-    ctx.beginPath();
-    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
-    ctx.clip();
-
-    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
-    ctx.restore();
-  };
-
-  imgPhoto.onerror = () => {
-    ctx.fillStyle = "#eee";
-    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
-  };
 }
 
 
