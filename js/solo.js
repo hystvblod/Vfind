@@ -1,12 +1,9 @@
-
-// === CONSTANTES ===
 const DEFI_STORAGE_KEY = "vfind_defis";
 const TIMER_STORAGE_KEY = "vfind_timer";
 const SCORE_STORAGE_KEY = "vfind_score";
 const PUB_USED_KEY = "vfind_pub_used";
 const HISTORY_KEY = "vfind_historique";
 
-// === ÉLÉMENTS DOM ===
 const startBtn = document.getElementById("startBtn");
 const replayBtn = document.getElementById("replayBtn");
 const preGame = document.getElementById("pre-game");
@@ -14,10 +11,8 @@ const gameSection = document.getElementById("game-section");
 const endSection = document.getElementById("end-section");
 const timerDisplay = document.getElementById("timer");
 const defiList = document.getElementById("defi-list");
-const vcoinScore = document.getElementById("vcoin-score");
 const finalMessage = document.getElementById("final-message");
 
-// === CHARGEMENT DES DÉFIS JSON (ADAPTÉ À TON FICHIER) ===
 let allDefis = [];
 
 fetch("data/defis.json")
@@ -27,7 +22,6 @@ fetch("data/defis.json")
     init();
   });
 
-// === INITIALISATION ===
 function init() {
   const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
   if (existingTimer && Date.now() < parseInt(existingTimer)) {
@@ -37,10 +31,9 @@ function init() {
   }
 }
 
-// === LANCER UNE PARTIE ===
 startBtn?.addEventListener("click", () => {
   const newDefis = getRandomDefis(3);
-  const endTime = Date.now() + 24 * 60 * 60 * 1000; // 24h
+  const endTime = Date.now() + 24 * 60 * 60 * 1000;
   localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(newDefis));
   localStorage.setItem(TIMER_STORAGE_KEY, endTime.toString());
   localStorage.setItem(SCORE_STORAGE_KEY, "0");
@@ -50,21 +43,18 @@ startBtn?.addEventListener("click", () => {
 
 function getRandomDefis(n) {
   const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n).map((defi) => ({ ...defi, done: false }));
+  return shuffled.slice(0, n).map(defi => ({ ...defi, done: false }));
 }
 
-// === AFFICHAGE JEU EN COURS ===
 function showGame() {
   preGame.classList.add("hidden");
   endSection.classList.add("hidden");
   gameSection.classList.remove("hidden");
-
   updateTimer();
   loadDefis();
   startCountdown();
 }
 
-// === TIMER LIVE ===
 function updateTimer() {
   const endTime = parseInt(localStorage.getItem(TIMER_STORAGE_KEY));
   const now = Date.now();
@@ -92,43 +82,36 @@ function startCountdown() {
   }, 1000);
 }
 
-// === CHARGER ET AFFICHER LES DÉFIS ===
 function loadDefis() {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY)) || [];
-  const score = parseInt(localStorage.getItem(SCORE_STORAGE_KEY)) || 0;
-  vcoinScore.textContent = score;
-
   defiList.innerHTML = "";
   defis.forEach((defi, index) => {
     const li = document.createElement("li");
+    if (defi.done) li.classList.add("done");
     li.innerHTML = `
       <p>${defi.texte}</p>
       <button ${defi.done ? "disabled" : ""} onclick="validerDefi(${index})">📸 Prendre une photo</button>
-      <button ${defi.done || pubUsed() ? "disabled" : ""} onclick="validerAvecPub(${index})">🎥 Voir une pub</button>
+      <button ${defi.done || pubUsed() ? "disabled" : ""} onclick="validerAvecPub(${index})">📺 Voir une pub</button>
     `;
-    if (defi.done) li.style.opacity = "0.6";
     defiList.appendChild(li);
   });
 }
 
-// === PUB UTILISÉE ===
 function pubUsed() {
   return localStorage.getItem(PUB_USED_KEY) === "true";
 }
 
-// === VALIDER DÉFI ===
-window.validerDefi = function (index) {
+window.validerDefi = function(index) {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
   if (!defis[index].done) {
     defis[index].done = true;
     localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
-    ajouterScore(10);
+    document.querySelectorAll("#defi-list li")[index]?.classList.add("done");
     loadDefis();
-    checkBonus();
   }
 };
 
-window.validerAvecPub = function (index) {
+window.validerAvecPub = function(index) {
   alert("✅ Merci d’avoir regardé la pub !");
   setTimeout(() => {
     localStorage.setItem(PUB_USED_KEY, "true");
@@ -136,35 +119,14 @@ window.validerAvecPub = function (index) {
   }, 3000);
 };
 
-// === GÉRER SCORE ===
-function ajouterScore(val) {
-  let score = parseInt(localStorage.getItem(SCORE_STORAGE_KEY)) || 0;
-  score += val;
-  localStorage.setItem(SCORE_STORAGE_KEY, score.toString());
-  vcoinScore.textContent = score;
-}
-
-function checkBonus() {
-  const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
-  const allDone = defis.every((d) => d.done);
-  let score = parseInt(localStorage.getItem(SCORE_STORAGE_KEY)) || 0;
-
-  if (allDone && score === 30) {
-    ajouterScore(10); // Bonus
-  }
-}
-
-// === FIN DE PARTIE ===
 function endGame() {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
-  const score = parseInt(localStorage.getItem(SCORE_STORAGE_KEY)) || 0;
   const date = new Date().toLocaleString("fr-FR");
 
   const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
   historique.unshift({
     date,
     defis: defis.map((d) => d.texte),
-    score,
   });
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
 
@@ -175,10 +137,9 @@ function endGame() {
 
   gameSection.classList.add("hidden");
   endSection.classList.remove("hidden");
-  finalMessage.textContent = `Tu as gagné ${score} VCoins sur 40 possibles !`;
+  finalMessage.textContent = `Tu as terminé tous les défis !`;
 }
 
-// === REJOUER ===
 replayBtn?.addEventListener("click", () => {
   showStart();
 });
