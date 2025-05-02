@@ -3,12 +3,14 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-  const paddingTop = 60;
-  const paddingSides = 60;
-  const paddingBottom = 90;
+    const borderRatio = 0.1;
+  const paddingSides = canvasTarget.width * borderRatio;
+  const paddingTop = canvasTarget.height * borderRatio;
+  const paddingBottom = canvasTarget.height * 0.18; // plus large en bas pour style polaroïd
 
-  const photoWidth = canvasTarget.width - paddingSides * 2;
+    const photoWidth = canvasTarget.width - paddingSides * 2;
   const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
+
 
   const imgPhoto = new Image();
   imgPhoto.src = photoSrc;
