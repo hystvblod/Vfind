@@ -1,176 +1,71 @@
-/* === RÉINITIALISATION DE BASE === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+function drawPolaroid(photoSrc, styleName, canvasTarget) {
+  const ctx = canvasTarget.getContext("2d");
+  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  const imgPhoto = new Image();
+  imgPhoto.src = photoSrc;
+
+  imgPhoto.onload = () => {
+    // Fond blanc du cadre
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+    // Marges façon Polaroïd
+    const paddingTop = 20;
+    const paddingSides = 20;
+    const paddingBottom = 70;
+
+    const photoWidth = canvasTarget.width - 2 * paddingSides;
+    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
+
+    // Effet ombre douce sous la photo
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+
+    // Zone arrondie pour moderniser légèrement (clip path simulé)
+    ctx.beginPath();
+    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
+    ctx.clip();
+
+    // Dessin image
+    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
+
+    // Restaure le contexte pour désactiver l'ombre
+    ctx.restore();
+
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+  };
+
+  imgPhoto.onerror = () => {
+    ctx.fillStyle = "#eee";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+  };
 }
 
-/* === FOND GLOBAL === */
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #6a0dad, #1e90ff);
-  color: white;
-  min-height: 100vh;
+// Ajout d'une méthode roundRect si elle n'existe pas encore
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    if (typeof r === 'number') {
+      r = {tl: r, tr: r, br: r, bl: r};
+    } else {
+      const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+      for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
+    }
+    this.beginPath();
+    this.moveTo(x + r.tl, y);
+    this.lineTo(x + w - r.tr, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+    this.lineTo(x + w, y + h - r.br);
+    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+    this.lineTo(x + r.bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+    this.lineTo(x, y + r.tl);
+    this.quadraticCurveTo(x, y, x + r.tl, y);
+    this.closePath();
+    return this;
+  };
 }
-
-/* === EN-TÊTE === */
-.header-solo {
-  padding: 1rem;
-  position: relative;
-}
-
-.mode-title {
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  margin: 0;
-}
-
-.top-buttons {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.7rem;
-}
-
-.btn-icon {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: white;
-  text-decoration: none;
-}
-
-.back-icon {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: white;
-  cursor: pointer;
-}
-
-/* === CONTAINERS === */
-.solo-container {
-  padding: 1rem;
-}
-
-/* === BOUTON PRINCIPAL === */
-.main-button {
-  background: #fdd44a; /* Jaune VBlocks */
-  color: #000;
-  font-weight: bold;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1.5rem auto;
-}
-
-.main-button:hover {
-  transform: scale(1.05);
-}
-
-/* === BOUTONS DÉFIS === */
-button {
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* === TIMER === */
-.timer-box {
-  text-align: center;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 15px;
-  margin: 1rem auto;
-  width: fit-content;
-  font-size: 1.1rem;
-}
-
-/* === LISTE DES DÉFIS === */
-.defi-list {
-  list-style: none;
-  padding: 0;
-  margin: 2rem auto;
-  max-width: 600px;
-}
-
-.defi-list li {
-  background-color: #fdd44a; /* Jaune VBlocks */
-  border-radius: 15px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  color: black;
-  transition: background 0.3s, opacity 0.3s;
-}
-
-.defi-list li.done {
-  background-color: #a2d2ff; /* Bleu VBlocks */
-  opacity: 0.7;
-}
-
-.defi-list p {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-/* === FIN DE PARTIE === */
-#end-section {
-  text-align: center;
-  padding: 2rem;
-}
-
-#final-message {
-  margin: 1rem 0;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-/* === MASQUER === */
-.hidden {
-  display: none !important;
-}
-.cadre-item canvas {
-  display: block;
-  width: 100%;
-  max-width: 200px;
-  height: auto;
-  margin: 0 auto 1rem;
-}
-.cadre-item {
-  background: rgba(255,255,255,0.1);
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  text-align: center;
-  color: white;
-  margin-bottom: 1.5rem;
-}
-.cadre-item h3, .cadre-item p {
-  margin: 0.5rem 0;
-}
-.cadre-item button {
-  background-color: #ffffff22;
-  color: white;
-  border: 1px solid white;
-}
-.cadre-item button:hover {
-  background-color: #ffffff44;
-}
-

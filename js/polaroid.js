@@ -3,24 +3,33 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
   const imgPhoto = new Image();
-  // ❌ Supprime cette ligne
-  // imgPhoto.crossOrigin = "anonymous";
-
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
+    // Fond blanc du cadre
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    ctx.drawImage(imgPhoto, 30, 30, 240, 300); // centrée verticalement
+
+    // Marges façon Polaroïd
+    const paddingTop = 20;
+    const paddingSides = 20;
+    const paddingBottom = 70;
+
+    const photoWidth = canvasTarget.width - 2 * paddingSides;
+    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
+
+    // Image centrée dans le cadre
+    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
+
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
 
   imgPhoto.onerror = () => {
-    // Affichage quand l’image échoue
     ctx.fillStyle = "#eee";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
+
 }
 
 function drawPolaroidFrame(styleName, ctx, w, h) {
