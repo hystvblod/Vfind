@@ -3,7 +3,9 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
   const imgPhoto = new Image();
-  imgPhoto.crossOrigin = "anonymous";
+  // ❌ Supprime cette ligne
+  // imgPhoto.crossOrigin = "anonymous";
+
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
@@ -13,7 +15,12 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
 
-  imgPhoto.onerror = () => console.warn("Erreur chargement image : ", photoSrc);
+  imgPhoto.onerror = () => {
+    // Affichage quand l’image échoue
+    ctx.fillStyle = "#eee";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+  };
 }
 
 function drawPolaroidFrame(styleName, ctx, w, h) {
