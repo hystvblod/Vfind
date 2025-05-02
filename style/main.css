@@ -146,3 +146,11 @@ button {
 .hidden {
   display: none !important;
 }
+.cadre-item canvas {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  margin: 0 auto 1rem;
+}
+
