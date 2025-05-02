@@ -4,9 +4,10 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
     const borderRatio = 0.1;
-  const paddingSides = canvasTarget.width * borderRatio;
-  const paddingTop = canvasTarget.height * borderRatio;
-  const paddingBottom = canvasTarget.height * 0.18; // plus large en bas pour style polaroïd
+  const paddingSides = canvasTarget.width * 0.1;       // 10% à gauche/droite
+const paddingTop = canvasTarget.height * 0.1;        // 10% en haut
+const paddingBottom = canvasTarget.height * 0.18;    // 18% en bas
+
 
     const photoWidth = canvasTarget.width - paddingSides * 2;
   const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
