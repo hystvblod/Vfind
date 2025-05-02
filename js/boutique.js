@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const canvas = document.createElement("canvas");
         canvas.width = 320;
         canvas.height = 400;
-        drawPolaroid("assets/img/exemple.jpg", cadre.nom, canvas);
+        drawPolaroid("assets/img/exemple.jpg", cadre.id, canvas);
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
