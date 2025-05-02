@@ -2,10 +2,9 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-  // Marges dynamiques selon la taille du canvas
-  const paddingSides = canvasTarget.width * 0.1;       // 10% de chaque côté
-  const paddingTop = canvasTarget.height * 0.1;        // 10% en haut
-  const paddingBottom = canvasTarget.height * 0.18;    // 18% en bas
+  const paddingTop = 60;
+  const paddingSides = 60;
+  const paddingBottom = 90;
 
   const photoWidth = canvasTarget.width - paddingSides * 2;
   const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
@@ -14,11 +13,9 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
-    // Cadre blanc de base
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-    // Dessin de la photo avec ombre et coins arrondis
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
     ctx.shadowBlur = 8;
@@ -30,69 +27,23 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
     ctx.restore();
 
-    // Appliquer l’effet de cadre autour
-    drawFrameEffect(styleName, ctx, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, paddingSides, paddingTop, photoWidth, photoHeight);
   };
 
   imgPhoto.onerror = () => {
     ctx.fillStyle = "#eee";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawFrameEffect(styleName, ctx, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, paddingSides, paddingTop, photoWidth, photoHeight);
   };
 }
 
-// Applique le style visuel autour du cadre Polaroïd
-function drawFrameEffect(styleName, ctx, w, h) {
-  ctx.save();
-
-  switch (styleName) {
-    case "polaroid_13":
-      ctx.lineWidth = 16;
-      ctx.strokeStyle = "#cc33ff";
-      ctx.shadowColor = "#cc33ff";
-      ctx.shadowBlur = 20;
-      break;
-
-    case "polaroid_14":
-      const grad = ctx.createLinearGradient(0, 0, w, 0);
-      grad.addColorStop(0, "red");
-      grad.addColorStop(0.17, "orange");
-      grad.addColorStop(0.34, "yellow");
-      grad.addColorStop(0.51, "green");
-      grad.addColorStop(0.68, "blue");
-      grad.addColorStop(0.85, "indigo");
-      grad.addColorStop(1, "violet");
-      ctx.lineWidth = 16;
-      ctx.strokeStyle = grad;
-      break;
-
-    case "polaroid_25":
-      const grad25 = ctx.createLinearGradient(0, 0, w, h);
-      grad25.addColorStop(0, "#ff9999");
-      grad25.addColorStop(0.5, "#ffcc99");
-      grad25.addColorStop(1, "#99ccff");
-      ctx.lineWidth = 16;
-      ctx.strokeStyle = grad25;
-      break;
-
-    default:
-      ctx.lineWidth = 14;
-      ctx.strokeStyle = "#999";
-      break;
-  }
-
-  // Dessin du cadre autour du canvas entier
-  ctx.strokeRect(0, 0, w, h);
-  ctx.restore();
-}
-
-// Ajout de roundRect si nécessaire
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    r = typeof r === "number" ? { tl: r, tr: r, br: r, bl: r } : r;
-    const defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
-    for (let side in defaultRadius) {
-      r[side] = r[side] || defaultRadius[side];
+    if (typeof r === "number") {
+      r = { tl: r, tr: r, br: r, bl: r };
+    } else {
+      const defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
+      for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
     }
     this.beginPath();
     this.moveTo(x + r.tl, y);
