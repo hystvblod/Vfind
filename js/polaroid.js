@@ -313,5 +313,5 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
       break;
   }
 
-  ctx.strokeRect(0, 0, w, h);
+  ctx.strokeRect(20, 20, w - 40, h - 40);
 }
