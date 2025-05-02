@@ -72,38 +72,47 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 // Et ici, le drawPolaroidFrame avec les 60 styles
 // (déjà collé depuis e68e62f6-e9d3-4f76-8a2b-6251af668612.js)
 function drawPolaroidFrame(styleName, ctx, w, h) {
-  ctx.lineWidth = 40;
+  ctx.lineWidth = 25;
 
   switch (styleName) {
-    case "polaroid_1":
-      ctx.strokeStyle = "#ffffff";
+    case "polaroid_1": // Blanc Classique
+      ctx.strokeStyle = "#111"; // léger cadre visible
       break;
-    case "polaroid_2":
-      ctx.strokeStyle = "#111";
+    case "polaroid_2": // Noir Mat
+      ctx.strokeStyle = "#000";
       break;
-    case "polaroid_3":
+    case "polaroid_3": // Sépia
       ctx.strokeStyle = "#704214";
       break;
-    case "polaroid_4":
-      ctx.strokeStyle = "#c4a484";
+    case "polaroid_4": // Bois Clair
+      const grad4 = ctx.createLinearGradient(0, 0, w, h);
+      grad4.addColorStop(0, "#d4b483");
+      grad4.addColorStop(1, "#f2e3c6");
+      ctx.strokeStyle = grad4;
       break;
-    case "polaroid_5":
-      ctx.strokeStyle = "#5b3a29";
+    case "polaroid_5": // Bois Foncé
+      const grad5 = ctx.createLinearGradient(0, 0, w, h);
+      grad5.addColorStop(0, "#5b3a29");
+      grad5.addColorStop(1, "#40210f");
+      ctx.strokeStyle = grad5;
       break;
-    case "polaroid_6":
-      ctx.strokeStyle = "#999999";
+    case "polaroid_6": // Gris Béton
+      ctx.strokeStyle = "#888";
       break;
-    case "polaroid_7":
+    case "polaroid_7": // Rose Poudré
       ctx.strokeStyle = "#e8b2c8";
       break;
-    case "polaroid_8":
-      ctx.strokeStyle = "#b2d8f8";
+    case "polaroid_8": // Bleu Pastel
+      ctx.strokeStyle = "#a2d2ff";
       break;
-    case "polaroid_9":
+    case "polaroid_9": // Vert Menthe
       ctx.strokeStyle = "#b2f8d0";
       break;
-    case "polaroid_10":
+    case "polaroid_10": // Jaune Doux
       ctx.strokeStyle = "#fff7b2";
+      break;
+    default:
+      ctx.strokeStyle = "#999";
       break;
     case "polaroid_11":
       ctx.strokeStyle = "#dbeeff";
