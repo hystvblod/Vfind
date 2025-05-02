@@ -33,7 +33,8 @@ function afficherCadres(cadres) {
     listeCadres.appendChild(container);
 
     // Affichage du cadre
-    drawPolaroidPreview(cadre.id, canvas);
+    drawPolaroid("img/logo.png", cadre.id, canvas);
+
   });
 }
 
