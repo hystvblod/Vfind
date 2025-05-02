@@ -13,7 +13,8 @@ function afficherCadres(cadres) {
 
   cadres.forEach(cadre => {
     const container = document.createElement("div");
-    container.className = "cadre-container";
+    container.className = "cadre-item"; // ✅ appliquera bien le style visuel
+
 
     const canvas = document.createElement("canvas");
     canvas.width = 300;
