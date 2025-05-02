@@ -1,63 +1,51 @@
+// boutique.js
+
 document.addEventListener("DOMContentLoaded", () => {
-  const boutiqueContainer = document.getElementById("boutique-container");
-  const pointsDisplay = document.getElementById("points");
-
-  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
-  pointsDisplay.textContent = userPoints;
-
-  const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-
   fetch("data/cadres.json")
-    .then(res => res.json())
-    .then(data => {
-      data.forEach(cadre => {
-        const item = document.createElement("div");
-        item.classList.add("cadre-item");
-
-        const canvas = document.createElement("canvas");
-        canvas.width = 320;
-        canvas.height = 400;
-        drawPolaroid("assets/img/exemple.jpg", cadre.id, canvas);
-
-        const title = document.createElement("h3");
-        title.textContent = cadre.nom;
-
-        const price = document.createElement("p");
-        price.textContent = `${cadre.prix} pièces`;
-
-        const button = document.createElement("button");
-
-        if (ownedFrames.includes(cadre.nom)) {
-          button.textContent = "✅ Acheté";
-          button.disabled = true;
-        } else {
-          button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadre(cadre.nom, cadre.prix));
-        }
-
-        item.appendChild(canvas);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-
-        boutiqueContainer.appendChild(item);
-      });
-    });
-
-  function acheterCadre(nom, prix) {
-    if (userPoints < prix) {
-      alert("❌ Pas assez de pièces !");
-      return;
-    }
-
-    userPoints -= prix;
-    pointsDisplay.textContent = userPoints;
-    localStorage.setItem("vfind_points", userPoints.toString());
-
-    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(nom);
-    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-
-    location.reload();
-  }
+    .then(response => response.json())
+    .then(data => afficherCadres(data))
+    .catch(error => console.error("Erreur de chargement des cadres :", error));
 });
+
+function afficherCadres(cadres) {
+  const listeCadres = document.getElementById("liste-cadres");
+
+  cadres.forEach(cadre => {
+    const container = document.createElement("div");
+    container.className = "cadre-container";
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 360;
+
+    const nom = document.createElement("div");
+    nom.className = "nom-cadre";
+    nom.textContent = cadre.nom;
+
+    const etat = document.createElement("div");
+    etat.className = "etat-cadre";
+    etat.textContent = cadre.etat === "débloqué" ? "✅ Débloqué" : "🔒 Verrouillé";
+
+    container.appendChild(canvas);
+    container.appendChild(nom);
+    container.appendChild(etat);
+
+    listeCadres.appendChild(container);
+
+    // Affichage du cadre
+    drawPolaroidPreview(cadre.id, canvas);
+  });
+}
+
+function drawPolaroidPreview(styleName, canvasTarget) {
+  const ctx = canvasTarget.getContext("2d");
+
+  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  // Fond blanc par défaut
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  // Affiche le cadre sans attendre d’image
+  drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+}
