@@ -1,5 +1,17 @@
 // Polaroid complet : affichage image + cadre stylisé
 
+function strokePolaroidFrame(ctx, color, width = 40) {
+  ctx.lineWidth = width;
+  ctx.strokeStyle = color;
+  ctx.strokeRect(
+    width / 2,
+    width / 2,
+    ctx.canvas.width - width,
+    ctx.canvas.height - width
+  );
+}
+
+// Fonction principale d'affichage d'une image avec cadre stylisé
 function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
@@ -38,48 +50,21 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
 
-  imgPhoto.onerror = () => {
+   imgPhoto.onerror = () => {
     ctx.fillStyle = "#eee";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
 }
 
-// Ajoute roundRect si manquant
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    if (typeof r === 'number') {
-      r = {tl: r, tr: r, br: r, bl: r};
-    } else {
-      const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
-      for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
-    }
-    this.beginPath();
-    this.moveTo(x + r.tl, y);
-    this.lineTo(x + w - r.tr, y);
-    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-    this.lineTo(x + w, y + h - r.br);
-    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-    this.lineTo(x + r.bl, y + h);
-    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-    this.lineTo(x, y + r.tl);
-    this.quadraticCurveTo(x, y, x + r.tl, y);
-    this.closePath();
-    return this;
-  };
-}
-
-// Et ici, le drawPolaroidFrame avec les 60 styles
-// (déjà collé depuis e68e62f6-e9d3-4f76-8a2b-6251af668612.js)
-
 
 function drawPolaroidFrame(styleName, ctx, w, h) {
   switch (styleName) {
     case "polaroid_1": // Blanc Classique
-  ctx.lineWidth = 40;
-  ctx.strokeStyle = "#000";
-  ctx.strokeRect(15, 15, w - 30, h - 30); // marge de 15 = moitié du lineWidth
-  break;
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#e0e0e0";
+      ctx.strokeRect(0, 0, w, h);
+      break;
     case "polaroid_2": // Noir Mat
       ctx.lineWidth = 7;
       ctx.strokeStyle = "#111";
