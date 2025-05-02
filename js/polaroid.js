@@ -1,78 +1,108 @@
-// Fonction générique de tracé de cadre
-function strokePolaroidFrame(ctx, color, width = 40) {
-  ctx.lineWidth = width;
-  ctx.strokeStyle = color;
-  ctx.strokeRect(
-    width / 2,
-    width / 2,
-    ctx.canvas.width - width,
-    ctx.canvas.height - width
-  );
-}
-
-// Fonction principale : afficher une photo avec cadre
+// Fonction principale : affiche une image dans un cadre Polaroïd avec style
 function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  const paddingTop = 60;
+  const paddingSides = 60;
+  const paddingBottom = 90;
+
+  const photoWidth = canvasTarget.width - paddingSides * 2;
+  const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
 
   const imgPhoto = new Image();
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
-    // Fond blanc
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
 
-    // Marges Polaroïd
-    const paddingTop = 60;
-    const paddingSides = 60;
-    const paddingBottom = 80;
-
-    const photoWidth = canvasTarget.width - 2 * paddingSides;
-    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
-
-    // Ombre et arrondi
+    // Ombre + arrondi
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
-
     ctx.beginPath();
     ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
     ctx.clip();
-
     ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
     ctx.restore();
 
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height, {
-      paddingTop: 60,
-      paddingSides: 60,
-      paddingBottom: 80
-    });
+    drawPolaroidFrame(styleName, ctx, paddingSides, paddingTop, photoWidth, photoHeight);
   };
 
   imgPhoto.onerror = () => {
     ctx.fillStyle = "#eee";
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
-    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height, {
-      paddingTop: 60,
-      paddingSides: 60,
-      paddingBottom: 80
-    });
+    drawPolaroidFrame(styleName, ctx, paddingSides, paddingTop, photoWidth, photoHeight);
   };
 }
+function drawPolaroidFrame(styleName, ctx, x, y, w, h) {
+  ctx.save();
 
-// Fonction d'affichage du cadre seul (avec marges respectées)
-function drawPolaroidFrame(styleName, ctx, w, h, padding = {}) {
-  const { paddingTop = 0, paddingSides = 0, paddingBottom = 0 } = padding;
-  const x = paddingSides;
-  const y = paddingTop;
-  const frameWidth = w - paddingSides * 2;
-  const frameHeight = h - paddingTop - paddingBottom;
+  switch (styleName) {
+    case "polaroid_13":
+      ctx.fillStyle = "#cc33ff";
+      ctx.shadowColor = "#cc33ff";
+      ctx.shadowBlur = 20;
+      break;
+
+    case "polaroid_14":
+      const grad = ctx.createLinearGradient(x, y, x + w, y);
+      grad.addColorStop(0, "red");
+      grad.addColorStop(0.17, "orange");
+      grad.addColorStop(0.34, "yellow");
+      grad.addColorStop(0.51, "green");
+      grad.addColorStop(0.68, "blue");
+      grad.addColorStop(0.85, "indigo");
+      grad.addColorStop(1, "violet");
+      ctx.fillStyle = grad;
+      break;
+
+    case "polaroid_25":
+      const grad25 = ctx.createLinearGradient(x, y, x + w, y + h);
+      grad25.addColorStop(0, "#ff9999");
+      grad25.addColorStop(0.5, "#ffcc99");
+      grad25.addColorStop(1, "#99ccff");
+      ctx.fillStyle = grad25;
+      break;
+
+    default:
+      ctx.fillStyle = "#999";
+      break;
+  }
+
+  // Marges larges
+  ctx.fillRect(x - 60, y - 60, w + 120, 60);       // haut
+  ctx.fillRect(x - 60, y, 60, h);                 // gauche
+  ctx.fillRect(x + w, y, 60, h);                  // droite
+  ctx.fillRect(x - 60, y + h, w + 120, 90);       // bas
+
+  ctx.restore();
 }
-
-
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    if (typeof r === "number") {
+      r = { tl: r, tr: r, br: r, bl: r };
+    } else {
+      const defaultRadius = { tl: 0, tr: 0, br: 0, bl: 0 };
+      for (let side in defaultRadius) r[side] = r[side] || defaultRadius[side];
+    }
+    this.beginPath();
+    this.moveTo(x + r.tl, y);
+    this.lineTo(x + w - r.tr, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+    this.lineTo(x + w, y + h - r.br);
+    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+    this.lineTo(x + r.bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+    this.lineTo(x, y + r.tl);
+    this.quadraticCurveTo(x, y, x + r.tl, y);
+    this.closePath();
+    return this;
+  };
+}
 function drawPolaroidFrame(styleName, ctx, w, h) {
   switch (styleName) {
     case "polaroid_1": // Blanc Classique
