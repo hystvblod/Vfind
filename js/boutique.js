@@ -35,7 +35,7 @@ function afficherCadres(cadres) {
     listeCadres.appendChild(container);
 
     // Affichage du cadre avec image
-    drawPolaroid("assets/img/logo.png", cadre.id, canvas);
+    drawPolaroid("assets/img/exemple.png", cadre.id, canvas);
 
   });
 }
