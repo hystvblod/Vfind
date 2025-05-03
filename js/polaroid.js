@@ -104,9 +104,7 @@ switch (styleName) {
     case "polaroid_10": // Jaune Doux
       ctx.strokeStyle = "#fff7b2";
       break;
-    default:
-      ctx.strokeStyle = "#999";
-      break;
+
         case "polaroid_11": // Nuage Sky
       ctx.lineWidth = 5;
       ctx.strokeStyle = "#dbeeff";
