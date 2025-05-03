@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (typeof drawPolaroid !== "function") {
+    console.error("drawPolaroid n'est pas disponible !");
+    return;
+  }
+
+  // ... ton code actuel ici ...
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   const boutiqueContainer = document.getElementById("boutique-container");
   const pointsDisplay = document.getElementById("points");
 
