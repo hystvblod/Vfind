@@ -3,8 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("drawPolaroid n'est pas disponible !");
     return;
   }
-
-  // ... ton code actuel ici ...
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.width = 320;
         canvas.height = 400;
 
-        // Appel à drawPolaroid (défini dans polaroid.js)
-        drawPolaroid("assets/img/exemple.jpg", cadre.nom, canvas);
+        // Utilise bien cadre.id pour le style
+        drawPolaroid("assets/img/exemple.jpg", cadre.id, canvas);
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
@@ -38,12 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const button = document.createElement("button");
 
-        if (ownedFrames.includes(cadre.nom)) {
+        if (ownedFrames.includes(cadre.id)) {
           button.textContent = "✅ Acheté";
           button.disabled = true;
         } else {
           button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadre(cadre.nom, cadre.prix));
+          button.addEventListener("click", () => acheterCadre(cadre.id, cadre.prix));
         }
 
         item.appendChild(canvas);
@@ -55,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  function acheterCadre(nom, prix) {
+  function acheterCadre(id, prix) {
     if (userPoints < prix) {
       alert("❌ Pas assez de pièces !");
       return;
@@ -66,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("vfind_points", userPoints.toString());
 
     const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(nom);
+    owned.push(id);
     localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
 
     location.reload();
