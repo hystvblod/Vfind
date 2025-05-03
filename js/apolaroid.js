@@ -31,9 +31,10 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
-    const paddingTop = 30;
-    const paddingSides = 30;
-    const paddingBottom = 80;
+    const paddingTop = 35 / 2;
+const paddingSides = 35 / 2;
+const paddingBottom = 70 / 2; // pour laisser la place au bas plus épais
+
 
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
@@ -379,30 +380,25 @@ case "polaroid_11": { // Nuage Sky
       break;
   }
 
-  // Haut
-ctx.lineWidth = 25;
+  // Cadre avec coins nets + bas plus épais
 ctx.beginPath();
-ctx.moveTo(20, 20);
-ctx.lineTo(w - 20, 20);
+ctx.moveTo(20, 20);                  // Haut gauche
+ctx.lineTo(w - 20, 20);              // Haut
+ctx.lineTo(w - 20, h - 80);          // Droite
+ctx.lineTo(20, h - 80);              // Bas (haut du bas épais)
+ctx.closePath();
+
+ctx.lineWidth = 35;
 ctx.stroke();
 
-// Gauche
+// Bande du bas plus épaisse, bien dessinée
 ctx.beginPath();
-ctx.moveTo(20, 20);
+ctx.moveTo(20, h - 80);
+ctx.lineTo(w - 20, h - 80);
+ctx.lineTo(w - 20, h - 20);
 ctx.lineTo(20, h - 20);
+ctx.closePath();
+
+ctx.lineWidth = 70;
 ctx.stroke();
 
-// Droite
-ctx.beginPath();
-ctx.moveTo(w - 20, 20);
-ctx.lineTo(w - 20, h - 20);
-ctx.stroke();
-
-// Bas (plus épais)
-ctx.lineWidth = 60;
-ctx.beginPath();
-ctx.moveTo(20, h - 20);
-ctx.lineTo(w - 20, h - 20);
-ctx.stroke();
-
-}
