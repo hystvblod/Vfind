@@ -31,9 +31,9 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   imgPhoto.src = photoSrc;
 
   imgPhoto.onload = () => {
-    const paddingTop = 30;
-    const paddingSides = 30;
-    const paddingBottom = 100;
+    const paddingTop = 0;
+    const paddingSides = 0;
+    const paddingBottom = 0;
 
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
@@ -379,5 +379,30 @@ case "polaroid_11": { // Nuage Sky
       break;
   }
 
-  ctx.strokeRect(20, 20, w - 40, h - 40);
+  // Haut
+ctx.lineWidth = 25;
+ctx.beginPath();
+ctx.moveTo(20, 20);
+ctx.lineTo(w - 20, 20);
+ctx.stroke();
+
+// Gauche
+ctx.beginPath();
+ctx.moveTo(20, 20);
+ctx.lineTo(20, h - 20);
+ctx.stroke();
+
+// Droite
+ctx.beginPath();
+ctx.moveTo(w - 20, 20);
+ctx.lineTo(w - 20, h - 20);
+ctx.stroke();
+
+// Bas (plus épais)
+ctx.lineWidth = 60;
+ctx.beginPath();
+ctx.moveTo(20, h - 20);
+ctx.lineTo(w - 20, h - 20);
+ctx.stroke();
+
 }
