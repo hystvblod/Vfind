@@ -1,4 +1,4 @@
-// Ajoute roundRect si manquant
+/// Ajoute roundRect si manquant
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (typeof r === 'number') {
@@ -10,7 +10,81 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     this.beginPath();
     this.moveTo(x + r.tl, y);
     this.lineTo(x + w - r.tr, y);
-    this.quadraticCurveTo(x + w, y
+    this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+    this.lineTo(x + w, y + h - r.br);
+    this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+    this.lineTo(x + r.bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+    this.lineTo(x, y + r.tl);
+    this.quadraticCurveTo(x, y, x + r.tl, y);
+    this.closePath();
+    return this;
+  };
+}
+
+// Fonction pour dessiner l'effet visuel autour de la photo
+function drawPolaroid(photoSrc, styleName, canvasTarget) {
+  const ctx = canvasTarget.getContext("2d");
+  ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
+
+  const imgPhoto = new Image();
+  imgPhoto.src = photoSrc;
+
+  imgPhoto.onload = () => {
+    const paddingTop = 30;
+    const paddingSides = 30;
+    const paddingBottom = 50;
+
+    const photoWidth = canvasTarget.width - 2 * paddingSides;
+    const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
+
+    // Cadre dessiné D'ABORD autour du canvas
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+
+    // Ombre douce et affichage image
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    ctx.beginPath();
+    ctx.roundRect(paddingSides, paddingTop, photoWidth, photoHeight, 8);
+    ctx.clip();
+    ctx.drawImage(imgPhoto, paddingSides, paddingTop, photoWidth, photoHeight);
+    ctx.restore();
+  };
+
+  imgPhoto.onerror = () => {
+    console.error("Erreur de chargement image : ", photoSrc);
+    ctx.fillStyle = "#eee";
+    ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
+    drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
+  };
+}
+
+// Fonction qui dessine un cadre stylisé autour du canvas
+function drawPolaroidFrame(styleName, ctx, w, h) {
+  ctx.lineWidth = 25;
+  ctx.strokeStyle = "#000"; // Temporaire, à adapter
+
+  // Si styleName correspond à un style existant, appliquer effet
+  switch (styleName) {
+    case "polaroid_1":
+      ctx.strokeStyle = "#111";
+      break;
+    case "polaroid_2":
+      ctx.strokeStyle = "#000";
+      break;
+    // ... tu mettras ici les 60 styles comme tu as déjà
+    default:
+      ctx.strokeStyle = "#999";
+      break;
+  }
+
+  ctx.strokeRect(0, 0, w, h);
+}
+
 
 }
 
