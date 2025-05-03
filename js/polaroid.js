@@ -68,31 +68,43 @@ const paddingBottom = 70 / 2; // pour laisser la place au bas plus épais
 function drawPolaroidFrame(styleName, ctx, w, h) {
   if (styleName === "polaroid_1") {
     // Définir les couleurs
-    ctx.strokeStyle = "#ffffff";
-    ctx.fillStyle = "#ffffff";
+    ctx.strokeStyle = "#ffffff";  // Couleur du cadre
+    ctx.fillStyle = "#ffffff";    // Couleur de remplissage (si nécessaire)
 
     // Épaisseurs personnalisées
     const thickness = 25;
-    const bottomExtra = 35;
+    const bottomExtra = 35;  // Bas plus épais
 
     // Forme globale du cadre
-    ctx.lineJoin = "miter"; // coins nets
-    ctx.lineCap = "square"; // terminaisons propres
+    ctx.lineJoin = "miter"; // Coins nets
+    ctx.lineCap = "square"; // Terminaisons propres
 
-    // Tracer le cadre en 1 seule forme fermée
+    // Tracer le cadre en une seule forme fermée
     ctx.beginPath();
-    ctx.moveTo(thickness / 2, thickness / 2);                   // coin haut gauche
-    ctx.lineTo(w - thickness / 2, thickness / 2);               // haut droit
-    ctx.lineTo(w - thickness / 2, h - thickness / 2 - bottomExtra); // bas droit (moins bas)
-    ctx.lineTo(w / 2 + (w - thickness * 2) / 2, h - thickness / 2); // petit décalage vers centre bas
-    ctx.lineTo(w / 2 - (w - thickness * 2) / 2, h - thickness / 2); // bas gauche
-    ctx.lineTo(thickness / 2, h - thickness / 2 - bottomExtra);     // gauche remontée
+
+    // Coin haut gauche
+    ctx.moveTo(thickness / 2, thickness / 2);                   // Coin haut gauche
+    // Haut droit
+    ctx.lineTo(w - thickness / 2, thickness / 2);               // Haut droit
+    // Bas droit (avant le bas épais)
+    ctx.lineTo(w - thickness / 2, h - thickness / 2 - bottomExtra); // Bas droit
+    // Bas (avec l'effet de bas plus large)
+    ctx.lineTo(w / 2 + (w - thickness * 2) / 2, h - thickness / 2); // Petit décalage vers le centre bas
+    ctx.lineTo(w / 2 - (w - thickness * 2) / 2, h - thickness / 2); // Bas gauche
+    // Coin bas gauche
+    ctx.lineTo(thickness / 2, h - thickness / 2 - bottomExtra);     // Remontée vers gauche
+    // Revenir au coin haut gauche
+    ctx.lineTo(thickness / 2, thickness / 2);  // Revenir au point de départ (coin haut gauche)
+
+    // Fermer le chemin
     ctx.closePath();
 
+    // Appliquer l'épaisseur du trait et tracer
     ctx.lineWidth = thickness;
     ctx.stroke();
   }
 }
+
 
 switch (styleName) {
     case "polaroid_1": // Blanc Classique
