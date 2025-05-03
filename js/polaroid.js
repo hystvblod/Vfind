@@ -247,45 +247,105 @@ break;
       case "polaroid_30":
         ctx.strokeStyle = "#d1c4e9";
         break;
-      case "polaroid_31":
+        case "polaroid_31": // Japon Traditionnel
+        ctx.lineWidth = 6;
         ctx.strokeStyle = "#b71c1c";
+        ctx.setLineDash([4, 2]);
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.setLineDash([]);
         break;
-      case "polaroid_32":
+  
+      case "polaroid_32": // Asiatique Kawaii
+        ctx.lineWidth = 6;
         ctx.strokeStyle = "#ffccf9";
+        ctx.setLineDash([6, 1]);
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.setLineDash([]);
         break;
-      case "polaroid_33":
+  
+      case "polaroid_33": // Oriental Or & Rouge
+        ctx.lineWidth = 8;
         const grad33 = ctx.createLinearGradient(0, 0, w, h);
         grad33.addColorStop(0, "#ffcc00");
         grad33.addColorStop(1, "#b30000");
         ctx.strokeStyle = grad33;
+        ctx.strokeRect(20, 20, w - 40, h - 40);
         break;
-      case "polaroid_34":
+  
+      case "polaroid_34": // Gothique
+        ctx.lineWidth = 7;
         ctx.strokeStyle = "#2c2c2c";
+        ctx.setLineDash([4, 3]);
+        ctx.shadowColor = "#000";
+        ctx.shadowBlur = 10;
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.shadowBlur = 0;
+        ctx.setLineDash([]);
         break;
-      case "polaroid_35":
-        ctx.strokeStyle = "#ff66cc";
+  
+      case "polaroid_35": // Années 80
+        ctx.lineWidth = 6;
+        const grad35 = ctx.createLinearGradient(0, 0, w, 0);
+        grad35.addColorStop(0, "#ff66cc");
+        grad35.addColorStop(1, "#33ccff");
+        ctx.strokeStyle = grad35;
+        ctx.setLineDash([8, 2, 1, 2]);
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.setLineDash([]);
         break;
-      case "polaroid_36":
-        const grad36 = ctx.createLinearGradient(0, 0, w, 0);
+  
+      case "polaroid_36": // Disco
+        ctx.lineWidth = 7;
+        const grad36 = ctx.createLinearGradient(0, 0, w, h);
         grad36.addColorStop(0, "#ffd700");
         grad36.addColorStop(1, "#e75480");
         ctx.strokeStyle = grad36;
+        ctx.shadowColor = "#fff";
+        ctx.shadowBlur = 8;
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.shadowBlur = 0;
         break;
-      case "polaroid_37":
+  
+      case "polaroid_37": // Journal Papier
+        ctx.lineWidth = 5;
         ctx.strokeStyle = "#bbbbbb";
+        ctx.setLineDash([2, 2]);
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.setLineDash([]);
         break;
-      case "polaroid_38":
+  
+      case "polaroid_38": // Glamour Paillettes
+        ctx.lineWidth = 6;
         ctx.strokeStyle = "#ff99ff";
+        ctx.shadowColor = "#ffccff";
+        ctx.shadowBlur = 15;
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.shadowBlur = 0;
         break;
-      case "polaroid_39":
-        ctx.strokeStyle = "#8d6e63";
+  
+      case "polaroid_39": // Bois Gravé
+        ctx.lineWidth = 6;
+        const grad39 = ctx.createLinearGradient(0, 0, w, h);
+        grad39.addColorStop(0, "#8d6e63");
+        grad39.addColorStop(1, "#5d4037");
+        ctx.strokeStyle = grad39;
+        ctx.setLineDash([3, 2]);
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.setLineDash([]);
         break;
-      case "polaroid_40":
-        const grad40 = ctx.createLinearGradient(0, 0, w, h);
+  
+      case "polaroid_40": // Cybermetal
+        ctx.lineWidth = 7;
+        const grad40 = ctx.createLinearGradient(0, 0, w, 0);
         grad40.addColorStop(0, "#00ffff");
-        grad40.addColorStop(1, "#333333");
+        grad40.addColorStop(1, "#111111");
         ctx.strokeStyle = grad40;
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = 10;
+        ctx.strokeRect(20, 20, w - 40, h - 40);
+        ctx.shadowBlur = 0;
         break;
+  
       case "polaroid_41":
         const grad41 = ctx.createLinearGradient(0, 0, w, h);
         grad41.addColorStop(0, "#ffe08a");
