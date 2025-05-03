@@ -85,10 +85,6 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.strokeRect(0, 0, w, h);
 }
 
-
-}
-
-
   switch (styleName) {
     case "polaroid_1": // Blanc Classique
       ctx.strokeStyle = "#111"; // léger cadre visible
