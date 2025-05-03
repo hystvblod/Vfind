@@ -107,7 +107,7 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.stroke();
 }
 
-
+console.log("test ", styleName)
 switch (styleName) {
     case "polaroid_1": // Blanc Classique
   ctx.strokeStyle = "#ffffff"; // vrai blanc
