@@ -66,26 +66,8 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
 // Fonction qui dessine un cadre stylisé autour du canvas
 function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.lineWidth = 25;
-  ctx.strokeStyle = "#000"; // Temporaire, à adapter
 
-  // Si styleName correspond à un style existant, appliquer effet
-  switch (styleName) {
-    case "polaroid_1":
-      ctx.strokeStyle = "#111";
-      break;
-    case "polaroid_2":
-      ctx.strokeStyle = "#000";
-      break;
-    // ... tu mettras ici les 60 styles comme tu as déjà
-    default:
-      ctx.strokeStyle = "#999";
-      break;
-  }
-
-  ctx.strokeRect(0, 0, w, h);
-}
-
-  switch (styleName) {
+switch (styleName) {
     case "polaroid_1": // Blanc Classique
       ctx.strokeStyle = "#111"; // léger cadre visible
       break;
