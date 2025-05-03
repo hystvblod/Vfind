@@ -200,19 +200,37 @@ case "polaroid_11": { // Nuage Sky
     case "polaroid_22":
       ctx.strokeStyle = "#f8c8dc";
       break;
-    case "polaroid_23":
+        case "polaroid_23":
       ctx.strokeStyle = "#ff99cc";
       break;
-    case "polaroid_24":
+
+    case "polaroid_24": {
+      // Effet bulles décoratives
+      for (let i = 0; i < 5; i++) {
+        const x = 30 + Math.random() * (w - 60);
+        const y = 30 + Math.random() * (h - 60);
+        const r = 6 + Math.random() * 10;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.strokeStyle = "rgba(178, 235, 242, 0.6)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // Couleur du cadre principal
       ctx.strokeStyle = "#b2ebf2";
       break;
-    case "polaroid_25":
+    }
+
+    case "polaroid_25": {
       const grad25 = ctx.createLinearGradient(0, 0, w, h);
       grad25.addColorStop(0, "#ff9999");
       grad25.addColorStop(0.5, "#ffcc99");
       grad25.addColorStop(1, "#99ccff");
       ctx.strokeStyle = grad25;
       break;
+    }
+
     case "polaroid_26":
       ctx.strokeStyle = "#fef3bd";
       break;
