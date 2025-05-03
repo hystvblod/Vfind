@@ -445,4 +445,4 @@ ctx.beginPath();
 ctx.moveTo(20, h - 20);
 ctx.lineTo(w - 20, h - 20);
 ctx.stroke();
-}
+
