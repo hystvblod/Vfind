@@ -114,7 +114,7 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
     ctx.stroke();
   }
 }
-
+switch (styleName) {
     c  case "polaroid_1": // Blanc Classique
       ctx.lineWidth = 6;
       ctx.strokeStyle = "#e0e0e0";
