@@ -393,16 +393,19 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.lineWidth = 35;
   ctx.stroke();
 
-  // Bande du bas plus épaisse, bien dessinée
-  ctx.beginPath();
-  ctx.moveTo(20, h - 60);
-  ctx.lineTo(w - 20, h - 60);
-  ctx.lineTo(w - 20, h - 20);
-  ctx.lineTo(20, h - 20);
-  ctx.closePath();  // Assurer que la bande est bien fermée
+  /// Bande du bas plus épaisse, bien dessinée (corrigée pour ne pas dépasser)
+const bottomTop = h - 80;
+const bottomBottom = h - 40;
 
-  ctx.lineWidth = 70;
-  ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(20, bottomTop);
+ctx.lineTo(w - 20, bottomTop);
+ctx.lineTo(w - 20, bottomBottom);
+ctx.lineTo(20, bottomBottom);
+ctx.closePath();
+
+ctx.lineWidth = 70;
+ctx.stroke();
 }
 
   
