@@ -1,302 +1,67 @@
 [
-  {
-    "id": "polaroid_1",
-    "nom": "Style 1",
-    "etat": "débloqué"
-  },
-  {
-    "id": "polaroid_2",
-    "nom": "Style 2",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_3",
-    "nom": "Style 3",
-    "etat": "débloqué"
-  },
-  {
-    "id": "polaroid_4",
-    "nom": "Style 4",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_5",
-    "nom": "Style 5",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_6",
-    "nom": "Style 6",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_7",
-    "nom": "Style 7",
-  "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_8",
-    "nom": "Style 8",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_9",
-    "nom": "Style 9",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_10",
-    "nom": "Style 10",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_11",
-    "nom": "Style 11",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_12",
-    "nom": "Style 12",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_13",
-    "nom": "Style 13",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_14",
-    "nom": "Style 14",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_15",
-    "nom": "Style 15",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_16",
-    "nom": "Style 16",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_17",
-    "nom": "Style 17",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_18",
-    "nom": "Style 18",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_19",
-    "nom": "Style 19",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_20",
-    "nom": "Style 20",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_21",
-    "nom": "Style 21",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_22",
-    "nom": "Style 22",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_23",
-    "nom": "Style 23",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_24",
-    "nom": "Style 24",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_25",
-    "nom": "Style 25",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_26",
-    "nom": "Style 26",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_27",
-    "nom": "Style 27",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_28",
-    "nom": "Style 28",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_29",
-    "nom": "Style 29",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_30",
-    "nom": "Style 30",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_31",
-    "nom": "Style 31",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_32",
-    "nom": "Style 32",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_33",
-    "nom": "Style 33",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_34",
-    "nom": "Style 34",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_35",
-    "nom": "Style 35",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_36",
-    "nom": "Style 36",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_37",
-    "nom": "Style 37",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_38",
-    "nom": "Style 38",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_39",
-    "nom": "Style 39",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_40",
-    "nom": "Style 40",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_41",
-    "nom": "Style 41",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_42",
-    "nom": "Style 42",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_43",
-    "nom": "Style 43",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_44",
-    "nom": "Style 44",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_45",
-    "nom": "Style 45",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_46",
-    "nom": "Style 46",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_47",
-    "nom": "Style 47",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_48",
-    "nom": "Style 48",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_49",
-    "nom": "Style 49",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_50",
-    "nom": "Style 50",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_51",
-    "nom": "Style 51",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_52",
-    "nom": "Style 52",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_53",
-    "nom": "Style 53",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_54",
-    "nom": "Style 54",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_55",
-    "nom": "Style 55",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_56",
-    "nom": "Style 56",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_57",
-    "nom": "Style 57",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_58",
-    "nom": "Style 58",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_59",
-    "nom": "Style 59",
-    "etat": "verrouillé"
-  },
-  {
-    "id": "polaroid_60",
-    "nom": "Style 60",
-    "etat": "verrouillé"
-  }
+  { "id": "polaroid_1", "nom": "Blanc Classique", "etat": "débloqué", "prix": 100 },
+  { "id": "polaroid_2", "nom": "Noir Mat", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_3", "nom": "Sépia", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_4", "nom": "Bois Clair", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_5", "nom": "Bois Foncé", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_6", "nom": "Gris Béton", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_7", "nom": "Rose Poudré", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_8", "nom": "Bleu Pastel", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_9", "nom": "Vert Menthe", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_10", "nom": "Jaune Doux", "etat": "verrouillé", "prix": 100 },
+
+  { "id": "polaroid_11", "nom": "Nuage Sky", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_12", "nom": "Aquarelle", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_13", "nom": "Fluo Violet", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_14", "nom": "Arc-en-ciel", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_15", "nom": "Pixels Rétro", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_16", "nom": "Papier Froissé", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_17", "nom": "Néon Rose", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_18", "nom": "Ombres Douces", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_19", "nom": "Gomme Crayonnée", "etat": "verrouillé", "prix": 120 },
+  { "id": "polaroid_20", "nom": "Coups de pinceau", "etat": "verrouillé", "prix": 120 },
+
+  { "id": "polaroid_21", "nom": "Emoji Jaune", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_22", "nom": "Petit Chat", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_23", "nom": "Cœurs Roses", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_24", "nom": "Bulles Bleues", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_25", "nom": "Ballons", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_26", "nom": "Nuages & Soleil", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_27", "nom": "Papier à Carreaux", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_28", "nom": "Stickers Fun", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_29", "nom": "Arc-en-ciel Cartoon", "etat": "verrouillé", "prix": 140 },
+  { "id": "polaroid_30", "nom": "Lapinou Violeta", "etat": "verrouillé", "prix": 140 },
+
+  { "id": "polaroid_31", "nom": "Japon Traditionnel", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_32", "nom": "Asiatique Kawaii", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_33", "nom": "Oriental Or & Rouge", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_34", "nom": "Gothique", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_35", "nom": "Années 80", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_36", "nom": "Disco", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_37", "nom": "Journal Papier", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_38", "nom": "Glamour Paillettes", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_39", "nom": "Bois Gravé", "etat": "verrouillé", "prix": 160 },
+  { "id": "polaroid_40", "nom": "Cybermetal", "etat": "verrouillé", "prix": 160 },
+
+  { "id": "polaroid_41", "nom": "Doré Deluxe", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_42", "nom": "Diamant Cristal", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_43", "nom": "Noir & Or", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_44", "nom": "VIP Étoilé", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_45", "nom": "Halo Animé", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_46", "nom": "Champion Médaille", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_47", "nom": "Flamme Dynamique", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_48", "nom": "Ice Blue Animé", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_49", "nom": "Royal Violet", "etat": "verrouillé", "prix": 180 },
+  { "id": "polaroid_50", "nom": "Édition Limitée (VFind)", "etat": "verrouillé", "prix": 200 },
+
+  { "id": "polaroid_51", "nom": "Flocons de Neige", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_52", "nom": "Citrouille Halloween", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_53", "nom": "Sapin de Noël", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_54", "nom": "Feuilles d’Automne", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_55", "nom": "Été Tropical", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_56", "nom": "Bord de Mer", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_57", "nom": "Printemps Fleuris", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_58", "nom": "Carnaval", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_59", "nom": "Nouvel An Brillant", "etat": "verrouillé", "prix": 100 },
+  { "id": "polaroid_60", "nom": "Gel Magique", "etat": "verrouillé", "prix": 100 }
 ]
