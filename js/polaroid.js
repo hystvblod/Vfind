@@ -105,15 +105,15 @@ switch (styleName) {
       ctx.strokeStyle = "#fff7b2";
       break;
 
-        case "polaroid_11": // Nuage Sky
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = "#dbeeff";
-      ctx.setLineDash([3, 3]);
-      ctx.strokeRect(0, 0, w, h);
-      ctx.setLineDash([]);
-      break;
-
-    case "polaroid_12": // Aquarelle
+case "polaroid_11": { // Nuage Sky
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#dbeeff";
+  ctx.setLineDash([3, 3]);
+  ctx.strokeRect(0, 0, w, h);
+  ctx.setLineDash([]);
+  break;
+}
+ case "polaroid_12": // Aquarelle
       ctx.lineWidth = 7;
       const grad12 = ctx.createLinearGradient(0, 0, w, h);
       grad12.addColorStop(0, "#fcd5ce");
