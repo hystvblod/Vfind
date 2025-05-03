@@ -33,7 +33,7 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
   imgPhoto.onload = () => {
     const paddingTop = 30;
     const paddingSides = 30;
-    const paddingBottom = 50;
+    const paddingBottom = 100;
 
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
@@ -69,9 +69,9 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
 
 switch (styleName) {
     case "polaroid_1": // Blanc Classique
-      ctx.strokeStyle = "#111"; // léger cadre visible
-      break;
-    case "polaroid_2": // Noir Mat
+  ctx.strokeStyle = "#ffffff"; // vrai blanc
+  break;
+case "polaroid_2": // Noir Mat
       ctx.strokeStyle = "#000";
       break;
     case "polaroid_3": // Sépia
