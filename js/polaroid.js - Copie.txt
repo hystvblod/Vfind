@@ -66,33 +66,7 @@ const paddingBottom = 70 / 2; // pour laisser la place au bas plus épais
 
 // Fonction qui dessine un cadre stylisé autour du canvas
 function drawPolaroidFrame(styleName, ctx, w, h) {
-  if (styleName === "polaroid_1") {
-    // Définir les couleurs
-    ctx.strokeStyle = "#ffffff";
-    ctx.fillStyle = "#ffffff";
-
-    // Épaisseurs personnalisées
-    const thickness = 25;
-    const bottomExtra = 35;
-
-    // Forme globale du cadre
-    ctx.lineJoin = "miter"; // coins nets
-    ctx.lineCap = "square"; // terminaisons propres
-
-    // Tracer le cadre en 1 seule forme fermée
-    ctx.beginPath();
-    ctx.moveTo(thickness / 2, thickness / 2);                   // coin haut gauche
-    ctx.lineTo(w - thickness / 2, thickness / 2);               // haut droit
-    ctx.lineTo(w - thickness / 2, h - thickness / 2 - bottomExtra); // bas droit (moins bas)
-    ctx.lineTo(w / 2 + (w - thickness * 2) / 2, h - thickness / 2); // petit décalage vers centre bas
-    ctx.lineTo(w / 2 - (w - thickness * 2) / 2, h - thickness / 2); // bas gauche
-    ctx.lineTo(thickness / 2, h - thickness / 2 - bottomExtra);     // gauche remontée
-    ctx.closePath();
-
-    ctx.lineWidth = thickness;
-    ctx.stroke();
-  }
-}
+  ctx.lineWidth = 25;
 
 switch (styleName) {
     case "polaroid_1": // Blanc Classique
