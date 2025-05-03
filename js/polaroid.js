@@ -402,6 +402,7 @@ ctx.stroke();
 }
 
 function drawClouds(ctx, w, h) {
+  ctx.save();
   for (let i = 0; i < 5; i++) {
     const x = Math.random() * w;
     const y = Math.random() * h * 0.3;
@@ -411,9 +412,12 @@ function drawClouds(ctx, w, h) {
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
     ctx.fill();
   }
+  ctx.restore();
 }
 
+
 function drawWatercolorBlobs(ctx, w, h) {
+  ctx.save();
   for (let i = 0; i < 3; i++) {
     const x = Math.random() * w;
     const y = Math.random() * h;
@@ -426,9 +430,11 @@ function drawWatercolorBlobs(ctx, w, h) {
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.restore();
 }
 
 function drawGlowDots(ctx, w, h, color) {
+  ctx.save();
   for (let i = 0; i < 6; i++) {
     const x = Math.random() * w;
     const y = Math.random() * h;
@@ -437,9 +443,11 @@ function drawGlowDots(ctx, w, h, color) {
     ctx.arc(x, y, 3 + Math.random() * 5, 0, 2 * Math.PI);
     ctx.fill();
   }
+  ctx.restore();
 }
 
 function drawRainbow(ctx, w, h) {
+  ctx.save();
   const spacing = 6;
   const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
   for (let i = 0; i < colors.length; i++) {
@@ -449,15 +457,18 @@ function drawRainbow(ctx, w, h) {
     ctx.lineWidth = spacing;
     ctx.stroke();
   }
+  ctx.restore();
 }
 
 function drawPixelDots(ctx, w, h) {
+  ctx.save();
   for (let i = 0; i < 50; i++) {
     const x = Math.floor(Math.random() * w);
     const y = Math.floor(Math.random() * h);
     ctx.fillStyle = i % 2 === 0 ? "#000" : "#fff";
     ctx.fillRect(x, y, 1, 1);
   }
+  ctx.restore();
 }
 
 function drawCrumpleLines(ctx, w, h) {
