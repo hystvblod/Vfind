@@ -64,7 +64,6 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
 }
 
 // Fonction qui dessine un cadre stylisé autour du canvas
-// Fonction pour dessiner un cadre stylisé autour du canvas
 function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.lineWidth = 25;
 
@@ -83,15 +82,11 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
 
   // Tracer le cadre avec coins nets et bas plus épais
   ctx.beginPath();
-  // Coin haut gauche
-  ctx.moveTo(20, 20);                   // Coin haut gauche
-  // Haut droit
-  ctx.lineTo(w - 20, 20);               // Coin haut droit
-  // Droite (avant bas épais)
-  ctx.lineTo(w - 20, h - 60);           // Droite avant le bas épais
-  // Bas (large)
-  ctx.lineTo(20, h - 60);               // Gauche avant bas épais
-  ctx.closePath();
+  ctx.moveTo(20, 20);                  // Coin haut gauche
+  ctx.lineTo(w - 20, 20);              // Coin haut droit
+  ctx.lineTo(w - 20, h - 60);          // Droite avant le bas épais
+  ctx.lineTo(20, h - 60);              // Gauche avant bas épais
+  ctx.closePath();  // Assurer que la forme est bien fermée
 
   ctx.lineWidth = 35;
   ctx.stroke();
@@ -102,11 +97,12 @@ function drawPolaroidFrame(styleName, ctx, w, h) {
   ctx.lineTo(w - 20, h - 60);
   ctx.lineTo(w - 20, h - 20);
   ctx.lineTo(20, h - 20);
-  ctx.closePath();
+  ctx.closePath();  // Assurer que la bande est bien fermée
 
   ctx.lineWidth = 70;
   ctx.stroke();
 }
+
 
 switch (styleName) {
     case "polaroid_1": // Blanc Classique
