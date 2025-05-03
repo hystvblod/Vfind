@@ -43,7 +43,6 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     ctx.fillRect(0, 0, canvasTarget.width, canvasTarget.height);
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
   };
-}
 
 // Ajoute roundRect si manquant
 if (!CanvasRenderingContext2D.prototype.roundRect) {
