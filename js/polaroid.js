@@ -25,6 +25,10 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 // Fonction pour dessiner l'effet visuel autour de la photo
 function drawPolaroid(photoSrc, styleName, canvasTarget) {
   const ctx = canvasTarget.getContext("2d");
+
+  // ✅ Cette ligne évite que les coins du cadre soient "coupés"
+  ctx.translate(0.5, 0.5);
+
   ctx.clearRect(0, 0, canvasTarget.width, canvasTarget.height);
 
   const imgPhoto = new Image();
@@ -38,10 +42,10 @@ function drawPolaroid(photoSrc, styleName, canvasTarget) {
     const photoWidth = canvasTarget.width - 2 * paddingSides;
     const photoHeight = canvasTarget.height - paddingTop - paddingBottom;
 
-    // Cadre dessiné D'ABORD autour du canvas
+    // Dessiner le cadre
     drawPolaroidFrame(styleName, ctx, canvasTarget.width, canvasTarget.height);
 
-    // Ombre douce et affichage image
+    // Dessiner la photo avec ombre et coins arrondis
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
     ctx.shadowBlur = 8;
