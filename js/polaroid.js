@@ -401,5 +401,114 @@ ctx.lineWidth = 70;
 ctx.stroke();
 }
 
-  
+function drawClouds(ctx, w, h) {
+  for (let i = 0; i < 5; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h * 0.3;
+    const radius = 20 + Math.random() * 30;
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
 
+function drawWatercolorBlobs(ctx, w, h) {
+  for (let i = 0; i < 3; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = 60 + Math.random() * 60;
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, "rgba(255,255,255,0.2)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawGlowDots(ctx, w, h, color) {
+  for (let i = 0; i < 6; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(x, y, 3 + Math.random() * 5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
+
+function drawRainbow(ctx, w, h) {
+  const spacing = 6;
+  const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+  for (let i = 0; i < colors.length; i++) {
+    ctx.strokeStyle = colors[i];
+    ctx.beginPath();
+    ctx.arc(w / 2, h, h * 0.9, Math.PI, 2 * Math.PI);
+    ctx.lineWidth = spacing;
+    ctx.stroke();
+  }
+}
+
+function drawPixelDots(ctx, w, h) {
+  for (let i = 0; i < 50; i++) {
+    const x = Math.floor(Math.random() * w);
+    const y = Math.floor(Math.random() * h);
+    ctx.fillStyle = i % 2 === 0 ? "#000" : "#fff";
+    ctx.fillRect(x, y, 1, 1);
+  }
+}
+
+function drawCrumpleLines(ctx, w, h) {
+  ctx.save();
+  ctx.setLineDash([8, 4]);
+  ctx.strokeStyle = "#ccc";
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    const startX = Math.random() * w;
+    ctx.moveTo(startX, 0);
+    ctx.lineTo(startX + Math.random() * 50 - 25, h);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawNeonOutline(ctx, w, h, color) {
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 15;
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = color;
+  ctx.strokeRect(10, 10, w - 20, h - 20);
+  ctx.restore();
+}
+
+function drawSoftShadowBorder(ctx, w, h) {
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.2)";
+  ctx.shadowBlur = 10;
+  ctx.strokeRect(10, 10, w - 20, h - 20);
+  ctx.restore();
+}
+
+function drawCrayonEdges(ctx, w, h) {
+  ctx.save();
+  ctx.setLineDash([2, 6]);
+  ctx.strokeRect(10, 10, w - 20, h - 20);
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawBrushStrokes(ctx, w, h) {
+  for (let i = 0; i < 5; i++) {
+    const x = 10 + Math.random() * (w - 20);
+    const y = 10 + Math.random() * (h - 20);
+    ctx.beginPath();
+    ctx.lineWidth = 4 + Math.random() * 4;
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 30, y + Math.random() * 20 - 10);
+    ctx.stroke();
+  }
+}
