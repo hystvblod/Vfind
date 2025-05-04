@@ -183,7 +183,7 @@ button {
 
 .photo-user {
   position: absolute;
-  top: -10px; /* léger décalage vers le haut pour effet Polaroïd */
+  top: -20px; /* léger décalage vers le haut pour effet Polaroïd */
   left: 0;
   width: 100%;
   height: 100%;
