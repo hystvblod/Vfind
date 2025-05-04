@@ -1,67 +1,102 @@
 [
-  { "id": "polaroid_1", "nom": "Blanc Classique", "etat": "débloqué", "prix": 100 },
-  { "id": "polaroid_2", "nom": "Noir Mat", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_3", "nom": "Sépia", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_4", "nom": "Bois Clair", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_5", "nom": "Bois Foncé", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_6", "nom": "Gris Béton", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_7", "nom": "Rose Poudré", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_8", "nom": "Bleu Pastel", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_9", "nom": "Vert Menthe", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_10", "nom": "Jaune Doux", "etat": "verrouillé", "prix": 100 },
-
-  { "id": "polaroid_11", "nom": "Nuage Sky", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_12", "nom": "Aquarelle", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_13", "nom": "Fluo Violet", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_14", "nom": "Arc-en-ciel", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_15", "nom": "Pixels Rétro", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_16", "nom": "Papier Froissé", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_17", "nom": "Néon Rose", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_18", "nom": "Ombres Douces", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_19", "nom": "Gomme Crayonnée", "etat": "verrouillé", "prix": 120 },
-  { "id": "polaroid_20", "nom": "Coups de pinceau", "etat": "verrouillé", "prix": 120 },
-
-  { "id": "polaroid_21", "nom": "Emoji Jaune", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_22", "nom": "Petit Chat", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_23", "nom": "Cœurs Roses", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_24", "nom": "Bulles Bleues", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_25", "nom": "Ballons", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_26", "nom": "Nuages & Soleil", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_27", "nom": "Papier à Carreaux", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_28", "nom": "Stickers Fun", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_29", "nom": "Arc-en-ciel Cartoon", "etat": "verrouillé", "prix": 140 },
-  { "id": "polaroid_30", "nom": "Lapinou Violeta", "etat": "verrouillé", "prix": 140 },
-
-  { "id": "polaroid_31", "nom": "Japon Traditionnel", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_32", "nom": "Asiatique Kawaii", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_33", "nom": "Oriental Or & Rouge", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_34", "nom": "Gothique", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_35", "nom": "Années 80", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_36", "nom": "Disco", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_37", "nom": "Journal Papier", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_38", "nom": "Glamour Paillettes", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_39", "nom": "Bois Gravé", "etat": "verrouillé", "prix": 160 },
-  { "id": "polaroid_40", "nom": "Cybermetal", "etat": "verrouillé", "prix": 160 },
-
-  { "id": "polaroid_41", "nom": "Doré Deluxe", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_42", "nom": "Diamant Cristal", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_43", "nom": "Noir & Or", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_44", "nom": "VIP Étoilé", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_45", "nom": "Halo Animé", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_46", "nom": "Champion Médaille", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_47", "nom": "Flamme Dynamique", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_48", "nom": "Ice Blue Animé", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_49", "nom": "Royal Violet", "etat": "verrouillé", "prix": 180 },
-  { "id": "polaroid_50", "nom": "Édition Limitée (VFind)", "etat": "verrouillé", "prix": 200 },
-
-  { "id": "polaroid_51", "nom": "Flocons de Neige", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_52", "nom": "Citrouille Halloween", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_53", "nom": "Sapin de Noël", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_54", "nom": "Feuilles d’Automne", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_55", "nom": "Été Tropical", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_56", "nom": "Bord de Mer", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_57", "nom": "Printemps Fleuris", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_58", "nom": "Carnaval", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_59", "nom": "Nouvel An Brillant", "etat": "verrouillé", "prix": 100 },
-  { "id": "polaroid_60", "nom": "Gel Magique", "etat": "verrouillé", "prix": 100 }
+  {
+    "id": "polaroid_10-Or",
+    "nom": "Or",
+    "prix": 100
+  },
+  {
+    "id": "polaroid_11-Nuages",
+    "nom": "Nuages",
+    "prix": 125
+  },
+  {
+    "id": "polaroid_12-Aquarelle bleue",
+    "nom": "Aquarelle bleue",
+    "prix": 150
+  },
+  {
+    "id": "polaroid_13-Aquarellerose",
+    "nom": "Aquarelle rose",
+    "prix": 175
+  },
+  {
+    "id": "polaroid_14-Arc en ciel",
+    "nom": "Arc-en-ciel",
+    "prix": 200
+  },
+  {
+    "id": "polaroid_15-Rose Aquarelle",
+    "nom": "Rose Aquarelle",
+    "prix": 100
+  },
+  {
+    "id": "polaroid_16-crayons gris",
+    "nom": "Crayons gris",
+    "prix": 125
+  },
+  {
+    "id": "polaroid_17-Coups de Pinceau",
+    "nom": "Coups de pinceau",
+    "prix": 150
+  },
+  {
+    "id": "polaroid_18-Coups de Pinceau bleu",
+    "nom": "Pinceau bleu",
+    "prix": 175
+  },
+  {
+    "id": "polaroid_19-Bulles Bleues",
+    "nom": "Bulles bleues",
+    "prix": 200
+  },
+  {
+    "id": "polaroid_20-Ballons",
+    "nom": "Ballons",
+    "prix": 100
+  },
+  {
+    "id": "polaroid_21-Gothique",
+    "nom": "Gothique",
+    "prix": 125
+  },
+  {
+    "id": "polaroid_22-Etoiles",
+    "nom": "Étoiles",
+    "prix": 150
+  },
+  {
+    "id": "polaroid_23-Nuit étoilée",
+    "nom": "Nuit étoilée",
+    "prix": 175
+  },
+  {
+    "id": "polaroid_24-Papier Froissé",
+    "nom": "Papier froissé",
+    "prix": 200
+  },
+  {
+    "id": "polaroid_25-Marbre Noire",
+    "nom": "Marbre noire",
+    "prix": 100
+  },
+  {
+    "id": "polaroid_40-Or Paillettes",
+    "nom": "Or à paillettes",
+    "prix": 125
+  },
+  {
+    "id": "polaroid_41-Rose Paillettes",
+    "nom": "Rose à paillettes",
+    "prix": 150
+  },
+  {
+    "id": "polaroid_42-Argent Paillettes",
+    "nom": "Argent à paillettes",
+    "prix": 175
+  },
+  {
+    "id": "polaroid_50---VIP",
+    "nom": "Cadre VIP",
+    "prix": 200
+  }
 ]
