@@ -1,5 +1,17 @@
 
-// Nettoyer totalement les données utilisateur (si besoin)
+// Initialisation des points si inexistant
+if (!localStorage.getItem("vfind_points")) {
+  localStorage.setItem("vfind_points", "0");
+}
+
+// Initialisation des cadres offerts
+if (!localStorage.getItem("vfind_owned_frames")) {
+  localStorage.setItem("vfind_owned_frames", JSON.stringify([
+    "polaroid_1-Blanc",
+    "polaroid_2-Noir"
+  ]));
+}
+n)
 function resetLocalStorage() {
   localStorage.removeItem("vfindUserData");
 }
