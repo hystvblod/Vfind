@@ -181,24 +181,27 @@ button {
   overflow: hidden;
 }
 
-.photo-user {
-  position: absolute;
-  top: 30px; /* décalage vers le haut pour effet Polaroïd */
-  left: 20px;
-  width: 260px;
-  height: 310px;
-  object-fit: cover;
-  z-index: 2; /* au-dessus du fond mais sous le cadre */
-  border-radius: 8px;
-}
-
+/* Cadre décoratif de fond */
 .photo-cadre {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  z-index: 1; /* au-dessus de la photo */
+  object-fit: cover; /* 'contain' si tu veux marges, sinon 'cover' */
+  z-index: 1; /* dessous */
   pointer-events: none;
+}
+
+/* Photo de l'utilisateur */
+.photo-user {
+  position: absolute;
+  top: 30px;  /* décalée vers le bas */
+  left: 20px; /* centrée horizontalement */
+  width: 260px;
+  height: 310px;
+  object-fit: cover;
+  z-index: 2; /* au-dessus du cadre */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* optionnel, pour effet relief */
 }
