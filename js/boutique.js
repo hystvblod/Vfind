@@ -54,16 +54,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  function acheterCadre(id, prix) {
-    if (userPoints < prix) {
-      alert("❌ Pas assez de pièces !");
-      return;
+    function acheterCadre(id, prix) {
+      if (userPoints < prix) {
+        alert("❌ Pas assez de pièces !");
+        return;
+      }
+    
+      userPoints -= prix;
+      pointsDisplay.textContent = userPoints;
+      localStorage.setItem("vfind_points", userPoints.toString());
+    
+      const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+      owned.push(id);
+      localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
+    
+      location.reload(); // Recharge la page pour mettre à jour les boutons
     }
-
-    userPoints -= prix;
-    pointsDisplay.textContent = userPoints;
-    localStorage.setItem("vfind_points", userPoints.toString());
-
-    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(id);
-    localStorage.setItem("vfind_owned_frames", JSON
+    
