@@ -173,19 +173,20 @@ button {
 .cadre-item button:hover {
   background-color: #ffffff44;
 }
+
 .cadre-preview {
   position: relative;
   width: 320px;
   height: 400px;
-  margin-bottom: 10px;
+  overflow: hidden;
 }
 
 .photo-user {
   position: absolute;
-  top: -10px; /* décalage vers le haut pour effet polaroïd */
+  top: -10px; /* léger décalage vers le haut pour effet Polaroïd */
   left: 0;
-  width: 320px;
-  height: 360px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   z-index: 1;
 }
@@ -194,8 +195,9 @@ button {
   position: absolute;
   top: 0;
   left: 0;
-  width: 320px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   z-index: 2;
   pointer-events: none;
 }
