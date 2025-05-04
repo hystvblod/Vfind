@@ -10,7 +10,7 @@
     "prix": 125
   },
   {
-    "id": "polaroid_12-Aquarelle bleue",
+    "id": "polaroid_12-Aquarellebleue",
     "nom": "Aquarelle bleue",
     "prix": 150
   },
@@ -20,32 +20,32 @@
     "prix": 175
   },
   {
-    "id": "polaroid_14-Arc en ciel",
+    "id": "polaroid_14-Arcenciel",
     "nom": "Arc-en-ciel",
     "prix": 200
   },
   {
-    "id": "polaroid_15-Rose Aquarelle",
+    "id": "polaroid_15-RoseAquarelle",
     "nom": "Rose Aquarelle",
     "prix": 100
   },
   {
-    "id": "polaroid_16-crayons gris",
+    "id": "polaroid_16-crayonsgris",
     "nom": "Crayons gris",
     "prix": 125
   },
   {
-    "id": "polaroid_17-Coups de Pinceau",
+    "id": "polaroid_17-CoupsdePinceau",
     "nom": "Coups de pinceau",
     "prix": 150
   },
   {
-    "id": "polaroid_18-Coups de Pinceau bleu",
+    "id": "polaroid_18-CoupsdePinceaubleu",
     "nom": "Pinceau bleu",
     "prix": 175
   },
   {
-    "id": "polaroid_19-Bulles Bleues",
+    "id": "polaroid_19-BullesBleues",
     "nom": "Bulles bleues",
     "prix": 200
   },
@@ -65,38 +65,38 @@
     "prix": 150
   },
   {
-    "id": "polaroid_23-Nuit étoilée",
+    "id": "polaroid_23-Nuitetoilee",
     "nom": "Nuit étoilée",
     "prix": 175
   },
   {
-    "id": "polaroid_24-Papier Froissé",
+    "id": "polaroid_24-PapierFroisse",
     "nom": "Papier froissé",
     "prix": 200
   },
   {
-    "id": "polaroid_25-Marbre Noire",
+    "id": "polaroid_25-MarbreNoire",
     "nom": "Marbre noire",
     "prix": 100
   },
   {
-    "id": "polaroid_40-Or Paillettes",
-    "nom": "Or à paillettes",
+    "id": "polaroid_40-OrPaillettes",
+    "nom": "Orpaillettes",
     "prix": 125
   },
   {
     "id": "polaroid_41-Rose Paillettes",
-    "nom": "Rose à paillettes",
+    "nom": "Rosepaillettes",
     "prix": 150
   },
   {
     "id": "polaroid_42-Argent Paillettes",
-    "nom": "Argent à paillettes",
+    "nom": "Argentpaillettes",
     "prix": 175
   },
   {
     "id": "polaroid_50---VIP",
-    "nom": "Cadre VIP",
+    "nom": "CadreVIP",
     "prix": 200
   }
 ]
