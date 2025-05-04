@@ -11,7 +11,6 @@ if (!localStorage.getItem("vfind_owned_frames")) {
     "polaroid_2-Noir"
   ]));
 }
-n)
 function resetLocalStorage() {
   localStorage.removeItem("vfindUserData");
 }
