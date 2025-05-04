@@ -173,4 +173,30 @@ button {
 .cadre-item button:hover {
   background-color: #ffffff44;
 }
+.cadre-preview {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  margin-bottom: 10px;
+}
+
+.photo-user {
+  position: absolute;
+  top: -10px; /* décalage vers le haut pour effet polaroïd */
+  left: 0;
+  width: 320px;
+  height: 360px;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 400px;
+  z-index: 2;
+  pointer-events: none;
+}
 

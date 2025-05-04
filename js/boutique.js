@@ -14,12 +14,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = document.createElement("div");
         item.classList.add("cadre-item");
 
-        const canvas = document.createElement("canvas");
-        canvas.width = 320;
-        canvas.height = 400;
+        // ✅ Nouveau système photo + cadre WebP
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("cadre-preview");
 
-        // Utilise bien cadre.id pour le style
-        drawPolaroid("assets/img/exemple.jpg", cadre.id, canvas);
+        const photo = document.createElement("img");
+        photo.src = "assets/img/exemple.jpg"; // Remplace par la vraie photo si besoin
+        photo.className = "photo-user";
+
+        const cadreImg = document.createElement("img");
+        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+        cadreImg.className = "photo-cadre";
+
+        wrapper.appendChild(photo);
+        wrapper.appendChild(cadreImg);
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
@@ -37,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
           button.addEventListener("click", () => acheterCadre(cadre.id, cadre.prix));
         }
 
-        item.appendChild(canvas);
+        item.appendChild(wrapper);
         item.appendChild(title);
         item.appendChild(price);
         item.appendChild(button);
@@ -58,8 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
     owned.push(id);
-    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-
-    location.reload();
-  }
-});
+    localStorage.setItem("vfind_owned_frames", JSON
