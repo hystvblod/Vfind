@@ -1,4 +1,28 @@
-[
+[{
+  "id": "polaroid_1-Blanc",
+  "nom": "Blanc",
+  "prix": 100
+},
+{
+  "id": "polaroid_2-Noir",
+  "nom": "Noir",
+  "prix": 100
+},
+{
+  "id": "polaroid-3-Rose",
+  "nom": "Rose",
+  "prix": 100
+},
+{
+  "id": "polaroid_4-Jaune",
+  "nom": "Jaune",
+  "prix": 100
+},
+{
+  "id": "polaroid_5-Vert",
+  "nom": "Vert",
+  "prix": 100
+},
   {
     "id": "polaroid_10-Or",
     "nom": "Or",
