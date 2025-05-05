@@ -1,11 +1,11 @@
 
-// Chargement et sauvegarde des données utilisateur
+/// Chargement et sauvegarde des données utilisateur
 function getUserData() {
   return JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
     coins: 0,
-    cadres: ["polaroid_1"],
-    cadreActif: "polaroid_1",
+    cadres: ["polaroid_1-Blanc", "polaroid_2-Noir"], // correspond aux vrais fichiers
+    cadreActif: "polaroid_1-Blanc",                  // idem
     historique: [],
     likedPhotos: [],
     signaledPhotos: [],
