@@ -910,8 +910,136 @@
     "ja": "ガラス",
     "ko": "유리"
   },
-
-
+{
+    "id": 71,
+    "intitule": "Une serviette",
+    "en": "A towel",
+    "es": "Una toalla",
+    "de": "Ein Handtuch",
+    "it": "Un asciugamano",
+    "nl": "Een handdoek",
+    "pt": "Uma toalha",
+    "ar": "منشفة",
+    "ja": "タオル",
+    "ko": "수건"
+  },
+  {
+    "id": 72,
+    "intitule": "Une porte",
+    "en": "A door",
+    "es": "Una puerta",
+    "de": "Eine Tür",
+    "it": "Una porta",
+    "nl": "Een deur",
+    "pt": "Uma porta",
+    "ar": "باب",
+    "ja": "ドア",
+    "ko": "문"
+  },
+  {
+    "id": 73,
+    "intitule": "Du bois",
+    "en": "Wood",
+    "es": "Madera",
+    "de": "Holz",
+    "it": "Legno",
+    "nl": "Hout",
+    "pt": "Madeira",
+    "ar": "خشب",
+    "ja": "木材",
+    "ko": "나무"
+  },
+  {
+    "id": 74,
+    "intitule": "Du verre",
+    "en": "Glass",
+    "es": "Vidrio",
+    "de": "Glas",
+    "it": "Vetro",
+    "nl": "Glas",
+    "pt": "Vidro",
+    "ar": "زجاج",
+    "ja": "ガラス",
+    "ko": "유리"
+  },
+  {
+    "id": 75,
+    "intitule": "Du métal",
+    "en": "Metal",
+    "es": "Metal",
+    "de": "Metall",
+    "it": "Metallo",
+    "nl": "Metaal",
+    "pt": "Metal",
+    "ar": "معدن",
+    "ja": "金属",
+    "ko": "금속"
+  },
+  {
+    "id": 76,
+    "intitule": "Du plastique",
+    "en": "Plastic",
+    "es": "Plástico",
+    "de": "Plastik",
+    "it": "Plastica",
+    "nl": "Plastic",
+    "pt": "Plástico",
+    "ar": "بلاستيك",
+    "ja": "プラスチック",
+    "ko": "플라스틱"
+  },
+  {
+    "id": 77,
+    "intitule": "Une brosse à dent",
+    "en": "A toothbrush",
+    "es": "Un cepillo de dientes",
+    "de": "Eine Zahnbürste",
+    "it": "Uno spazzolino da denti",
+    "nl": "Een tandenborstel",
+    "pt": "Uma escova de dentes",
+    "ar": "فرشاة أسنان",
+    "ja": "歯ブラシ",
+    "ko": "칫솔"
+  },
+  {
+    "id": 78,
+    "intitule": "Une brosse à cheveux",
+    "en": "A hairbrush",
+    "es": "Un cepillo para el cabello",
+    "de": "Eine Haarbürste",
+    "it": "Una spazzola per capelli",
+    "nl": "Een haarborstel",
+    "pt": "Uma escova de cabelo",
+    "ar": "فرشاة شعر",
+    "ja": "ヘアブラシ",
+    "ko": "헤어브러시"
+  },
+  {
+    "id": 79,
+    "intitule": "Un miroir",
+    "en": "A mirror",
+    "es": "Un espejo",
+    "de": "Ein Spiegel",
+    "it": "Uno specchio",
+    "nl": "Een spiegel",
+    "pt": "Um espelho",
+    "ar": "مرآة",
+    "ja": "鏡",
+    "ko": "거울"
+  },
+  {
+    "id": 80,
+    "intitule": "Un visage dans un objet",
+    "en": "A face in an object",
+    "es": "Una cara en un objeto",
+    "de": "Ein Gesicht in einem Objekt",
+    "it": "Un volto in un oggetto",
+    "nl": "Een gezicht in een object",
+    "pt": "Um rosto em um objeto",
+    "ar": "وجه في شيء",
+    "ja": "物の中の顔",
+    "ko": "사물 속 얼굴"
+  },
 
 
 
