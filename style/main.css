@@ -187,17 +187,17 @@ header nav a:hover {
 
 .photo-user {
   position: absolute;
-  top: 10%; /* décalage vers le haut */
+  top: 20px;              /* légèrement décalée vers le haut */
   left: 50%;
   transform: translateX(-50%);
-  width: 80%; /* ou 240px si tu préfères une taille fixe */
-  height: auto;
-  max-height: 100%;
-  object-fit: cover;
+  width: 240px;           /* taille d’origine conservée */
+  height: 300px;
+  object-fit: contain;   /* pour voir toute l’image sans rognage */
   z-index: 2;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+
 
 
 /* === MASQUER === */
