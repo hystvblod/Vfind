@@ -188,7 +188,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 'contain' si tu veux marges, sinon 'cover' */
+  object-fit: contain; /* 'contain' si tu veux marges, sinon 'cover' */
   z-index: 1; /* dessous */
   pointer-events: none;
 }
