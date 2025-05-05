@@ -11,116 +11,116 @@
 {
   "id": "polaroid-3-Rose",
   "nom": "Rose",
-  "prix": 100
+  "prix": 600
 },
 {
   "id": "polaroid_4-Jaune",
   "nom": "Jaune",
-  "prix": 100
+  "prix": 600
 },
 {
   "id": "polaroid_5-Vert",
   "nom": "Vert",
-  "prix": 100
+  "prix": 600
 },
   {
     "id": "polaroid_10-Or",
     "nom": "Or",
-    "prix": 100
+    "prix": 1200
   },
   {
     "id": "polaroid_11-Nuages",
     "nom": "Nuages",
-    "prix": 125
+    "prix": 1200
   },
   {
     "id": "polaroid_12-Aquarellebleue",
     "nom": "Aquarelle bleue",
-    "prix": 150
+    "prix": 1200
   },
   {
     "id": "polaroid_13-Aquarellerose",
     "nom": "Aquarelle rose",
-    "prix": 175
+    "prix": 1200
   },
   {
     "id": "polaroid_14-Arcenciel",
     "nom": "Arc-en-ciel",
-    "prix": 200
+    "prix": 1200
   },
   {
     "id": "polaroid_15-RoseAquarelle",
     "nom": "Rose Aquarelle",
-    "prix": 100
+    "prix": 1200
   },
   {
     "id": "polaroid_16-crayonsgris",
     "nom": "Crayons gris",
-    "prix": 125
+    "prix": 1200
   },
   {
     "id": "polaroid_17-CoupsdePinceau",
     "nom": "Coups de pinceau",
-    "prix": 150
+    "prix": 1200
   },
   {
     "id": "polaroid_18-CoupsdePinceaubleu",
     "nom": "Pinceau bleu",
-    "prix": 175
+    "prix": 1200
   },
   {
     "id": "polaroid_19-BullesBleues",
     "nom": "Bulles bleues",
-    "prix": 200
+    "prix": 1200
   },
   {
     "id": "polaroid_20-Ballons",
     "nom": "Ballons",
-    "prix": 100
+    "prix": 1200
   },
   {
     "id": "polaroid_21-Gothique",
     "nom": "Gothique",
-    "prix": 125
+    "prix": 1200
   },
   {
     "id": "polaroid_22-Etoiles",
     "nom": "Étoiles",
-    "prix": 150
+    "prix": 1200
   },
   {
     "id": "polaroid_23-Nuitetoilee",
     "nom": "Nuit étoilée",
-    "prix": 175
+    "prix": 1200
   },
   {
     "id": "polaroid_24-PapierFroisse",
     "nom": "Papier froissé",
-    "prix": 200
+    "prix": 1200
   },
   {
     "id": "polaroid_25-MarbreNoire",
     "nom": "Marbre noire",
-    "prix": 100
+    "prix": 1200
   },
   {
     "id": "polaroid_40-OrPaillettes",
     "nom": "Orpaillettes",
-    "prix": 125
+    "prix": 1200
   },
   {
     "id": "polaroid_41-RosePaillettes",
     "nom": "Rosepaillettes",
-    "prix": 150
+    "prix": 1200
   },
   {
     "id": "polaroid_42-ArgentPaillettes",
     "nom": "Argentpaillettes",
-    "prix": 175
+    "prix": 1200
   },
   {
     "id": "polaroid_50-VIP",
     "nom": "CadreVIP",
-    "prix": 200
+    "prix": 5000
   }
 ]
