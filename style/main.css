@@ -196,10 +196,10 @@ button {
 /* Photo de l'utilisateur */
 .photo-user {
   position: absolute;
-  top: 30px;  /* décalée vers le bas */
-  left: 20px; /* centrée horizontalement */
-  width: 260px;
-  height: 310px;
+  top: 32px;  /* décalée vers le bas */
+  left: 30px; /* centrée horizontalement */
+  width: 240px;
+  height: 300px;
   object-fit: cover;
   z-index: 2; /* au-dessus du cadre */
   border-radius: 8px;
