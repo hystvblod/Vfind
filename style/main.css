@@ -121,9 +121,8 @@ header nav a:hover {
 
 /* === GRILLE DE CADRES === */
 .grid-cadres {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptation responsive */
   gap: 30px;
   padding: 20px 10px;
 }
@@ -134,7 +133,6 @@ header nav a:hover {
   padding: 15px;
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  width: 240px;
   text-align: center;
   transition: transform 0.2s;
 }
