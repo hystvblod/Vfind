@@ -14,8 +14,8 @@ function showAd(type) {
   }
 
   if (type === "rewarded") {
-    alert("🎁 Pub vue ! Tu gagnes 10 pièces.");
-    ajouterPieces(10);
+    alert("🎁 Pub vue ! Tu gagnes 100 pièces.");
+    ajouterPieces(100);
   } else if (type === "interstitial") {
     alert("📺 Merci d'avoir vu la pub ! Le duel va commencer.");
   } else if (type === "premium") {
