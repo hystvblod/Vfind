@@ -200,7 +200,7 @@ button {
   left: 30px; /* centrée horizontalement */
   width: 240px;
   height: 300px;
-  object-fit: cover;
+  object-fit: contain;
   z-index: 2; /* au-dessus du cadre */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* optionnel, pour effet relief */
