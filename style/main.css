@@ -66,7 +66,7 @@ header nav a:hover {
   transform: scale(1.05);
 }
 
-/* === AFFICHAGE DES POINTS */
+/* === AFFICHAGE DES POINTS === */
 .points-display {
   background: none;
   text-align: center;
@@ -135,6 +135,9 @@ header nav a:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .cadre-item:hover {
@@ -164,11 +167,6 @@ header nav a:hover {
   cursor: default;
 }
 
-.cadre-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* ✅ centre tous les enfants horizontalement */
-}
 .cadre-preview {
   position: relative;
   width: 300px;
@@ -200,7 +198,7 @@ header nav a:hover {
   height: auto;
   max-width: calc(100% - 40px);
   max-height: calc(100% - 40px);
-  object-fit: contain; /* ✅ PAS cover */
+  object-fit: contain;
   z-index: 3;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -219,7 +217,6 @@ nav.nav-icons {
   font-size: 24px;
   cursor: pointer;
   color: #333;
-
 }
 
 .icon-btn {
@@ -241,6 +238,8 @@ nav.nav-icons {
 .hidden {
   display: none !important;
 }
+
+/* ✅ Feedback de gain */
 #gain-feedback {
   margin-left: 8px;
   font-size: 16px;
@@ -257,3 +256,15 @@ nav.nav-icons {
   transform: translateY(-10px);
 }
 
+/* ✅ STYLE POPUP CENTRALISÉE */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
