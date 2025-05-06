@@ -1106,16 +1106,16 @@
   },
   {
     "id": 86,
-    "intitule": "Un insecte",
-    "en": "An insect",
-    "es": "Un insecto",
-    "de": "Ein Insekt",
-    "it": "Un insetto",
-    "nl": "Een insect",
-    "pt": "Um inseto",
-    "ar": "حشرة",
-    "ja": "昆虫",
-    "ko": "곤충"
+    "intitule": "Une coque de téléphone",
+  "en": "A phone case",
+  "es": "Una funda de teléfono",
+  "de": "Eine Handyhülle",
+  "it": "Una cover per telefono",
+  "nl": "Een telefoonhoesje",
+  "pt": "Uma capa de celular",
+  "ar": "غطاء هاتف",
+  "ja": "スマホケース",
+  "ko": "휴대폰 케이스"
   },
   {
     "id": 87,
