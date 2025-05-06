@@ -46,28 +46,6 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("gain-btn").addEventListener("click", function () {
-        document.getElementById("popup-gain").classList.remove("hidden");
-      });
-  
-      window.closePopup = function () {
-        document.getElementById("popup-gain").classList.add("hidden");
-      };
-  
-      window.watchAd = function () {
-        alert("🎬 Pub simulée ! +100 pièces ajoutées.");
-        closePopup();
-      };
-  
-      window.inviteFriend = function () {
-        alert("👥 Lien d’invitation simulé ! +100 pièces à la validation.");
-        closePopup();
-      };
-    });
-  </script>
-
   <script src="js/storage.js"></script>
   <script src="js/userData.js"></script>
   <script src="js/pub.js"></script>
