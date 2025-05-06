@@ -164,6 +164,11 @@ header nav a:hover {
   cursor: default;
 }
 
+.cadre-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ centre tous les enfants horizontalement */
+}
 .cadre-preview {
   position: relative;
   width: 300px;
