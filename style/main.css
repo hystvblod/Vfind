@@ -175,17 +175,17 @@ header nav a:hover {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.photo-user {
+.photo-user
   position: absolute;
-  top: 20px;
-  left: 30px;
-  width: 240px;
-  height: 260px;
+  width: 320px;
+  height: 400px;
   object-fit: cover;
+  border-radius: 12px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
-  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
 .photo-cadre {
   position: absolute;
