@@ -16,9 +16,13 @@
     </nav>
   </header>
 
+  <!-- ✅ Balise <main> correctement ouverte ici -->
   <main>
     <section class="points-display">
-      <p>💰 Tes pièces : <span id="points">0</span></p>
+      <p>
+        💰 Tes pièces : <span id="points">0</span>
+        <span id="gain-feedback" class="hidden">+100 💰</span>
+      </p>
       <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
     </section>
 
@@ -30,7 +34,7 @@
     </section>
   </main>
 
-  <!-- ✅ Fenêtre modale interactive à l’intérieur du <body> -->
+  <!-- ✅ Fenêtre modale interactive -->
   <div id="popup-gain" class="popup hidden">
     <h3>💰 Gagner des pièces</h3>
     <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
@@ -43,23 +47,25 @@
   </footer>
 
   <script>
-    document.getElementById("gain-btn").addEventListener("click", function () {
-      document.getElementById("popup-gain").classList.remove("hidden");
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("gain-btn").addEventListener("click", function () {
+        document.getElementById("popup-gain").classList.remove("hidden");
+      });
+  
+      window.closePopup = function () {
+        document.getElementById("popup-gain").classList.add("hidden");
+      };
+  
+      window.watchAd = function () {
+        alert("🎬 Pub simulée ! +100 pièces ajoutées.");
+        closePopup();
+      };
+  
+      window.inviteFriend = function () {
+        alert("👥 Lien d’invitation simulé ! +100 pièces à la validation.");
+        closePopup();
+      };
     });
-
-    function closePopup() {
-      document.getElementById("popup-gain").classList.add("hidden");
-    }
-
-    function watchAd() {
-      alert("🎬 Pub simulée ! +100 pièces ajoutées.");
-      closePopup();
-    }
-
-    function inviteFriend() {
-      alert("👥 Lien d’invitation simulé ! +100 pièces à la validation.");
-      closePopup();
-    }
   </script>
 
   <script src="js/storage.js"></script>
