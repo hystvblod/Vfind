@@ -169,8 +169,8 @@ header nav a:hover {
 
 .cadre-preview {
   position: relative;
-  width: 300px;
-  height: 375px;
+  width: 375px;
+  height: 425px;
   overflow: hidden;
   margin: 0 auto;
 }
@@ -267,4 +267,12 @@ nav.nav-icons {
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   z-index: 1000;
+  
+}
+.photo-user.cover {
+  object-fit: cover;
+}
+
+.photo-user.contain {
+  object-fit: contain;
 }
