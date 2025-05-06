@@ -186,7 +186,7 @@ header nav a:hover {
   transform: translate(-50%, -50%);
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
+} /* 👈 cette accolade fermante manquait */
 .photo-cadre {
   position: absolute;
   top: 0;
@@ -233,3 +233,19 @@ nav.nav-icons {
 .hidden {
   display: none !important;
 }
+#gain-feedback {
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #28a745;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  position: relative;
+  top: 0;
+}
+
+#gain-feedback.show {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
