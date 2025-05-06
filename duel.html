@@ -29,12 +29,18 @@
     <section class="duel-photos">
       <div class="duel-photo">
         <h3>👤 Joueur A</h3>
-        <canvas id="canvas-joueurA" width="320" height="400"></canvas>
+        <div class="cadre-preview">
+          <img src="photos/photo_joueurA.jpg" class="photo-user cover" onclick="toggleFit(this)">
+          <img src="cadres/polaroid_01.png" class="photo-cadre">
+        </div>
         <button class="btn-flag report-button">🚩 Signaler</button>
       </div>
       <div class="duel-photo">
         <h3>👤 Joueur B</h3>
-        <canvas id="canvas-joueurB" width="320" height="400"></canvas>
+        <div class="cadre-preview">
+          <img src="photos/photo_joueurB.jpg" class="photo-user cover" onclick="toggleFit(this)">
+          <img src="cadres/polaroid_01.png" class="photo-cadre">
+        </div>
         <button class="btn-flag report-button">🚩 Signaler</button>
       </div>
     </section>
@@ -49,5 +55,12 @@
   <script src="js/polaroid.js"></script>
   <script src="js/pub.js"></script>
   <script src="js/duel.js"></script>
+
+  <script>
+    function toggleFit(img) {
+      img.classList.toggle('cover');
+      img.classList.toggle('contain');
+    }
+  </script>
 </body>
 </html>

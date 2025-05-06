@@ -29,10 +29,22 @@
     <section id="end-section" class="hidden">
       <h2>🎉 Bravo !</h2>
       <p id="final-message"></p>
+
+      <div class="cadre-preview">
+        <img src="photos/photo_utilisateur.jpg" class="photo-user cover" onclick="toggleFit(this)">
+        <img src="cadres/polaroid_01.png" class="photo-cadre">
+      </div>
+
       <button id="replayBtn" class="main-button">🔁 Rejouer</button>
     </section>
   </main>
 
   <script src="js/solo.js"></script>
+  <script>
+    function toggleFit(img) {
+      img.classList.toggle('cover');
+      img.classList.toggle('contain');
+    }
+  </script>
 </body>
 </html>
