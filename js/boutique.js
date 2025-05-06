@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
         cadreImg.src = `assets/cadres/${cadre.id}.webp`;
         cadreImg.className = "photo-cadre";
 
-        wrapper.appendChild(photo);
-        wrapper.appendChild(cadreImg);
+        wrapper.appendChild(cadreImg); // ✅ cadre D'ABORD
+        wrapper.appendChild(photo);    // ✅ photo APRES
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
@@ -70,4 +70,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       location.reload(); // Recharge la page pour mettre à jour le bouton
     }
+    document.getElementById("gain-btn").addEventListener("click", function () {
+      document.getElementById("popup-gain").classList.remove("hidden");
+    });
+    
+    function closePopup() {
+      document.getElementById("popup-gain").classList.add("hidden");
+    }
+    
+    function watchAd() {
+      alert("🎬 Pub simulée ! +100 pièces ajoutées.");
+      userPoints += 100;
+      pointsDisplay.textContent = userPoints;
+      localStorage.setItem("vfind_points", userPoints.toString());
+      closePopup();
+    }
+    
+    function inviteFriend() {
+      alert("👥 Lien d’invitation simulé ! +100 pièces à la validation.");
+      userPoints += 100;
+      pointsDisplay.textContent = userPoints;
+      localStorage.setItem("vfind_points", userPoints.toString());
+      closePopup();
+    }
+    
 });
