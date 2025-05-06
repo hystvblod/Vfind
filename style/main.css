@@ -190,7 +190,7 @@ header nav a:hover {
   top: 20px;
   left: 20px;
   right: 20px;
-  bottom: 20px;
+  bottom: 0px;
   width: auto;
   height: auto;
   max-width: calc(100% - 40px);
