@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paramètres</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    select {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Paramètres</h1>
+
+  <label for="langue-select">Langue de l'interface :</label>
+  <select id="langue-select">
+    <option value="fr">Français</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="de">Deutsch</option>
+    <option value="it">Italiano</option>
+    <option value="nl">Nederlands</option>
+    <option value="pt">Português</option>
+    <option value="ar">العربية</option>
+    <option value="ja">日本語</option>
+    <option value="ko">한국어</option>
+  </select>
+
+  <script>
+    // Détection langue actuelle
+    let userLang = navigator.language || navigator.userLanguage;
+    userLang = userLang.split("-")[0];
+
+    const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
+    let currentLang = supportedLangs.includes(userLang) ? userLang : "fr";
+
+    const savedLang = localStorage.getItem("langue");
+    if (savedLang && supportedLangs.includes(savedLang)) {
+      currentLang = savedLang;
+    }
+
+    // Appliquer langue sélectionnée
+    const selectLang = document.getElementById("langue-select");
+    if (selectLang) {
+      selectLang.value = currentLang;
+
+      selectLang.addEventListener("change", (e) => {
+        const newLang = e.target.value;
+        localStorage.setItem("langue", newLang);
+        location.reload();
+      });
+    }
+  </script>
+</body>
+</html>
