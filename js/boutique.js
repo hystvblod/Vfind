@@ -118,5 +118,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
-  }, 100);
+  }, 100);  
 });
