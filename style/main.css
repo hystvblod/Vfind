@@ -174,13 +174,14 @@ header nav a:hover {
 
 .photo-user {
   position: absolute;
-  top: 30px; /* décalage vers le haut pour effet Polaroïd */
-  left: 20px;
-  width: 260px;
-  height: 310px;
-  object-fit: conver;
-  z-index: 2; /* au-dessus du fond mais sous le cadre */
+  top: 20px;       /* monte légèrement */
+  left: 30px;      /* réduit le centrage à cause de la taille réduite */
+  width: 240px;    /* un peu plus petit */
+  height: 300px;   /* un peu plus petit aussi */
+  object-fit: cover;
+  z-index: 2;
   border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .photo-cadre {
