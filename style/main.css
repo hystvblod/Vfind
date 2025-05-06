@@ -170,6 +170,21 @@ header nav a:hover {
   width: 300px;
   height: 375px;
   overflow: hidden;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.photo-user {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  width: 240px;
+  height: 260px;
+  object-fit: cover;
+  z-index: 2;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .photo-cadre {
@@ -183,18 +198,6 @@ header nav a:hover {
   pointer-events: none;
 }
 
-.photo-user {
-  position: absolute;
-  top: 32px;
-  left: 50px;
-  right: 50px;
-  width: 240px;
-  height: 300px;
-  object-fit: contain;
-  z-index: 2;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
 nav.nav-icons {
   display: flex;
   align-items: center;
@@ -208,6 +211,7 @@ nav.nav-icons {
   font-size: 24px;
   cursor: pointer;
   color: #333;
+
 }
 
 .icon-btn {
