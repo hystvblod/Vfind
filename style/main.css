@@ -185,7 +185,7 @@ header nav a:hover {
 }
 
 /* ✅ PHOTO UTILISATEUR - DESSUS */
-photo-user {
+.photo-user {
   position: absolute;
   top: 20px;
   left: 20px;
