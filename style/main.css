@@ -185,13 +185,17 @@ header nav a:hover {
 }
 
 /* ✅ PHOTO UTILISATEUR - DESSUS */
-.photo-user {
+photo-user {
   position: absolute;
   top: 20px;
   left: 20px;
-  right: 20px;  /* ✅ Ajout clé */
-  bottom: 20px; /* ✅ Ajout clé */
-  object-fit: cover;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain; /* ✅ PAS cover */
   z-index: 2;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
