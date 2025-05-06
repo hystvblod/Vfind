@@ -18,7 +18,7 @@ let allDefis = [];
 fetch("data/defis.json")
   .then((res) => res.json())
   .then((data) => {
-    allDefis = data.map(d => ({ texte: d.description, done: false }));
+    allDefis = data.map(d => ({ texte: id, done: false }));
     init();
   });
 
