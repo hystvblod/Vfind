@@ -189,8 +189,10 @@ header nav a:hover {
   position: absolute;
   top: 20px;
   left: 20px;
-  width: calc(100% - 40px); /* = 300 - 2x20 */
-  height: calc(100% - 40px); /* = 375 - 2x20 */
+  right: 20px; /* ✅ Ajoute cette ligne */
+  bottom: 20px; /* ✅ Ajoute cette ligne */
+  width: auto;
+  height: auto;
   object-fit: cover;
   z-index: 2;
   border-radius: 10px;
