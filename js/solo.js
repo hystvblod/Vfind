@@ -15,13 +15,28 @@ const finalMessage = document.getElementById("final-message");
 
 let allDefis = [];
 
+// 🔤 Détection de la langue
+let userLang = navigator.language || navigator.userLanguage; // exemple "fr-FR"
+userLang = userLang.split("-")[0];
+
+const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
+let currentLang = supportedLangs.includes(userLang) ? userLang : "fr";
+
+const savedLang = localStorage.getItem("langue");
+if (savedLang && supportedLangs.includes(savedLang)) {
+  currentLang = savedLang;
+}
+
 fetch("data/defis.json")
   .then((res) => res.json())
   .then((data) => {
-    allDefis = data.map(d => ({ texte: d.description, done: false }));
-    init();
+    allDefis = data.map(d => ({
+      id: d.id,
+      texte: currentLang === "fr" ? d.intitule : d[currentLang],
+      done: false
+    }));
+    init(); // il manquait aussi cet appel ici
   });
-
 function init() {
   const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
   if (existingTimer && Date.now() < parseInt(existingTimer)) {

@@ -25,6 +25,12 @@
       width: 100%;
       max-width: 300px;
     }
+    button {
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -43,6 +49,8 @@
     <option value="ja">日本語</option>
     <option value="ko">한국어</option>
   </select>
+
+  <button onclick="history.back()">⬅️ Retour</button>
 
   <script>
     // Détection langue actuelle
