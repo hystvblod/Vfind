@@ -230,5 +230,6 @@ nav.nav-icons {
 }
 
 /* === MASQUER === */
-.hidden 
+.hidden {
   display: none !important;
+}
