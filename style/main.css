@@ -187,6 +187,7 @@ header nav a:hover {
   position: absolute;
   top: 32px;
   left: 50px;
+  right: 50px;
   width: 240px;
   height: 300px;
   object-fit: contain;
@@ -225,5 +226,5 @@ nav.nav-icons {
 }
 
 /* === MASQUER === */
-.hidden {
+.hidden 
   display: none !important;
