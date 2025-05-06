@@ -196,7 +196,7 @@ header nav a:hover {
   max-width: calc(100% - 40px);
   max-height: calc(100% - 40px);
   object-fit: contain; /* ✅ PAS cover */
-  z-index: 3
+  z-index: 3;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
