@@ -176,16 +176,15 @@ header nav a:hover {
 }
 
 .photo-user {
-  position: absolute;
-  width: 320px;
-  height: 400px;
-  object-fit: cover;
-  border-radius: 12px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    top: 20px;       /* monte légèrement */
+    left: 30px;      /* réduit le centrage à cause de la taille réduite */
+    width: 240px;    /* un peu plus petit */
+    height: 300px;   /* un peu plus petit aussi */
+    object-fit: cover;
+    z-index: 2;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 } /* 👈 cette accolade fermante manquait */
 .photo-cadre {
   position: absolute;
