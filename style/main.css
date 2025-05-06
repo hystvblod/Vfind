@@ -15,7 +15,6 @@ body {
   padding: 0;
 }
 
-
 /* === EN-TÊTE === */
 header {
   background: #4b4acb;
@@ -187,7 +186,8 @@ header nav a:hover {
 .photo-user {
   position: absolute;
   top: 32px;
-  left: 30px;
+  left: 50px;
+  transform: translateX(-50%);
   width: 240px;
   height: 300px;
   object-fit: contain;
