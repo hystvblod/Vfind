@@ -187,7 +187,6 @@ header nav a:hover {
   position: absolute;
   top: 32px;
   left: 50px;
-  transform: translateX(-50%);
   width: 240px;
   height: 300px;
   object-fit: contain;
