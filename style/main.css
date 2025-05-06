@@ -169,8 +169,8 @@ header nav a:hover {
 
 .cadre-preview {
   position: relative;
-  width: 375px;
-  height: 425px;
+  width: 300px;
+  height: 375px;
   overflow: hidden;
   margin: 0 auto;
 }
