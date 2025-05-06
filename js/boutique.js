@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     location.reload();
   }
   setTimeout(() => {
-    document.body.scrollTop = 0;
+    document.body.scrollTop = ;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
   }, 100);
