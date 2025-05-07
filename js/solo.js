@@ -136,15 +136,32 @@ function loadDefis() {
 }
 
 function afficherPhotosSauvegardees() {
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "cadre1";
+
   document.querySelectorAll(".defi").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
     const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+    
     if (dataUrl) {
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      img.onclick = () => agrandirPhoto(dataUrl, id);
-       img.className = "photo-miniature";
-      defiEl.appendChild(img);
+      // Crée un conteneur style preview
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      preview.style.width = "120px";
+      preview.style.height = "150px";
+
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.png`;
+
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
+
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      defiEl.appendChild(preview);
+  
     }
   });
 }
