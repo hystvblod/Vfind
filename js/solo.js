@@ -98,15 +98,15 @@ function startCountdown() {
 }
 
 function loadDefis() {
-  const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY)) || [];
-  defiList.innerHTML = "";
-  defis.forEach((defi, index) => {
+  defiList.innerHTML = '';
+  defisActuels.forEach((defi, index) => {
     const li = document.createElement("li");
-    if (defi.done) li.classList.add("done");
+    li.className = "defi";
+    li.setAttribute("data-defi-id", defi.id); // ← essentiel
     li.innerHTML = `
       <p>${defi.texte}</p>
-      <button ${defi.done ? "disabled" : ""} onclick="validerDefi(${index})">📸 Prendre une photo</button>
-      <button ${defi.done || pubUsed() ? "disabled" : ""} onclick="validerAvecPub(${index})">📺 Voir une pub</button>
+      <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
+      <button onclick="validerAvecPub(${index})">📺 Voir une pub</button>
     `;
     defiList.appendChild(li);
   });
@@ -163,4 +163,16 @@ function showStart() {
   preGame.classList.remove("hidden");
   gameSection.classList.add("hidden");
   endSection.classList.add("hidden");
+}
+function afficherPhotosSauvegardees() {
+  document.querySelectorAll(".defi").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+    if (dataUrl) {
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      img.className = "photo-miniature";
+      defiEl.appendChild(img);
+    }
+  });
 }

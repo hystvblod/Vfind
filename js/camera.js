@@ -1,51 +1,59 @@
+// camera.js — version PRO
 
-let classifier;
-let currentChallenge = "";
+let videoStream = null;
+const VIDEO_WIDTH = 500;
+const VIDEO_HEIGHT = 580;
 
-function preloadModel() {
-  ml5.imageClassifier('MobileNet')
-    .then(model => {
-      classifier = model;
-      console.log("Modèle IA chargé.");
+function ouvrirCameraPour(defiId) {
+  const container = document.createElement("div");
+  container.className = "camera-container";
+
+  const video = document.createElement("video");
+  video.autoplay = true;
+  video.playsInline = true;
+  container.appendChild(video);
+
+  const captureBtn = document.createElement("button");
+  captureBtn.textContent = "Prendre la photo";
+  captureBtn.className = "btn-capture";
+  container.appendChild(captureBtn);
+
+  document.body.appendChild(container);
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      videoStream = stream;
+      video.srcObject = stream;
     })
-    .catch(err => console.error("Erreur de chargement IA :", err));
+    .catch(err => {
+      alert("Erreur d’accès à la caméra : " + err);
+    });
+
+  captureBtn.addEventListener("click", () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = VIDEO_WIDTH;
+    canvas.height = VIDEO_HEIGHT;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+
+    // Sauvegarde dans localStorage avec une clé unique
+    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+
+    // Affiche la miniature dans le bon encadré
+    const blocDefi = document.querySelector(`[data-defi-id="${defiId}"]`);
+    if (blocDefi) {
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      img.className = "photo-miniature";
+      blocDefi.appendChild(img);
+    }
+
+    // Stop caméra
+    if (videoStream) {
+      videoStream.getTracks().forEach(track => track.stop());
+    }
+
+    container.remove();
+  });
 }
-
-function takePhoto() {
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("photoCanvas");
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const imageData = canvas.toDataURL("image/png");
-  analysePhoto(imageData);
-}
-
-function analysePhoto(photoData) {
-  const img = new Image();
-  img.src = photoData;
-  img.onload = () => {
-    classifier.classify(img)
-      .then(results => {
-        const bestMatch = results[0].label.toLowerCase();
-        const isValid = bestMatch.includes(currentChallenge.toLowerCase());
-        alert(isValid ? "✅ Défi réussi !" : "❌ Essayez encore...");
-      })
-      .catch(err => console.error("Erreur IA :", err));
-  };
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  preloadModel();
-
-  const video = document.getElementById("video");
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch(err => console.error("Erreur caméra :", err));
-  }
-
-  document.getElementById("btn-photo").addEventListener("click", takePhoto);
-});
