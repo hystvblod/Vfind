@@ -1,50 +1,119 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Mode Solo</title>
-  <link rel="stylesheet" href="style/main.css" />
+  <meta charset="UTF-8">
+  <title>Mode Solo - Prise de Photo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .encadre {
+      width: 300px;
+      height: 375px;
+      border: 4px solid #FFD700; /* jaune */
+      border-radius: 10px;
+      margin: 0 auto;
+      position: relative;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .encadre.selectionne {
+      border-color: #3498db; /* bleu quand sélectionné */
+    }
+
+    .encadre img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .instructions {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    #canvas {
+      display: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <header class="header-solo">
-    <a href="index.html" class="btn-icon back-button">⬅️</a>
-    <h1 class="mode-title">📸 Mode Solo</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
-    </div>
-  </header>
 
-  <main class="solo-container">
-    <section id="pre-game" class="centered">
-      <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
-    </section>
+  <h2>Mode Solo</h2>
 
-    <section id="game-section" class="hidden">
-      <div class="timer-box">⏱️ Temps restant : <span id="timer">--:--:--</span></div>
-      <ul id="defi-list" class="defi-list"></ul>
-    </section>
+  <div class="encadre" id="photo-zone">
+    <span class="instructions" id="instruction-text">📸 Prendre une photo</span>
+    <img id="photo-preview" src="" alt="" style="display:none;">
+  </div>
 
-    <section id="end-section" class="hidden">
-      <h2>🎉 Bravo !</h2>
-      <p id="final-message"></p>
+  <!-- Input invisible déclenché par clic sur le cadre -->
+  <input type="file" accept="image/*" capture="environment" id="photo-input">
+  <!-- Canvas pour redimensionner la photo -->
+  <canvas id="canvas" width="500" height="580"></canvas>
 
-      <div class="cadre-preview">
-        <img src="photos/photo_utilisateur.jpg" class="photo-user cover" onclick="toggleFit(this)">
-        <img src="cadres/polaroid_01.png" class="photo-cadre">
-      </div>
-
-      <button id="replayBtn" class="main-button">🔁 Rejouer</button>
-    </section>
-  </main>
-
-  <script src="js/solo.js"></script>
   <script>
-    function toggleFit(img) {
-      img.classList.toggle('cover');
-      img.classList.toggle('contain');
+    const encadre = document.getElementById("photo-zone");
+    const input = document.getElementById("photo-input");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const preview = document.getElementById("photo-preview");
+    const instruction = document.getElementById("instruction-text");
+
+    // Ouvre l'appareil photo ou la galerie au clic
+    encadre.addEventListener("click", () => {
+      input.click();
+    });
+
+    // Quand une photo est sélectionnée
+    input.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const img = new Image();
+      img.onload = () => {
+        // Redimensionner la photo en 500x580
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, 500, 580);
+        const resized = canvas.toDataURL("image/webp");
+
+        // Affiche dans le cadre
+        preview.src = resized;
+        preview.style.display = "block";
+        instruction.style.display = "none";
+        encadre.classList.add("selectionne");
+
+        // Sauvegarde locale pour 7 jours
+        localStorage.setItem("photo_solo", resized);
+        localStorage.setItem("photo_solo_timestamp", Date.now());
+      };
+      img.src = URL.createObjectURL(file);
+    });
+
+    // Recharge la photo si elle est toujours valide
+    const saved = localStorage.getItem("photo_solo");
+    const savedTime = localStorage.getItem("photo_solo_timestamp");
+    if (saved && savedTime && (Date.now() - parseInt(savedTime)) < 7 * 24 * 60 * 60 * 1000) {
+      preview.src = saved;
+      preview.style.display = "block";
+      instruction.style.display = "none";
+      encadre.classList.add("selectionne");
+    } else {
+      localStorage.removeItem("photo_solo");
+      localStorage.removeItem("photo_solo_timestamp");
     }
   </script>
+
 </body>
 </html>
