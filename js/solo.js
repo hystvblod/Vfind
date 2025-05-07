@@ -25,6 +25,9 @@ const savedLang = localStorage.getItem("langue");
 if (savedLang && supportedLangs.includes(savedLang)) {
   currentLang = savedLang;
 }
+const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+
+
 
 // 🟦 Chargement des défis
 document.addEventListener("DOMContentLoaded", () => {
@@ -136,7 +139,8 @@ function loadDefis() {
 }
 
 function afficherPhotosSauvegardees() {
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "cadre1";
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+
 
   document.querySelectorAll(".defi").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
@@ -211,7 +215,7 @@ function showStart() {
   endSection.classList.add("hidden");
 }
 function agrandirPhoto(dataUrl, id) {
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "cadre1";
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
   document.getElementById("photo-affichee").src = dataUrl;
   document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.png`;
   document.getElementById("popup-photo").classList.add("show");
