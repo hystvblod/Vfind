@@ -12,11 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (gainBtn) {
     gainBtn.addEventListener("click", () => {
       popupGain.classList.remove("hidden");
+      popupGain.classList.add("show"); // ✅ rend visible et interactive
     });
   }
 
   // ✅ Fermer la fenêtre
   window.closePopup = function () {
+    popupGain.classList.remove("show");
     popupGain.classList.add("hidden");
   };
 
