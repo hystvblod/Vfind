@@ -260,37 +260,45 @@ nav.nav-icons {
   transform: translateY(-10px);
 }
 
-/* ✅ STYLE POPUP CENTRALISÉE */
-.popup {
+/.popup {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.95);
   background: white;
-  padding: 30px;
+  padding: 0;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   z-index: 1000;
-  
-}
-.photo-user.cover {
-  object-fit: cover;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
 }
 
-.photo-user.contain {
-  object-fit: contain;
-
+.popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
 }
-.photo-miniature {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
+
+.popup-inner {
+  position: relative;
+  padding: 20px;
+}
+
+/* Bouton fermeture */
+.close-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #f44;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease;
-}
-
-.photo-miniature:hover {
-  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }

@@ -193,3 +193,14 @@ function showStart() {
   gameSection.classList.add("hidden");
   endSection.classList.add("hidden");
 }
+function agrandirPhoto(dataUrl, id) {
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "cadre1";
+  document.getElementById("photo-affichee").src = dataUrl;
+  document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.png`;
+  document.getElementById("popup-photo").classList.add("show");
+}
+
+// Fermer avec bouton ❌
+document.getElementById("close-popup").addEventListener("click", () => {
+  document.getElementById("popup-photo").classList.remove("show");
+});
