@@ -160,7 +160,8 @@ function afficherPhotosSauvegardees() {
 
       const fond = document.createElement("img");
       fond.className = "photo-cadre";
-      fond.src = `./assets/cadres/${cadreActuel}.png`;
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+
 
       const photo = document.createElement("img");
       photo.className = "photo-user";
