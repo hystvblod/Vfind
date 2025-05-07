@@ -36,12 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
         texte: currentLang === "fr" ? d.intitule : d[currentLang],
         done: false
       }));
-      console.log("✅ Défis chargés :", allDefis);
+    
       init();
     })
     .catch(err => {
       console.error("❌ Erreur de chargement du fichier defis.json :", err);
-      console.log("Défis affichés dans le DOM :", document.querySelectorAll(".defi").length);
+
 
     });
 });
