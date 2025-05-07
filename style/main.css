@@ -348,4 +348,6 @@ nav.nav-icons {
   display: flex;
   justify-content: flex-end;
 }
-
+.main-buttons a {
+  width: 240px; /* ✅ Cette syntaxe est valide */
+}
