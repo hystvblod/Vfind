@@ -120,6 +120,7 @@ function loadDefis() {
   afficherPhotosSauvegardees();
 }
 
+
 function pubUsed() {
   return localStorage.getItem(PUB_USED_KEY) === "true";
 }
