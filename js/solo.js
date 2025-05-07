@@ -79,14 +79,7 @@ function showGame() {
   gameSection.classList.remove("hidden");
   updateTimer();
 
-  if (!localStorage.getItem(DEFI_STORAGE_KEY)) {
-    const newDefis = getRandomDefis(3);
-    localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(newDefis));
   }
-
-  loadDefis();
-  startCountdown();
-}
 
 function updateTimer() {
   const endTime = parseInt(localStorage.getItem(TIMER_STORAGE_KEY));
@@ -116,7 +109,14 @@ function startCountdown() {
 }
 
 function loadDefis() {
-  const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY)) || [];
+  let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
+
+  // Sécurité si vide ou cassé
+  if (!defis || !Array.isArray(defis) || defis.length === 0) {
+    defis = getRandomDefis(3);
+    localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
+  }
+
   defisActuels = defis;
   defiList.innerHTML = '';
   defis.forEach((defi, index) => {
