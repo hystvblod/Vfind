@@ -200,7 +200,14 @@ function agrandirPhoto(dataUrl, id) {
   document.getElementById("popup-photo").classList.add("show");
 }
 
-// Fermer avec bouton ❌
+// Fermer avec le bouton ❌
 document.getElementById("close-popup").addEventListener("click", () => {
   document.getElementById("popup-photo").classList.remove("show");
+});
+
+// Fermer en cliquant sur le fond (hors cadre)
+document.getElementById("popup-photo").addEventListener("click", (e) => {
+  if (e.target.id === "popup-photo") {
+    document.getElementById("popup-photo").classList.remove("show");
+  }
 });
