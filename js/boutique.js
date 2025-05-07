@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Gagner pièces via invitation
   window.inviteFriend = function () {
-    userPoints += 100;
+    userPoints += 300;
     updatePointsDisplay();
-    showFeedback("+100 💰");
+    showFeedback("+300 💰");
     closePopup();
   };
 
