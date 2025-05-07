@@ -14,6 +14,8 @@ const defiList = document.getElementById("defi-list");
 const finalMessage = document.getElementById("final-message");
 
 let allDefis = [];
+let defisActuels = [];
+
 
 // 🔤 Détection de la langue
 let userLang = navigator.language || navigator.userLanguage; // exemple "fr-FR"
