@@ -294,12 +294,14 @@ nav.nav-icons {
   position: relative;
 }
 
-.cadre-preview {
+.cadre-preview.cadre-popup {
+  width: 90vw;
+  max-width: 500px;
+  height: calc(90vw * 1.25); /* 4:5 = 1.25 */
+  max-height: 625px;
+  margin: 0 auto;
   position: relative;
-  width: 100%;
-  max-width: 360px;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
+
 }
 
 .photo-cadre,
