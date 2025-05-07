@@ -29,7 +29,7 @@ if (savedLang && supportedLangs.includes(savedLang)) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("data/defis.json")
+  fetch("./data/defis.json")
     .then((res) => res.json())
     .then((data) => {
       allDefis = data.defis.map(d => ({
