@@ -351,27 +351,6 @@ nav.nav-icons {
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
 }
-/* === STYLE IDENTIQUE À LA BOUTIQUE POUR LA PREVIEW === */
-.boutique-style {
-  width: 250px;
-  height: 250px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  background: white;
-  position: relative;
-  overflow: hidden;
-  margin: 40px auto 20px;
-}
-
-.boutique-style .photo-cadre,
-.boutique-style .photo-user {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
 
 .popup-inner {
   display: flex;
