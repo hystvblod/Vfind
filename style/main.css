@@ -260,7 +260,7 @@ nav.nav-icons {
   transform: translateY(-10px);
 }
 
-/.popup {
+.popup {
   position: fixed;
   top: 50%;
   left: 50%;
