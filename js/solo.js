@@ -30,7 +30,7 @@ if (savedLang && supportedLangs.includes(savedLang)) {
 fetch("data/defis.json")
   .then((res) => res.json())
   .then((data) => {
-    allDefis = data.map(d => ({
+    allDefis = data.defis.map(d => ({
       id: d.id,
       texte: currentLang === "fr" ? d.intitule : d[currentLang],
       done: false
