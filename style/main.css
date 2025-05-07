@@ -344,9 +344,4 @@ nav.nav-icons {
   display: flex;
   justify-content: flex-end;
 }
-/* ✅ Agrandissement du cadre dans la popup */
-.cadre-popup {
-  width: 500px;
-  height: 625px;
-}
 
