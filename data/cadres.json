@@ -4,122 +4,122 @@
   "prix": 100
 },
 {
-  "id": "polaroid_2-Noir",
+  "id": "polaroid_02",
   "nom": "Noir",
   "prix": 100
 },
 {
-  "id": "polaroid-3-Rose",
+  "id": "polaroid_03",
   "nom": "Rose",
   "prix": 600
 },
 {
-  "id": "polaroid_4-Jaune",
+  "id": "polaroid_04",
   "nom": "Jaune",
   "prix": 600
 },
 {
-  "id": "polaroid_5-Vert",
+  "id": "polaroid_05",
   "nom": "Vert",
   "prix": 600
 },
   {
-    "id": "polaroid_10-Or",
+    "id": "polaroid_10",
     "nom": "Or",
     "prix": 1200
   },
   {
-    "id": "polaroid_11-Nuages",
+    "id": "polaroid_11",
     "nom": "Nuages",
     "prix": 1200
   },
   {
-    "id": "polaroid_12-Aquarellebleue",
+    "id": "polaroid_12",
     "nom": "Aquarelle bleue",
     "prix": 1200
   },
   {
-    "id": "polaroid_13-Aquarellerose",
+    "id": "polaroid_13",
     "nom": "Aquarelle rose",
     "prix": 1200
   },
   {
-    "id": "polaroid_14-Arcenciel",
+    "id": "polaroid_14",
     "nom": "Arc-en-ciel",
     "prix": 1200
   },
   {
-    "id": "polaroid_15-RoseAquarelle",
+    "id": "polaroid_15",
     "nom": "Rose Aquarelle",
     "prix": 1200
   },
   {
-    "id": "polaroid_16-crayonsgris",
+    "id": "polaroid_16",
     "nom": "Crayons gris",
     "prix": 1200
   },
   {
-    "id": "polaroid_17-CoupsdePinceau",
+    "id": "polaroid_17",
     "nom": "Coups de pinceau",
     "prix": 1200
   },
   {
-    "id": "polaroid_18-CoupsdePinceaubleu",
+    "id": "polaroid_18",
     "nom": "Pinceau bleu",
     "prix": 1200
   },
   {
-    "id": "polaroid_19-BullesBleues",
+    "id": "polaroid_19",
     "nom": "Bulles bleues",
     "prix": 1200
   },
   {
-    "id": "polaroid_20-Ballons",
+    "id": "polaroid_20",
     "nom": "Ballons",
     "prix": 1200
   },
   {
-    "id": "polaroid_21-Gothique",
+    "id": "polaroid_21",
     "nom": "Gothique",
     "prix": 1200
   },
   {
-    "id": "polaroid_22-Etoiles",
+    "id": "polaroid_22",
     "nom": "Étoiles",
     "prix": 1200
   },
   {
-    "id": "polaroid_23-Nuitetoilee",
+    "id": "polaroid_23",
     "nom": "Nuit étoilée",
     "prix": 1200
   },
   {
-    "id": "polaroid_24-PapierFroisse",
+    "id": "polaroid_24",
     "nom": "Papier froissé",
     "prix": 1200
   },
   {
-    "id": "polaroid_25-MarbreNoire",
+    "id": "polaroid_25",
     "nom": "Marbre noire",
     "prix": 1200
   },
   {
-    "id": "polaroid_40-OrPaillettes",
+    "id": "polaroid_40",
     "nom": "Or paillettes",
     "prix": 1200
   },
   {
-    "id": "polaroid_41-RosePaillettes",
+    "id": "polaroid_41",
     "nom": "Rose paillettes",
     "prix": 1200
   },
   {
-    "id": "polaroid_42-ArgentPaillettes",
+    "id": "polaroid_42",
     "nom": "Argent paillettes",
     "prix": 1200
   },
   {
-    "id": "polaroid_50-VIP",
+    "id": "polaroid_50",
     "nom": "Cadre VIP",
     "prix": 5000
   }
