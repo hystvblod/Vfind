@@ -183,5 +183,10 @@ function afficherPhotosSauvegardees() {
       img.className = "photo-miniature";
       defiEl.appendChild(img);
     }
+    
   });
+  function init() {
+    document.getElementById("startBtn").addEventListener("click", startGame);
+    document.getElementById("replayBtn").addEventListener("click", resetGame);
+  }
 }
