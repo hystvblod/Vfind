@@ -54,20 +54,21 @@ header nav a:hover {
 
 /* === BOUTON PRINCIPAL === */
 .main-button {
-  background: #fdd44a; /* Jaune VBlocks */
+  background: #fdd44a;
   color: #000;
   font-weight: bold;
   padding: 1rem 2rem;
   font-size: 1.1rem;
-  border: none;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
-  display: flex;
+  display: inline-flex;      /* 🔄 important pour les liens */
   align-items: center;
   justify-content: center;
   margin: 1.5rem auto;
+  width: 250px;              /* ✅ taille uniforme */
+  text-decoration: none;     /* ✅ retire soulignement */
 }
 
 .main-button:hover {
