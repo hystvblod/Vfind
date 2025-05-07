@@ -1,4 +1,6 @@
 {
+  "defis": [
+    {
   "id": 1,
  "intitule": "Un objet qui fait du bruit",
    "en": "An object that makes noise",
@@ -388,7 +390,6 @@
    "ja": "玄関マット",
    "ko": "현관 매트"
  },
-[
  {
    "id": 31,
    "intitule": "Un savon",
@@ -2338,8 +2339,8 @@
    "ar": "غصن",
    "ja": "枝",
    "ko": "나뭇가지"
- }
-{
+  },
+  {
    "id": 181,
    "intitule": "Une caméra",
    "en": "A camera",
@@ -2805,7 +2806,7 @@
  "pt": "Uma flecha",
  "ar": "سهم",
  "ja": "矢印",
- "ko": "화살표"s
+ "ko": "화살표"
  },
  {
    "id": 217,
@@ -3375,7 +3376,7 @@
    "it": "Un uccello in volo",
    "nl": "Een vliegende vogel",
    "pt": "Um pássaro em voo",
-   "ar": ""طائر يطير"",
+   "ar": "طائر يطير",
    "ja": "飛んでいる鳥",
    "ko": "날고 있는 새"
  },
@@ -4537,16 +4538,17 @@
    "ko": "문 손잡이"
  },
  {
-   "id": 350,
-   "intitule": "Une pub",
-   "en": "An advertisement",
-   "es": "Un anuncio",
-   "de": "Eine Werbung",
-   "it": "Una pubblicità",
-   "nl": "Een reclame",
-   "pt": "Um anúncio",
-   "ar": "إعلان",
-   "ja": "広告",
-   "ko": "광고"
- },
-]
+  "id": 350,
+  "intitule": "Une pub",
+  "en": "An advertisement",
+  "es": "Un anuncio",
+  "de": "Eine Werbung",
+  "it": "Una pubblicità",
+  "nl": "Een reclame",
+  "pt": "Um anúncio",
+  "ar": "إعلان",
+  "ja": "広告",
+  "ko": "광고"
+}
+  ]
+        }
