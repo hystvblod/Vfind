@@ -19,15 +19,14 @@ let defisActuels = [];
 // 🔤 Détection de la langue
 let userLang = navigator.language || navigator.userLanguage;
 userLang = userLang.split("-")[0];
-
 const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
 let currentLang = supportedLangs.includes(userLang) ? userLang : "fr";
-
 const savedLang = localStorage.getItem("langue");
 if (savedLang && supportedLangs.includes(savedLang)) {
   currentLang = savedLang;
 }
 
+// 🟦 Chargement des défis
 document.addEventListener("DOMContentLoaded", () => {
   fetch("./data/defis.json")
     .then((res) => res.json())
@@ -37,17 +36,17 @@ document.addEventListener("DOMContentLoaded", () => {
         texte: currentLang === "fr" ? d.intitule : d[currentLang],
         done: false
       }));
-      console.log("✅ Défis chargés :", allDefis); // ← ici OK
+      console.log("✅ Défis chargés :", allDefis);
       init();
     })
     .catch(err => {
-      console.error("Erreur de chargement du fichier defis.json :", err);
+      console.error("❌ Erreur de chargement du fichier defis.json :", err);
     });
 });
 
 function init() {
   startBtn?.addEventListener("click", startGame);
-  replayBtn?.addEventListener("click", () => showStart());
+  replayBtn?.addEventListener("click", showStart);
 
   const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
   if (existingTimer && Date.now() < parseInt(existingTimer)) {
@@ -77,6 +76,12 @@ function showGame() {
   endSection.classList.add("hidden");
   gameSection.classList.remove("hidden");
   updateTimer();
+
+  if (!localStorage.getItem(DEFI_STORAGE_KEY)) {
+    const newDefis = getRandomDefis(3);
+    localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(newDefis));
+  }
+
   loadDefis();
   startCountdown();
 }
@@ -127,7 +132,6 @@ function loadDefis() {
 
   afficherPhotosSauvegardees();
 }
-
 
 function afficherPhotosSauvegardees() {
   document.querySelectorAll(".defi").forEach(defiEl => {
