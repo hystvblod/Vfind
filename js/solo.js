@@ -41,6 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => {
       console.error("❌ Erreur de chargement du fichier defis.json :", err);
+      console.log("Défis affichés dans le DOM :", document.querySelectorAll(".defi").length);
+
     });
 });
 
