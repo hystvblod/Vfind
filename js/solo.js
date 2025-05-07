@@ -128,10 +128,17 @@ function loadDefis() {
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
     li.innerHTML = `
+  <div class="defi-content">
+    <div class="defi-texte">
       <p>${defi.texte}</p>
       <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
       <button onclick="validerAvecPub(${index})">📺 Voir une pub</button>
-    `;
+    </div>
+    <div class="defi-photo-container" data-photo-id="${defi.id}">
+      <!-- photo miniature ici -->
+    </div>
+  </div>
+`;
     defiList.appendChild(li);
   });
 
@@ -141,13 +148,11 @@ function loadDefis() {
 function afficherPhotosSauvegardees() {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-
   document.querySelectorAll(".defi").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
     const dataUrl = localStorage.getItem(`photo_defi_${id}`);
     
     if (dataUrl) {
-      // Crée un conteneur style preview
       const preview = document.createElement("div");
       preview.className = "cadre-preview";
       preview.style.width = "120px";
@@ -164,11 +169,15 @@ function afficherPhotosSauvegardees() {
 
       preview.appendChild(fond);
       preview.appendChild(photo);
-      defiEl.appendChild(preview);
-  
+
+      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+      if (container) {
+        container.innerHTML = ''; // Nettoie avant d'ajouter
+        container.appendChild(preview);
+      }
     }
   });
-}
+} // ✅ FIN DE LA FONCTION
 
 window.validerDefi = function(index) {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
