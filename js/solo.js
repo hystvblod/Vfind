@@ -98,11 +98,14 @@ function startCountdown() {
 }
 
 function loadDefis() {
+  const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY)) || [];
+  defisActuels = defis;
   defiList.innerHTML = '';
-  defisActuels.forEach((defi, index) => {
+  defis.forEach((defi, index) => {
     const li = document.createElement("li");
     li.className = "defi";
-    li.setAttribute("data-defi-id", defi.id); // ← essentiel
+    if (defi.done) li.classList.add("done");
+    li.setAttribute("data-defi-id", defi.id);
     li.innerHTML = `
       <p>${defi.texte}</p>
       <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
@@ -110,6 +113,9 @@ function loadDefis() {
     `;
     defiList.appendChild(li);
   });
+
+  // ✅ Ajoute les photos si déjà stockées
+  afficherPhotosSauvegardees();
 }
 
 function pubUsed() {
