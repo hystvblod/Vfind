@@ -16,9 +16,8 @@ const finalMessage = document.getElementById("final-message");
 let allDefis = [];
 let defisActuels = [];
 
-
 // 🔤 Détection de la langue
-let userLang = navigator.language || navigator.userLanguage; // exemple "fr-FR"
+let userLang = navigator.language || navigator.userLanguage;
 userLang = userLang.split("-")[0];
 
 const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
@@ -29,17 +28,26 @@ if (savedLang && supportedLangs.includes(savedLang)) {
   currentLang = savedLang;
 }
 
-fetch("data/defis.json")
-  .then((res) => res.json())
-  .then((data) => {
-    allDefis = data.defis.map(d => ({
-      id: d.id,
-      texte: currentLang === "fr" ? d.intitule : d[currentLang],
-      done: false
-    }));
-    init(); // il manquait aussi cet appel ici
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("data/defis.json")
+    .then((res) => res.json())
+    .then((data) => {
+      allDefis = data.defis.map(d => ({
+        id: d.id,
+        texte: currentLang === "fr" ? d.intitule : d[currentLang],
+        done: false
+      }));
+      init();
+    })
+    .catch(err => {
+      console.error("Erreur de chargement du fichier defis.json :", err);
+    });
+});
+
 function init() {
+  startBtn?.addEventListener("click", startGame);
+  replayBtn?.addEventListener("click", () => showStart());
+
   const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
   if (existingTimer && Date.now() < parseInt(existingTimer)) {
     showGame();
@@ -48,7 +56,7 @@ function init() {
   }
 }
 
-startBtn?.addEventListener("click", () => {
+function startGame() {
   const newDefis = getRandomDefis(3);
   const endTime = Date.now() + 24 * 60 * 60 * 1000;
   localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(newDefis));
@@ -56,7 +64,7 @@ startBtn?.addEventListener("click", () => {
   localStorage.setItem(SCORE_STORAGE_KEY, "0");
   localStorage.setItem(PUB_USED_KEY, "false");
   showGame();
-});
+}
 
 function getRandomDefis(n) {
   const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
@@ -116,13 +124,20 @@ function loadDefis() {
     defiList.appendChild(li);
   });
 
-  // ✅ Ajoute les photos si déjà stockées
   afficherPhotosSauvegardees();
 }
 
-
-function pubUsed() {
-  return localStorage.getItem(PUB_USED_KEY) === "true";
+function afficherPhotosSauvegardees() {
+  document.querySelectorAll(".defi").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+    if (dataUrl) {
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      img.className = "photo-miniature";
+      defiEl.appendChild(img);
+    }
+  });
 }
 
 window.validerDefi = function(index) {
@@ -164,24 +179,8 @@ function endGame() {
   finalMessage.textContent = `Tu as terminé tous les défis !`;
 }
 
-replayBtn?.addEventListener("click", () => {
-  showStart();
-});
-
 function showStart() {
   preGame.classList.remove("hidden");
   gameSection.classList.add("hidden");
   endSection.classList.add("hidden");
-}
-function afficherPhotosSauvegardees() {
-  document.querySelectorAll(".defi").forEach(defiEl => {
-    const id = defiEl.getAttribute("data-defi-id");
-    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
-    if (dataUrl) {
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      img.className = "photo-miniature";
-      defiEl.appendChild(img);
-    }
-  });
 }
