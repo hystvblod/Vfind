@@ -142,7 +142,8 @@ function afficherPhotosSauvegardees() {
     if (dataUrl) {
       const img = document.createElement("img");
       img.src = dataUrl;
-      img.className = "photo-miniature";
+      img.onclick = () => agrandirPhoto(dataUrl, id);
+       img.className = "photo-miniature";
       defiEl.appendChild(img);
     }
   });

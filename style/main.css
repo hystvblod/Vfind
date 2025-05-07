@@ -281,3 +281,16 @@ nav.nav-icons {
   object-fit: contain;
 
 }
+.photo-miniature {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.photo-miniature:hover {
+  transform: scale(1.05);
+}
