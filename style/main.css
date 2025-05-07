@@ -9,7 +9,7 @@ html, body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* ✅ empêche tout scroll */
+  overflow-x: hidden; /* ✅ permet scroll vertical mais pas horizontal */
 }
 
 
