@@ -55,14 +55,14 @@
     const data = getUserData();
     document.getElementById("pseudo").textContent = data.pseudo;
     document.getElementById("points").textContent = data.coins;
-    document.getElementById("cadre-actuel").textContent = data.cadreActif;
     document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
 
-    // Affichage des cadres possédés + sélection
-    const cadresPossedes = JSON.parse(localStorage.getItem("cadres_possedes") || "[]");
+    // Chargement du cadre actif depuis localStorage
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
     document.getElementById("cadre-actuel").textContent = cadreActuel;
 
+    // Affichage des cadres possédés
+    const cadresPossedes = JSON.parse(localStorage.getItem("cadres_possedes") || "[]");
     const cadresContainer = document.getElementById("cadres-list");
 
     cadresPossedes.forEach(cadre => {
