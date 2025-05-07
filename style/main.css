@@ -302,3 +302,20 @@ nav.nav-icons {
   z-index: 10;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
+.defi-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.defi-texte {
+  flex: 1;
+}
+
+.defi-photo-container {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
