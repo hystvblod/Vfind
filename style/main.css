@@ -349,5 +349,5 @@ nav.nav-icons {
   justify-content: flex-end;
 }
 .main-buttons a {
-  width: 240px; /* ✅ Cette syntaxe est valide */
+  width: 280px; /* ✅ Cette syntaxe est valide */
 }
