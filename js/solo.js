@@ -227,7 +227,7 @@ function showStart() {
 function agrandirPhoto(dataUrl, id) {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
   document.getElementById("photo-affichee").src = dataUrl;
-  document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.png`;
+  document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
   document.getElementById("popup-photo").classList.add("show");
 }
 
