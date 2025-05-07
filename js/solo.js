@@ -127,17 +127,6 @@ function loadDefis() {
   afficherPhotosSauvegardees();
 }
 
-function init() {
-  startBtn?.addEventListener("click", startGame);
-  replayBtn?.addEventListener("click", () => showStart());
-
-  const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
-  if (existingTimer && Date.now() < parseInt(existingTimer)) {
-    showGame();
-  } else {
-    showStart();
-  }
-}
 
 function afficherPhotosSauvegardees() {
   document.querySelectorAll(".defi").forEach(defiEl => {
