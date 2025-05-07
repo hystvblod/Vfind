@@ -105,22 +105,22 @@
   },
   {
     "id": "polaroid_40-OrPaillettes",
-    "nom": "Orpaillettes",
+    "nom": "Or paillettes",
     "prix": 1200
   },
   {
     "id": "polaroid_41-RosePaillettes",
-    "nom": "Rosepaillettes",
+    "nom": "Rose paillettes",
     "prix": 1200
   },
   {
     "id": "polaroid_42-ArgentPaillettes",
-    "nom": "Argentpaillettes",
+    "nom": "Argent paillettes",
     "prix": 1200
   },
   {
     "id": "polaroid_50-VIP",
-    "nom": "CadreVIP",
+    "nom": "Cadre VIP",
     "prix": 5000
   }
 ]
