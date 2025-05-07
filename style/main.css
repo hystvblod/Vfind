@@ -295,38 +295,37 @@ nav.nav-icons {
 }
 
 .cadre-preview.cadre-popup {
-  width: 90vw;
-  max-width: 500px;
-  height: calc(90vw * 1.25); /* 4:5 = 1.25 */
-  max-height: 625px;
-  margin: 0 auto;
   position: relative;
-
+  width: 300px;
+  height: 375px;
+  margin: 0 auto;
 }
 
-.photo-cadre,
-.photo-user {
+.photo-cadre {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
 }
 
-/* Bouton fermeture */
-.close-btn {
+.photo-user {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  background: #f44;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  z-index: 3;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 .defi-content {
   display: flex;
