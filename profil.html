@@ -49,7 +49,6 @@
   </footer>
 
   <script src="js/userData.js"></script>
-
   <script>
     // Chargement des données du profil
     const data = getUserData();
@@ -77,9 +76,10 @@
       cadresContainer.appendChild(div);
     });
 
-    function selectionnerCadre(cadreNom) {
-      localStorage.setItem("cadre_selectionne", cadreNom);
-      alert(`✅ Le cadre "${cadreNom}" est maintenant sélectionné.`);
+    // Fonction de sélection de cadre
+    function selectionnerCadre(nomCadre) {
+      localStorage.setItem("cadre_selectionne", nomCadre);
+      alert("✅ Cadre sélectionné !");
       location.reload();
     }
   </script>
