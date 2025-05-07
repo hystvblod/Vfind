@@ -1,47 +1,87 @@
-
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>VFind - Profil</title>
-<link href="style/main.css" rel="stylesheet"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Profil</title>
+  <link rel="stylesheet" href="style/main.css"/>
 </head>
 <body class="vfind-bg">
-<header>
-<h1>👤 Mon Profil</h1>
-<nav>
-<a href="index.html">🏠 Accueil</a>
-<a href="historique.html">📜 Historique</a>
-</nav>
-</header>
-<main>
-<section class="profil-info">
-<p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
-<p><strong>Points :</strong> <span id="points">0</span></p>
-<p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
-<p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
-</section><div id="user-nickname">Chargement du pseudo...</div>
-<section class="likes-section">
-<h2>❤️ Photos aimées</h2>
-<div class="photo-gallery" id="liked-photos-gallery"></div>
-</section>
-<section class="signaled-section">
-<h2>🚩 Photos signalées</h2>
-<div class="photo-gallery" id="signaled-photos-gallery"></div>
-</section>
-</main>
-<footer>
-<p>© 2025 VFind</p>
-</footer>
-<script src="js/userData.js"></script>
-<script>
+  <header>
+    <h1>👤 Mon Profil</h1>
+    <nav>
+      <a href="index.html">🏠 Accueil</a>
+      <a href="historique.html">📜 Historique</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="profil-info">
+      <p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
+      <p><strong>Points :</strong> <span id="points">0</span></p>
+      <p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
+      <p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
+    </section>
+
+    <!-- ✅ Section affichant les cadres possédés -->
+    <section class="cadres-possedes">
+      <h2>🎨 Mes cadres</h2>
+      <div class="grid-cadres" id="cadres-list">
+        <!-- Les cadres possédés seront injectés ici -->
+      </div>
+    </section>
+
+    <div id="user-nickname">Chargement du pseudo...</div>
+
+    <section class="likes-section">
+      <h2>❤️ Photos aimées</h2>
+      <div class="photo-gallery" id="liked-photos-gallery"></div>
+    </section>
+
+    <section class="signaled-section">
+      <h2>🚩 Photos signalées</h2>
+      <div class="photo-gallery" id="signaled-photos-gallery"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 VFind</p>
+  </footer>
+
+  <script src="js/userData.js"></script>
+
+  <script>
+    // Chargement des données du profil
     const data = getUserData();
     document.getElementById("pseudo").textContent = data.pseudo;
     document.getElementById("points").textContent = data.coins;
     document.getElementById("cadre-actuel").textContent = data.cadreActif;
     document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
+
+    // Affichage des cadres possédés + sélection
+    const cadresPossedes = JSON.parse(localStorage.getItem("cadres_possedes") || "[]");
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
+    document.getElementById("cadre-actuel").textContent = cadreActuel;
+
+    const cadresContainer = document.getElementById("cadres-list");
+
+    cadresPossedes.forEach(cadre => {
+      const div = document.createElement("div");
+      div.className = "cadre-item";
+      div.innerHTML = `
+        <img src="./assets/cadres/${cadre}.png" alt="${cadre}" />
+        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
+          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
+        </button>
+      `;
+      cadresContainer.appendChild(div);
+    });
+
+    function selectionnerCadre(cadreNom) {
+      localStorage.setItem("cadre_selectionne", cadreNom);
+      alert(`✅ Le cadre "${cadreNom}" est maintenant sélectionné.`);
+      location.reload();
+    }
   </script>
 </body>
 </html>
