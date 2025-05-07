@@ -120,5 +120,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
-  }, 100);  
+  }, 100); 
+  
+  // ✅ Fermer la popup si on clique sur le fond
+document.addEventListener("click", function (e) {
+  const popup = document.getElementById("popup-gain");
+  if (popup.classList.contains("show") && e.target === popup) {
+    closePopup();
+  }
+});
+
 });
