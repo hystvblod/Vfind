@@ -78,8 +78,8 @@ function showGame() {
   endSection.classList.add("hidden");
   gameSection.classList.remove("hidden");
   updateTimer();
-
-  }
+  loadDefis(); // 🟢 ← cette ligne manquait
+}
 
 function updateTimer() {
   const endTime = parseInt(localStorage.getItem(TIMER_STORAGE_KEY));
