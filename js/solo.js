@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         texte: currentLang === "fr" ? d.intitule : d[currentLang],
         done: false
       }));
+      console.log("✅ Défis chargés :", allDefis); // ← ici OK
       init();
     })
     .catch(err => {
