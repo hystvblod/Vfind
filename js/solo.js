@@ -228,17 +228,24 @@ function agrandirPhoto(dataUrl, id) {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
   document.getElementById("photo-affichee").src = dataUrl;
   document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
-  document.getElementById("popup-photo").classList.add("show");
+
+  const popup = document.getElementById("popup-photo");
+  popup.classList.remove("hidden"); // ✅ on rend visible
+  popup.classList.add("show");
 }
 
 // Fermer avec le bouton ❌
 document.getElementById("close-popup").addEventListener("click", () => {
-  document.getElementById("popup-photo").classList.remove("show");
+  const popup = document.getElementById("popup-photo");
+  popup.classList.remove("show");
+  popup.classList.add("hidden"); // ✅ on masque à nouveau
 });
 
 // Fermer en cliquant sur le fond (hors cadre)
 document.getElementById("popup-photo").addEventListener("click", (e) => {
   if (e.target.id === "popup-photo") {
-    document.getElementById("popup-photo").classList.remove("show");
+    const popup = document.getElementById("popup-photo");
+    popup.classList.remove("show");
+    popup.classList.add("hidden"); // ✅ idem ici
   }
 });
