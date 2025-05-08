@@ -61,7 +61,7 @@
     document.getElementById("cadre-actuel").textContent = cadreActuel;
 
     // Affichage des cadres possédés
-    const cadresPossedes = JSON.parse(localStorage.getItem("cadres_possedes") || "[]");
+    const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames") || "[]");
     const cadresContainer = document.getElementById("cadres-list");
 
     cadresPossedes.forEach(cadre => {
