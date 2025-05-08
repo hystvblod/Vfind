@@ -6,12 +6,47 @@
 }
 
 html, body {
-  height: 100vh;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* ✅ permet scroll vertical mais pas horizontal */
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
 }
 
+/* Conteneur plein écran centré */
+.main-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 20px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Boutons uniformes */
+.main-buttons a {
+  background: #fdd44a;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 12px 24px;
+  border-radius: 15px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  min-width: 200px;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.main-buttons a:hover {
+  transform: scale(1.05);
+}
 
 /* === FOND GLOBAL === */
 body {
@@ -404,4 +439,7 @@ nav.nav-icons {
 
 #popup-gain button:hover {
   background: #e6b800;
+}
+.popup {
+  background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
