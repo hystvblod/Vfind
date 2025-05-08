@@ -31,6 +31,12 @@
       </div>
     </section>
 
+    <!-- ✅ Aperçu du cadre sélectionné -->
+    <div class="cadre-preview">
+      <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
+      <img class="photo-user" src="./assets/photos/exemple.jpg" />
+    </div>
+
     <div id="user-nickname">Chargement du pseudo...</div>
 
     <section class="likes-section">
@@ -60,6 +66,12 @@
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
     document.getElementById("cadre-actuel").textContent = cadreActuel;
 
+    // Mise à jour de l'image de prévisualisation du cadre sélectionné
+    const previewImage = document.getElementById("cadre-preview-img");
+    if (cadreActuel !== "Aucun") {
+      previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
+    }
+
     // Affichage des cadres possédés
     const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames") || "[]");
     const cadresContainer = document.getElementById("cadres-list");
@@ -75,11 +87,6 @@
       `;
       cadresContainer.appendChild(div);
     });
-
-    <div class="cadre-preview">
-  <img class="photo-cadre" src="./assets/cadres/polaroid_01.webp" />
-  <img class="photo-user" src="./assets/photos/exemple.jpg" />
-</div>
 
     // Fonction de sélection de cadre
     function selectionnerCadre(nomCadre) {
