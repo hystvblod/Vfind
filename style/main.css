@@ -16,51 +16,6 @@ body {
   padding: 0;
 }
 
-/* Conteneur plein écran centré */
-.main-buttons {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  gap: 20px;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Boutons uniformes */
-.main-buttons a {
-  background: #fdd44a;
-  color: #000;
-  font-weight: bold;
-  font-size: 1.1rem;
-  padding: 12px 24px;
-  border-radius: 15px;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-  min-width: 200px;
-  max-width: 240px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-}
-
-.main-buttons a:hover {
-  transform: scale(1.05);
-}
-
-/* === FOND GLOBAL === */
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom right, #6a0dad, #1e90ff); /* Violet et bleu */
-  color: #222;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
 /* === EN-TÊTE === */
 header {
   background: #4b4acb;
