@@ -12,6 +12,12 @@ const endSection = document.getElementById("end-section");
 const timerDisplay = document.getElementById("timer");
 const defiList = document.getElementById("defi-list");
 const finalMessage = document.getElementById("final-message");
+function getUserData() {
+  return {
+    premium: localStorage.getItem("premium") === "true"
+  };
+}
+
 
 let allDefis = [];
 let defisActuels = [];
