@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const pointsDisplay = document.getElementById("points");
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
-  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
+  let userPoints = getUserData().coins;
+
 
   pointsDisplay.textContent = userPoints;
 
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Met à jour le compteur
   function updatePointsDisplay() {
-    pointsDisplay.textContent = userPoints;
+    updateUserData({ coins: userPoints });
     localStorage.setItem("vfind_points", userPoints);
   }
 
