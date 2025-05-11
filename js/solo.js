@@ -121,19 +121,20 @@ function loadDefis() {
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
     li.innerHTML = `
-      <div class="defi-content">
-        <div class="defi-texte">
-          <p>${defi.texte}</p>
-          const isPremium = getUserData().premium === true;
-${isPremium || !localStorage.getItem(`photo_defi_${defi.id}`) 
-  ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
-  : `<button disabled title="Réservé aux membres premium">🔒 Prendre une photo</button>`}
-
-          <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ? </button>
-        </div>
-        <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+    <div class="defi-content">
+      <div class="defi-texte">
+        <p>${defi.texte}</p>
+        ${
+          getUserData().premium === true || !localStorage.getItem(`photo_defi_${defi.id}`)
+            ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
+            : `<button disabled title="Réservé aux membres premium">🔒 Prendre une photo</button>`
+        }
+        <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ? </button>
       </div>
-    `;
+      <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+    </div>
+  `;
+  
     defiList.appendChild(li);
   });
 
@@ -142,6 +143,7 @@ ${isPremium || !localStorage.getItem(`photo_defi_${defi.id}`)
 
 function afficherPhotosSauvegardees() {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+
   document.querySelectorAll(".defi").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
     const dataUrl = localStorage.getItem(`photo_defi_${id}`);
@@ -159,22 +161,18 @@ function afficherPhotosSauvegardees() {
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id);
-        const isPremium = getUserData().premium === true;
-      
-        if (isPremium) {
-          const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
-          if (confirmChange) {
-            localStorage.removeItem(`photo_defi_${id}`);
-            location.reload();
-          } else {
-            agrandirPhoto(dataUrl, id);
-          }
-        } else {
-          agrandirPhoto(dataUrl, id);
+      photo.onclick = () => agrandirPhoto(dataUrl, id);  // ✅ uniquement ouvrir au clic
+
+      // ✅ test premium exécuté une seule fois
+      const isPremium = getUserData().premium === true;
+      if (isPremium) {
+        const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
+        if (confirmChange) {
+          localStorage.removeItem(`photo_defi_${id}`);
+          location.reload();
+          return; // on sort ici
         }
-      };
-      
+      }
 
       preview.appendChild(fond);
       preview.appendChild(photo);
