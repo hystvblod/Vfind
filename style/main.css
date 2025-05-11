@@ -423,3 +423,45 @@ nav.nav-icons {
   padding-top: 80px;
   height: calc(100vh - 80px);
 }
+/* === NAVIGATION PROFESSIONNELLE === */
+header {
+  background: #4b4acb;
+  padding: 20px 30px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 5px solid #3a3a9f;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header nav {
+  display: flex;
+  gap: 20px;
+}
+
+header nav a {
+  background: white;
+  color: #4b4acb;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+header nav a:hover {
+  background: #ffd700;
+  color: #000;
+  transform: scale(1.05);
+}
