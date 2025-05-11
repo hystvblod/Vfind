@@ -5,7 +5,7 @@ function getUserData() {
     pseudo: "Toi",
     coins: 0,
     cadres: ["polaroid_01", "polaroid_02"], // correspond aux vrais fichiers
-    cadreActif: "polaroid_1-Blanc",                  // idem
+    cadreActif: "polaroid_01",                  // idem
     historique: [],
     likedPhotos: [],
     signaledPhotos: [],
