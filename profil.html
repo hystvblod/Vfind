@@ -60,8 +60,7 @@
     // Chargement des données du profil
     const data = getUserData();
     document.getElementById("pseudo").textContent = data.pseudo;
-    document.getElementById("points").textContent = data.coins;
-    document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
+   
 
     // Chargement du cadre actif depuis localStorage
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
