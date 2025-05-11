@@ -64,7 +64,17 @@
 
     // Chargement du cadre actif depuis localStorage
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
+    fetch('./assets/data/cadres.json')
+  .then(response => response.json())
+  .then(cadresData => {
+    const cadreInfo = cadresData.find(c => c.id === cadreActuel);
+    document.getElementById("cadre-actuel").textContent = cadreInfo ? cadreInfo.nom : cadreActuel;
+  })
+  .catch(error => {
+    console.error("Erreur lors du chargement des noms de cadres :", error);
     document.getElementById("cadre-actuel").textContent = cadreActuel;
+  });
+
 
     // Mise à jour de l'image de prévisualisation du cadre sélectionné
     const previewImage = document.getElementById("cadre-preview-img");
