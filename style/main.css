@@ -401,3 +401,17 @@ nav.nav-icons {
 .popup {
   background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
+#solo-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding-top: 50px;
+}
+
+#start-button {
+  margin-top: 20px;
+  padding: 15px 25px;
+  font-size: 1.2em; /* ajuste la taille du texte */
+}
