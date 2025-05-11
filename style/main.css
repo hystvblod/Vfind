@@ -344,7 +344,7 @@ nav.nav-icons {
   justify-content: flex-end;
 }
 .defi-photo-container .photo-user {
-  width: 70%;
+  width: 30%;
   height: auto;
   object-fit: contain;
   border-radius: 6px;
