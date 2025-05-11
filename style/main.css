@@ -94,10 +94,11 @@ header nav a:hover {
 
 /* === LISTE DES DÉFIS === */
 .defi-list {
-  list-style: none;
-  padding: 0;
-  margin: 2rem auto;
-  max-width: 600px;
+    list-style: none;
+    padding: 0 20px; /* ✅ marge gauche/droite ajoutée */
+    margin: 2rem auto;
+    max-width: 600px;
+  
 }
 
 .defi-list li {
