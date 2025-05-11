@@ -193,7 +193,6 @@ function afficherPhotosSauvegardees() {
         defiEl.classList.add("done"); // ✅ ligne à ajouter ici
       }      
     }
-  });
 } // ✅ FIN DE LA FONCTION
 
 window.validerDefi = function(index) {
