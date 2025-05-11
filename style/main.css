@@ -506,7 +506,7 @@ header nav a:hover {
 .profil-top {
   text-align: center;
   color: white;
-  margin-top: -30px; /* 🔼 Ce qui remonte */
+  margin-top: -100px; /* 🔼 Ce qui remonte */
   margin-bottom: 30px;
   font-size: 1.1rem;
 }
