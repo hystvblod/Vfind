@@ -479,22 +479,7 @@ header nav a:hover {
   border: none;
   color: #333;
   cursor: pointer;
-}
-.profil-sections button {
-  display: block;
-  width: 90%;
-  margin: 10px auto;
-  padding: 12px;
-  font-size: 16px;
-  background-color: #fff;
-  border-radius: 10px;
-  border: 2px solid #444;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
 
-.profil-sections button:hover {
-  background-color: #f0f0f0;
 }
 /* ✅ EN-TÊTE PROFIL */
 .profil-header {
@@ -504,14 +489,7 @@ header nav a:hover {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-}
 
-.profil-header h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
-  text-align: center;
-  margin: 10px 0 20px;
 }
 
 .back-btn {
@@ -563,5 +541,23 @@ header nav a:hover {
 .profil-sections button:hover {
   background-color: #ffd700;
   transform: translateY(-2px);
+}
+/* ✅ Conteneur principal centré */
+.profil-container {
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+/* ✅ Garde les boutons bien centrés */
+.profil-sections {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
