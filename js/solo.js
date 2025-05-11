@@ -166,21 +166,23 @@ function afficherPhotosSauvegardees() {
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
-      photo.onclick = () => {
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
         const isPremium = getUserData().premium === true;
-      
         if (isPremium) {
           const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
           if (confirmChange) {
             localStorage.removeItem(`photo_defi_${id}`);
             location.reload();
+          } else {
+            // 👉 Si l’utilisateur premium clique NON → juste zoom
+            agrandirPhoto(dataUrl, id);
           }
         } else {
-          alert("❌ Seuls les utilisateurs premium peuvent changer leur photo.");
+          // 👉 Si non premium → on affiche quand même le zoom
+          agrandirPhoto(dataUrl, id);
         }
       };
       
-
       preview.appendChild(fond);
       preview.appendChild(photo);
 
