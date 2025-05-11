@@ -124,7 +124,11 @@ function loadDefis() {
       <div class="defi-content">
         <div class="defi-texte">
           <p>${defi.texte}</p>
-          <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
+          const isPremium = getUserData().premium === true;
+${isPremium || !localStorage.getItem(`photo_defi_${defi.id}`) 
+  ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
+  : `<button disabled title="Réservé aux membres premium">🔒 Prendre une photo</button>`}
+
           <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ? </button>
         </div>
         <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
@@ -155,7 +159,7 @@ function afficherPhotosSauvegardees() {
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
-      photo.onclick = () => {
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
         const isPremium = getUserData().premium === true;
       
         if (isPremium) {
