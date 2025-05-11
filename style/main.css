@@ -401,7 +401,7 @@ nav.nav-icons {
 .popup {
   background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
-#solo-main {
+.solo-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -410,8 +410,16 @@ nav.nav-icons {
   padding-top: 50px;
 }
 
-#start-button {
+#startBtn {
   margin-top: 20px;
   padding: 15px 25px;
-  font-size: 1.2em; /* ajuste la taille du texte */
+  font-size: 1.2em;
+
+}
+#pre-game {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px;
+  height: calc(100vh - 80px);
 }
