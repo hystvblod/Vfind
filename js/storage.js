@@ -21,7 +21,7 @@ function initUserDataIfMissing() {
     const data = {
       pseudo: "Toi",
       coins: 0,
-      cadres: ["polaroid_01"],
+      cadres: JSON.parse(localStorage.getItem("vfind_owned_frames")) || ["polaroid_01"],
       cadreActif: "polaroid_01",
       historique: [],
       likedPhotos: [],
