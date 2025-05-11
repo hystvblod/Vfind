@@ -401,14 +401,6 @@ nav.nav-icons {
 .popup {
   background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
-.solo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 80px;   /* Tu ajustes ici */
-    height: auto;        /* ⛔ PAS 100vh sinon ça bloque */
-    min-height: 100vh;   /* Pour garder une bonne base sans forcer */
-  }
 
 #startBtn {
   margin-top: 20px;
@@ -417,15 +409,15 @@ nav.nav-icons {
 
 }
   #pre-game {
-    height: 100vh;
-    box-sizing: border-box;
-    padding: 20px 0 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start; /* 🟡 important pour coller en haut */
-    overflow: hidden; /* ❌ empêche la barre de scroll inutile */
-  }
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding: 40px 20px 30px; /* Ajustable selon ton design */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+    }
   
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
