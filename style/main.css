@@ -506,8 +506,8 @@ header nav a:hover {
 .profil-top {
   text-align: center;
   color: white;
-  margin-bottom: 10px; /* réduit l'espace */
-  margin-top: -10px;   /* remonte encore */
+  margin-top: -30px; /* 🔼 Ce qui remonte */
+  margin-bottom: 30px;
   font-size: 1.1rem;
 }
 
