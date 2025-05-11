@@ -26,9 +26,7 @@
     <!-- ✅ Section affichant les cadres possédés -->
     <section class="cadres-possedes">
       <h2>🎨 Mes cadres</h2>
-      <div class="grid-cadres" id="cadres-list">
-        <!-- Les cadres possédés seront injectés ici -->
-      </div>
+      <div class="grid-cadres" id="cadres-list"></div>
     </section>
 
     <!-- ✅ Aperçu du cadre sélectionné -->
@@ -54,57 +52,63 @@
     <p>© 2025 VFind</p>
   </footer>
 
+  <!-- ✅ Script propre et unique -->
   <script src="js/userData.js"></script>
-<script>
-  // Chargement des données du profil
-  const data = getUserData();
-  document.getElementById("pseudo").textContent = data.pseudo;
-  document.getElementById("points").textContent = data.coins;
-  document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
+  <script>
+    // Chargement des données du profil
+    const data = getUserData();
+    document.getElementById("pseudo").textContent = data.pseudo;
+    document.getElementById("points").textContent = data.coins;
+    document.getElementById("premium-status").textContent = data.premium ? "🌟 Premium actif" : "🆓 Compte gratuit";
 
-  // Chargement du cadre actif depuis localStorage
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
+    // Chargement du cadre actif
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "Aucun";
 
-  // Mise à jour de l'image de prévisualisation du cadre sélectionné
-  const previewImage = document.getElementById("cadre-preview-img");
-  if (cadreActuel !== "Aucun") {
-    previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
-  }
+    // Préaffichage de l'image sélectionnée
+    const previewImage = document.getElementById("cadre-preview-img");
+    if (cadreActuel !== "Aucun") {
+      previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
+    }
 
-  // Affichage des cadres possédés
-  const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-  const cadresContainer = document.getElementById("cadres-list");
+    const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
 
-  cadresPossedes.forEach(cadre => {
-    const div = document.createElement("div");
-    div.className = "cadre-item";
-    div.innerHTML = `
-      <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
-      <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
-        ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
-      </button>
-    `;
-    cadresContainer.appendChild(div);
-  });
+    // Chargement du JSON de cadres
+    fetch('./data/cadres.json')
+      .then(response => response.json())
+      .then(cadresData => {
+        // Nom lisible du cadre sélectionné
+        const cadreInfo = cadresData.find(c => c.id === cadreActuel);
+        document.getElementById("cadre-actuel").textContent = cadreInfo ? cadreInfo.nom : cadreActuel;
 
-  // Fonction de sélection de cadre
-  function selectionnerCadre(nomCadre) {
-    localStorage.setItem("cadre_selectionne", nomCadre);
-    alert("✅ Cadre sélectionné !");
-    location.reload();
-  }
+        // Affichage des cadres possédés
+        const cadresContainer = document.getElementById("cadres-list");
+        cadresPossedes.forEach(cadre => {
+          const cadreData = cadresData.find(c => c.id === cadre);
+          const nomLisible = cadreData ? cadreData.nom : cadre;
 
-  // ✅ Affichage du nom lisible depuis le JSON
-  fetch('./data/cadres.json')
-    .then(response => response.json())
-    .then(cadresData => {
-      const cadreInfo = cadresData.find(c => c.id === cadreActuel);
-      document.getElementById("cadre-actuel").textContent = cadreInfo ? cadreInfo.nom : cadreActuel;
-    })
-    .catch(error => {
-      console.error("Erreur lors du chargement des noms de cadres :", error);
-      document.getElementById("cadre-actuel").textContent = cadreActuel;
-    });
-</script>
+          const div = document.createElement("div");
+          div.className = "cadre-item";
+          div.innerHTML = `
+            <img src="./assets/cadres/${cadre}.webp" alt="${nomLisible}" />
+            <p style="margin: 10px 0 6px; font-weight: bold;">${nomLisible}</p>
+            <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
+              ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
+            </button>
+          `;
+          cadresContainer.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error("Erreur lors du chargement des noms de cadres :", error);
+        document.getElementById("cadre-actuel").textContent = cadreActuel;
+      });
+
+    // Sélection d’un cadre
+    function selectionnerCadre(nomCadre) {
+      localStorage.setItem("cadre_selectionne", nomCadre);
+      alert("✅ Cadre sélectionné !");
+      location.reload();
+    }
+  </script>
 </body>
 </html>
