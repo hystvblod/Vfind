@@ -173,9 +173,10 @@ function afficherPhotosSauvegardees() {
 
       const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
       if (container) {
-        container.innerHTML = ''; // Nettoie avant d'ajouter
+        container.innerHTML = '';
         container.appendChild(preview);
-      }
+        defiEl.classList.add("done"); // ✅ ligne à ajouter ici
+      }      
     }
   });
 } // ✅ FIN DE LA FONCTION
