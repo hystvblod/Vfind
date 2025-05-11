@@ -14,7 +14,7 @@ const defiList = document.getElementById("defi-list");
 const finalMessage = document.getElementById("final-message");
 function getUserData() {
   return {
-    premium: localStorage.getItem("premium") === "true"
+    premium: localStorage.getItem("isPremium") === "true"
   };
 }
 
