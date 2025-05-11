@@ -157,31 +157,39 @@ function afficherPhotosSauvegardees() {
       preview.className = "cadre-preview";
       preview.style.width = "120px";
       preview.style.height = "150px";
-
+    
       const fond = document.createElement("img");
       fond.className = "photo-cadre";
       fond.src = `./assets/cadres/${cadreActuel}.webp`;
-
-
+    
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
       photo.onclick = () => agrandirPhoto(dataUrl, id);
-        const isPremium = getUserData().premium === true;
-        if (isPremium) {
-          const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
-          if (confirmChange) {
-            localStorage.removeItem(`photo_defi_${id}`);
-            location.reload();
-          } else {
-            // 👉 Si l’utilisateur premium clique NON → juste zoom
-            agrandirPhoto(dataUrl, id);
-          }
+    
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+    
+      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(preview);
+        defiEl.classList.add("done");
+      }
+    
+      const isPremium = getUserData().premium === true;
+      if (isPremium) {
+        const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
+        if (confirmChange) {
+          localStorage.removeItem(`photo_defi_${id}`);
+          location.reload();
         } else {
-          // 👉 Si non premium → on affiche quand même le zoom
           agrandirPhoto(dataUrl, id);
         }
-      };
+      } else {
+        agrandirPhoto(dataUrl, id);
+      }    
+        }
       
       preview.appendChild(fond);
       preview.appendChild(photo);
@@ -192,8 +200,7 @@ function afficherPhotosSauvegardees() {
         container.appendChild(preview);
         defiEl.classList.add("done"); // ✅ ligne à ajouter ici
       }      
-    }
-} // ✅ FIN DE LA FONCTION
+   // ✅ FIN DE LA FONCTION afficherPhotosSauvegardees (fermeture correcte du if déplacée plus haut dans le code principal)
 
 window.validerDefi = function(index) {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
@@ -239,13 +246,14 @@ function showStart() {
   gameSection.classList.add("hidden");
   endSection.classList.add("hidden");
 }
+
 function agrandirPhoto(dataUrl, id) {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
   document.getElementById("photo-affichee").src = dataUrl;
   document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
 
   const popup = document.getElementById("popup-photo");
-  popup.classList.remove("hidden"); // ✅ on rend visible
+  popup.classList.remove("hidden");
   popup.classList.add("show");
 }
 
