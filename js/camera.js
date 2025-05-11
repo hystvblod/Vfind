@@ -1,5 +1,3 @@
-// camera.js — version PRO
-
 let videoStream = null;
 const VIDEO_WIDTH = 500;
 const VIDEO_HEIGHT = 580;
@@ -37,23 +35,17 @@ function ouvrirCameraPour(defiId) {
     ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
     const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
 
-    // Sauvegarde dans localStorage avec une clé unique
-    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+    const confirmSave = confirm("Souhaites-tu valider cette photo ?");
+    if (confirmSave) {
+      localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
 
-    // Affiche la miniature dans le bon encadré
-    const blocDefi = document.querySelector(`[data-defi-id="${defiId}"]`);
-    if (blocDefi) {
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      img.className = "photo-miniature";
-      blocDefi.appendChild(img);
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+
+      container.remove();
+      location.reload();
     }
-
-    // Stop caméra
-    if (videoStream) {
-      videoStream.getTracks().forEach(track => track.stop());
-    }
-
-    container.remove();
+    // sinon on ne fait rien → la caméra reste ouverte
   });
 }
