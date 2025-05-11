@@ -12,21 +12,19 @@
     <h1>Mon Profil</h1>
   </header>
 
-  <main>
-    <main class="profil-container">
-      <section class="profil-top">...</section>
-      <section class="profil-sections">...</section>
-    </main>    
+  <main class="profil-container">
+    <section class="profil-top">
+      <p><strong>Pseudo :</strong> <span id="pseudo"></span></p>
+      <p><strong>VCoins :</strong> <span id="vcoins"></span></p>
+    </section>
+
     <section class="profil-sections">
       <button onclick="location.href='historique.html'">📜 Historique</button>
       <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
       <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
       <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
-    </section>        
-
-
-    <section class="signaled-section">
-    
+    </section>
+  </main>
 
   <footer>
     <p>© 2025 VFind</p>
@@ -34,19 +32,9 @@
 
   <script src="js/userData.js"></script>
   <script>
-    // Chargement des données du profil
-
     const data = getUserData();
-document.getElementById("pseudo").textContent = data.pseudo;
-document.getElementById("vcoins").textContent = data.coins;
-
+    document.getElementById("pseudo").textContent = data.pseudo;
+    document.getElementById("vcoins").textContent = data.coins;
   </script>
 </body>
 </html>
-<script src="js/userData.js"></script>
-<script>
-  const data = getUserData();
-  document.getElementById("pseudo").textContent = data.pseudo;
-  document.getElementById("vcoins").textContent = data.coins;
-</script>
-</body>
