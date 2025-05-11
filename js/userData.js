@@ -4,7 +4,7 @@ function getUserData() {
   return JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
     coins: 0,
-    cadres: ["polaroid_1-Blanc", "polaroid_2-Noir"], // correspond aux vrais fichiers
+    cadres: ["polaroid_01", "polaroid_02"], // correspond aux vrais fichiers
     cadreActif: "polaroid_1-Blanc",                  // idem
     historique: [],
     likedPhotos: [],
@@ -61,7 +61,7 @@ function acheterCadre(id) {
   }
 }
 function getCadreSelectionne() {
-  return getUserData().cadreActif || "polaroid_1";
+  return getUserData().cadreActif || "polaroid_01";
 }
 function setCadreSelectionne(id) {
   const data = getUserData();

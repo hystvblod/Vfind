@@ -7,8 +7,8 @@ if (!localStorage.getItem("vfind_points")) {
 // Initialisation des cadres offerts
 if (!localStorage.getItem("vfind_owned_frames")) {
   localStorage.setItem("vfind_owned_frames", JSON.stringify([
-    "polaroid_1-Blanc",
-    "polaroid_2-Noir"
+    "polaroid_01",
+    "polaroid_02"
   ]));
 }
 function resetLocalStorage() {
@@ -21,8 +21,8 @@ function initUserDataIfMissing() {
     const data = {
       pseudo: "Toi",
       coins: 0,
-      cadres: ["polaroid_1"],
-      cadreActif: "polaroid_1",
+      cadres: ["polaroid_01"],
+      cadreActif: "polaroid_01",
       historique: [],
       likedPhotos: [],
       signaledPhotos: [],

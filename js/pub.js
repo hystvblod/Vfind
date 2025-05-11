@@ -29,7 +29,7 @@ function ajouterPieces(montant) {
   const userData = JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
     coins: 0,
-    cadres: ["polaroid_1"],
+    cadres: ["polaroid_01"],
     premium: false
   };
 

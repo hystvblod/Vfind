@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const userData = JSON.parse(localStorage.getItem("vfind_user")) || {
     pseudo: "Toi",
-    cadre: "polaroid_1",
+    cadre: "polaroid_01",
     historique: []
   };
 
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Simule chargement des photos (à remplacer par vraies photos ou envoi peer-to-peer)
   const demoPhoto = "logo.png";
   drawPolaroid(demoPhoto, userData.cadre, canvasA);
-  drawPolaroid(demoPhoto, "polaroid_2", canvasB);
+  drawPolaroid(demoPhoto, "polaroid_02", canvasB);
 
   // Gestion des signalements
   document.querySelectorAll(".report-button").forEach(button => {
