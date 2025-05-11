@@ -1,3 +1,8 @@
+function getUserData() {
+  return {
+    premium: localStorage.getItem("isPremium") === "true"
+  };
+}
 const DEFI_STORAGE_KEY = "vfind_defis";
 const TIMER_STORAGE_KEY = "vfind_timer";
 const SCORE_STORAGE_KEY = "vfind_score";
@@ -12,11 +17,7 @@ const endSection = document.getElementById("end-section");
 const timerDisplay = document.getElementById("timer");
 const defiList = document.getElementById("defi-list");
 const finalMessage = document.getElementById("final-message");
-function getUserData() {
-  return {
-    premium: localStorage.getItem("isPremium") === "true"
-  };
-}
+
 
 
 let allDefis = [];
