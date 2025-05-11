@@ -418,14 +418,12 @@ nav.nav-icons {
 }
 #pre-game {
   #pre-game {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;  /* ✅ garde ça */
-    padding-top: 30px;        /* 🔽 réduit l'espace */
-    height: auto;             /* 🔄 remplace le 100vh */
+      padding-top: 30px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }            /* 🔄 remplace le 100vh */
   }
   
-}
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
   background: #4b4acb;
