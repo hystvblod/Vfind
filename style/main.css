@@ -409,14 +409,12 @@ nav.nav-icons {
 
 }
     #pre-game {
-      min-height: 100vh;
-      box-sizing: border-box;
-      padding: 40px 20px 30px; /* Ajustable selon ton design */
       display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
-      justify-content: flex-start;
-      overflow-x: hidden;
+      height: 100vh;
+      padding-top: 50px;
     }
   
 /* === NAVIGATION PROFESSIONNELLE === */
