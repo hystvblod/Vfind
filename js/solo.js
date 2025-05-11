@@ -27,8 +27,6 @@ if (savedLang && supportedLangs.includes(savedLang)) {
 }
 const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-
-
 // 🟦 Chargement des défis
 document.addEventListener("DOMContentLoaded", () => {
   fetch("./data/defis.json")
@@ -39,13 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
         texte: currentLang === "fr" ? d.intitule : d[currentLang],
         done: false
       }));
-    
       init();
     })
     .catch(err => {
       console.error("❌ Erreur de chargement du fichier defis.json :", err);
-
-
     });
 });
 
@@ -81,7 +76,7 @@ function showGame() {
   endSection.classList.add("hidden");
   gameSection.classList.remove("hidden");
   updateTimer();
-  loadDefis(); // 🟢 ← cette ligne manquait
+  loadDefis();
 }
 
 function updateTimer() {
@@ -113,8 +108,6 @@ function startCountdown() {
 
 function loadDefis() {
   let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
-
-  // Sécurité si vide ou cassé
   if (!defis || !Array.isArray(defis) || defis.length === 0) {
     defis = getRandomDefis(3);
     localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
@@ -128,17 +121,15 @@ function loadDefis() {
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
     li.innerHTML = `
-  <div class="defi-content">
-    <div class="defi-texte">
-      <p>${defi.texte}</p>
-      <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
-      <button onclick="validerAvecPub(${index})">📺 Voir une pub</button>
-    </div>
-    <div class="defi-photo-container" data-photo-id="${defi.id}">
-      <!-- photo miniature ici -->
-    </div>
-  </div>
-`;
+      <div class="defi-content">
+        <div class="defi-texte">
+          <p>${defi.texte}</p>
+          <button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>
+          <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ? </button>
+        </div>
+        <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+      </div>
+    `;
     defiList.appendChild(li);
   });
 
@@ -147,7 +138,6 @@ function loadDefis() {
 
 function afficherPhotosSauvegardees() {
   const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
-
   document.querySelectorAll(".defi").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
     const dataUrl = localStorage.getItem(`photo_defi_${id}`);
@@ -175,6 +165,11 @@ function afficherPhotosSauvegardees() {
         container.innerHTML = '';
         container.appendChild(preview);
         defiEl.classList.add("done");
+
+        const pubBtn = defiEl.querySelector("button:nth-child(3)");
+        if (pubBtn && pubBtn.textContent.includes("pub")) {
+          pubBtn.remove();
+        }
       }
 
       const isPremium = getUserData().premium === true;
@@ -192,17 +187,6 @@ function afficherPhotosSauvegardees() {
     }
   });
 }
-      
-      preview.appendChild(fond);
-      preview.appendChild(photo);
-
-      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-      if (container) {
-        container.innerHTML = '';
-        container.appendChild(preview);
-        defiEl.classList.add("done"); // ✅ ligne à ajouter ici
-      }      
-   // ✅ FIN DE LA FONCTION afficherPhotosSauvegardees (fermeture correcte du if déplacée plus haut dans le code principal)
 
 window.validerDefi = function(index) {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
