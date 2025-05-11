@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Met à jour le compteur
   function updatePointsDisplay() {
     updateUserData({ coins: userPoints });
+  }
+  
     localStorage.setItem("vfind_points", userPoints);
   }
 
