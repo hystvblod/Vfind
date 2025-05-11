@@ -70,7 +70,7 @@
       previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
     }
 
-    const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+    const cadresPossedes = getCadresPossedes();
 
     // Chargement du JSON de cadres
     fetch('./data/cadres.json')
