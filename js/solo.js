@@ -1,6 +1,6 @@
 function getUserData() {
   return {
-    premium: localStorage.getItem("isPremium") === "true"
+    premium: localStorage.getItem("premium") === "true"
   };
 }
 const DEFI_STORAGE_KEY = "vfind_defis";
