@@ -235,18 +235,21 @@ function agrandirPhoto(dataUrl, id) {
   popup.classList.add("show");
 }
 
-// Fermer avec le bouton ❌
-document.getElementById("close-popup").addEventListener("click", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("popup-photo");
-  popup.classList.remove("show");
-  popup.classList.add("hidden"); // ✅ on masque à nouveau
-});
+  const closeBtn = document.getElementById("close-popup");
 
-// Fermer en cliquant sur le fond (hors cadre)
-document.getElementById("popup-photo").addEventListener("click", (e) => {
-  if (e.target.id === "popup-photo") {
-    const popup = document.getElementById("popup-photo");
-    popup.classList.remove("show");
-    popup.classList.add("hidden"); // ✅ idem ici
+  if (popup && closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      popup.classList.remove("show");
+      popup.classList.add("hidden");
+    });
+
+    popup.addEventListener("click", (e) => {
+      if (e.target === popup) {
+        popup.classList.remove("show");
+        popup.classList.add("hidden");
+      }
+    });
   }
 });
