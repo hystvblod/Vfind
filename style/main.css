@@ -402,13 +402,13 @@ nav.nav-icons {
   background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
 .solo-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding-top: 50px;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 80px;   /* Tu ajustes ici */
+    height: auto;        /* ⛔ PAS 100vh sinon ça bloque */
+    min-height: 100vh;   /* Pour garder une bonne base sans forcer */
+  }
 
 #startBtn {
   margin-top: 20px;
