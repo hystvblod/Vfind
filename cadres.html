@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Mes cadres</title>
+  <link rel="stylesheet" href="style/main.css"/>
+</head>
+<body class="vfind-bg">
+  <header class="profil-header">
+    <button onclick="window.history.back()" class="back-btn">← Retour</button>
+    <h1>🎨 Mes cadres</h1>
+  </header>
+
+  <main>
+    <section class="cadres-possedes">
+      <div class="grid-cadres" id="cadres-list">
+        <!-- Les cadres possédés seront injectés ici -->
+      </div>
+    </section>
+
+    <section class="cadre-preview">
+      <h2>Aperçu du cadre sélectionné</h2>
+      <div class="cadre-preview">
+        <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 VFind</p>
+  </footer>
+
+  <script>
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+
+    const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames")) || ["polaroid_01"];
+    const cadresContainer = document.getElementById("cadres-list");
+
+    // Génération de la liste des cadres
+    cadresPossedes.forEach(cadre => {
+      const div = document.createElement("div");
+      div.className = "cadre-item";
+      div.innerHTML = `
+        <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
+        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
+          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
+        </button>
+      `;
+      cadresContainer.appendChild(div);
+    });
+
+    // Mise à jour de l'aperçu
+    const previewImage = document.getElementById("cadre-preview-img");
+    previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
+
+    function selectionnerCadre(nomCadre) {
+      localStorage.setItem("cadre_selectionne", nomCadre);
+      alert("✅ Cadre sélectionné !");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
