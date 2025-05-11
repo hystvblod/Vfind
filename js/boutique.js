@@ -58,56 +58,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Chargement des cadres
   const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-  function afficherCadresDans(containerId = "cadres-list") {
-    const cadreActif = localStorage.getItem("cadre_selectionne") || "polaroid_01";
-    const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-  
-    fetch("data/cadres.json")
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
-  
-        data.forEach(cadre => {
-          if (!ownedFrames.includes(cadre.id)) return;
-  
-          const item = document.createElement("div");
-          item.classList.add("cadre-item");
-  
-          const preview = document.createElement("div");
-          preview.className = "cadre-preview";
-  
-          const photo = document.createElement("img");
-          photo.src = "assets/img/exemple.jpg";
-          photo.className = "photo-user profil";
-  
-          const cadreImg = document.createElement("img");
-          cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-          cadreImg.className = "photo-cadre";
-  
-          preview.appendChild(photo);
-          preview.appendChild(cadreImg);
-  
-          const title = document.createElement("h3");
-          title.textContent = cadre.nom;
-  
-          const button = document.createElement("button");
-          button.textContent = cadre.id === cadreActif ? "✅ Utilisé" : "Utiliser";
-          if (cadre.id === cadreActif) button.disabled = true;
-  
-          button.onclick = () => {
-            localStorage.setItem("cadre_selectionne", cadre.id);
-            alert("✅ Cadre sélectionné !");
-            location.reload();
-          };
-  
-          item.appendChild(preview);
-          item.appendChild(title);
-          item.appendChild(button);
-          container.appendChild(item);
-        });
+  fetch("data/cadres.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(cadre => {
+        const item = document.createElement("div");
+        item.classList.add("cadre-item");
+
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("cadre-preview");
+
+        const photo = document.createElement("img");
+        photo.src = "assets/img/exemple.jpg";
+        photo.className = "photo-user";
+
+        const cadreImg = document.createElement("img");
+        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+        cadreImg.className = "photo-cadre";
+
+        wrapper.appendChild(photo);
+        wrapper.appendChild(cadreImg);
+
+        const title = document.createElement("h3");
+        title.textContent = cadre.nom;
+
+        const price = document.createElement("p");
+        price.textContent = `${cadre.prix} pièces`;
+
+        const button = document.createElement("button");
+        if (ownedFrames.includes(cadre.id)) {
+          button.textContent = "✅ Acheté";
+          button.disabled = true;
+        } else {
+          button.textContent = "Acheter";
+          button.addEventListener("click", () => acheterCadre(cadre.id, cadre.prix));
+        }
+
+        item.appendChild(wrapper);
+        item.appendChild(title);
+        item.appendChild(price);
+        item.appendChild(button);
+        boutiqueContainer.appendChild(item);
       });
-  }  
+    });
 
   function acheterCadre(id, prix) {
     if (userPoints < prix) {
