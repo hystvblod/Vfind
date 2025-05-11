@@ -155,7 +155,22 @@ function afficherPhotosSauvegardees() {
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id);
+      photo.onclick = () => {
+        const isPremium = getUserData().premium === true;
+      
+        if (isPremium) {
+          const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
+          if (confirmChange) {
+            localStorage.removeItem(`photo_defi_${id}`);
+            location.reload();
+          } else {
+            agrandirPhoto(dataUrl, id);
+          }
+        } else {
+          agrandirPhoto(dataUrl, id);
+        }
+      };
+      
 
       preview.appendChild(fond);
       preview.appendChild(photo);
@@ -170,19 +185,6 @@ function afficherPhotosSauvegardees() {
         if (pubBtn && pubBtn.textContent.includes("pub")) {
           pubBtn.remove();
         }
-      }
-
-      const isPremium = getUserData().premium === true;
-      if (isPremium) {
-        const confirmChange = confirm("Souhaites-tu supprimer cette photo et en prendre une autre ?");
-        if (confirmChange) {
-          localStorage.removeItem(`photo_defi_${id}`);
-          location.reload();
-        } else {
-          agrandirPhoto(dataUrl, id);
-        }
-      } else {
-        agrandirPhoto(dataUrl, id);
       }
     }
   });
