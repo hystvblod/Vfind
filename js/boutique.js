@@ -44,9 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUserData({ coins: userPoints });
   }
   
-    localStorage.setItem("vfind_points", userPoints);
-  }
-
   // ✅ Effet visuel "+100"
   function showFeedback(text) {
     if (!feedback) return;
