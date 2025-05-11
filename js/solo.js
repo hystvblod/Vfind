@@ -179,6 +179,7 @@ function afficherPhotosSauvegardees() {
       }
     }
   });
+}
 
 window.validerDefi = function(index) {
   const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
