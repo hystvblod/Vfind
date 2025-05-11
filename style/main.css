@@ -465,3 +465,34 @@ header nav a:hover {
   color: #000;
   transform: scale(1.05);
 }
+.profil-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: #fff;
+}
+
+.back-btn {
+  font-size: 18px;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+.profil-sections button {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 2px solid #444;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.profil-sections button:hover {
+  background-color: #f0f0f0;
+}

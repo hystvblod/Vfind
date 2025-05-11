@@ -7,21 +7,22 @@
   <link rel="stylesheet" href="style/main.css"/>
 </head>
 <body class="vfind-bg">
-  <header>
-    <h1>👤 Mon Profil</h1>
-    <nav>
-      <a href="index.html">🏠 Accueil</a>
-      <a href="historique.html">📜 Historique</a>
-    </nav>
+  <header class="profil-header">
+    <button onclick="window.history.back()" class="back-btn">← Retour</button>
+    <h1>Mon Profil</h1>
   </header>
 
   <main>
-    <section class="profil-info">
-      <p><strong>Pseudo :</strong> <span id="pseudo">Invité</span></p>
-      <p><strong>Points :</strong> <span id="points">0</span></p>
-      <p><strong>Cadre sélectionné :</strong> <span id="cadre-actuel">Aucun</span></p>
-      <p><strong>Statut :</strong> <span id="premium-status">Chargement...</span></p>
+    <section class="profil-top">
+      <p><strong>Pseudo :</strong> <span id="pseudo">Toi</span></p>
+      <p><strong>VCoins :</strong> <span id="vcoins">0</span></p>
     </section>
+    <section class="profil-sections">
+      <button onclick="location.href='historique.html'">📜 Historique</button>
+      <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
+      <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
+      <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
+    </section>        
 
     <!-- ✅ Section affichant les cadres possédés -->
     <section class="cadres-possedes">
