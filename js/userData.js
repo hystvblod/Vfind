@@ -122,3 +122,8 @@ function setPremium(status) {
 function resetUserData() {
   localStorage.removeItem("vfindUserData");
 }
+function updateUserData(update) {
+  const data = getUserData();
+  Object.assign(data, update);
+  saveUserData(data);
+}
