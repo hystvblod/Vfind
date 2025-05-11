@@ -496,3 +496,72 @@ header nav a:hover {
 .profil-sections button:hover {
   background-color: #f0f0f0;
 }
+/* ✅ EN-TÊTE PROFIL */
+.profil-header {
+  background: none;
+  padding: 30px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.profil-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin: 10px 0 20px;
+}
+
+.back-btn {
+  align-self: flex-start;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  color: white;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* ✅ SECTION INFOS */
+.profil-top {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.profil-top p {
+  margin: 6px 0;
+}
+
+/* ✅ BOUTONS DE SECTION */
+.profil-sections {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 0 20px 30px;
+}
+
+.profil-sections button {
+  width: 90%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #4b4acb;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.profil-sections button:hover {
+  background-color: #ffd700;
+  transform: translateY(-2px);
+}
+
