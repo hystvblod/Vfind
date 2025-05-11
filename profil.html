@@ -95,7 +95,7 @@
   }
 
   // ✅ Affichage du nom lisible depuis le JSON
-  fetch('./assets/data/cadres.json')
+  fetch('./data/cadres.json')
     .then(response => response.json())
     .then(cadresData => {
       const cadreInfo = cadresData.find(c => c.id === cadreActuel);
