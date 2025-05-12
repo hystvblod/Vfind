@@ -92,8 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
         cadreImg.src = `assets/cadres/${cadre.id}.webp`;
         cadreImg.className = "photo-cadre";
 
-        wrapper.appendChild(photo);
-        wrapper.appendChild(cadreImg);
+       wrapper.appendChild(cadreImg);   // fond cadre
+wrapper.appendChild(photo);      // photo utilisateur
+
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
