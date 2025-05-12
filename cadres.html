@@ -8,98 +8,62 @@
 </head>
 <body class="vfind-bg">
 
-<!-- ✅ POPUP de zoom -->
-<div id="popup-cadre" class="popup hidden">
-  <div class="popup-inner">
-    <button id="close-popup" class="close-btn">✖</button>
-    <div class="cadre-preview cadre-popup">
-      <img id="popup-cadre-img" class="photo-cadre" src="" />
-      <img class="photo-user" src="./assets/img/exemple.jpg" />
-    </div>
-  </div>
-</div>
+  <header class="profil-header">
+    <a href="profil.html" class="back-btn">🔙</a>
+    <h1>🎨 Mes cadres</h1>
+  </header>
 
-<header class="profil-header">
-  <a href="profil.html" class="back-btn">🔙</a>
-  <h1>🎨 Mes cadres</h1>
-</header>
+  <main>
+    <section class="cadres-possedes">
+      <div class="grid-cadres" id="cadres-list">
+        <!-- Les cadres possédés seront injectés ici -->
+      </div>
+    </section>
 
-<main>
-  <section class="cadres-possedes">
-    <div class="grid-cadres" id="cadres-list">
-      <!-- Les cadres possédés seront injectés ici -->
-    </div>
-  </section>
-</main>
+    <section class="cadre-preview-section">
+      <h2 style="text-align:center; color:white;">Aperçu du cadre sélectionné</h2>
+      <div class="cadre-preview">
+        <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+    </section>
+  </main>
 
-<footer>
-  <p>© 2025 VFind</p>
-</footer>
+  <footer>
+    <p>© 2025 VFind</p>
+  </footer>
 
-<script src="js/userData.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Nettoyage des anciens IDs
-    const data = getUserData();
-    data.cadres = data.cadres.map(id => {
-      const num = id.replace(/[^\d]/g, "");
-      const padded = num.padStart(2, "0");
-      return "polaroid_" + padded;
-    });
-    saveUserData(data);
+  <script>
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-    const cadresPossedes = getCadresPossedes();
-    const cadreActif = getCadreSelectionne();
-    const container = document.getElementById("cadres-list");
+    const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
+    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
+      .filter(c => tousLesCadres.includes(c));
 
-    // Affichage des cadres avec miniature + zoom
+    const cadresContainer = document.getElementById("cadres-list");
+
+    // Génération de la liste des cadres
     cadresPossedes.forEach(cadre => {
       const div = document.createElement("div");
       div.className = "cadre-item";
-
       div.innerHTML = `
-        <div class="cadre-preview cadre-mini" onclick="zoomCadre('${cadre}')">
-          <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-          <img class="photo-user" src="./assets/img/exemple.jpg" />
-        </div>
-        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
-          ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
+        <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
+        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
+          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
         </button>
       `;
-
-      container.appendChild(div);
+      cadresContainer.appendChild(div);
     });
 
-    // Gestion fermeture popup
-    const popup = document.getElementById("popup-cadre");
-    const closeBtn = document.getElementById("close-popup");
+    // Mise à jour de l'aperçu
+    const previewImage = document.getElementById("cadre-preview-img");
+    previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
 
-    if (popup && closeBtn) {
-      closeBtn.addEventListener("click", () => {
-        popup.classList.remove("show");
-        popup.classList.add("hidden");
-      });
-
-      popup.addEventListener("click", (e) => {
-        if (e.target === popup) {
-          popup.classList.remove("show");
-          popup.classList.add("hidden");
-        }
-      });
+    function selectionnerCadre(nomCadre) {
+      localStorage.setItem("cadre_selectionne", nomCadre);
+      alert("✅ Cadre sélectionné !");
+      location.reload();
     }
-  });
-
-  function selectionnerCadre(id) {
-    setCadreSelectionne(id);
-    alert("✅ Cadre sélectionné !");
-    location.reload();
-  }
-
-  function zoomCadre(id) {
-    document.getElementById("popup-cadre-img").src = `./assets/cadres/${id}.webp`;
-    document.getElementById("popup-cadre").classList.remove("hidden");
-    document.getElementById("popup-cadre").classList.add("show");
-  }
-</script>
+  </script>
 </body>
 </html>

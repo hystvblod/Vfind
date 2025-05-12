@@ -703,3 +703,9 @@ color: #000;
   color: #333;
   cursor: default;
 }
+.cadre-mini {
+  width: 100px;
+  height: 125px;
+  position: relative;
+  overflow: hidden;
+}
