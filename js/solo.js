@@ -134,12 +134,15 @@ function loadDefis() {
       if (isPremium) {
         // ✅ Premium : peuvent reprendre une photo
         boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
-      
+      } else {
+        // 🔒 Non-premium : bouton bloqué
+        boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
+      }
     } else {
       // Aucun historique : tout le monde peut prendre une photo
       boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
     }
-    
+      
     li.innerHTML = `
       <div class="defi-content">
         <div class="defi-texte">
