@@ -16,7 +16,6 @@
     </nav>
   </header>
 
-  <!-- ✅ Balise <main> correctement ouverte ici -->
   <main>
     <section class="points-display">
       <p>
@@ -28,13 +27,13 @@
 
     <section class="cadres-list">
       <h2>🎨 Cadres disponibles</h2>
-      <div id="boutique-container" class="grid-cadres">
-        <!-- Les cadres seront chargés depuis cadres.json -->
+      <!-- ✅ Affichage vertical personnalisé uniquement ici -->
+      <div id="boutique-container" class="list-cadres">
+        <!-- Les cadres seront chargés dynamiquement -->
       </div>
     </section>
   </main>
 
-  <!-- ✅ Fenêtre modale interactive -->
   <div id="popup-gain" class="popup hidden">
     <h3>💰 Gagner des pièces</h3>
     <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
@@ -45,6 +44,7 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
+  <!-- Scripts -->
   <script src="js/storage.js"></script>
   <script src="js/userData.js"></script>
   <script src="js/pub.js"></script>
