@@ -15,13 +15,7 @@ body {
 * {
   max-width: 100%;
   box-sizing: border-box;
-}
 
-/* Désactive le scroll horizontal dû aux cadres trop larges */
-.cadre-preview {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
 }
 
 /* Permet aux listes de défis de se replier proprement */
