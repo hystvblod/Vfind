@@ -9,8 +9,8 @@
 /* === FOND GLOBAL === */
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom right, #6a0dad, #1e90ff); /* Violet et bleu */
-  color: #222;
+  background: #0e0e18; /* fond sombre pro */
+  color: #f0f0f0;
   min-height: 100vh;
   margin: 0;
   padding: 0;
