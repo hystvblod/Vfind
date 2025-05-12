@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (gainBtn) {
     gainBtn.addEventListener("click", () => {
       popupGain.classList.remove("hidden");
-      popupGain.classList.add("show"); // ✅ rend visible et interactive
+      popupGain.classList.add("show");
     });
   }
 
@@ -38,13 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup();
   };
 
-  // ✅ Met à jour le compteur
   function updatePointsDisplay() {
     pointsDisplay.textContent = userPoints;
     localStorage.setItem("vfind_points", userPoints);
   }
 
-  // ✅ Effet visuel "+100"
   function showFeedback(text) {
     if (!feedback) return;
     feedback.textContent = text;
@@ -54,6 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
       feedback.classList.remove("show");
       feedback.classList.add("hidden");
     }, 1500);
+  }
+
+  // ✅ Fonction d’achat
+  function acheterCadreBoutique(id, prix) {
+    if (userPoints < prix) {
+      alert("❌ Pas assez de pièces !");
+      return;
+    }
+
+    userPoints -= prix;
+    updatePointsDisplay();
+
+    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+    owned.push(id);
+    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
+    localStorage.setItem("vfind_selected_frame", id); // facultatif
+
+    location.reload();
   }
 
   // ✅ Chargement des cadres
@@ -91,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
           button.disabled = true;
         } else {
           button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadre(cadre.id, cadre.prix));
+          button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
         }
 
         item.appendChild(wrapper);
@@ -102,32 +118,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  function acheterCadre(id, prix) {
-    if (userPoints < prix) {
-      alert("❌ Pas assez de pièces !");
-      return;
-    }
-
-    userPoints -= prix;
-    updatePointsDisplay();
-
-    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(id);
-    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-    location.reload();
-  }
+  // ✅ Scroll vers le haut après chargement
   setTimeout(() => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
-  }, 100); 
-  
-  // ✅ Fermer la popup si on clique sur le fond
-document.addEventListener("click", function (e) {
-  const popup = document.getElementById("popup-gain");
-  if (popup.classList.contains("show") && e.target === popup) {
-    closePopup();
-  }
-});
+  }, 100);
 
+  // ✅ Fermer la popup si on clique sur le fond
+  document.addEventListener("click", function (e) {
+    if (popupGain.classList.contains("show") && e.target === popupGain) {
+      closePopup();
+    }
+  });
 });
