@@ -357,7 +357,6 @@ nav.nav-icons {
   .defi-photo-container .cadre-preview {
     transform: scale(0.6);
     transform-origin: top right;
-    margin-top: 18px; /* ✅ centrage vertical léger */
   }
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
