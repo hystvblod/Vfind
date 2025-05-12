@@ -4,7 +4,8 @@
 }
 
 html, body {
-  height: calc(var(--vh, 1vh) * 100);
+  min-height: 100vh;
+  height: auto;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
