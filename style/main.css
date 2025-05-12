@@ -655,3 +655,7 @@ color: #000;
   opacity: 0.6;
   pointer-events: auto;
 }
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
