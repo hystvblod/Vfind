@@ -110,11 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updatePointsDisplay();
 
     // ✅ Synchronise avec le système global (profil, cadre actif)
-    if (typeof acheterCadre === "function") {
-      acheterCadre(id);
-    }
-    
-
+  // ✅ Sauvegarde propre du cadre acheté
+const idFormatte = formatCadreId(id);
+acheterCadre(idFormatte);
+setCadreSelectionne(idFormatte); // optionnel, active automatiquement
     location.reload();
   }
 });
