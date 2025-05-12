@@ -130,19 +130,18 @@ function loadDefis() {
     const isPremium = getUserData().premium === true;
     const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
     const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-    if (hasPhoto) {
-      if (isPremium) {
-        // ✅ Premium : peuvent reprendre une photo
-        boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
-      } else {
-        // 🔒 Non-premium : bouton bloqué
-        boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
-      }
+    
+    let boutonPhoto = "";
+    
+    if (hasPhoto && !isPremium) {
+      // Non premium + déjà une photo = bouton actif MAIS avec message au clic
+      boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
+      <button class="disabled-premium" onclick="alert(...)">🔒 ...</button>
     } else {
-      // Aucun historique : tout le monde peut prendre une photo
+      // Tous les autres cas : bouton actif normal
       boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
     }
-      
+    
     li.innerHTML = `
       <div class="defi-content">
         <div class="defi-texte">

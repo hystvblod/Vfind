@@ -127,4 +127,3 @@ function updateUserData(update) {
   Object.assign(data, update);
   saveUserData(data);
 }
-

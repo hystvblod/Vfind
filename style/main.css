@@ -347,17 +347,16 @@ nav.nav-icons {
     line-height: 1.4;
   }
 
-  .defi-photo-container {
+.defi-photo-container {
     flex-shrink: 0;
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    justify-content: flex-end;  /* ← garde l’alignement à droite */
+    align-items: center;        /* ← centre verticalement dans le bloc */
   }
-  
-  .defi-photo-container .cadre-preview {
-    transform: scale(0.6);
-    transform-origin: top right;
-  }
+.defi-photo-container .cadre-preview {
+  transform: scale(0.6);
+  transform-origin: top right;
+}
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
 }
@@ -377,23 +376,19 @@ nav.nav-icons {
 }
 
 .close-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 50%;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2rem;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    color: black;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 99999;
+  }
   
 #popup-gain {
   background: linear-gradient(to bottom right, #6a0dad, #1e90ff);
