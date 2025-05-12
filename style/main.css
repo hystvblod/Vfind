@@ -1,6 +1,10 @@
 /* === PATCH GLOBAL RESPONSIVE CLEAN === */
+:root {
+  --vh: 100vh;
+}
+
 html, body {
-  height: 100%;
+  height: calc(var(--vh, 1vh) * 100);
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -27,6 +31,26 @@ html, body {
 }
 
 /* Réduction sur petits écrans */
+@media (max-width: 768px) {
+  .grid-cadres {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .popup-inner {
+    width: 90vw;
+    height: auto;
+  }
+
+  .main-button {
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+  }
+
+  .defi-list {
+    padding: 0 10px;
+  }
+}
+
 @media (max-width: 480px) {
   .cadre-preview {
     max-width: 90vw;
@@ -815,4 +839,12 @@ main {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
-
+body, html, main, section, .container {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+img, .cadre-preview, .cadre-item {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
