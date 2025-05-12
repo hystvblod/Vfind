@@ -1,45 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VFind - Mode Solo</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
 <body>
-  <div class="page-container"> <!-- ✅ Ajout du conteneur -->
-
-    <div id="popup-photo" class="popup hidden">
-      <div class="popup-inner">
-        <button id="close-popup" class="close-btn">❌</button>
-        <div class="cadre-preview cadre-popup boutique-style">
-          <img id="cadre-affiche" class="photo-cadre" src="" />
-          <img id="photo-affichee" class="photo-user" src="" />
-        </div>
+  
+  <div id="popup-photo" class="popup hidden">
+    <div class="popup-inner">
+      <button id="close-popup" class="close-btn">❌</button>
+      <div class="cadre-preview cadre-popup boutique-style">
+        <img id="cadre-affiche" class="photo-cadre" src="" />
+        <img id="photo-affichee" class="photo-user" src="" />
       </div>
     </div>
+  </div>
+  <header class="header-solo">
+    <a href="index.html" class="btn-icon back-button">⬅️</a>
+    <h1 class="mode-title">📸 Mode Solo</h1>
+    <div class="top-buttons">
+      <a href="profil.html" class="btn-icon">👤</a>
+      <a href="parametres.html" class="btn-icon">⚙️</a>
+    </div>
+  </header>
 
-    <header class="header-solo">
-      <a href="index.html" class="btn-icon back-button">⬅️</a>
-      <h1 class="mode-title">📸 Mode Solo</h1>
-      <div class="top-buttons">
-        <a href="profil.html" class="btn-icon">👤</a>
-        <a href="parametres.html" class="btn-icon">⚙️</a>
-      </div>
-    </header>
+  <main class="solo-container">
+    <section id="pre-game" class="centered">
+      <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
+    </section>
 
-    <main class="solo-container">
-      <section id="pre-game" class="centered">
-        <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
-      </section>
+    <section id="game-section" class="hidden">
+      <div class="timer-box">⏱️ Temps restant : <span id="timer">--:--:--</span></div>
+      <ul id="defi-list" class="defi-list"></ul>
+    </section>
 
-      <section id="game-section" class="hidden">
-        <div class="timer-box">⏱️ Temps restant : <span id="timer">--:--:--</span></div>
-        <ul id="defi-list" class="defi-list"></ul>
-      </section>
+    <section id="end-section" class="hidden">
+      <h2>🎉 Bravo !</h2>
+      <p id="final-message"></p>
 
-      <section id="end-section" class="hidden">
-        <h2>🎉 Bravo !</h2>
-        <p id="final-message"></p>
-        <button id="replayBtn" class="main-button">🔁 Rejouer</button>
-      </section>
-    </main>
-
-    <!-- (facultatif) Ajoute un footer ici si besoin -->
-
-  </div> <!-- ✅ Fermeture du .page-container -->
+      <button id="replayBtn" class="main-button">🔁 Rejouer</button>
+    </section>
+  </main>
 
   <script src="js/solo.js"></script>
   <script src="js/camera.js"></script>
@@ -50,3 +53,4 @@
     }
   </script>
 </body>
+</html>
