@@ -18,7 +18,7 @@ body {
 
 /* === EN-TÊTE === */
 header {
-  background: #3c3c46;
+  background: #a8a8b1;
   padding: 15px 30px;
   color: white;
   display: flex;
@@ -42,7 +42,7 @@ header nav a {
 }
 
 header nav a:hover {
- background-color: #3c3c46;
+ background-color: #c9c9c9;
 }
 
 /* === BOUTON PRINCIPAL === */
@@ -112,11 +112,11 @@ header nav a:hover {
 }
 
 .defi-list li.done {
-  background-color: #3c3c46;;  /* ✅ même que les boutons d'accueil */
+  background-color: #3a3a3a;  /* ✅ même que les boutons d'accueil */
   color: white;
 }
 .defi-list li.done .defi-texte button:hover {
-  background-color: #3a3a3a;
+  background-color: #1e3265;
 }
 .defi-list li.done .defi-texte button {
   background-color: #555;
@@ -136,10 +136,9 @@ header nav a:hover {
 /* === GRILLE DE CADRES === */
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-  padding: 20px;
-
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptation responsive */
+  gap: 30px;
+  padding: 20px 10px;
 }
 
 /* CARTE CADRE */
@@ -464,13 +463,13 @@ nav.nav-icons {
   
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
-  color: #babada;
+  background: #4b4acb;
   padding: 20px 30px;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #babada;
+  border-bottom: 5px solid #3a3a9f;
 }
 
 header h1 {
@@ -489,7 +488,7 @@ header nav {
 
 header nav a {
   background: white;
-  color: #babada;
+  color: #4b4acb;
   padding: 10px 16px;
   border-radius: 12px;
   font-size: 1rem;
@@ -619,7 +618,7 @@ color: #000;
 }
 
 .timer-box {
-  background: #3c3c46(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.15);
   padding: 10px 20px;
   margin: 20px auto;
   text-align: center;
@@ -655,51 +654,4 @@ color: #000;
 .disabled-premium {
   opacity: 0.6;
   pointer-events: auto;
-}
-.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.cadre-item {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-  min-height: 160px;
-}
-
-.cadre-item:hover {
-  transform: scale(1.03);
-}
-
-.cadre-item img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 10px;
-}
-
-.cadre-item button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  background-color: #4caf50;
-  color: white;
-  font-size: 0.9rem;
-}
-
-.cadre-item button[disabled] {
-  background-color: #ccc;
-  color: #333;
-  cursor: default;
 }

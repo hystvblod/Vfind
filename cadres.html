@@ -33,61 +33,37 @@
     <p>© 2025 VFind</p>
   </footer>
 
-  <script src="js/userData.js"></script>
-<script src="js/userData.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Nettoyage et récupération
-    const data = getUserData();
-    data.cadres = data.cadres.map(id => {
-      const num = id.replace(/[^\d]/g, "");
-      const padded = num.padStart(2, "0");
-      return "polaroid_" + padded;
-    });
-    saveUserData(data);
+  <script>
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-    const cadresPossedes = getCadresPossedes();
-    const cadreActif = getCadreSelectionne();
-    const container = document.getElementById("cadres-list");
+    const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
+    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
+      .filter(c => tousLesCadres.includes(c));
 
-    // Affichage en tableau visuel
+    const cadresContainer = document.getElementById("cadres-list");
+
+    // Génération de la liste des cadres
     cadresPossedes.forEach(cadre => {
       const div = document.createElement("div");
       div.className = "cadre-item";
       div.innerHTML = `
-        <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" onclick="zoomCadre('${cadre}')" />
-        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
-          ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
+        <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
+        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
+          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
         </button>
       `;
-      container.appendChild(div);
+      cadresContainer.appendChild(div);
     });
 
-    document.getElementById("cadre-preview-img").src = `./assets/cadres/${cadreActif}.webp`;
-  });
+    // Mise à jour de l'aperçu
+    const previewImage = document.getElementById("cadre-preview-img");
+    previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
 
-  function selectionnerCadre(id) {
-    setCadreSelectionne(id);
-    alert("✅ Cadre sélectionné !");
-    location.reload();
-  }
-
-  function zoomCadre(id) {
-    const popup = document.createElement("div");
-    popup.className = "popup show";
-    popup.innerHTML = `
-      <div class="popup-inner">
-        <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-        <div class="cadre-preview cadre-popup">
-          <img class="photo-cadre" src="./assets/cadres/${id}.webp" />
-          <img class="photo-user" src="./assets/img/exemple.jpg" />
-        </div>
-      </div>
-    `;
-    document.body.appendChild(popup);
-  }
-</script>
-
-
+    function selectionnerCadre(nomCadre) {
+      localStorage.setItem("cadre_selectionne", nomCadre);
+      alert("✅ Cadre sélectionné !");
+      location.reload();
+    }
+  </script>
 </body>
 </html>
