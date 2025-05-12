@@ -112,11 +112,11 @@ header nav a:hover {
 }
 
 .defi-list li.done {
-  background-color: #3a3a3a;  /* ✅ même que les boutons d'accueil */
+  background-color: #1e3265;  /* ✅ même que les boutons d'accueil */
   color: white;
 }
 .defi-list li.done .defi-texte button:hover {
-  background-color: #1e3265;
+  background-color: #3a3a3a;
 }
 .defi-list li.done .defi-texte button {
   background-color: #555;
@@ -463,13 +463,13 @@ nav.nav-icons {
   
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
-  background: #4b4acb;
+  color: #babada;
   padding: 20px 30px;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #3a3a9f;
+  border-bottom: 5px solid #babada;
 }
 
 header h1 {
@@ -488,7 +488,7 @@ header nav {
 
 header nav a {
   background: white;
-  color: #4b4acb;
+  color: #babada;
   padding: 10px 16px;
   border-radius: 12px;
   font-size: 1rem;
