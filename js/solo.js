@@ -132,11 +132,16 @@ function loadDefis() {
       <div class="defi-texte">
         <p>${defi.texte}</p>
         ${
-          getUserData().premium === true || !localStorage.getItem(`photo_defi_${defi.id}`)
-            ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
-            : `<button disabled title="Réservé aux membres premium">🔒 Prendre une photo</button>`
-        }
-        <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ? </button>
+            localStorage.getItem("photo_defi_" + defi.id)
+              ? (
+                  getUserData().premium
+                    ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Reprendre une photo</button>`
+                    : `<button disabled style="opacity:0.6;cursor:not-allowed;">🔒 Prendre une photo</button>
+                       <div style="font-size:0.9rem;color:#aa0000;margin-top:4px;">Réservé aux membres premium</div>`
+                )
+              : `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
+          }
+          
       </div>
       <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
     </div>
