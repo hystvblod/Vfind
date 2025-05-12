@@ -1,3 +1,50 @@
+/* 🔧 PATCH ANTI-DÉBORDEMENT RESPONSIVE GLOBAL */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  max-width: 100vw;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* Empêche toute boîte de sortir de l'écran */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Désactive le scroll horizontal dû aux cadres trop larges */
+.cadre-preview {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+/* Permet aux listes de défis de se replier proprement */
+.defi-list li {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Réduction sur petits écrans */
+@media (max-width: 480px) {
+  .cadre-preview {
+    max-width: 90vw;
+    height: auto;
+  }
+
+  .cadre-item {
+    max-width: 95vw;
+  }
+
+  .defi-texte p {
+    font-size: 1rem;
+  }
+}
 
 /* === RÉINITIALISATION DE BASE === */
 * {
