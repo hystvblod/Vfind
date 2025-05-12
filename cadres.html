@@ -34,12 +34,23 @@
   </footer>
 
   <script src="js/userData.js"></script>
+<script src="js/userData.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    // Nettoyage et récupération
+    const data = getUserData();
+    data.cadres = data.cadres.map(id => {
+      const num = id.replace(/[^\d]/g, "");
+      const padded = num.padStart(2, "0");
+      return "polaroid_" + padded;
+    });
+    saveUserData(data);
+
     const cadresPossedes = getCadresPossedes();
     const cadreActif = getCadreSelectionne();
-    const cadresContainer = document.getElementById("cadres-list");
+    const container = document.getElementById("cadres-list");
 
+    // Affichage en tableau visuel
     cadresPossedes.forEach(cadre => {
       const div = document.createElement("div");
       div.className = "cadre-item";
@@ -49,27 +60,26 @@
           ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
         </button>
       `;
-      cadresContainer.appendChild(div);
+      container.appendChild(div);
     });
 
-    const previewImage = document.getElementById("cadre-preview-img");
-    previewImage.src = `./assets/cadres/${cadreActif}.webp`;
+    document.getElementById("cadre-preview-img").src = `./assets/cadres/${cadreActif}.webp`;
   });
 
-  function selectionnerCadre(nomCadre) {
-    setCadreSelectionne(nomCadre);
+  function selectionnerCadre(id) {
+    setCadreSelectionne(id);
     alert("✅ Cadre sélectionné !");
     location.reload();
   }
 
-  function zoomCadre(cadre) {
+  function zoomCadre(id) {
     const popup = document.createElement("div");
     popup.className = "popup show";
     popup.innerHTML = `
       <div class="popup-inner">
         <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
         <div class="cadre-preview cadre-popup">
-          <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+          <img class="photo-cadre" src="./assets/cadres/${id}.webp" />
           <img class="photo-user" src="./assets/img/exemple.jpg" />
         </div>
       </div>
@@ -77,6 +87,7 @@
     document.body.appendChild(popup);
   }
 </script>
+
 
 </body>
 </html>

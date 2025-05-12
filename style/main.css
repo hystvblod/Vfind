@@ -136,9 +136,10 @@ header nav a:hover {
 /* === GRILLE DE CADRES === */
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptation responsive */
-  gap: 30px;
-  padding: 20px 10px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 20px;
+
 }
 
 /* CARTE CADRE */

@@ -1,4 +1,10 @@
 
+function formatCadreId(id) {
+  const num = id.replace(/[^\d]/g, ""); // extrait le numéro
+  const padded = num.padStart(2, "0"); // force 2 chiffres
+  return "polaroid_" + padded;
+}
+
 /// Chargement et sauvegarde des données utilisateur
 function getUserData() {
   return JSON.parse(localStorage.getItem("vfindUserData")) || {
@@ -51,22 +57,25 @@ function getCadresPossedes() {
   return getUserData().cadres;
 }
 function possedeCadre(id) {
-  return getUserData().cadres.includes(id);
+  return getUserData().cadres.includes(formatCadreId(id));
+
 }
 function acheterCadre(id) {
   const data = getUserData();
-  if (!data.cadres.includes(id)) {
-    data.cadres.push(id);
+  const idClean = formatCadreId(id);
+  if (!data.cadres.includes(idClean)) {
+    data.cadres.push(idClean);
     saveUserData(data);
-  }
+ }
 }
 function getCadreSelectionne() {
   return getUserData().cadreActif || "polaroid_01";
 }
 function setCadreSelectionne(id) {
   const data = getUserData();
-  data.cadreActif = id;
+  data.cadreActif = formatCadreId(id);
   saveUserData(data);
+
 }
 
 // Historique
