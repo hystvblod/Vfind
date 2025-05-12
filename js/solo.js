@@ -136,6 +136,7 @@ function loadDefis() {
     if (hasPhoto && !isPremium) {
       // Non premium + déjà une photo = bouton actif MAIS avec message au clic
       boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
+      <button class="disabled-premium" onclick="alert(...)">🔒 ...</button>
     } else {
       // Tous les autres cas : bouton actif normal
       boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;

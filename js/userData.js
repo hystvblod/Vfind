@@ -127,3 +127,9 @@ function updateUserData(update) {
   Object.assign(data, update);
   saveUserData(data);
 }
+function acheterCadreDansUserData(id) {
+  const data = JSON.parse(localStorage.getItem("vfind_userdata")) || {};
+  data.cadres = data.cadres || [];
+  if (!data.cadres.includes(id)) data.cadres.push(id);
+  localStorage.setItem("vfind_userdata", JSON.stringify(data));
+}

@@ -102,11 +102,28 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  function acheterCadre(id, prix) {
-    if (userPoints < prix) {
-      alert("❌ Pas assez de pièces !");
-      return;
+    function acheterCadre(id, prix) {
+      if (userPoints < prix) {
+        alert("❌ Pas assez de pièces !");
+        return;
+      }
+    
+      userPoints -= prix;
+      updatePointsDisplay();
+    
+      // Stockage local
+      const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+      if (!owned.includes(id)) owned.push(id);
+      localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
+    
+      // Mise à jour du userData (profil)
+      if (typeof acheterCadreDansUserData === "function") {
+        acheterCadreDansUserData(id); // appelera data.cadres.push(...)
+      }
+    
+      location.reload();
     }
+    
 
     userPoints -= prix;
     updatePointsDisplay();
@@ -115,19 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
     owned.push(id);
     localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
     location.reload();
-  }
+  });
   setTimeout(() => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
   }, 100); 
-  
-  // ✅ Fermer la popup si on clique sur le fond
-document.addEventListener("click", function (e) {
-  const popup = document.getElementById("popup-gain");
-  if (popup.classList.contains("show") && e.target === popup) {
-    closePopup();
-  }
-});
 
-});
+  // ✅ Fermer la popup si on clique sur le fond
+  document.addEventListener("click", function (e) {
+    const popup = document.getElementById("popup-gain");
+    if (popup.classList.contains("show") && e.target === popup) {
+      closePopup();
+    }
+  });

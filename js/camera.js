@@ -59,6 +59,7 @@ function ouvrirCameraPour(defiId) {
     const confirmSave = confirm("Souhaites-tu valider cette photo ?");
     if (confirmSave) {
       localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+      setTimeout(() => location.reload(), 200);
       if (videoStream) {
         videoStream.getTracks().forEach(track => track.stop());
       }
