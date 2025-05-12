@@ -718,3 +718,18 @@ color: #000;
   height: 100%;
   object-fit: contain;
 }
+html, body {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.solo-container {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#cadres-list, .cadres-possedes {
+  overflow-y: auto;
+}
