@@ -5,6 +5,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Mes cadres</title>
   <link rel="stylesheet" href="style/main.css"/>
+  <style>
+    .grid-cadres {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 24px;
+      padding: 30px;
+      justify-items: center;
+      align-items: start;
+    }
+
+    .cadre-item {
+      width: 160px;
+      height: 200px;
+      background-color: #1f1f2b;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .cadre-item:hover {
+      transform: scale(1.04);
+    }
+
+    .cadre-item .cadre-preview {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .cadre-item .photo-cadre,
+    .cadre-item .photo-user {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0;
+    }
+
+    .cadre-item .checkmark {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #00bfff;
+      color: white;
+      border-radius: 50%;
+      padding: 4px 6px;
+      font-size: 14px;
+      display: none;
+      z-index: 5;
+    }
+
+    .cadre-item.selected-cadre .checkmark {
+      display: block;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      background: #1e1e2a;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 9999;
+      max-width: 90vw;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .popup.show {
+      display: flex;
+    }
+
+    .popup .cadre-preview {
+      width: 300px;
+      height: 375px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .popup .photo-cadre,
+    .popup .photo-user {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .main-button {
+      background-color: #ffcc00;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body class="vfind-bg">
@@ -16,76 +137,62 @@
 
   <main>
     <section class="cadres-possedes">
-      <div class="grid-cadres" id="cadres-list">
-        <!-- Les cadres possédés seront injectés ici -->
-      </div>
+      <div class="grid-cadres" id="cadres-list"></div>
     </section>
   </main>
 
-  <!-- ✅ POPUP PLATO STYLE -->
-  <div id="popup-cadre" class="popup hidden">
-    <div class="popup-inner">
-      <button id="close-popup" class="close-btn">❌</button>
-      <div class="cadre-preview cadre-popup">
-        <img id="popup-cadre-img" class="photo-cadre" src="" />
-        <img id="popup-photo-user" class="photo-user" src="./assets/img/exemple.jpg" />
-      </div>
-      <button class="main-button" id="confirmer-cadre">✅ Utiliser ce cadre</button>
+  <!-- ✅ POPUP ZOOM -->
+  <div id="popup-cadre" class="popup">
+    <button id="close-popup" class="close-btn">✖</button>
+    <div class="cadre-preview">
+      <img id="popup-cadre-img" class="photo-cadre" src="" />
+      <img class="photo-user" src="./assets/img/exemple.jpg" />
     </div>
+    <button class="main-button" id="confirmer-cadre">✅ Utiliser ce cadre</button>
   </div>
 
-  <footer>
-    <p>© 2025 VFind</p>
-  </footer>
+  <script>
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+    const cadresPossedes = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
 
- <script src="js/userData.js"></script>
-<script>
-  const cadreActuel = getUserData().cadreActif || "polaroid_01";
-  const cadresPossedes = getUserData().cadres || [];
+    const container = document.getElementById("cadres-list");
+    const popup = document.getElementById("popup-cadre");
+    const popupImg = document.getElementById("popup-cadre-img");
+    let cadreTemp = "";
 
-  const cadresContainer = document.getElementById("cadres-list");
-  const popup = document.getElementById("popup-cadre");
-  const popupCadreImg = document.getElementById("popup-cadre-img");
-  let cadreSelectionTemp = "";
+    cadresPossedes.forEach(cadre => {
+      const cleanId = cadre.trim();
+      const div = document.createElement("div");
+      div.className = "cadre-item";
+      if (cleanId === cadreActuel) div.classList.add("selected-cadre");
 
-  // Affiche tous les cadres achetés en grille
-  cadresPossedes.forEach(cadre => {
-    const div = document.createElement("div");
-    div.className = "cadre-item";
-    if (cadre === cadreActuel) div.classList.add("selected-cadre");
+      div.innerHTML = `
+        <span class="checkmark">✔</span>
+        <div class="cadre-preview">
+          <img class="photo-cadre" src="./assets/cadres/${cleanId}.webp" />
+          <img class="photo-user" src="./assets/img/exemple.jpg" />
+        </div>
+      `;
 
-    div.innerHTML = `
-      <span class="checkmark">✔</span>
-      <div class="cadre-preview">
-        <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-        <img class="photo-user" src="./assets/img/exemple.jpg" />
-      </div>
-    `;
+      div.addEventListener("click", () => {
+        cadreTemp = cleanId;
+        popupImg.src = `./assets/cadres/${cleanId}.webp`;
+        popup.classList.add("show");
+      });
 
-    div.addEventListener("click", () => {
-      cadreSelectionTemp = cadre;
-      popupCadreImg.src = `./assets/cadres/${cadre}.webp`;
-      popup.classList.remove("hidden");
-      popup.classList.add("show");
+      container.appendChild(div);
     });
 
-    cadresContainer.appendChild(div);
-  });
+    document.getElementById("close-popup").addEventListener("click", () => {
+      popup.classList.remove("show");
+    });
 
-  document.getElementById("close-popup").addEventListener("click", () => {
-    popup.classList.remove("show");
-    popup.classList.add("hidden");
-  });
-
-  document.getElementById("confirmer-cadre").addEventListener("click", () => {
-    const data = getUserData();
-    data.cadreActif = cadreSelectionTemp;
-    localStorage.setItem("vfindUserData", JSON.stringify(data));
-    popup.classList.remove("show");
-    popup.classList.add("hidden");
-    location.reload();
-  });
-</script>
+    document.getElementById("confirmer-cadre").addEventListener("click", () => {
+      localStorage.setItem("cadre_selectionne", cadreTemp);
+      popup.classList.remove("show");
+      location.reload();
+    });
+  </script>
 
 </body>
 </html>
