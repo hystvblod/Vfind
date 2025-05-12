@@ -102,9 +102,9 @@ header nav a:hover {
 }
 
 .defi-list li {
-  background-color: #e0e0e0;
+  background-color: #5f7182;
   border-radius: 15px;
-  padding: 1rem;
+  padding: 0.75rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   color: black;
@@ -112,13 +112,19 @@ header nav a:hover {
 }
 
 .defi-list li.done {
-.defi-list li.done .defi-texte button {
-  background-color: #2a468b; /* bleu foncé validé */
+.defi-list li.done {
+  background-color: #3a3a3a;  /* ✅ même que les boutons d'accueil */
   color: white;
 }
 .defi-list li.done .defi-texte button:hover {
   background-color: #1e3265;
 }
+.defi-list li.done .defi-texte button {
+  background-color: #555;
+  color: white;
+}
+.defi-list li.done .defi-texte button:hover {
+  background-color: #444;
 
 }
 
