@@ -659,3 +659,39 @@ color: #000;
   max-width: 100%;
   box-sizing: border-box;
 }
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+main, .page-container, .grid-cadres, .cadre-item, .defi-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cadre-mini {
+  width: 100%;
+  max-width: 120px;
+  aspect-ratio: 4 / 5;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 10px;
+}
+
+.cadre-mini .photo-user,
+.cadre-mini .photo-cadre {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  top: 0; left: 0;
+}
