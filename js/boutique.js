@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupGain = document.getElementById("popup-gain");
   let userPoints = getUserData().coins;
 
-
   pointsDisplay.textContent = userPoints;
 
   // ✅ Gérer ouverture de la fenêtre
@@ -43,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updatePointsDisplay() {
     updateUserData({ coins: userPoints });
   }
-  
+
   // ✅ Effet visuel "+100"
   function showFeedback(text) {
     if (!feedback) return;
@@ -102,61 +101,40 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    function acheterCadre(id, prix) {
-      if (userPoints < prix) {
-        alert("❌ Pas assez de pièces !");
-        return;
-      }
-    
-      userPoints -= prix;
-      updatePointsDisplay();
-    
-      // Ajout dans les cadres achetés de la boutique
-      const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-      if (!owned.includes(id)) owned.push(id);
-      localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-    
-      // ✅ Synchronise avec le système global (profil, cadre actif)
-      if (typeof acheterCadre === "function") {
-        acheterCadre(id); // Appelle la fonction définie dans userData.js
-      }
-    
-      location.reload();
+  function acheterCadre(id, prix) {
+    if (userPoints < prix) {
+      alert("❌ Pas assez de pièces !");
+      return;
     }
-    
-    
-      // Stockage local
-      const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-      if (!owned.includes(id)) owned.push(id);
-      localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-    
-      // Mise à jour du userData (profil)
-      if (typeof acheterCadreDansUserData === "function") {
-        acheterCadreDansUserData(id); // appelera data.cadres.push(...)
-      }
-    
-      location.reload();
-    }
-    
 
     userPoints -= prix;
     updatePointsDisplay();
 
+    // Ajout dans les cadres achetés de la boutique
     const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(id);
+    if (!owned.includes(id)) owned.push(id);
     localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-    location.reload();
-  });
-  setTimeout(() => {
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-    document.body.style.overflowX = "hidden";
-  }, 100); 
 
-  // ✅ Fermer la popup si on clique sur le fond
-  document.addEventListener("click", function (e) {
-    const popup = document.getElementById("popup-gain");
-    if (popup.classList.contains("show") && e.target === popup) {
-      closePopup();
+    // ✅ Synchronise avec le système global (profil, cadre actif)
+    if (typeof acheterCadreDansUserData === "function") {
+      acheterCadreDansUserData(id); // appelera data.cadres.push(...)
     }
-  });
+
+    location.reload();
+  }
+});
+
+// ✅ Scroll vers le haut après chargement
+setTimeout(() => {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  document.body.style.overflowX = "hidden";
+}, 100);
+
+// ✅ Fermer la popup si on clique sur le fond
+document.addEventListener("click", function (e) {
+  const popup = document.getElementById("popup-gain");
+  if (popup.classList.contains("show") && e.target === popup) {
+    closePopup();
+  }
+});
