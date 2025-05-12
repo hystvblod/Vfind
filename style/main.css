@@ -376,18 +376,25 @@ nav.nav-icons {
 }
 
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 2rem;
-    background: white;
-    border: none;
-    border-radius: 50%;
-    color: black;
-    padding: 8px 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    cursor: pointer;
-    z-index: 99999;
+#close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.2rem;         /* réduit la taille de la croix */
+  background: white;
+  border: none;
+  border-radius: 50%;
+  color: black;
+  padding: 4px 6px;          /* moins d'espace autour de la croix */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 99999;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
   }
   
 #popup-gain {
