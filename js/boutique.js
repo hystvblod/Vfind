@@ -111,6 +111,20 @@ document.addEventListener("DOMContentLoaded", () => {
       userPoints -= prix;
       updatePointsDisplay();
     
+      // Ajout dans les cadres achetés de la boutique
+      const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+      if (!owned.includes(id)) owned.push(id);
+      localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
+    
+      // ✅ Synchronise avec le système global (profil, cadre actif)
+      if (typeof acheterCadre === "function") {
+        acheterCadre(id); // Appelle la fonction définie dans userData.js
+      }
+    
+      location.reload();
+    }
+    
+    
       // Stockage local
       const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
       if (!owned.includes(id)) owned.push(id);
