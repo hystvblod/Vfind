@@ -35,9 +35,17 @@
 
   <script>
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+    if (cadreActuel === "polaroid 1") {
+  localStorage.setItem("cadre_selectionne", "polaroid_01");
+  cadreActuel = "polaroid_01";
+}
 
     const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
-    const cadresPossedes = getUserData().cadres || [];
+    let cadresPossedes = getUserData().cadres || [];
+cadresPossedes = cadresPossedes
+  .map(c => c.replace("polaroid 1", "polaroid_01"))
+  .filter(c => tousLesCadres.includes(c));
+
     const cadresContainer = document.getElementById("cadres-list");
 
     // Génération de la liste des cadres
