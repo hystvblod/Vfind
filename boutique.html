@@ -2,9 +2,19 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VFind - Boutique</title>
   <link rel="stylesheet" href="style/main.css" />
+
+  <!-- ✅ Script pour fixer la hauteur réelle du viewport sur mobile -->
+  <script>
+    function setVh() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+  </script>
 </head>
 <body class="vfind-bg">
   <header>
@@ -16,7 +26,6 @@
     </nav>
   </header>
 
-  <!-- ✅ Balise <main> correctement ouverte ici -->
   <main>
     <section class="points-display">
       <p>
@@ -34,7 +43,6 @@
     </section>
   </main>
 
-  <!-- ✅ Fenêtre modale interactive -->
   <div id="popup-gain" class="popup hidden">
     <h3>💰 Gagner des pièces</h3>
     <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
