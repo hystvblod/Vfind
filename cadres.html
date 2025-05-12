@@ -6,6 +6,7 @@
   <title>VFind - Mes cadres</title>
   <link rel="stylesheet" href="style/main.css"/>
 </head>
+
 <body class="vfind-bg">
 
   <header class="profil-header">
@@ -19,64 +20,68 @@
         <!-- Les cadres possédés seront injectés ici -->
       </div>
     </section>
-
-    <section class="cadre-preview-section">
-      <h2 style="text-align:center; color:white;">Aperçu du cadre sélectionné</h2>
-      <div class="cadre-preview">
-        <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
-        <img class="photo-user" src="./assets/img/exemple.jpg" />
-      </div>
-    </section>
   </main>
+
+  <!-- ✅ POPUP PLATO STYLE -->
+  <div id="popup-cadre" class="popup hidden">
+    <div class="popup-inner">
+      <button id="close-popup" class="close-btn">❌</button>
+      <div class="cadre-preview cadre-popup">
+        <img id="popup-cadre-img" class="photo-cadre" src="" />
+        <img id="popup-photo-user" class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+      <button class="main-button" id="confirmer-cadre">✅ Utiliser ce cadre</button>
+    </div>
+  </div>
 
   <footer>
     <p>© 2025 VFind</p>
   </footer>
 
   <script>
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+    const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
+    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
+      .filter(c => tousLesCadres.includes(c));
 
-  const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
-  const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
-    .filter(c => tousLesCadres.includes(c));
+    const cadresContainer = document.getElementById("cadres-list");
 
-  const cadresContainer = document.getElementById("cadres-list");
+    let cadreSelectionTemp = "";
 
-  // Génération de la liste des cadres
-  cadresPossedes.forEach(cadre => {
-    const div = document.createElement("div");
-    div.className = "cadre-item";
-    if (cadre === cadreActuel) div.classList.add("selected-cadre");
+    cadresPossedes.forEach(cadre => {
+      const div = document.createElement("div");
+      div.className = "cadre-item";
+      if (cadre === cadreActuel) div.classList.add("selected-cadre");
 
-    div.innerHTML = `
-      <span class="checkmark">✔</span>
-      <div class="cadre-preview">
-        <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-        <img class="photo-user" src="./assets/img/exemple.jpg" />
-      </div>
-    `;
+      div.innerHTML = `
+        <span class="checkmark">✔</span>
+        <div class="cadre-preview">
+          <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+          <img class="photo-user" src="./assets/img/exemple.jpg" />
+        </div>
+      `;
 
-    div.addEventListener("click", () => {
-      localStorage.setItem("cadre_selectionne", cadre);
-      updateSelection(cadre);
+      div.addEventListener("click", () => {
+        cadreSelectionTemp = cadre;
+        document.getElementById("popup-cadre-img").src = `./assets/cadres/${cadre}.webp`;
+        document.getElementById("popup-cadre").classList.remove("hidden");
+        document.getElementById("popup-cadre").classList.add("show");
+      });
+
+      cadresContainer.appendChild(div);
     });
 
-    cadresContainer.appendChild(div);
-  });
+    document.getElementById("close-popup").addEventListener("click", () => {
+      document.getElementById("popup-cadre").classList.remove("show");
+      document.getElementById("popup-cadre").classList.add("hidden");
+    });
 
-  function updateSelection(newCadre) {
-    document.querySelectorAll(".cadre-item").forEach(item => item.classList.remove("selected-cadre"));
-    const previewImage = document.getElementById("cadre-preview-img");
-    previewImage.src = `./assets/cadres/${newCadre}.webp`;
-    const newItem = [...document.querySelectorAll(".cadre-item")].find(item =>
-      item.querySelector("img.photo-cadre")?.src.includes(newCadre)
-    );
-    if (newItem) newItem.classList.add("selected-cadre");
-  }
-
-  // Mise à jour de l'aperçu au chargement
-  const previewImage = document.getElementById("cadre-preview-img");
-  previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
-</script>
+    document.getElementById("confirmer-cadre").addEventListener("click", () => {
+      localStorage.setItem("cadre_selectionne", cadreSelectionTemp);
+      document.getElementById("popup-cadre").classList.remove("show");
+      document.getElementById("popup-cadre").classList.add("hidden");
+      location.reload();
+    });
+  </script>
 </body>
 </html>
