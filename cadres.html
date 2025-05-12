@@ -8,10 +8,7 @@
 </head>
 <body class="vfind-bg">
   <header class="profil-header">
-    <button onclick="selectionnerCadre('${cadre}')" class="${cadre === cadreActuel ? 'owned' : ''}" ${cadre === cadreActuel ? 'disabled' : ''}>
-      ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
-    </button>
-    
+  
     <h1>🎨 Mes cadres</h1>
   </header>
 
@@ -49,8 +46,7 @@ const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) |
       div.className = "cadre-item";
       div.innerHTML = `
         <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
-        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
-          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
+ 
         </button>
       `;
       cadresContainer.appendChild(div);
