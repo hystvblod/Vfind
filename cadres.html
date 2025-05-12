@@ -1,97 +1,135 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Mes cadres</title>
-  <link rel="stylesheet" href="style/main.css"/>
-</head>
-<body class="vfind-bg">
+document.addEventListener("DOMContentLoaded", () => {
+  const boutiqueContainer = document.getElementById("boutique-container");
+  const pointsDisplay = document.getElementById("points");
+  const feedback = document.getElementById("gain-feedback");
+  const popupGain = document.getElementById("popup-gain");
+  let userPoints = getUserData().coins;
 
-  <header class="profil-header">
-    <a href="profil.html" class="back-btn">🔙</a>
-    <h1>🎨 Mes cadres</h1>
-  </header>
+  pointsDisplay.textContent = userPoints;
 
-  <main>
-    <section class="cadres-possedes">
-      <div class="grid-cadres" id="cadres-list">
-        <!-- Les cadres possédés seront injectés ici -->
-      </div>
-    </section>
-
-    <section class="cadre-preview-section">
-      <h2 style="text-align:center; color:white;">Aperçu du cadre sélectionné</h2>
-      <div class="cadre-preview">
-        <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
-        <img class="photo-user" src="./assets/img/exemple.jpg" />
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 VFind</p>
-  </footer>
-
-  <script src="js/userData.js"></script>
-<script src="js/userData.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Nettoyage et récupération
-    const data = getUserData();
-    data.cadres = data.cadres.map(id => {
-      const num = id.replace(/[^\d]/g, "");
-      const padded = num.padStart(2, "0");
-      return "polaroid_" + padded;
+  // ✅ Gérer ouverture de la fenêtre
+  const gainBtn = document.getElementById("gain-btn");
+  if (gainBtn) {
+    gainBtn.addEventListener("click", () => {
+      popupGain.classList.remove("hidden");
+      popupGain.classList.add("show"); // ✅ rend visible et interactive
     });
-    saveUserData(data);
+  }
 
-    const cadresPossedes = getCadresPossedes();
-    const cadreActif = getCadreSelectionne();
-    const container = document.getElementById("cadres-list");
+  // ✅ Fermer la fenêtre
+  window.closePopup = function () {
+    popupGain.classList.remove("show");
+    popupGain.classList.add("hidden");
+  };
 
-    // Affichage en tableau visuel
-    cadresPossedes.forEach(cadre => {
-      const div = document.createElement("div");
-      div.className = "cadre-item";
-   div.innerHTML = `
-  <div class="cadre-preview" onclick="zoomCadre('${cadre}')">
-    <img class="photo-user" src="./assets/img/exemple.jpg" />
-    <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-  </div>
-  <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
-    ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
-  </button>
-`;
+  // ✅ Gagner pièces via pub
+  window.watchAd = function () {
+    userPoints += 100;
+    updatePointsDisplay();
+    showFeedback("+100 💰");
+    closePopup();
+  };
 
-      container.appendChild(div);
+  // ✅ Gagner pièces via invitation
+  window.inviteFriend = function () {
+    userPoints += 300;
+    updatePointsDisplay();
+    showFeedback("+300 💰");
+    closePopup();
+  };
+
+  // ✅ Met à jour le compteur
+  function updatePointsDisplay() {
+    updateUserData({ coins: userPoints });
+  }
+
+  // ✅ Effet visuel "+100"
+  function showFeedback(text) {
+    if (!feedback) return;
+    feedback.textContent = text;
+    feedback.classList.remove("hidden");
+    feedback.classList.add("show");
+    setTimeout(() => {
+      feedback.classList.remove("show");
+      feedback.classList.add("hidden");
+    }, 1500);
+  }
+
+  // ✅ Chargement des cadres
+  fetch("data/cadres.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(cadre => {
+        const item = document.createElement("div");
+        item.classList.add("cadre-item");
+
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("cadre-preview");
+
+        const photo = document.createElement("img");
+        photo.src = "assets/img/exemple.jpg";
+        photo.className = "photo-user";
+
+        const cadreImg = document.createElement("img");
+        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+        cadreImg.className = "photo-cadre";
+
+        wrapper.appendChild(photo);
+        wrapper.appendChild(cadreImg);
+
+        const title = document.createElement("h3");
+        title.textContent = cadre.nom;
+
+        const price = document.createElement("p");
+        price.textContent = `${cadre.prix} pièces`;
+
+        const button = document.createElement("button");
+        if (getUserData().cadres.includes(cadre.id)) {
+          button.textContent = "✅ Acheté";
+          button.disabled = true;
+        } else {
+          button.textContent = "Acheter";
+          button.addEventListener("click", () => acheterCadre(cadre.id, cadre.prix));
+        }
+
+        item.appendChild(wrapper);
+        item.appendChild(title);
+        item.appendChild(price);
+        item.appendChild(button);
+        boutiqueContainer.appendChild(item);
+      });
     });
 
-    document.getElementById("cadre-preview-img").src = `./assets/cadres/${cadreActif}.webp`;
-  });
+  function acheterCadre(id, prix) {
+    if (userPoints < prix) {
+      alert("❌ Pas assez de pièces !");
+      return;
+    }
 
-  function selectionnerCadre(id) {
-    setCadreSelectionne(id);
-    alert("✅ Cadre sélectionné !");
+    userPoints -= prix;
+    updatePointsDisplay();
+
+    // ✅ Synchronise avec le système global (profil, cadre actif)
+    if (typeof acheterCadre === "function") {
+      acheterCadre(id);
+    }
+    
+
     location.reload();
   }
+});
 
-  function zoomCadre(id) {
-    const popup = document.createElement("div");
-    popup.className = "popup show";
-    popup.innerHTML = `
-      <div class="popup-inner">
-        <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-        <div class="cadre-preview cadre-popup">
-          <img class="photo-cadre" src="./assets/cadres/${id}.webp" />
-          <img class="photo-user" src="./assets/img/exemple.jpg" />
-        </div>
-      </div>
-    `;
-    document.body.appendChild(popup);
+// ✅ Scroll vers le haut après chargement
+setTimeout(() => {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  document.body.style.overflowX = "hidden";
+}, 100);
+
+// ✅ Fermer la popup si on clique sur le fond
+document.addEventListener("click", function (e) {
+  const popup = document.getElementById("popup-gain");
+  if (popup.classList.contains("show") && e.target === popup) {
+    closePopup();
   }
-</script>
-
-
-</body>
-</html>
+});
