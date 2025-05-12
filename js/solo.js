@@ -127,25 +127,31 @@ function loadDefis() {
     li.className = "defi";
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
+    const isPremium = getUserData().premium === true;
+    const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
+    const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+    
+    let boutonPhoto = "";
+    
+    if (hasPhoto && !isPremium) {
+      // Non premium + déjà une photo = bouton actif MAIS avec message au clic
+      boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
+    } else {
+      // Tous les autres cas : bouton actif normal
+      boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
+    }
+    
     li.innerHTML = `
-    <div class="defi-content">
-      <div class="defi-texte">
-        <p>${defi.texte}</p>
-        ${
-            localStorage.getItem("photo_defi_" + defi.id)
-              ? (
-                  getUserData().premium
-                    ? `<button onclick="ouvrirCameraPour(${defi.id})">📸 Reprendre une photo</button>`
-                    : `<button disabled style="opacity:0.6;cursor:not-allowed;">🔒 Prendre une photo</button>
-                       <div style="font-size:0.9rem;color:#aa0000;margin-top:4px;">Réservé aux membres premium</div>`
-                )
-              : `<button onclick="ouvrirCameraPour(${defi.id})">📸 Prendre une photo</button>`
-          }
-          
+      <div class="defi-content">
+        <div class="defi-texte">
+          <p>${defi.texte}</p>
+          ${boutonPhoto}
+          <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ?</button>
+        </div>
+        <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
       </div>
-      <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
-    </div>
-  `;
+    `;
+    
   
     defiList.appendChild(li);
   });
