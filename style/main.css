@@ -1,4 +1,3 @@
-
 /* === RÉINITIALISATION DE BASE === */
 * {
   margin: 0;
@@ -9,8 +8,8 @@
 /* === FOND GLOBAL === */
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom right, #6a0dad, #1e90ff); /* Violet et bleu */
-  color: #222;
+  background: linear-gradient(to bottom, #eaf4ff, #ffffff); /* Pastel bleu clair */
+  color: #1a1a1a;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -18,13 +17,13 @@ body {
 
 /* === EN-TÊTE === */
 header {
-  background: #4b4acb;
+  background: #cfe6ff;
   padding: 15px 30px;
-  color: white;
+  color: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #3a3a9f;
+  border-bottom: 2px solid #b2d4f2;
 }
 
 header h1 {
@@ -33,7 +32,7 @@ header h1 {
 }
 
 header nav a {
-  color: white;
+  color: #1a1a1a;
   margin-left: 20px;
   text-decoration: none;
   font-weight: bold;
@@ -42,13 +41,13 @@ header nav a {
 }
 
 header nav a:hover {
-  color: #ffd700;
+  color: #88bff1;
 }
 
 /* === BOUTON PRINCIPAL === */
 .main-button {
-  background: #fdd44a;
-  color: #000;
+  background: #a3cfff;
+  color: #fff;
   font-weight: bold;
   padding: 1rem 2rem;
   font-size: 1.1rem;
@@ -56,12 +55,12 @@ header nav a:hover {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
-  display: inline-flex;      /* 🔄 important pour les liens */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin: 1.5rem auto;
-  width: 250px;              /* ✅ taille uniforme */
-  text-decoration: none;     /* ✅ retire soulignement */
+  width: 250px;
+  text-decoration: none;
 }
 
 .main-button:hover {
@@ -77,42 +76,41 @@ header nav a:hover {
 }
 
 .points-display button {
-  background-color: #ffcc00;
+  background-color: #a3cfff;
   border: none;
   padding: 8px 14px;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
+  color: #fff;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   transition: background 0.3s;
 }
 
 .points-display button:hover {
-  background-color: #e6b800;
+  background-color: #88bff1;
 }
-
 /* === LISTE DES DÉFIS === */
 .defi-list {
-    list-style: none;
-    padding: 0 20px; /* ✅ marge gauche/droite ajoutée */
-    margin: 2rem auto;
-    max-width: 600px;
-  
+  list-style: none;
+  padding: 0 20px;
+  margin: 2rem auto;
+  max-width: 600px;
 }
 
 .defi-list li {
-  background-color: #fdd44a; /* Jaune VBlocks */
+  background-color: #ffffff; /* fond blanc doux */
   border-radius: 15px;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  color: black;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  color: #1a1a1a;
   transition: background 0.3s, opacity 0.3s;
 }
 
 .defi-list li.done {
-  background-color: #a2d2ff; /* Bleu VBlocks */
+  background-color: #d1f0ff; /* pastel bleu clair */
   opacity: 0.7;
 }
 
@@ -122,20 +120,62 @@ header nav a:hover {
   font-weight: bold;
 }
 
+/* === CONTENU DU DÉFI === */
+.defi-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.defi-texte {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.defi-texte p {
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+/* === BOUTONS DES DÉFIS === */
+.defi-texte button {
+  margin-top: 8px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #a3cfff;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  transition: background 0.2s ease;
+}
+
+.defi-texte button:hover {
+  background-color: #88bff1;
+}
 /* === GRILLE DE CADRES === */
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptation responsive */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 30px;
   padding: 20px 10px;
 }
 
-/* CARTE CADRE */
+/* === CARTE DE CADRE === */
 .cadre-item {
-  background: rgba(255, 255, 255, 0.1);
+  background: #ffffff;
   padding: 15px;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   text-align: center;
   transition: transform 0.2s;
   display: flex;
@@ -151,12 +191,12 @@ header nav a:hover {
   width: 100%;
   border-radius: 12px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .cadre-item button {
-  background-color: #4caf50;
-  color: white;
+  background-color: #a3cfff;
+  color: #fff;
   border: none;
   padding: 6px 12px;
   border-radius: 8px;
@@ -165,11 +205,12 @@ header nav a:hover {
 }
 
 .cadre-item button.owned {
-  background-color: #d3d3d3;
+  background-color: #e0e0e0;
   color: #333;
   cursor: default;
 }
 
+/* === APERÇU DU CADRE === */
 .cadre-preview {
   position: relative;
   width: 300px;
@@ -178,128 +219,6 @@ header nav a:hover {
   margin: 0 auto;
 }
 
-/* ✅ CADRE PNG - FOND */
-.photo-cadre {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ✅ PHOTO UTILISATEUR - DESSUS */
-.photo-user {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  width: auto;
-  height: auto;
-  max-width: calc(100% - 40px);
-  max-height: calc(100% - 40px);
-  object-fit: contain;
-  z-index: 3;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-nav.nav-icons {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 10px;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-}
-
-.icon-btn img {
-  width: 24px;
-  height: 24px;
-}
-
-/* === MASQUER === */
-.hidden {
-  display: none !important;
-}
-
-/* ✅ Feedback de gain */
-#gain-feedback {
-  margin-left: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #28a745;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.4s ease;
-  position: relative;
-  top: 0;
-}
-
-#gain-feedback.show {
-  opacity: 1;
-  transform: translateY(-10px);
-}
-
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  z-index: 1000;
-  opacity: 0;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 90vw;
-  height: auto;
-}
-
-.popup.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  pointer-events: auto;
-}
-
-.popup-inner {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.cadre-preview.cadre-popup {
-  position: relative;
-  width: 300px;
-  height: 375px;
-  margin: 0 auto;
-}
-
 .photo-cadre {
   position: absolute;
   top: 0;
@@ -324,86 +243,15 @@ nav.nav-icons {
   object-fit: contain;
   z-index: 3;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
-.defi-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-top: 15px;
-}
-
-.defi-texte {
-    flex: 1;
-    text-align: center;        /* ✅ centre le texte multi-lignes */
-    display: flex;
-    flex-direction: column;
-    align-items: center;       /* ✅ centre les éléments (texte + boutons) horizontalement */
-  }
-  .defi-texte p {
-    margin-bottom: 0.6rem;
-    font-size: 1.1rem;
-    font-weight: bold;
-    line-height: 1.4;
-  }
-
-.defi-photo-container {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: flex-end;  /* ← garde l’alignement à droite */
-    align-items: center;        /* ← centre verticalement dans le bloc */
-  }
-.defi-photo-container .cadre-preview {
-  transform: scale(0.6);
-  transform-origin: top right;
-}
-.main-buttons a {
-  width: 280px; /* ✅ Cette syntaxe est valide */
-}
-
-.popup-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.popup {
-  width: auto;
-  max-width: 90vw;
-  height: auto;
-  max-height: 90vh;
-  padding: 10px 20px 30px;
-}
-
-.close-btn {
-#close-popup {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.2rem;         /* réduit la taille de la croix */
-  background: white;
-  border: none;
-  border-radius: 50%;
-  color: black;
-  padding: 4px 6px;          /* moins d'espace autour de la croix */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  cursor: pointer;
-  z-index: 99999;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-  }
-  
+/* === POPUP GAIN === */
 #popup-gain {
-  background: linear-gradient(to bottom right, #6a0dad, #1e90ff);
-  color: white;
+  background: #f0f8ff;
+  color: #1a1a1a;
   border-radius: 20px;
   padding: 30px 20px;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
   text-align: center;
 }
@@ -422,201 +270,67 @@ nav.nav-icons {
   border-radius: 12px;
   font-weight: bold;
   font-size: 1rem;
-  background: #ffcc00;
-  color: #000;
+  background: #a3cfff;
+  color: #fff;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 #popup-gain button:hover {
-  background: #e6b800;
-}
-.popup {
-  background-color: transparent; /* pour retirer le fond blanc de la popup */
+  background: #88bff1;
 }
 
-#startBtn {
-  margin-top: 20px;
-  padding: 15px 25px;
-  font-size: 1.2em;
-
-}
-    #pre-game {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 80px;
-      height: calc(100vh - 80px);
-    }
-  
-/* === NAVIGATION PROFESSIONNELLE === */
-header {
-  background: #4b4acb;
-  padding: 20px 30px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 5px solid #3a3a9f;
-}
-
-header h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-header nav {
-  display: flex;
-  gap: 20px;
-}
-
-header nav a {
-  background: white;
-  color: #4b4acb;
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-header nav a:hover {
-  background: #ffd700;
-  color: #000;
-  transform: scale(1.05);
-}
-.profil-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 15px;
-  background: #fff;
-}
-
-.back-btn {
-  font-size: 18px;
-  background: none;
+/* === FERMETURE DE POPUP === */
+#close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.1rem;
+  background: #ffffff;
   border: none;
-  color: #333;
+  border-radius: 50%;
+  color: #555;
+  padding: 4px 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: pointer;
-
-}
-/* ✅ EN-TÊTE PROFIL */
-.profil-header {
-  background: none;
-  padding: 30px 20px 10px;
+  z-index: 99999;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-
 }
 
-.back-btn {
-  align-self: flex-start;
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  color: white;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-/* ✅ SECTION INFOS */
-.profil-top {
-  text-align: center;
-  color: white;
-  margin-top: -100px; /* 🔼 Ce qui remonte */
-  margin-bottom: 30px;
-  font-size: 1.1rem;
-}
-
-.profil-top p {
-  margin: 6px 0;
-}
-
-/* ✅ BOUTONS DE SECTION */
-.profil-sections {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  padding: 0 20px 30px;
-}
-
-.profil-sections button {
-  width: 90%;
-  max-width: 320px;
-  padding: 14px;
-  font-size: 1.1rem;
+/* === FEEDBACK DE GAIN === */
+#gain-feedback {
+  margin-left: 8px;
+  font-size: 16px;
   font-weight: bold;
-  border: none;
-  border-radius: 12px;
-  background-color: #ffffff;
-  color: #4b4acb;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s;
+  color: #28a745;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  position: relative;
+  top: 0;
 }
 
-.profil-sections button:hover {
-  background-color: #ffd700;
-  transform: translateY(-2px);
-}
-/* ✅ Conteneur principal centré */
-.profil-container {
-  min-height: calc(100vh - 100px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 40px;
+#gain-feedback.show {
+  opacity: 1;
+  transform: translateY(-10px);
 }
 
-/* ✅ Garde les boutons bien centrés */
-.profil-sections {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-.defi-texte button {
-  margin-top: 8px;
-  padding: 10px 16px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 10px;
-  background-color: #ffcc00;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  transition: background 0.2s ease;
-}
-
-.defi-texte button:hover {
-  background-color: #e6b800;
-}
-
+/* === TIMER === */
 .timer-box {
-  background: rgba(255, 255, 255, 0.15);
+  background: #f0f8ff;
   padding: 10px 20px;
   margin: 20px auto;
   text-align: center;
   border-radius: 12px;
   font-weight: bold;
-  color: white;
+  color: #1a1a1a;
   font-size: 1.2rem;
   max-width: 300px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+/* === CAMERA FULLSCREEN === */
 .camera-container-fullscreen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -639,7 +353,90 @@ header nav a:hover {
   display: flex;
   gap: 15px;
 }
+
+/* === BOUTON PREMIUM DÉSACTIVÉ === */
 .disabled-premium {
   opacity: 0.6;
   pointer-events: auto;
+}
+
+/* === SECTION PROFIL === */
+.profil-header {
+  background: #cfe6ff;
+  padding: 30px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #1a1a1a;
+}
+
+.back-btn {
+  align-self: flex-start;
+  font-size: 1.4rem;
+  background: #a3cfff;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 50px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* === INFOS PROFIL === */
+.profil-top {
+  text-align: center;
+  color: #1a1a1a;
+  margin-top: -80px;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.profil-top p {
+  margin: 6px 0;
+}
+
+/* === SECTIONS PROFIL === */
+.profil-sections {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 0 20px 30px;
+  width: 100%;
+}
+
+.profil-sections button {
+  width: 90%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.profil-sections button:hover {
+  background-color: #e2f0ff;
+  transform: translateY(-2px);
+}
+
+/* === CONTENEUR PROFIL === */
+.profil-container {
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+/* === CLASSE UTILITAIRE HIDDEN === */
+.hidden {
+  display: none !important;
 }
