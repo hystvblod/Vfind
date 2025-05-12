@@ -655,30 +655,3 @@ color: #000;
   opacity: 0.6;
   pointer-events: auto;
 }
-.cadre-item {
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.cadre-item.selected-cadre {
-  border: 3px solid #00bfff;
-  box-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
-}
-
-.cadre-item .checkmark {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #00bfff;
-  color: white;
-  font-size: 16px;
-  border-radius: 50%;
-  padding: 5px;
-  display: none;
-  z-index: 10;
-}
-
-.cadre-item.selected-cadre .checkmark {
-  display: block;
-}
