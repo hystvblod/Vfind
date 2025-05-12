@@ -54,6 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   }
 
+  // ✅ Fonction de synchronisation "Mes cadres"
+  function acheterCadre(id) {
+    const userData = JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
+    if (!userData.cadres.includes(id)) {
+      userData.cadres.push(id);
+    }
+    localStorage.setItem("vfindUserData", JSON.stringify(userData));
+  }
+
   // ✅ Fonction d’achat
   function acheterCadreBoutique(id, prix) {
     if (userPoints < prix) {
@@ -66,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
     owned.push(id);
+    acheterCadre(id); // 🔁 synchronise avec vfindUserData
     localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
     localStorage.setItem("vfind_selected_frame", id); // facultatif
 
@@ -92,9 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
         cadreImg.src = `assets/cadres/${cadre.id}.webp`;
         cadreImg.className = "photo-cadre";
 
-       wrapper.appendChild(cadreImg);   // fond cadre
-wrapper.appendChild(photo);      // photo utilisateur
-
+        wrapper.appendChild(cadreImg);
+        wrapper.appendChild(photo);
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
