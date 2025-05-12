@@ -3,6 +3,7 @@ function getUserData() {
     premium: localStorage.getItem("premium") === "true"
   };
 }
+
 const DEFI_STORAGE_KEY = "vfind_defis";
 const TIMER_STORAGE_KEY = "vfind_timer";
 const SCORE_STORAGE_KEY = "vfind_score";
@@ -18,12 +19,9 @@ const timerDisplay = document.getElementById("timer");
 const defiList = document.getElementById("defi-list");
 const finalMessage = document.getElementById("final-message");
 
-
-
 let allDefis = [];
 let defisActuels = [];
 
-// 🔤 Détection de la langue
 let userLang = navigator.language || navigator.userLanguage;
 userLang = userLang.split("-")[0];
 const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
@@ -34,7 +32,6 @@ if (savedLang && supportedLangs.includes(savedLang)) {
 }
 const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-// 🟦 Chargement des défis
 document.addEventListener("DOMContentLoaded", () => {
   fetch("./data/defis.json")
     .then((res) => res.json())
@@ -127,21 +124,19 @@ function loadDefis() {
     li.className = "defi";
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
+
     const isPremium = getUserData().premium === true;
     const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
     const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-    
+
     let boutonPhoto = "";
-    
+
     if (hasPhoto && !isPremium) {
-      // Non premium + déjà une photo = bouton actif MAIS avec message au clic
-      boutonPhoto = `<button onclick="alert('❌ Fonction réservée aux membres premium.')" title="Réservé aux premium">🔒 ${boutonTexte}</button>`;
-      <button class="disabled-premium" onclick="alert(...)">🔒 ...</button>
+      boutonPhoto = `<button class="disabled-premium" onclick="alert('❌ Fonction réservée aux membres premium.')">🔒 ${boutonTexte}</button>`;
     } else {
-      // Tous les autres cas : bouton actif normal
       boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
     }
-    
+
     li.innerHTML = `
       <div class="defi-content">
         <div class="defi-texte">
@@ -152,8 +147,7 @@ function loadDefis() {
         <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
       </div>
     `;
-    
-  
+
     defiList.appendChild(li);
   });
 
@@ -180,7 +174,7 @@ function afficherPhotosSauvegardees() {
       const photo = document.createElement("img");
       photo.className = "photo-user";
       photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id); // ✅ zoom simple
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
 
       preview.appendChild(fond);
       preview.appendChild(photo);
@@ -273,4 +267,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
