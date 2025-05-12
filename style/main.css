@@ -18,7 +18,7 @@ body {
 
 /* === EN-TÊTE === */
 header {
-  background: #a8a8b1;
+  background: #3c3c46;
   padding: 15px 30px;
   color: white;
   display: flex;
@@ -42,7 +42,7 @@ header nav a {
 }
 
 header nav a:hover {
- background-color: #c9c9c9;
+ background-color: #3c3c46;
 }
 
 /* === BOUTON PRINCIPAL === */
@@ -112,11 +112,11 @@ header nav a:hover {
 }
 
 .defi-list li.done {
-  background-color: #3a3a3a;  /* ✅ même que les boutons d'accueil */
+  background-color: #3c3c46;;  /* ✅ même que les boutons d'accueil */
   color: white;
 }
 .defi-list li.done .defi-texte button:hover {
-  background-color: #1e3265;
+  background-color: #3a3a3a;
 }
 .defi-list li.done .defi-texte button {
   background-color: #555;
@@ -136,9 +136,10 @@ header nav a:hover {
 /* === GRILLE DE CADRES === */
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptation responsive */
-  gap: 30px;
-  padding: 20px 10px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 20px;
+
 }
 
 /* CARTE CADRE */
@@ -463,13 +464,13 @@ nav.nav-icons {
   
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
-  background: #4b4acb;
+  color: #babada;
   padding: 20px 30px;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #3a3a9f;
+  border-bottom: 5px solid #babada;
 }
 
 header h1 {
@@ -488,7 +489,7 @@ header nav {
 
 header nav a {
   background: white;
-  color: #4b4acb;
+  color: #babada;
   padding: 10px 16px;
   border-radius: 12px;
   font-size: 1rem;
@@ -618,7 +619,7 @@ color: #000;
 }
 
 .timer-box {
-  background: rgba(255, 255, 255, 0.15);
+  background: #3c3c46(255, 255, 255, 0.15);
   padding: 10px 20px;
   margin: 20px auto;
   text-align: center;
@@ -655,43 +656,50 @@ color: #000;
   opacity: 0.6;
   pointer-events: auto;
 }
-* {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-html, body {
-  width: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  padding: 20px;
 }
 
-main, .page-container, .grid-cadres, .cadre-item, .defi-content {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+.cadre-item {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+  min-height: 160px;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.cadre-item:hover {
+  transform: scale(1.03);
 }
 
-.cadre-mini {
-  width: 100%;
-  max-width: 120px;
-  aspect-ratio: 4 / 5;
-  position: relative;
-  overflow: hidden;
-  margin: 0 auto 10px;
-}
-
-.cadre-mini .photo-user,
-.cadre-mini .photo-cadre {
-  width: 100%;
-  height: 100%;
+.cadre-item img {
+  width: 80px;
+  height: 80px;
   object-fit: contain;
-  position: absolute;
-  top: 0; left: 0;
+  margin-bottom: 10px;
+}
+
+.cadre-item button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.cadre-item button[disabled] {
+  background-color: #ccc;
+  color: #333;
+  cursor: default;
 }
