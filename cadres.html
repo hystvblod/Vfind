@@ -11,6 +11,7 @@
     <a href="profil.html" class="back-btn">🔙</a>
     <h1>🎨 Mes cadres</h1>
   </header>
+  <script src="js/userData.js"></script>
 
   <main>
     <section class="cadres-possedes">
@@ -36,7 +37,7 @@
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
     const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
-    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || []).filter(c => tousLesCadres.includes(c));
+    const cadresPossedes = getUserData().cadres || [];
     const cadresContainer = document.getElementById("cadres-list");
 
     // Génération de la liste des cadres

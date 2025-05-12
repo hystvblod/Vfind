@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ Chargement des cadres
-  const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
   fetch("data/cadres.json")
     .then(res => res.json())
     .then(data => {
@@ -85,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         price.textContent = `${cadre.prix} pièces`;
 
         const button = document.createElement("button");
-        if (ownedFrames.includes(cadre.id)) {
+        if (getUserData().cadres.includes(cadre.id)) {
           button.textContent = "✅ Acheté";
           button.disabled = true;
         } else {
@@ -110,15 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
     userPoints -= prix;
     updatePointsDisplay();
 
-    // Ajout dans les cadres achetés de la boutique
-    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    if (!owned.includes(id)) owned.push(id);
-    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-
     // ✅ Synchronise avec le système global (profil, cadre actif)
-    if (typeof acheterCadreDansUserData === "function") {
-      acheterCadreDansUserData(id); // appelera data.cadres.push(...)
+    if (typeof acheterCadre === "function") {
+      acheterCadre(id);
     }
+    
 
     location.reload();
   }
