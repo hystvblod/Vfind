@@ -38,50 +38,54 @@
     <p>© 2025 VFind</p>
   </footer>
 
-  <script>
-    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
-    const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
-    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
-      .filter(c => tousLesCadres.includes(c));
+ <script src="js/userData.js"></script>
+<script>
+  const cadreActuel = getUserData().cadreActif || "polaroid_01";
+  const cadresPossedes = getUserData().cadres || [];
 
-    const cadresContainer = document.getElementById("cadres-list");
+  const cadresContainer = document.getElementById("cadres-list");
+  const popup = document.getElementById("popup-cadre");
+  const popupCadreImg = document.getElementById("popup-cadre-img");
+  let cadreSelectionTemp = "";
 
-    let cadreSelectionTemp = "";
+  // Affiche tous les cadres achetés en grille
+  cadresPossedes.forEach(cadre => {
+    const div = document.createElement("div");
+    div.className = "cadre-item";
+    if (cadre === cadreActuel) div.classList.add("selected-cadre");
 
-    cadresPossedes.forEach(cadre => {
-      const div = document.createElement("div");
-      div.className = "cadre-item";
-      if (cadre === cadreActuel) div.classList.add("selected-cadre");
+    div.innerHTML = `
+      <span class="checkmark">✔</span>
+      <div class="cadre-preview">
+        <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+    `;
 
-      div.innerHTML = `
-        <span class="checkmark">✔</span>
-        <div class="cadre-preview">
-          <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-          <img class="photo-user" src="./assets/img/exemple.jpg" />
-        </div>
-      `;
-
-      div.addEventListener("click", () => {
-        cadreSelectionTemp = cadre;
-        document.getElementById("popup-cadre-img").src = `./assets/cadres/${cadre}.webp`;
-        document.getElementById("popup-cadre").classList.remove("hidden");
-        document.getElementById("popup-cadre").classList.add("show");
-      });
-
-      cadresContainer.appendChild(div);
+    div.addEventListener("click", () => {
+      cadreSelectionTemp = cadre;
+      popupCadreImg.src = `./assets/cadres/${cadre}.webp`;
+      popup.classList.remove("hidden");
+      popup.classList.add("show");
     });
 
-    document.getElementById("close-popup").addEventListener("click", () => {
-      document.getElementById("popup-cadre").classList.remove("show");
-      document.getElementById("popup-cadre").classList.add("hidden");
-    });
+    cadresContainer.appendChild(div);
+  });
 
-    document.getElementById("confirmer-cadre").addEventListener("click", () => {
-      localStorage.setItem("cadre_selectionne", cadreSelectionTemp);
-      document.getElementById("popup-cadre").classList.remove("show");
-      document.getElementById("popup-cadre").classList.add("hidden");
-      location.reload();
-    });
-  </script>
+  document.getElementById("close-popup").addEventListener("click", () => {
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+  });
+
+  document.getElementById("confirmer-cadre").addEventListener("click", () => {
+    const data = getUserData();
+    data.cadreActif = cadreSelectionTemp;
+    localStorage.setItem("vfindUserData", JSON.stringify(data));
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+    location.reload();
+  });
+</script>
+
 </body>
 </html>
