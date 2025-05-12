@@ -34,36 +34,49 @@
   </footer>
 
   <script>
-    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-    const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
-    const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
-      .filter(c => tousLesCadres.includes(c));
+  const tousLesCadres = ["polaroid_01", "polaroid_02", "polaroid_03", "polaroid_04"];
+  const cadresPossedes = (JSON.parse(localStorage.getItem("vfind_owned_frames")) || [])
+    .filter(c => tousLesCadres.includes(c));
 
-    const cadresContainer = document.getElementById("cadres-list");
+  const cadresContainer = document.getElementById("cadres-list");
 
-    // Génération de la liste des cadres
-    cadresPossedes.forEach(cadre => {
-      const div = document.createElement("div");
-      div.className = "cadre-item";
-      div.innerHTML = `
-        <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" />
-        <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActuel ? "disabled" : ""}>
-          ${cadre === cadreActuel ? "✅ Utilisé" : "Utiliser"}
-        </button>
-      `;
-      cadresContainer.appendChild(div);
+  // Génération de la liste des cadres
+  cadresPossedes.forEach(cadre => {
+    const div = document.createElement("div");
+    div.className = "cadre-item";
+    if (cadre === cadreActuel) div.classList.add("selected-cadre");
+
+    div.innerHTML = `
+      <span class="checkmark">✔</span>
+      <div class="cadre-preview">
+        <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+    `;
+
+    div.addEventListener("click", () => {
+      localStorage.setItem("cadre_selectionne", cadre);
+      updateSelection(cadre);
     });
 
-    // Mise à jour de l'aperçu
-    const previewImage = document.getElementById("cadre-preview-img");
-    previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
+    cadresContainer.appendChild(div);
+  });
 
-    function selectionnerCadre(nomCadre) {
-      localStorage.setItem("cadre_selectionne", nomCadre);
-      alert("✅ Cadre sélectionné !");
-      location.reload();
-    }
-  </script>
+  function updateSelection(newCadre) {
+    document.querySelectorAll(".cadre-item").forEach(item => item.classList.remove("selected-cadre"));
+    const previewImage = document.getElementById("cadre-preview-img");
+    previewImage.src = `./assets/cadres/${newCadre}.webp`;
+    const newItem = [...document.querySelectorAll(".cadre-item")].find(item =>
+      item.querySelector("img.photo-cadre")?.src.includes(newCadre)
+    );
+    if (newItem) newItem.classList.add("selected-cadre");
+  }
+
+  // Mise à jour de l'aperçu au chargement
+  const previewImage = document.getElementById("cadre-preview-img");
+  previewImage.src = `./assets/cadres/${cadreActuel}.webp`;
+</script>
 </body>
 </html>
