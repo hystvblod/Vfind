@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pointsDisplay = document.getElementById("points");
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
-  let userPoints = getUserData().coins;
+  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
 
   pointsDisplay.textContent = userPoints;
 
@@ -40,7 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Met à jour le compteur
   function updatePointsDisplay() {
-    updateUserData({ coins: userPoints });
+    pointsDisplay.textContent = userPoints;
+    localStorage.setItem("vfind_points", userPoints);
   }
 
   // ✅ Effet visuel "+100"
@@ -56,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ Chargement des cadres
+  const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
   fetch("data/cadres.json")
     .then(res => res.json())
     .then(data => {
@@ -84,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         price.textContent = `${cadre.prix} pièces`;
 
         const button = document.createElement("button");
-        if (getUserData().cadres.includes(cadre.id)) {
+        if (ownedFrames.includes(cadre.id)) {
           button.textContent = "✅ Acheté";
           button.disabled = true;
         } else {
@@ -109,26 +111,23 @@ document.addEventListener("DOMContentLoaded", () => {
     userPoints -= prix;
     updatePointsDisplay();
 
-    // ✅ Synchronise avec le système global (profil, cadre actif)
-  // ✅ Sauvegarde propre du cadre acheté
-const idFormatte = formatCadreId(id);
-acheterCadre(idFormatte);
-setCadreSelectionne(idFormatte); // optionnel, active automatiquement
+    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+    owned.push(id);
+    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
     location.reload();
   }
-});
-
-// ✅ Scroll vers le haut après chargement
-setTimeout(() => {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-  document.body.style.overflowX = "hidden";
-}, 100);
-
-// ✅ Fermer la popup si on clique sur le fond
+  setTimeout(() => {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    document.body.style.overflowX = "hidden";
+  }, 100); 
+  
+  // ✅ Fermer la popup si on clique sur le fond
 document.addEventListener("click", function (e) {
   const popup = document.getElementById("popup-gain");
   if (popup.classList.contains("show") && e.target === popup) {
     closePopup();
   }
+});
+
 });
