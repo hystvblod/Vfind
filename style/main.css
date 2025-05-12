@@ -112,7 +112,7 @@ header nav a:hover {
 }
 
 .defi-list li.done {
-  background-color: #1e3265;  /* ✅ même que les boutons d'accueil */
+  background-color: #3c3c46;;  /* ✅ même que les boutons d'accueil */
   color: white;
 }
 .defi-list li.done .defi-texte button:hover {
