@@ -600,3 +600,25 @@ header nav a:hover {
   max-width: 300px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+.camera-container-fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: black;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-video {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: cover;
+}
+
+.camera-controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
