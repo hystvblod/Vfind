@@ -84,11 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTimer() {
+  const interval = setInterval(() => {
     const endTime = parseInt(localStorage.getItem(TIMER_STORAGE_KEY));
     const now = Date.now();
     const diff = endTime - now;
 
     if (diff <= 0) {
+      clearInterval(interval);
       endGame();
       return;
     }
@@ -96,8 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
-  }
+    if (timerDisplay) {
+      timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    }
+  }, 1000);
+}
 
   function loadDefis() {
     let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
