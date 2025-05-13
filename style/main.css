@@ -401,7 +401,6 @@ nav.nav-icons {
 }
 
 
-.close-btn {
 #close-popup {
   position: absolute;
   top: 10px;
@@ -419,8 +418,6 @@ nav.nav-icons {
   align-items: center;
   justify-content: center;
   line-height: 1;
-
-}
 
   }
   
