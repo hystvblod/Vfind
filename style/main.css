@@ -340,17 +340,14 @@ nav.nav-icons {
 .popup-inner {
   width: 90vw;
   max-width: 600px;
-  height: auto;
   background: #111;
   padding: 20px;
   border-radius: 12px;
   position: relative;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-
 }
 .defi-content {
   display: flex;
@@ -885,12 +882,16 @@ main {
 
 
 .cadre-popup .photo-user {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  object-fit: contain;
   z-index: 2;
-  top: 20px; left: 20px; right: 20px; bottom: 20px;
-  max-width: calc(100% - 40px);
-  max-height: calc(100% - 40px);
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+
 }
 .popup .popup-user {
   position: absolute;
@@ -914,21 +915,23 @@ main {
 
 /* ✅ POPUP ZOOM EXACTE BOUTIQUE */
 .cadre-preview.cadre-popup {
-  width: 90vw;
-  height: auto;
-  max-height: 90vh;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 4 / 5;
   position: relative;
   overflow: hidden;
   border-radius: 16px;
   background: #000;
+
 }
 .cadre-popup .photo-cadre,
 .cadre-popup .photo-user {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
   width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  height: 100%;
   object-fit: contain;
+  z-index: 1;
 }
 .popup-photo {
   width: 100%;
