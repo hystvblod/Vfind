@@ -1,10 +1,16 @@
-/* === PATCH GLOBAL RESPONSIVE CLEAN === */
-/* === PATCH PRO FIX SCROLL === */
 html, body {
-  height: auto !important;
-  min-height: 100vh !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  font-family: 'Poppins', sans-serif;
+  background: #0e0e18;
+  color: #f0f0f0;
 }
 
 /* Garde la hauteur d'écran réelle sur mobile (vh buggy sinon) */
@@ -18,21 +24,6 @@ html, body {
 
 }
 
-html, body {
-  height: 100%;                /* ✅ essentiel pour les scrolls sur tous les appareils */
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  font-size: 16px;
-  line-height: 1.5;
-  word-wrap: break-word;
-  font-family: 'Poppins', sans-serif;
-  background: #0e0e18;
-  color: #f0f0f0;
-
-}
 body {
   display: flex;
   flex-direction: column;
@@ -370,14 +361,6 @@ nav.nav-icons {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-
-.cadre-preview.cadre-popup {
-  width: 300px;
-  height: 375px;
-  position: relative;
-  overflow: hidden;
 }
 
 .photo-cadre {

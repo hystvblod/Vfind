@@ -45,7 +45,8 @@
         div.innerHTML = `
           <div class="cadre-preview miniature" onclick="zoomCadre('${cadre}')">
   <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
-  <img class="photo-user" src="./assets/img/exemple.jpg" />
+  <img class="photo-user-mini" src="./assets/img/exemple.jpg" />
+
 </div>
           <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
             ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
