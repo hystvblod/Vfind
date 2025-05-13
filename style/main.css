@@ -362,6 +362,7 @@ nav.nav-icons {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
 
 }
 .defi-content {
