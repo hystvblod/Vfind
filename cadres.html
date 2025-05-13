@@ -6,35 +6,31 @@
   <title>VFind - Mes cadres</title>
   <link rel="stylesheet" href="style/main.css"/>
 </head>
-<body class="vfind-bg">
-  <div class="page-container">
+<body class="cadres-container">
+  <header class="profil-header">
+    <a href="profil.html" class="back-btn">🔙</a>
+    <h1>🎨 Mes cadres</h1>
+  </header>
 
-    <header class="profil-header">
-      <a href="profil.html" class="back-btn">🔙</a>
-      <h1>🎨 Mes cadres</h1>
-    </header>
+  <main>
+    <section class="cadres-possedes">
+      <div class="grid-cadres" id="cadres-list">
+        <!-- Les cadres possédés seront injectés ici -->
+      </div>
+    </section>
 
-    <main>
-      <section class="cadres-possedes">
-        <div class="grid-cadres" id="cadres-list">
-          <!-- Les cadres possédés seront injectés ici -->
-        </div>
-      </section>
+    <section class="cadre-preview-section">
+      <h2 style="text-align:center; color:white;">Aperçu du cadre sélectionné</h2>
+      <div class="cadre-preview">
+        <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
+      </div>
+    </section>
+  </main>
 
-      <section class="cadre-preview-section">
-        <h2 style="text-align:center; color:white;">Aperçu du cadre sélectionné</h2>
-        <div class="cadre-preview">
-          <img class="photo-cadre" id="cadre-preview-img" src="./assets/cadres/polaroid_01.webp" />
-          <img class="photo-user" src="./assets/img/exemple.jpg" />
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <p>© 2025 VFind</p>
-    </footer>
-
-  </div> <!-- FIN page-container -->
+  <footer>
+    <p>© 2025 VFind</p>
+  </footer>
 
   <script src="js/userData.js"></script>
   <script>

@@ -31,12 +31,6 @@ html, body {
   overflow-wrap: break-word;
 }
 
-/* Réduction sur petits écrans */
-@media (max-width: 768px) {
-  .grid-cadres {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
   .popup-inner {
     width: 90vw;
     height: auto;
@@ -50,7 +44,6 @@ html, body {
   .defi-list {
     padding: 0 10px;
   }
-}
 
 @media (max-width: 480px) {
   .cadre-preview {
@@ -199,14 +192,6 @@ header nav a:hover {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   font-weight: bold;
-}
-
-/* === GRILLE DE CADRES === */
-.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-  padding: 20px;
 
 }
 
@@ -864,4 +849,38 @@ main, .main-container, .duel-container, .boutique-container, .cadres-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+main,
+.boutique-container,
+.cadres-container,
+.duel-container,
+.gallery-container,
+.historique-container,
+.index-container,
+.parametre-container,
+.reglement-container {
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+html, body {
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body, .page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: auto;
+  width: 100%;
+}
+
+main {
+  flex-grow: 1;
+  overflow-y: auto;
 }

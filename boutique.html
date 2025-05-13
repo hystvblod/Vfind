@@ -6,40 +6,36 @@
   <title>VFind - Boutique</title>
   <link rel="stylesheet" href="style/main.css" />
 </head>
-<body class="vfind-bg">
-  <div class="page-container">
+<body class="boutique-container">
+  <header>
+    <h1>Boutique</h1>
+    <nav class="nav-icons">
+      <button class="back-btn" onclick="history.back()" title="Retour">&#8592;</button>
+      <a href="profil.html" class="icon-btn" title="Profil">👤</a>
+      <a href="parametres.html" class="icon-btn" title="Paramètres">⚙️</a>
+    </nav>
+  </header>
 
-    <header>
-      <h1>Boutique</h1>
-      <nav class="nav-icons">
-        <button class="back-btn" onclick="history.back()" title="Retour">&#8592;</button>
-        <a href="profil.html" class="icon-btn" title="Profil">👤</a>
-        <a href="parametres.html" class="icon-btn" title="Paramètres">⚙️</a>
-      </nav>
-    </header>
+  <main>
+    <section class="points-display">
+      <p>
+        💰 Tes pièces : <span id="points">0</span>
+        <span id="gain-feedback" class="hidden">+100 💰</span>
+      </p>
+      <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
+    </section>
 
-    <main>
-      <section class="points-display">
-        <p>
-          💰 Tes pièces : <span id="points">0</span>
-          <span id="gain-feedback" class="hidden">+100 💰</span>
-        </p>
-        <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
-      </section>
+    <section class="cadres-list">
+      <h2>🎨 Cadres disponibles</h2>
+      <div id="boutique-container" class="list-cadres">
+        <!-- Les cadres seront chargés depuis cadres.json -->
+      </div>
+    </section>
+  </main>
 
-      <section class="cadres-list">
-        <h2>🎨 Cadres disponibles</h2>
-        <div id="boutique-container" class="list-cadres">
-          <!-- Les cadres seront chargés depuis cadres.json -->
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 VFind</p>
-    </footer>
-
-  </div> <!-- page-container -->
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
 
   <!-- ✅ Fenêtre modale interactive -->
   <div id="popup-gain" class="popup hidden">
