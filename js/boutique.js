@@ -16,13 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Fermer la fenêtre
   window.closePopup = function () {
     popupGain.classList.remove("show");
     popupGain.classList.add("hidden");
   };
 
-  // ✅ Gagner pièces via pub
   window.watchAd = function () {
     userPoints += 100;
     updatePointsDisplay();
@@ -30,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup();
   };
 
-  // ✅ Gagner pièces via invitation
   window.inviteFriend = function () {
     userPoints += 300;
     updatePointsDisplay();
@@ -54,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   }
 
-  // ✅ Fonction de synchronisation "Mes cadres"
+  // ✅ Ajout réel du cadre dans vfindUserData
   function acheterCadre(id) {
     const userData = JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
     if (!userData.cadres.includes(id)) {
@@ -63,7 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("vfindUserData", JSON.stringify(userData));
   }
 
-  // ✅ Fonction d’achat
+  function getUserData() {
+    return JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
+  }
+
   function acheterCadreBoutique(id, prix) {
     if (userPoints < prix) {
       alert("❌ Pas assez de pièces !");
@@ -72,18 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     userPoints -= prix;
     updatePointsDisplay();
-
-    const owned = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
-    owned.push(id);
-    acheterCadre(id); // 🔁 synchronise avec vfindUserData
-    localStorage.setItem("vfind_owned_frames", JSON.stringify(owned));
-    localStorage.setItem("vfind_selected_frame", id); // facultatif
-
+    acheterCadre(id); // ✅ synchronise la version officielle
+    localStorage.setItem("vfind_selected_frame", id); // optionnel
     location.reload();
   }
 
-  // ✅ Chargement des cadres
-  const ownedFrames = JSON.parse(localStorage.getItem("vfind_owned_frames")) || [];
+  // ✅ Chargement de la boutique
+  const ownedFrames = getUserData().cadres;
   fetch("data/cadres.json")
     .then(res => res.json())
     .then(data => {
@@ -128,14 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // ✅ Scroll vers le haut après chargement
+  // ✅ Scroll en haut au chargement
   setTimeout(() => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     document.body.style.overflowX = "hidden";
   }, 100);
 
-  // ✅ Fermer la popup si on clique sur le fond
   document.addEventListener("click", function (e) {
     if (popupGain.classList.contains("show") && e.target === popupGain) {
       closePopup();
