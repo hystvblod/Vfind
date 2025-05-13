@@ -884,10 +884,6 @@ main {
   box-shadow: 0 0 10px 2px #ffd700;
   border-radius: 16px;
 }
-@media (max-width: 480px) {
-  .grid-cadres {
-    grid-template-columns: repeat(2, 1fr); /* passe à 2 sur mobile */
-  }
 
   .cadre-preview.cadre-popup {
     width: 90vw;
@@ -901,7 +897,7 @@ main {
     bottom: 10px;
     max-width: calc(100% - 20px);
     max-height: calc(100% - 20px);
-  }
+
 }
 .cadre-miniature {
   position: relative;
@@ -935,4 +931,13 @@ main {
   object-fit: contain;
   z-index: 2;
   border-radius: 6px;
+}
+.popup {
+  background: rgba(0, 0, 0, 0.7); /* ✅ fond semi-transparent */
+  border-radius: 12px;
+}
+.popup-inner {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
 }
