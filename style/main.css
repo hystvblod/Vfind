@@ -886,3 +886,8 @@ main {
   flex-grow: 1;
   overflow-y: auto;
 }
+.cadre-actif {
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 10px 2px #ffd700;
+  border-radius: 16px;
+}

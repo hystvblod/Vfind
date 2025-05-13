@@ -41,9 +41,12 @@
 
       cadresPossedes.forEach(cadre => {
         const div = document.createElement("div");
-        div.className = "cadre-item";
+        div.className = "cadre-item" + (cadre === cadreActif ? " cadre-actif" : "");
         div.innerHTML = `
-          <img src="./assets/cadres/${cadre}.webp" alt="${cadre}" onclick="zoomCadre('${cadre}')" />
+          <div class="cadre-preview cadre-popup" onclick="zoomCadre('${cadre}')">
+            <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+            <img class="photo-user" src="./assets/img/exemple.jpg" />
+          </div>
           <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
             ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
           </button>
