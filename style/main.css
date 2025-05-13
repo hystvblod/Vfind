@@ -68,6 +68,7 @@ main {
 .grid-cadres .cadre-item {
   width: 100%;
   max-width: 120px;
+  min-width: 80px; /* ✅ Permet aux éléments de se réduire si nécessaire */
 }
 
   .defi-texte p {
@@ -667,7 +668,7 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
+  grid-template-columns: repeat(3, 1fr); /* ✅ Toujours 3 colonnes */
   gap: 20px;
   padding: 20px;
   justify-items: center;
@@ -828,20 +829,7 @@ main {
   background: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
   padding: 0; /* padding inutile ici, on le met dans .popup-inner */
   margin: 0;
-}
 
-
-
-@media (max-width: 768px) {
-  .grid-cadres {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-cadres {
-    grid-template-columns: 1fr;
-  }
 }
 
 .cadre-item {
