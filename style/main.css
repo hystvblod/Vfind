@@ -545,8 +545,8 @@ nav.nav-icons {
       justify-content: center;
       align-items: flex-start;
       padding-top: 80px;
-      height: calc(100vh - 80px);
-    }
+      min-height: calc(100vh - 80px);
+}
   
 /* === NAVIGATION PROFESSIONNELLE === */
 header {
