@@ -85,7 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateTimer() {
   const interval = setInterval(() => {
-    const endTime = parseInt(localStorage.getItem(TIMER_STORAGE_KEY));
+    const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
+if (!endTimeRaw) return;
+
+const endTime = parseInt(endTimeRaw);
+
     const now = Date.now();
     const diff = endTime - now;
 
