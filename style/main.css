@@ -222,13 +222,6 @@ header nav a:hover {
   transform: translateY(-5px);
 }
 
-.cadre-item img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
 .cadre-item button {
   background-color: #4caf50;
   color: white;
@@ -917,6 +910,7 @@ main {
   overflow: hidden;
   border-radius: 10px;
   cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .cadre-miniature .photo-cadre {
