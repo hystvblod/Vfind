@@ -851,3 +851,10 @@ img, .cadre-preview, .cadre-item {
   height: auto;
   display: block;
 }
+.solo-container {
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
