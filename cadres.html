@@ -43,10 +43,10 @@
         const div = document.createElement("div");
         div.className = "cadre-item";
         div.innerHTML = `
-          <div class="cadre-miniature" onclick="zoomCadre('${cadre}')">
-            <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" alt="Cadre" />
-            <img class="photo-user" src="./assets/img/exemple.jpg" alt="Utilisateur" />
-          </div>
+          <div class="cadre-preview miniature" onclick="zoomCadre('${cadre}')">
+  <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" />
+  <img class="photo-user" src="./assets/img/exemple.jpg" />
+</div>
           <button onclick="selectionnerCadre('${cadre}')" ${cadre === cadreActif ? "disabled" : ""}>
             ${cadre === cadreActif ? "✅ Utilisé" : "Utiliser"}
           </button>
