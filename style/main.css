@@ -858,3 +858,10 @@ img, .cadre-preview, .cadre-item {
   gap: 1.5rem;
   overflow-y: auto;
 }
+main, .main-container, .duel-container, .boutique-container, .cadres-container {
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
