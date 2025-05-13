@@ -1,6 +1,21 @@
 /* === PATCH GLOBAL RESPONSIVE CLEAN === */
+/* === PATCH PRO FIX SCROLL === */
+html, body {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Garde la hauteur d'écran réelle sur mobile (vh buggy sinon) */
 :root {
   --vh: 100vh;
+}
+@media (max-width: 768px) {
+  :root {
+    --vh: 100dvh;
+  }
+
 }
 
 html, body {
@@ -68,13 +83,6 @@ main {
   .defi-texte p {
     font-size: 1rem;
   }
-}
-
-/* === RÉINITIALISATION DE BASE === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 /* === FOND GLOBAL === */
@@ -738,18 +746,6 @@ color: #000;
   justify-items: center;
 }
 
-.cadre-item {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-  min-height: 160px;
-}
 
 .cadre-item:hover {
   transform: scale(1.03);
@@ -940,4 +936,144 @@ main {
   background: white;
   padding: 20px;
   border-radius: 12px;
+}
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .grid-cadres {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cadres {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cadre-item {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+  min-height: 160px;
+  width: 100%;
+  max-width: 140px;
+}
+
+
+.cadre-item button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.cadre-item button[disabled] {
+  background-color: #ccc;
+  color: #333;
+  cursor: default;
+}
+
+/* ✅ MINIATURE : fond + lapin superposés */
+.cadre-miniature {
+  position: relative;
+  width: 100%;
+  padding-top: 125%; /* ratio 4:5 */
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cadre-miniature .photo-cadre {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cadre-miniature .photo-user {
+  position: absolute;
+  top: 6px; left: 6px;
+  right: 6px; bottom: 6px;
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
+  object-fit: contain;
+  z-index: 2;
+  border-radius: 6px;
+}
+
+/* ✅ POPUP ZOOM */
+.popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-inner {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.popup-inner #close-popup {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+}
+
+.cadre-preview.cadre-popup {
+  position: relative;
+  width: 300px;
+  height: 375px;
+  overflow: hidden;
+}
+
+.cadre-popup .photo-cadre,
+.cadre-popup .photo-user {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.cadre-popup .photo-user {
+  z-index: 2;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
