@@ -68,20 +68,21 @@
       location.reload();
     }
 
-    function zoomCadre(id) {
+function zoomCadre(id) {
   const popup = document.createElement("div");
   popup.className = "popup show";
   popup.innerHTML = `
     <div class="popup-inner">
       <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
       <div class="cadre-preview cadre-popup">
-        <img class="photo-cadre popup-photo" src="./assets/cadres/${id}.webp" />
-        <img class="photo-user popup-photo" src="./assets/img/exemple.jpg" />
+        <img class="photo-cadre" src="./assets/cadres/${id}.webp" />
+        <img class="photo-user" src="./assets/img/exemple.jpg" />
       </div>
     </div>
   `;
-document.body.appendChild(popup);
-    }
+  document.body.appendChild(popup);
+}
+
   </script>
 </body>
 </html>

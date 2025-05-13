@@ -338,10 +338,10 @@ nav.nav-icons {
 }
 
 .popup-inner {
-  width: 100%;
-  max-width: 90vw;
+  width: 90vw;
+  max-width: 600px;
   height: auto;
-  background: white;
+  background: #111;
   padding: 20px;
   border-radius: 12px;
   position: relative;
