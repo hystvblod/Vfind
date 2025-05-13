@@ -79,6 +79,10 @@ main {
   .cadre-item {
     max-width: 95vw;
   }
+.grid-cadres .cadre-item {
+  width: 100%;
+  max-width: 120px;
+}
 
   .defi-texte p {
     font-size: 1rem;
@@ -991,15 +995,6 @@ main {
   cursor: default;
 }
 
-/* ✅ MINIATURE : fond + lapin superposés */
-.cadre-miniature {
-  position: relative;
-  width: 100%;
-  padding-top: 125%; /* ratio 4:5 */
-  overflow: hidden;
-  border-radius: 10px;
-  cursor: pointer;
-}
 
 .cadre-miniature .photo-cadre {
   position: absolute;
@@ -1074,6 +1069,16 @@ main {
   top: 20px; left: 20px; right: 20px; bottom: 20px;
   max-width: calc(100% - 40px);
   max-height: calc(100% - 40px);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.popup .popup-user {
+  position: absolute;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  z-index: 2;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
