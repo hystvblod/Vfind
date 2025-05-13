@@ -849,15 +849,7 @@ main {
   border: 3px solid #ffd700;
   box-shadow: 0 0 10px 2px #ffd700;
   border-radius: 16px;
-}
 
-  .photo-user {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    max-width: calc(100% - 20px);
-    max-height: calc(100% - 20px);
 
 }
 .cadre-miniature {
