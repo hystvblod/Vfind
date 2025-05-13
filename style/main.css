@@ -1,11 +1,6 @@
-/* === PATCH GLOBAL RESPONSIVE CLEAN === */
-:root {
-  --vh: 100vh;
-}
-
 html, body {
+  height: 100%;
   min-height: 100vh;
-  height: auto;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -17,6 +12,27 @@ html, body {
   background: #0e0e18;
   color: #f0f0f0;
 }
+
+/* Garde la hauteur d'écran réelle sur mobile (vh buggy sinon) */
+:root {
+  --vh: 100vh;
+}
+@media (max-width: 768px) {
+  :root {
+    --vh: 100dvh;
+  }
+
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
 
 /* Empêche toute boîte de sortir de l'écran */
 * {
@@ -30,11 +46,6 @@ html, body {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-
-  .popup-inner {
-    width: 90vw;
-    height: auto;
-  }
 
   .main-button {
     font-size: 1rem;
@@ -54,17 +65,14 @@ html, body {
   .cadre-item {
     max-width: 95vw;
   }
+.grid-cadres .cadre-item {
+  width: 100%;
+  max-width: 120px;
+}
 
   .defi-texte p {
     font-size: 1rem;
   }
-}
-
-/* === RÉINITIALISATION DE BASE === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 /* === FOND GLOBAL === */
@@ -212,13 +220,6 @@ header nav a:hover {
   transform: translateY(-5px);
 }
 
-.cadre-item img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
 .cadre-item button {
   background-color: #4caf50;
   color: white;
@@ -342,25 +343,6 @@ nav.nav-icons {
   transform: translateY(-10px);
 }
 
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  z-index: 1000;
-  opacity: 0;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 90vw;
-  height: auto;
-}
-
 .popup.show {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
@@ -369,45 +351,17 @@ nav.nav-icons {
 
 .popup-inner {
   width: 100%;
+  max-width: 90vw;
   height: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
-}
 
-.cadre-preview.cadre-popup {
-  position: relative;
-  width: 300px;
-  height: 375px;
-  margin: 0 auto;
-}
-
-.photo-cadre {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.photo-user {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  width: auto;
-  height: auto;
-  max-width: calc(100% - 40px);
-  max-height: calc(100% - 40px);
-  object-fit: contain;
-  z-index: 3;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 .defi-content {
   display: flex;
@@ -445,19 +399,6 @@ nav.nav-icons {
   width: 280px; /* ✅ Cette syntaxe est valide */
 }
 
-.popup-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.popup {
-  width: auto;
-  max-width: 90vw;
-  height: auto;
-  max-height: 90vh;
-  padding: 10px 20px 30px;
-}
 
 .close-btn {
 #close-popup {
@@ -514,9 +455,6 @@ nav.nav-icons {
 
 #popup-gain button:hover {
   background: #e6b800;
-}
-.popup {
-  background-color: transparent; /* pour retirer le fond blanc de la popup */
 }
 
 #startBtn {
@@ -735,18 +673,6 @@ color: #000;
   justify-items: center;
 }
 
-.cadre-item {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-  min-height: 160px;
-}
 
 .cadre-item:hover {
   transform: scale(1.03);
@@ -777,9 +703,6 @@ color: #000;
 
 }
 
-body {
-  display: block;
-}
 
 .page-container {
   max-width: 100vw;
@@ -811,22 +734,7 @@ main {
   object-fit: contain;
   z-index: 1;
   pointer-events: none;
-}
 
-.list-cadres .photo-user {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  width: auto;
-  height: auto;
-  max-width: calc(100% - 40px);
-  max-height: calc(100% - 40px);
-  object-fit: contain;
-  z-index: 3;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 body, html, main, section, .container {
   max-width: 100vw;
@@ -866,22 +774,175 @@ main,
   flex-direction: column;
   gap: 1.5rem;
 }
-html, body {
-  height: auto;
-  min-height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
+
 
 body, .page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  height: auto;
   width: 100%;
 }
 
 main {
   flex-grow: 1;
   overflow-y: auto;
+}
+.cadre-actif {
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 10px 2px #ffd700;
+  border-radius: 16px;
+
+
+}
+.cadre-miniature {
+  position: relative;
+  width: 100px;
+  height: 125px;
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.cadre-miniature .photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+  padding: 0; /* padding inutile ici, on le met dans .popup-inner */
+  margin: 0;
+}
+
+
+
+@media (max-width: 768px) {
+  .grid-cadres {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cadres {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cadre-item {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+  min-height: 160px;
+  width: 100%;
+  max-width: 140px;
+}
+
+
+.cadre-item button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.cadre-item button[disabled] {
+  background-color: #ccc;
+  color: #333;
+  cursor: default;
+}
+
+
+.cadre-miniature .photo-cadre {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cadre-miniature .photo-user {
+  position: absolute;
+  top: 6px; left: 6px;
+  right: 6px; bottom: 6px;
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
+  object-fit: contain;
+  z-index: 2;
+  border-radius: 6px;
+}
+
+.popup-inner #close-popup {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+}
+
+
+.cadre-popup .photo-user {
+  z-index: 2;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.popup .popup-user {
+  position: absolute;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  z-index: 2;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+/* ✅ MINIATURE DU CADRE VERSION BOUTIQUE */
+.cadre-preview.miniature {
+  width: 300px;
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* ✅ POPUP ZOOM EXACTE BOUTIQUE */
+.cadre-preview.cadre-popup {
+  width: 1000px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
 }
