@@ -143,7 +143,8 @@ const endTime = parseInt(endTimeRaw);
     </div>
     <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
   </div>
-  <img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />
+  ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
+
 `;
 
 

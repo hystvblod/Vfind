@@ -944,8 +944,8 @@ main {
   position: absolute;
   bottom: 10px;
   right: 12px;
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   z-index: 5;
   cursor: pointer;
   transform: none; /* ✅ retire le centrage horizontal */
@@ -1055,5 +1055,10 @@ main {
 
 #popup-achat-jeton button:hover {
   background: #e6b800;
+}
+.vcoin-mini {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
 }
 
