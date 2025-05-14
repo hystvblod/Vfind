@@ -4,10 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
 
- let userPoints = getPoints();
+  let userPoints = getPoints();
   pointsDisplay.textContent = userPoints;
 
-  updateJetonsDisplay(); // ✅ Met à jour l'affichage des jetons au chargement
+  updateJetonsDisplay(); // ✅ Mise à jour au chargement
 
   const gainBtn = document.getElementById("gain-btn");
   if (gainBtn) {
@@ -41,10 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup();
   };
 
- function updatePointsDisplay() {
-  userPoints = getPoints(); // recalcule à chaque fois
-  pointsDisplay.textContent = userPoints;
-}
+  function updatePointsDisplay() {
+    const pointsDisplay = document.getElementById("points");
+    if (pointsDisplay) {
+      pointsDisplay.textContent = getPoints();
+    }
+  }
+
   function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
     if (jetonsSpan && typeof getJetons === "function") {
@@ -76,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Pas assez de pièces !");
       return;
     }
-
     userPoints -= prix;
     updatePointsDisplay();
     acheterCadre(id);
@@ -181,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // ✅ Rendez les fonctions globales accessibles dans le HTML (onclick)
+  // ✅ Fonctions rendues globales
   window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
   window.fermerPopupJetonBoutique = fermerPopupJetonBoutique;
   window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
