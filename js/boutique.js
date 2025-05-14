@@ -5,9 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupGain = document.getElementById("popup-gain");
 
   let userPoints = getPoints();
-  pointsDisplay.textContent = userPoints;
-
-  updateJetonsDisplay(); // ✅ Mise à jour au chargement
+  updatePointsDisplay();
+  updateJetonsDisplay();
 
   const gainBtn = document.getElementById("gain-btn");
   if (gainBtn) {
@@ -28,21 +27,20 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.watchAd = function () {
-    userPoints += 100;
+    addPoints(100);
     updatePointsDisplay();
     showFeedback("+100 💰");
     closePopup();
   };
 
   window.inviteFriend = function () {
-    userPoints += 300;
+    addPoints(300);
     updatePointsDisplay();
     showFeedback("+300 💰");
     closePopup();
   };
 
   function updatePointsDisplay() {
-    const pointsDisplay = document.getElementById("points");
     if (pointsDisplay) {
       pointsDisplay.textContent = getPoints();
     }
@@ -75,11 +73,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function acheterCadreBoutique(id, prix) {
-    if (userPoints < prix) {
+    if (getPoints() < prix) {
       alert("❌ Pas assez de pièces !");
       return;
     }
-    userPoints -= prix;
+
+    removePoints(prix);
     updatePointsDisplay();
     acheterCadre(id);
     localStorage.setItem("vfind_selected_frame", id);
@@ -118,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 
-  // ✅ Chargement des cadres de la boutique
   const ownedFrames = getUserData().cadres;
   fetch("data/cadres.json")
     .then(res => res.json())
@@ -183,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // ✅ Fonctions rendues globales
   window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
   window.fermerPopupJetonBoutique = fermerPopupJetonBoutique;
   window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
