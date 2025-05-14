@@ -140,7 +140,7 @@ const endTime = parseInt(endTimeRaw);
           <div class="defi-texte">
             <p>${defi.texte}</p>
             ${boutonPhoto}
-            <button onclick="validerAvecPub(${index})">📺 Voir une pub afin de valider ce défi ?</button>
+            <img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />
           </div>
           <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
         </div>
