@@ -169,6 +169,21 @@ function acheterJetonsAvecPub() {
         boutiqueContainer.appendChild(item);
       });
     });
+window.ouvrirPopupJetonBoutique = function () {
+  const popup = document.getElementById("popup-achat-jeton");
+  if (popup) {
+    popup.classList.add("show");
+    popup.classList.remove("hidden");
+  }
+};
+
+window.fermerPopupJetonBoutique = function () {
+  const popup = document.getElementById("popup-achat-jeton");
+  if (popup) {
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+  }
+};
 
   // ✅ Scroll en haut au chargement
   setTimeout(() => {
