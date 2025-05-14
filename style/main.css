@@ -442,8 +442,12 @@ nav.nav-icons {
     align-items: center;        /* ← centre verticalement dans le bloc */
   }
 .defi-photo-container .cadre-preview {
-  transform: scale(0.6);
+  width: 80px;
+  height: 100px;
+  position: relative;
+  transform: scale(1); /* ✅ Pour éviter qu’il disparaisse */
   transform-origin: top right;
+  margin-left: auto;  /* ✅ Pour l’aligner à droite */
 }
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
