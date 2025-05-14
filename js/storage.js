@@ -20,7 +20,7 @@ function initUserDataIfMissing() {
   if (!localStorage.getItem("vfindUserData")) {
     const data = {
       pseudo: "Toi",
-      coins: 0,
+      Vcoins: 0,
       cadres: JSON.parse(localStorage.getItem("vfind_owned_frames")) || ["polaroid_01"],
       cadreActif: "polaroid_01",
       historique: [],

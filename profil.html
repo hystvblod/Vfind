@@ -8,13 +8,13 @@
 </head>
 <body class="vfind-bg">
   <header class="profil-header">
-    <a href="index.html" class="back-btn">← Retour</a>
+    <a href="javascript:history.back()" class="back-btn">←</a>
     <h1>Mon Profil</h1>
   </header>
 
   <!-- ✅ Bloc unique avec les bonnes valeurs -->
   <section class="profil-top">
-    <p>💰 VCoins : <span id="vcoins">0</span></p>
+    <p>💰 VCoins : <span id="Vcoins">0</span></p>
     <p>🎟️ Jetons : <span id="jetons">0</span></p>
   </section>
 
@@ -36,7 +36,7 @@
   <script src="js/userData.js"></script>
   <script>
     const data = getUserData();
-    document.getElementById("vcoins").textContent = data.coins || 0;
+    document.getElementById("Vcoins").textContent = data.Vcoins || 0;
     document.getElementById("jetons").textContent = data.jetons || 0;
   </script>
 </body>

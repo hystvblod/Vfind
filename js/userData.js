@@ -9,7 +9,7 @@ function formatCadreId(id) {
 function getUserData() {
   return JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
-    vcoins: 0,
+    Vcoins: 0,
     cadres: ["polaroid_01", "polaroid_02"], // correspond aux vrais fichiers
     cadreActif: "polaroid_01",                  // idem
     historique: [],
@@ -35,17 +35,17 @@ function setPseudo(pseudo) {
 
 // Points
 function getPoints() {
-  return getUserData().coins;
+  return getUserData().Vcoins;
 }
 function addPoints(n) {
   const data = getUserData();
-  data.coins += n;
+  data.Vcoins += n;
   saveUserData(data);
 }
 function removePoints(n) {
   const data = getUserData();
-  if (data.coins >= n) {
-    data.coins -= n;
+  if (data.Vcoins >= n) {
+    data.Vcoins -= n;
     saveUserData(data);
     return true;
   }

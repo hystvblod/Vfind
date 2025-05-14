@@ -28,14 +28,14 @@ function showAd(type) {
 function ajouterPieces(montant) {
   const userData = JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
-    coins: 0,
+    Vcoins: 0,
     cadres: ["polaroid_01"],
     premium: false
   };
 
-  userData.coins += montant;
+  userData.Vcoins += montant;
   localStorage.setItem("vfindUserData", JSON.stringify(userData));
 
   const pointsSpan = document.getElementById("points");
-  if (pointsSpan) pointsSpan.textContent = userData.coins;
+  if (pointsSpan) pointsSpan.textContent = userData.Vcoins;
 }
