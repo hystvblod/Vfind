@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="page-container">
+  <!-- POPUP PHOTO -->
   <div id="popup-photo" class="popup hidden">
     <div class="popup-inner">
       <button id="close-popup" class="close-btn">❌</button>
@@ -17,6 +18,17 @@
     </div>
   </div>
 
+  <!-- POPUP VALIDATION PAR JETON -->
+  <div id="popup-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
+      <p id="solde-jeton">Jetons disponibles : --</p>
+      <button id="valider-jeton-btn">✅ Valider</button>
+      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
   <header class="header-solo">
     <a href="index.html" class="btn-icon back-button">⬅️</a>
     <h1 class="mode-title">📸 Mode Solo</h1>
@@ -26,6 +38,7 @@
     </div>
   </header>
 
+  <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
     <section id="pre-game" class="centered">
       <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
@@ -43,6 +56,7 @@
     </section>
   </main>
 
+  <!-- SCRIPTS -->
   <script src="js/solo.js"></script>
   <script src="js/camera.js"></script>
   <script>
@@ -50,6 +64,37 @@
       img.classList.toggle('cover');
       img.classList.toggle('contain');
     }
+
+    let defiIndexActuel = null;
+
+    window.ouvrirPopupJeton = function(index) {
+      const jetons = parseInt(localStorage.getItem("jetons_validation")) || 0;
+      const isPremium = localStorage.getItem("premium") === "true";
+
+      document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+      document.getElementById("popup-jeton").classList.remove("hidden");
+      document.getElementById("popup-jeton").classList.add("show");
+      defiIndexActuel = index;
+
+      document.getElementById("valider-jeton-btn").onclick = () => {
+        if (jetons > 0 || isPremium) {
+          if (!isPremium) {
+            localStorage.setItem("jetons_validation", jetons - 1);
+          }
+          if (typeof validerDefi === "function") {
+            validerDefi(defiIndexActuel);
+          }
+          fermerPopupJeton();
+        } else {
+          alert("❌ Pas de jeton disponible. Achetez-en dans la boutique ou passez premium.");
+        }
+      };
+    };
+
+    window.fermerPopupJeton = function () {
+      document.getElementById("popup-jeton").classList.remove("show");
+      document.getElementById("popup-jeton").classList.add("hidden");
+    };
   </script>
 </body>
 </html>
