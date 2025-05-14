@@ -278,21 +278,24 @@ function updateJetonsDisplay() {
   document.getElementById("popup-jeton").classList.add("show");
   defiIndexActuel = index;
 
-  document.getElementById("valider-jeton-btn").onclick = () => {
-    if (jetons > 0) {
-      const success = removeJeton(); // retire un jeton
-      if (success) {
-        if (typeof validerDefi === "function") {
-          validerDefi(defiIndexActuel);
-        }
-        fermerPopupJeton();
-      } else {
-        alert("❌ Erreur lors de la soustraction du jeton.");
+document.getElementById("valider-jeton-btn").onclick = () => {
+  const jetons = getJetons(); // ⚠️ recalcul ici (dans l'action)
+  if (jetons > 0) {
+    const success = removeJeton();
+    if (success) {
+      if (typeof validerDefi === "function") {
+        validerDefi(defiIndexActuel);
       }
+      updateJetonsDisplay(); // ✅ met à jour le haut de l’écran
+      fermerPopupJeton();
     } else {
-      alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+      alert("❌ Erreur lors de la soustraction du jeton.");
     }
-  };
+  } else {
+    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+  }
+};
+
 };
 
 window.fermerPopupJeton = function () {
