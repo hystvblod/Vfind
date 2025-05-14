@@ -16,11 +16,11 @@
 <section class="profil-top">
   <div class="solde-container">
     <div class="solde-item">
-      <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon-large" />
+      <img src="assets/img/vcoin.webp" alt="VCoins" class="vcoin-mini" />
       <div class="solde-ligne">VCoins : <span id="vcoins">0</span></div>
     </div>
     <div class="solde-item">
-      <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon-large" />
+      <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-mini" />
       <div class="solde-ligne">Jetons : <span id="jetons">0</span></div>
     </div>
   </div>
@@ -46,7 +46,7 @@
   <script src="js/userData.js"></script>
   <script>
     const data = getUserData();
-    document.getElementById("Vcoins").textContent = data.vcoins || 0;
+    document.getElementById("Vcoins").textContent = data.Vcoins || 0;
     document.getElementById("jetons").textContent = data.jetons || 0;
   </script>
 </body>
