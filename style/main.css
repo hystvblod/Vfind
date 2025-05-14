@@ -163,6 +163,7 @@ header nav a:hover {
 }
 
 .defi-list li {
+  position: relative;
   background-color: #5f7182;
   border-radius: 15px;
   padding: 0.5rem 0.75rem;
@@ -934,11 +935,13 @@ main {
 }
 .jeton-icone {
   position: absolute;
-  top: 72px;       /* 🔧 Ajuste jusqu’à atteindre le rond rouge */
-  left: 265px;     /* 🔧 Ajuste pour coller pile au bon endroit */
+  top: 72px;         /* 🔧 Distance fixe depuis le haut du carré */
+  left: 50%;         /* 🔁 Centre horizontalement */
+  transform: translateX(-50%); /* ✅ Décale pour être parfaitement centré */
   width: 26px;
   height: 26px;
   z-index: 5;
+  cursor: pointer;
 
 }
 .jeton-icone:hover {
@@ -981,3 +984,19 @@ main {
   margin-left: 6px;
 }
 
+/* ✅ Affichage côte à côte des boutons points + jetons */
+.stacked-points {
+  text-align: center;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.btn-row button {
+  white-space: nowrap;
+}

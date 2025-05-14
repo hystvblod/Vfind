@@ -17,22 +17,20 @@
   </header>
 
   <!-- Bloc affichage pièces + boutons -->
-  <section class="points-display dual-buttons">
-    <div class="left">
-      <p>
-        💰 Tes pièces : <span id="points">0</span>
-        <span id="gain-feedback" class="hidden">+100 💰</span>
-      </p>
-      <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
-    </div>
-    <div class="right">
-      <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
-        🪙 Acheter jetons
-       <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton P" />
+<section class="points-display stacked-points">
+  <p>
+    💰 Tes pièces : <span id="points">0</span>
+    <span id="gain-feedback" class="hidden">+100 💰</span>
+  </p>
+  <div class="btn-row">
+    <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
+    <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
+      Acheter jetons
+      <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton" />
+    </button>
+  </div>
+</section>
 
-      </button>
-    </div>
-  </section>
 
   <!-- Cadres -->
   <section class="cadres-list">
