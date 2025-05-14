@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   }
 
-  // ✅ Ajout réel du cadre dans vfindUserData
   function acheterCadre(id) {
     const userData = JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
     if (!userData.cadres.includes(id)) {
@@ -72,8 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     userPoints -= prix;
     updatePointsDisplay();
-    acheterCadre(id); // ✅ synchronise la version officielle
-    localStorage.setItem("vfind_selected_frame", id); // optionnel
+    acheterCadre(id);
+    localStorage.setItem("vfind_selected_frame", id);
     location.reload();
   }
 
@@ -86,43 +85,38 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = document.createElement("div");
         item.classList.add("cadre-item");
 
-      const wrapper = document.createElement("div");
-wrapper.classList.add("cadre-preview");
-wrapper.style.transform = "scale(0.4)";
-wrapper.style.transformOrigin = "top center";
-wrapper.style.margin = "0 auto";
-wrapper.style.height = "150px"; // Limite la hauteur logique réelle
-wrapper.style.width = "120px";  // Assure que la miniature ne déborde pas
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("cadre-preview");
+        wrapper.style.width = "80px";
+        wrapper.style.height = "100px";
+        wrapper.style.position = "relative";
+        wrapper.style.margin = "0 auto 10px";
 
+        const cadreImg = document.createElement("img");
+        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+        cadreImg.className = "photo-cadre";
 
-// ✅ Structure complète pour la miniature
-const cadreImg = document.createElement("img");
-cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-cadreImg.className = "photo-cadre";
+        const photo = document.createElement("img");
+        photo.src = "assets/img/exemple.jpg";
+        photo.className = "photo-user";
 
-const photo = document.createElement("img");
-photo.src = "assets/img/exemple.jpg";
-photo.className = "photo-user";
+        wrapper.appendChild(cadreImg);
+        wrapper.appendChild(photo);
 
-wrapper.appendChild(cadreImg);
-wrapper.appendChild(photo);
-
-// ✅ Click = zoom grand
-wrapper.addEventListener("click", () => {
-  const popup = document.createElement("div");
-  popup.className = "popup show";
-  popup.innerHTML = `
-    <div class="popup-inner">
-      <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-      <div class="cadre-preview cadre-popup">
-        <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
-        <img class="photo-user" src="assets/img/exemple.jpg" />
-      </div>
-    </div>
-  `;
-  document.body.appendChild(popup);
-});
-
+        wrapper.addEventListener("click", () => {
+          const popup = document.createElement("div");
+          popup.className = "popup show";
+          popup.innerHTML = `
+            <div class="popup-inner">
+              <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+              <div class="cadre-preview cadre-popup">
+                <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+                <img class="photo-user" src="assets/img/exemple.jpg" />
+              </div>
+            </div>
+          `;
+          document.body.appendChild(popup);
+        });
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
