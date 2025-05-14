@@ -279,14 +279,14 @@ function updateJetonsDisplay() {
   defiIndexActuel = index;
 
 document.getElementById("valider-jeton-btn").onclick = () => {
-  const jetons = getJetons(); // ⚠️ recalcul ici (dans l'action)
+  const jetons = getJetons(); // ⚠️ on lit le nombre actuel
   if (jetons > 0) {
     const success = removeJeton();
     if (success) {
+      updateJetonsDisplay(); // ✅ met à jour visuellement tout de suite
       if (typeof validerDefi === "function") {
         validerDefi(defiIndexActuel);
       }
-      updateJetonsDisplay(); // ✅ met à jour le haut de l’écran
       fermerPopupJeton();
     } else {
       alert("❌ Erreur lors de la soustraction du jeton.");
