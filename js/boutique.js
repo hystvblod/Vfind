@@ -91,6 +91,9 @@ wrapper.classList.add("cadre-preview");
 wrapper.style.transform = "scale(0.4)";
 wrapper.style.transformOrigin = "top center";
 wrapper.style.margin = "0 auto";
+wrapper.style.height = "150px"; // Limite la hauteur logique réelle
+wrapper.style.width = "120px";  // Assure que la miniature ne déborde pas
+
 
 // ✅ Structure complète pour la miniature
 const cadreImg = document.createElement("img");
