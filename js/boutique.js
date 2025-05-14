@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
 
-  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
+ let userPoints = getPoints();
   pointsDisplay.textContent = userPoints;
 
   updateJetonsDisplay(); // ✅ Met à jour l'affichage des jetons au chargement
@@ -41,11 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup();
   };
 
-  function updatePointsDisplay() {
-    pointsDisplay.textContent = userPoints;
-    localStorage.setItem("vfind_points", userPoints);
-  }
-
+ function updatePointsDisplay() {
+  userPoints = getPoints(); // recalcule à chaque fois
+  pointsDisplay.textContent = userPoints;
+}
   function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
     if (jetonsSpan && typeof getJetons === "function") {

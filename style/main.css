@@ -1068,4 +1068,9 @@ main {
   height: 22px;
   margin-left: 6px;
 }
+.profil-top {
+  margin-top: 40px;
+  text-align: center;
+  color: white;
+}
 
