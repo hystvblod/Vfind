@@ -669,12 +669,12 @@ header nav a:hover {
 }
 /* ✅ Conteneur principal centré */
 .profil-container {
-  min-height: calc(100vh - 100px);
+  min-height: auto;                /* plus besoin de 100vh */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;     /* ✅ aligne vers le haut */
   align-items: center;
-  padding-bottom: 40px;
+  padding-bottom: 20px; 
 }
 
 /* ✅ Garde les boutons bien centrés */
@@ -1125,6 +1125,7 @@ main {
   gap: 30px;
   margin: 20px auto;
   flex-wrap: wrap;
+  margin: 0 auto 10px !important;
 }
 
 .coin-icon-large {
