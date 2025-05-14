@@ -945,7 +945,6 @@ main {
 .jeton-icone:hover {
   transform: scale(1.1);
 }
-}
 .dual-buttons {
   display: flex;
   justify-content: space-between;
@@ -982,3 +981,4 @@ main {
   height: 22px;
   margin-left: 6px;
 }
+
