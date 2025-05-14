@@ -26,7 +26,8 @@ function initUserDataIfMissing() {
       historique: [],
       likedPhotos: [],
       signaledPhotos: [],
-      premium: false
+      premium: false,
+      jetons: 0 
     };
     localStorage.setItem("vfindUserData", JSON.stringify(data));
   }

@@ -51,6 +51,24 @@ function removePoints(n) {
   }
   return false;
 }
+// Jetons
+function getJetons() {
+  return getUserData().jetons || 0;
+}
+function addJetons(n) {
+  const data = getUserData();
+  data.jetons = (data.jetons || 0) + n;
+  saveUserData(data);
+}
+function removeJeton() {
+  const data = getUserData();
+  if (data.jetons > 0) {
+    data.jetons -= 1;
+    saveUserData(data);
+    return true;
+  }
+  return false;
+}
 
 // Cadres
 function getCadresPossedes() {
