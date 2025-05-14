@@ -132,9 +132,12 @@ header nav a:hover {
 /* === AFFICHAGE DES POINTS === */
 .points-display {
   background: none;
-  text-align: center;
   margin: 20px auto 10px;
   font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
 }
 
 .points-display button {
@@ -1006,11 +1009,12 @@ main {
 }
 
 .btn-inline {
-  display: inline-flex;
+  display: flex;
+  flex-direction: row;
   gap: 12px;
-  margin-top: 10px;
   justify-content: center;
-  flex-wrap: nowrap; /* ❌ pas de retour à la ligne */
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .btn-inline button {
