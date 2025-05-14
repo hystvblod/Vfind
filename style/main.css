@@ -893,30 +893,7 @@ main {
   justify-items: center;
 
 }
-/* ✅ Miniature de cadre avec photo dans boutique */
-.cadre-item .cadre-preview {
-  width: 80px;
-  height: 100px;
-  position: relative;
-  margin: 0 auto 10px;
-}
 
-.cadre-item .photo-cadre {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-}
-
-.cadre-item .photo-user {
-  position: absolute;
-  top: 5px; left: 5px; right: 5px; bottom: 5px;
-  object-fit: contain;
-  z-index: 2;
-  border-radius: 8px;
-}
 
 /* ✅ MINIATURE = version réduite exacte du zoom */
 .cadre-item .cadre-preview {
