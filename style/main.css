@@ -1000,3 +1000,19 @@ main {
 .btn-row button {
   white-space: nowrap;
 }
+/* ✅ Met les deux boutons sur une seule ligne */
+.horizontal-buttons {
+  text-align: center;
+}
+
+.btn-inline {
+  display: inline-flex;
+  gap: 12px;
+  margin-top: 10px;
+  justify-content: center;
+  flex-wrap: nowrap; /* ❌ pas de retour à la ligne */
+}
+
+.btn-inline button {
+  white-space: nowrap;
+}
