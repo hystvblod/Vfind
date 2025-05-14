@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const button = document.createElement("button");
         if (ownedFrames.includes(cadre.id)) {
-          button.textContent = "✅ Acheté";
+          button.textContent = "Acheté";
           button.disabled = true;
         } else {
           button.textContent = "Acheter";
