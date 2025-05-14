@@ -6,76 +6,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       padding: 2rem;
       background-color: #f5f5f5;
       color: #333;
     }
+
     h1 {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
+
+    .param-group {
+      margin-bottom: 2rem;
+    }
+
     label {
       font-weight: bold;
       display: block;
       margin-bottom: 0.5rem;
     }
-    select {
-      padding: 0.5rem;
+
+    select, input[type="checkbox"] {
       font-size: 1rem;
-      width: 100%;
-      max-width: 300px;
+      padding: 0.5rem;
     }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .link-group a {
+      display: block;
+      margin-top: 1rem;
+      text-decoration: none;
+      color: #0066cc;
+      font-weight: bold;
+    }
+
+    small {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
     button {
       margin-top: 2rem;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       cursor: pointer;
     }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
   </style>
 </head>
 <body>
-  <h1>Paramètres</h1>
+  <h1>⚙️ Paramètres</h1>
 
-  <label for="langue-select">Langue de l'interface :</label>
-  <select id="langue-select">
-    <option value="fr">Français</option>
-    <option value="en">English</option>
-    <option value="es">Español</option>
-    <option value="de">Deutsch</option>
-    <option value="it">Italiano</option>
-    <option value="nl">Nederlands</option>
-    <option value="pt">Português</option>
-    <option value="ar">العربية</option>
-    <option value="ja">日本語</option>
-    <option value="ko">한국어</option>
-  </select>
+  <!-- 🌐 Langue -->
+  <div class="param-group">
+    <label for="langue-select">Langue de l'interface :</label>
+    <select id="langue-select">
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="nl">Nederlands</option>
+      <option value="pt">Português (BR)</option>
+      <option value="ar">العربية</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+    </select>
+  </div>
+
+  <!-- 🔔 Notifications -->
+  <div class="param-group">
+    <label>Notifications :</label>
+    <div class="switch">
+      <input type="checkbox" id="notif-toggle" />
+      <span id="notif-label">Activées</span>
+    </div>
+  </div>
+
+  <!-- 📤 Partage social -->
+  <div class="param-group">
+    <label>Autoriser la publication de mes photos sur les réseaux sociaux :</label>
+    <div class="switch">
+      <input type="checkbox" id="share-toggle" />
+      <span id="share-label">Autorisés</span>
+    </div>
+    <small>⚠️ En mode Duel, les photos sont toujours envoyées pour classement.<br>Cette option ne concerne que la diffusion publique (ex : Instagram).</small>
+  </div>
+
+  <!-- 📄 Liens utiles -->
+  <div class="param-group link-group">
+    <a href="faq.html">❓ Consulter la FAQ</a>
+    <a href="reglement.html">📄 Voir le règlement</a>
+  </div>
 
   <button onclick="history.back()">⬅️ Retour</button>
 
+  <footer>
+    <p>Contact : <strong>supportvfind@gmail.com</strong></p>
+    <p>Version 1.0.0 – VFind</p>
+  </footer>
+
   <script>
-    // Détection langue actuelle
-    let userLang = navigator.language || navigator.userLanguage;
-    userLang = userLang.split("-")[0];
-
+    // Langue
+    const langueSelect = document.getElementById("langue-select");
     const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
+    let userLang = navigator.language?.split("-")[0] || "fr";
     let currentLang = supportedLangs.includes(userLang) ? userLang : "fr";
-
     const savedLang = localStorage.getItem("langue");
-    if (savedLang && supportedLangs.includes(savedLang)) {
-      currentLang = savedLang;
-    }
+    if (savedLang && supportedLangs.includes(savedLang)) currentLang = savedLang;
+    langueSelect.value = currentLang;
 
-    // Appliquer langue sélectionnée
-    const selectLang = document.getElementById("langue-select");
-    if (selectLang) {
-      selectLang.value = currentLang;
+    langueSelect.addEventListener("change", (e) => {
+      localStorage.setItem("langue", e.target.value);
+      location.reload();
+    });
 
-      selectLang.addEventListener("change", (e) => {
-        const newLang = e.target.value;
-        localStorage.setItem("langue", newLang);
-        location.reload();
-      });
-    }
+    // Notifications
+    const notifToggle = document.getElementById("notif-toggle");
+    const notifLabel = document.getElementById("notif-label");
+    notifToggle.checked = localStorage.getItem("notifEnabled") === "true";
+    notifLabel.textContent = notifToggle.checked ? "Activées" : "Désactivées";
+    notifToggle.addEventListener("change", () => {
+      localStorage.setItem("notifEnabled", notifToggle.checked);
+      notifLabel.textContent = notifToggle.checked ? "Activées" : "Désactivées";
+    });
+
+    // Partage social
+    const shareToggle = document.getElementById("share-toggle");
+    const shareLabel = document.getElementById("share-label");
+    shareToggle.checked = localStorage.getItem("partageSocial") === "true";
+    shareLabel.textContent = shareToggle.checked ? "Autorisés" : "Refusés";
+    shareToggle.addEventListener("change", () => {
+      localStorage.setItem("partageSocial", shareToggle.checked);
+      shareLabel.textContent = shareToggle.checked ? "Autorisés" : "Refusés";
+    });
   </script>
 </body>
 </html>

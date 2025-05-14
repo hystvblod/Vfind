@@ -14,7 +14,7 @@ html, body {
   line-height: 1.5;
   word-wrap: break-word;
   font-family: 'Poppins', sans-serif;
-  background: #0e0e18;
+  background: #313142;
   color: #f0f0f0;
 }
 
@@ -70,7 +70,7 @@ html, body {
 /* === FOND GLOBAL === */
 body {
   font-family: 'Poppins', sans-serif;
-  background: #0e0e18; /* fond sombre pro */
+  background: #313142; /* fond sombre pro */
   color: #f0f0f0;
   min-height: 100vh;
   margin: 0;
