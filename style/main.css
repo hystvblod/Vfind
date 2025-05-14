@@ -629,13 +629,12 @@ header nav a:hover {
 
 /* ✅ SECTION INFOS */
 .profil-top {
+  margin-top: 10px;
+  margin-bottom: 20px;
   text-align: center;
   color: white;
-  margin-top: -100px; /* 🔼 Ce qui remonte */
-  margin-bottom: 30px;
   font-size: 1.1rem;
 }
-
 .profil-top p {
   margin: 6px 0;
 }
@@ -1067,11 +1066,6 @@ main {
   width: 22px;
   height: 22px;
   margin-left: 6px;
-}
-.profil-top {
-  margin-top: 40px;
-  text-align: center;
-  color: white;
 }
 .back-btn {
   font-size: 1.6rem;
