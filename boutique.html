@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Boutique</title>
   <link rel="stylesheet" href="style/main.css" />
+  <style>
+    .solde-ligne span {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .coin-icon {
+      width: 22px;
+      height: 22px;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .btn-secondary img,
+    .jeton-button img {
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body class="boutique-container">
 
@@ -27,6 +48,7 @@
       </div>
       <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
         Gagner des pièces
+        <img src="assets/img/vcoin.webp" alt="Vcoin" />
       </button>
     </div>
 
@@ -37,6 +59,7 @@
       </div>
       <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
         Acheter jetons
+        <img src="assets/img/jeton_p.webp" alt="Jeton" />
       </button>
     </div>
   </div>
@@ -75,6 +98,12 @@
 <script src="js/userData.js"></script>
 <script src="js/pub.js"></script>
 <script src="js/boutique.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (typeof updatePointsDisplay === "function") updatePointsDisplay();
+    if (typeof updateJetonsDisplay === "function") updateJetonsDisplay();
+  });
+</script>
 
 </body>
 </html>
