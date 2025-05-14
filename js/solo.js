@@ -119,7 +119,7 @@ const endTime = parseInt(endTimeRaw);
     defiList.innerHTML = '';
     defis.forEach((defi, index) => {
       const li = document.createElement("li");
-      li.className = "defi";
+     li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
