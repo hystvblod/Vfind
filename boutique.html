@@ -32,20 +32,28 @@
 
   <!-- Bloc affichage pièces + boutons -->
   <section class="points-display">
-    <p>
-      <span id="gain-feedback" class="hidden">+100 💰</span>
-    </p>
-    <div class="btn-inline">
-      <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
-        <img src="assets/img/vcoin.webp" class="jeton-mini" alt="Vcoin" />
-        Gagner des pièces
-      </button>
-
-      <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
-        Acheter jetons <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton" />
-      </button>
+<div class="btn-inline">
+  <div class="solde-item">
+    <div class="solde-ligne">
+      <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
+      <span id="points">0</span>
     </div>
-  </section>
+    <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
+      Gagner des pièces
+    </button>
+  </div>
+
+  <div class="solde-item">
+    <div class="solde-ligne">
+      <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+      <span id="jetons">0</span>
+    </div>
+    <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
+      Acheter jetons
+    </button>
+  </div>
+</div>
+
 
   <!-- Cadres -->
   <section class="cadres-list">

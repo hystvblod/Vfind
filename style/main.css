@@ -1081,3 +1081,24 @@ main {
   margin-right: 6px;
 }
 
+.solde-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.solde-ligne {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: white;
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.25rem;
+}
