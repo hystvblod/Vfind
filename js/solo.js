@@ -156,7 +156,7 @@ const endTime = parseInt(endTimeRaw);
   function afficherPhotosSauvegardees() {
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 
-    document.querySelectorAll(".defi").forEach(defiEl => {
+    document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
       const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 

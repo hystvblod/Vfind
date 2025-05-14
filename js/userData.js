@@ -9,7 +9,7 @@ function formatCadreId(id) {
 function getUserData() {
   return JSON.parse(localStorage.getItem("vfindUserData")) || {
     pseudo: "Toi",
-    coins: 0,
+    vcoins: 0,
     cadres: ["polaroid_01", "polaroid_02"], // correspond aux vrais fichiers
     cadreActif: "polaroid_01",                  // idem
     historique: [],
