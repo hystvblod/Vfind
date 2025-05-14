@@ -73,7 +73,7 @@
     let defiIndexActuel = null;
 
     window.ouvrirPopupJeton = function(index) {
-      const jetons = parseInt(localStorage.getItem("jetons_validation")) || 0;
+      const jetons = getJetons();
       const isPremium = localStorage.getItem("premium") === "true";
 
       document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
@@ -81,19 +81,20 @@
       document.getElementById("popup-jeton").classList.add("show");
       defiIndexActuel = index;
 
-      document.getElementById("valider-jeton-btn").onclick = () => {
-        if (jetons > 0 || isPremium) {
-          if (!isPremium) {
-            localStorage.setItem("jetons_validation", jetons - 1);
-          }
-          if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel);
-          }
-          fermerPopupJeton();
-        } else {
-          alert("❌ Pas de jeton disponible. Achetez-en dans la boutique ou passez premium.");
-        }
-      };
+  document.getElementById("valider-jeton-btn").onclick = () => {
+  const jetons = getJetons();
+
+  if (jetons > 0) {
+    removeJeton(); // ✅ toujours retirer 1 jeton
+    if (typeof validerDefi === "function") {
+      validerDefi(defiIndexActuel);
+    }
+    fermerPopupJeton();
+  } else {
+    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+  }
+};
+
     };
 
     window.fermerPopupJeton = function () {

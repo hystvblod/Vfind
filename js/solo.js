@@ -271,4 +271,33 @@ function updateJetonsDisplay() {
       validerDefi(index);
     }, 3000);
   };
+  window.ouvrirPopupJeton = function(index) {
+  const jetons = getJetons(); // lecture à jour
+  document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+  document.getElementById("popup-jeton").classList.remove("hidden");
+  document.getElementById("popup-jeton").classList.add("show");
+  defiIndexActuel = index;
+
+  document.getElementById("valider-jeton-btn").onclick = () => {
+    if (jetons > 0) {
+      const success = removeJeton(); // retire un jeton
+      if (success) {
+        if (typeof validerDefi === "function") {
+          validerDefi(defiIndexActuel);
+        }
+        fermerPopupJeton();
+      } else {
+        alert("❌ Erreur lors de la soustraction du jeton.");
+      }
+    } else {
+      alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+    }
+  };
+};
+
+window.fermerPopupJeton = function () {
+  document.getElementById("popup-jeton").classList.remove("show");
+  document.getElementById("popup-jeton").classList.add("hidden");
+};
+
 });
