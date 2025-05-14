@@ -938,15 +938,15 @@ main {
 }
 .jeton-icone {
   position: absolute;
-  top: 72px;         /* 🔧 Distance fixe depuis le haut du carré */
-  left: 50%;         /* 🔁 Centre horizontalement */
-  transform: translateX(-50%); /* ✅ Décale pour être parfaitement centré */
+  bottom: 10px;
+  right: 12px;
   width: 26px;
   height: 26px;
   z-index: 5;
   cursor: pointer;
-
+  transform: none; /* ✅ retire le centrage horizontal */
 }
+
 .jeton-icone:hover {
   transform: scale(1.1);
 }
@@ -1020,3 +1020,36 @@ main {
 .btn-inline button {
   white-space: nowrap;
 }
+#popup-achat-jeton {
+  background: linear-gradient(to bottom, #2e2e50, #3f3f70);
+  color: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+#popup-achat-jeton h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+#popup-achat-jeton button {
+  display: block;
+  width: 100%;
+  margin: 12px auto;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  background: #ffcc00;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#popup-achat-jeton button:hover {
+  background: #e6b800;
+}
+

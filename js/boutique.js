@@ -8,12 +8,17 @@ document.addEventListener("DOMContentLoaded", () => {
   pointsDisplay.textContent = userPoints;
 
   // ✅ Gérer ouverture de la fenêtre
-  const gainBtn = document.getElementById("gain-btn");
-  if (gainBtn) {
-    gainBtn.addEventListener("click", () => {
-      popupGain.classList.remove("hidden");
-      popupGain.classList.add("show");
-    });
+const gainBtn = document.getElementById("gain-btn");
+if (gainBtn) {
+  gainBtn.addEventListener("click", () => {
+    const popupJeton = document.getElementById("popup-achat-jeton");
+    if (popupJeton.classList.contains("show")) {
+      popupJeton.classList.remove("show");
+      popupJeton.classList.add("hidden");
+    }
+    popupGain.classList.remove("hidden");
+    popupGain.classList.add("show");
+  });
   }
 
   window.closePopup = function () {
@@ -170,11 +175,14 @@ function acheterJetonsAvecPub() {
       });
     });
 window.ouvrirPopupJetonBoutique = function () {
-  const popup = document.getElementById("popup-achat-jeton");
-  if (popup) {
-    popup.classList.add("show");
-    popup.classList.remove("hidden");
+  const popupJeton = document.getElementById("popup-achat-jeton");
+  const popupGain = document.getElementById("popup-gain");
+  if (popupGain.classList.contains("show")) {
+    popupGain.classList.remove("show");
+    popupGain.classList.add("hidden");
   }
+  popupJeton.classList.add("show");
+  popupJeton.classList.remove("hidden");
 };
 
 window.fermerPopupJetonBoutique = function () {
