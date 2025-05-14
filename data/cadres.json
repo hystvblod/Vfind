@@ -122,5 +122,10 @@
     "id": "polaroid_50",
     "nom": "Cadre VIP",
     "prix": 5000
+  },
+    {
+    "id": "polaroid_51",
+    "nom": "VIP",
+    "prix": 5000
   }
 ]
