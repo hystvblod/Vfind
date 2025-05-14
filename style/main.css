@@ -1074,4 +1074,10 @@ main {
   padding: 6px;
   display: inline-block;
 }
+.coin-icon {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
 
