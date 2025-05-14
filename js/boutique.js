@@ -75,6 +75,35 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("vfind_selected_frame", id);
     location.reload();
   }
+  function ouvrirPopupJetonBoutique() {
+  document.getElementById("popup-achat-jeton").classList.remove("hidden");
+  document.getElementById("popup-achat-jeton").classList.add("show");
+}
+
+function fermerPopupJetonBoutique() {
+  document.getElementById("popup-achat-jeton").classList.remove("show");
+  document.getElementById("popup-achat-jeton").classList.add("hidden");
+}
+
+function acheterJetonsAvecPieces() {
+  if (removePoints(100)) {
+    addJetons(3);
+    alert("✅ 3 jetons ajoutés !");
+    updatePointsDisplay();
+    fermerPopupJetonBoutique();
+  } else {
+    alert("❌ Pas assez de pièces.");
+  }
+}
+
+function acheterJetonsAvecPub() {
+  alert("📺 Simulation de pub regardée !");
+  setTimeout(() => {
+    addJetons(3);
+    alert("✅ 3 jetons ajoutés !");
+    fermerPopupJetonBoutique();
+  }, 3000);
+}
 
   // ✅ Chargement de la boutique
   const ownedFrames = getUserData().cadres;

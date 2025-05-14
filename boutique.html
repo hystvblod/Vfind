@@ -16,34 +16,54 @@
     </nav>
   </header>
 
-  <main>
-    <section class="points-display">
+  <!-- Bloc affichage pièces + boutons -->
+  <section class="points-display dual-buttons">
+    <div class="left">
       <p>
         💰 Tes pièces : <span id="points">0</span>
         <span id="gain-feedback" class="hidden">+100 💰</span>
       </p>
       <button id="gain-btn" class="btn-secondary">🎁 Gagner des pièces</button>
-    </section>
+    </div>
+    <div class="right">
+      <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
+        🪙 Acheter jetons
+        <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="jeton" />
+      </button>
+    </div>
+  </section>
 
-    <section class="cadres-list">
-      <h2>🎨 Cadres disponibles</h2>
-   <div id="boutique-container" class="grid-cadres">
-        <!-- Les cadres seront chargés depuis cadres.json -->
-      </div>
-    </section>
-  </main>
+  <!-- Cadres -->
+  <section class="cadres-list">
+    <h2>🎨 Cadres disponibles</h2>
+    <div id="boutique-container" class="grid-cadres">
+      <!-- Les cadres seront chargés depuis cadres.json -->
+    </div>
+  </section>
 
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <!-- ✅ Fenêtre modale interactive -->
+  <!-- ✅ Popup : gagner des pièces -->
   <div id="popup-gain" class="popup hidden">
     <h3>💰 Gagner des pièces</h3>
     <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
     <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
   </div>
 
+  <!-- ✅ Popup : acheter des jetons -->
+  <div id="popup-achat-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <h3>🎟️ Acheter 3 jetons</h3>
+      <p>💰 100 pièces ou 📺 regarder une pub</p>
+      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/storage.js"></script>
   <script src="js/userData.js"></script>
   <script src="js/pub.js"></script>

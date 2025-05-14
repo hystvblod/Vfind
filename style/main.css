@@ -946,3 +946,39 @@ main {
 .jeton-icone:hover {
   transform: scale(1.1);
 }
+.dual-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.left, .right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.jeton-button {
+  display: flex;
+  align-items: center;
+  background: #ffda77;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.jeton-button:hover {
+  background: #ffd24d;
+}
+
+.jeton-mini {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+}
