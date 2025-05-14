@@ -86,19 +86,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = document.createElement("div");
         item.classList.add("cadre-item");
 
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("cadre-preview");
+      const wrapper = document.createElement("div");
+wrapper.classList.add("cadre-preview");
+wrapper.style.transform = "scale(0.4)";
+wrapper.style.transformOrigin = "top center";
+wrapper.style.margin = "0 auto";
 
-        const photo = document.createElement("img");
-        photo.src = "assets/img/exemple.jpg";
-        photo.className = "photo-user";
+// ✅ Structure complète pour la miniature
+const cadreImg = document.createElement("img");
+cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+cadreImg.className = "photo-cadre";
 
-        const cadreImg = document.createElement("img");
-        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-        cadreImg.className = "photo-cadre";
+const photo = document.createElement("img");
+photo.src = "assets/img/exemple.jpg";
+photo.className = "photo-user";
 
-        wrapper.appendChild(cadreImg);
-        wrapper.appendChild(photo);
+wrapper.appendChild(cadreImg);
+wrapper.appendChild(photo);
+
+// ✅ Click = zoom grand
+wrapper.addEventListener("click", () => {
+  const popup = document.createElement("div");
+  popup.className = "popup show";
+  popup.innerHTML = `
+    <div class="popup-inner">
+      <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+      <div class="cadre-preview cadre-popup">
+        <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+        <img class="photo-user" src="assets/img/exemple.jpg" />
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+});
+
 
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
