@@ -153,7 +153,13 @@ const endTime = parseInt(endTimeRaw);
 
     afficherPhotosSauvegardees();
   }
-
+function updateJetonsDisplay() {
+  const data = getUserData();
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) {
+    jetonsSpan.textContent = data.jetons || 0;
+  }
+}
   function afficherPhotosSauvegardees() {
     const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
 

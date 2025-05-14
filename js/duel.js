@@ -9,7 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     cadre: "polaroid_01",
     historique: []
   };
-
+function updateJetonsDisplay() {
+  const data = getUserData();
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) {
+    jetonsSpan.textContent = data.jetons || 0;
+  }
+}
   // Tirage d'un défi au hasard (à synchroniser en vrai serveur)
   fetch("data/defis.json")
     .then(res => res.json())

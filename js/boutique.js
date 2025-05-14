@@ -55,7 +55,13 @@ if (gainBtn) {
       feedback.classList.add("hidden");
     }, 1500);
   }
-
+function updateJetonsDisplay() {
+  const data = getUserData();
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) {
+    jetonsSpan.textContent = data.jetons || 0;
+  }
+}
   function acheterCadre(id) {
     const userData = JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
     if (!userData.cadres.includes(id)) {
