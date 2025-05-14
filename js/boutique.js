@@ -48,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan) {
-      jetonsSpan.textContent = getJetons(); // ❗ Repose sur userData.js
+    if (jetonsSpan && typeof getJetons === "function") {
+      jetonsSpan.textContent = getJetons();
     }
   }
 
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addJetons(3);
       alert("✅ 3 jetons ajoutés !");
       updatePointsDisplay();
-      updateJetonsDisplay(); // ✅ met à jour l'affichage après ajout
+      updateJetonsDisplay();
       fermerPopupJetonBoutique();
     } else {
       alert("❌ Pas assez de pièces.");
@@ -112,12 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       addJetons(3);
       alert("✅ 3 jetons ajoutés !");
-      updateJetonsDisplay(); // ✅ met à jour l'affichage après ajout
+      updateJetonsDisplay();
       fermerPopupJetonBoutique();
     }, 3000);
   }
 
-  // ✅ Chargement de la boutique
+  // ✅ Chargement des cadres de la boutique
   const ownedFrames = getUserData().cadres;
   fetch("data/cadres.json")
     .then(res => res.json())
@@ -182,10 +182,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+  // ✅ Rendez les fonctions globales accessibles dans le HTML (onclick)
   window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
   window.fermerPopupJetonBoutique = fermerPopupJetonBoutique;
+  window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
+  window.acheterJetonsAvecPub = acheterJetonsAvecPub;
 
-  // ✅ Scroll en haut au chargement
   setTimeout(() => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
