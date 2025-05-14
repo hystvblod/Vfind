@@ -14,19 +14,18 @@
 
   <!-- ✅ Bloc unique avec les bonnes valeurs -->
 <section class="profil-top">
-  <div class="solde-block">
-    <div class="solde-ligne">
-      <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-large" />
-      <span class="solde-label">VCoins :</span>
-      <span id="vcoins">0</span>
+  <div class="solde-container">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon-large" />
+      <div class="solde-ligne">VCoins : <span id="vcoins">0</span></div>
     </div>
-    <div class="solde-ligne">
-      <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-large" />
-      <span class="solde-label">Jetons :</span>
-      <span id="jetons">0</span>
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon-large" />
+      <div class="solde-ligne">Jetons : <span id="jetons">0</span></div>
     </div>
   </div>
 </section>
+
 
 
   <main class="profil-container">
@@ -47,7 +46,7 @@
   <script src="js/userData.js"></script>
   <script>
     const data = getUserData();
-    document.getElementById("Vcoins").textContent = data.Vcoins || 0;
+    document.getElementById("Vcoins").textContent = data.vcoins || 0;
     document.getElementById("jetons").textContent = data.jetons || 0;
   </script>
 </body>
