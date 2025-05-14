@@ -14,6 +14,10 @@
       <a href="profil.html" class="icon-btn" title="Profil">👤</a>
       <a href="parametres.html" class="icon-btn" title="Paramètres">⚙️</a>
     </nav>
+    <!-- ✅ Jetons visibles ici -->
+    <p style="text-align: center; margin-top: 0.5rem;">
+      🪙 Jetons : <span id="jetons">0</span>
+    </p>
   </header>
 
   <!-- Bloc affichage pièces + boutons -->
@@ -23,10 +27,10 @@
       <span id="gain-feedback" class="hidden">+100 💰</span>
     </p>
     <div class="btn-inline">
- <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
-  <img src="assets/img/vcoin.webp" class="jeton-mini" alt="Vcoin" />
-  Gagner des pièces
-</button>
+      <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
+        <img src="assets/img/vcoin.webp" class="jeton-mini" alt="Vcoin" />
+        Gagner des pièces
+      </button>
 
       <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
         Acheter jetons <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton" />
@@ -56,7 +60,7 @@
   <!-- ✅ Popup : acheter des jetons -->
   <div id="popup-achat-jeton" class="popup hidden">
     <div class="popup-inner">
-     <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
       <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
       <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
     </div>

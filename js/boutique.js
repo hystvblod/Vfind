@@ -3,22 +3,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const pointsDisplay = document.getElementById("points");
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
-  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
 
+  let userPoints = parseInt(localStorage.getItem("vfind_points")) || 0;
   pointsDisplay.textContent = userPoints;
 
-  // ✅ Gérer ouverture de la fenêtre
-const gainBtn = document.getElementById("gain-btn");
-if (gainBtn) {
-  gainBtn.addEventListener("click", () => {
-    const popupJeton = document.getElementById("popup-achat-jeton");
-    if (popupJeton.classList.contains("show")) {
-      popupJeton.classList.remove("show");
-      popupJeton.classList.add("hidden");
-    }
-    popupGain.classList.remove("hidden");
-    popupGain.classList.add("show");
-  });
+  updateJetonsDisplay(); // ✅ Met à jour l'affichage des jetons au chargement
+
+  const gainBtn = document.getElementById("gain-btn");
+  if (gainBtn) {
+    gainBtn.addEventListener("click", () => {
+      const popupJeton = document.getElementById("popup-achat-jeton");
+      if (popupJeton.classList.contains("show")) {
+        popupJeton.classList.remove("show");
+        popupJeton.classList.add("hidden");
+      }
+      popupGain.classList.remove("hidden");
+      popupGain.classList.add("show");
+    });
   }
 
   window.closePopup = function () {
@@ -45,6 +46,13 @@ if (gainBtn) {
     localStorage.setItem("vfind_points", userPoints);
   }
 
+  function updateJetonsDisplay() {
+    const jetonsSpan = document.getElementById("jetons");
+    if (jetonsSpan) {
+      jetonsSpan.textContent = getJetons(); // ❗ Repose sur userData.js
+    }
+  }
+
   function showFeedback(text) {
     if (!feedback) return;
     feedback.textContent = text;
@@ -55,23 +63,13 @@ if (gainBtn) {
       feedback.classList.add("hidden");
     }, 1500);
   }
-function updateJetonsDisplay() {
-  const data = getUserData();
-  const jetonsSpan = document.getElementById("jetons");
-  if (jetonsSpan) {
-    jetonsSpan.textContent = data.jetons || 0;
-  }
-}
-  function acheterCadre(id) {
-    const userData = JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
-    if (!userData.cadres.includes(id)) {
-      userData.cadres.push(id);
-    }
-    localStorage.setItem("vfindUserData", JSON.stringify(userData));
-  }
 
-  function getUserData() {
-    return JSON.parse(localStorage.getItem("vfindUserData")) || { cadres: [] };
+  function acheterCadre(id) {
+    const data = getUserData();
+    if (!data.cadres.includes(id)) {
+      data.cadres.push(id);
+      saveUserData(data);
+    }
   }
 
   function acheterCadreBoutique(id, prix) {
@@ -86,35 +84,38 @@ function updateJetonsDisplay() {
     localStorage.setItem("vfind_selected_frame", id);
     location.reload();
   }
+
   function ouvrirPopupJetonBoutique() {
-  document.getElementById("popup-achat-jeton").classList.remove("hidden");
-  document.getElementById("popup-achat-jeton").classList.add("show");
-}
-
-function fermerPopupJetonBoutique() {
-  document.getElementById("popup-achat-jeton").classList.remove("show");
-  document.getElementById("popup-achat-jeton").classList.add("hidden");
-}
-
-function acheterJetonsAvecPieces() {
-  if (removePoints(100)) {
-    addJetons(3);
-    alert("✅ 3 jetons ajoutés !");
-    updatePointsDisplay();
-    fermerPopupJetonBoutique();
-  } else {
-    alert("❌ Pas assez de pièces.");
+    document.getElementById("popup-achat-jeton").classList.remove("hidden");
+    document.getElementById("popup-achat-jeton").classList.add("show");
   }
-}
 
-function acheterJetonsAvecPub() {
-  alert("📺 Simulation de pub regardée !");
-  setTimeout(() => {
-    addJetons(3);
-    alert("✅ 3 jetons ajoutés !");
-    fermerPopupJetonBoutique();
-  }, 3000);
-}
+  function fermerPopupJetonBoutique() {
+    document.getElementById("popup-achat-jeton").classList.remove("show");
+    document.getElementById("popup-achat-jeton").classList.add("hidden");
+  }
+
+  function acheterJetonsAvecPieces() {
+    if (removePoints(100)) {
+      addJetons(3);
+      alert("✅ 3 jetons ajoutés !");
+      updatePointsDisplay();
+      updateJetonsDisplay(); // ✅ met à jour l'affichage après ajout
+      fermerPopupJetonBoutique();
+    } else {
+      alert("❌ Pas assez de pièces.");
+    }
+  }
+
+  function acheterJetonsAvecPub() {
+    alert("📺 Simulation de pub regardée !");
+    setTimeout(() => {
+      addJetons(3);
+      alert("✅ 3 jetons ajoutés !");
+      updateJetonsDisplay(); // ✅ met à jour l'affichage après ajout
+      fermerPopupJetonBoutique();
+    }, 3000);
+  }
 
   // ✅ Chargement de la boutique
   const ownedFrames = getUserData().cadres;
@@ -180,24 +181,9 @@ function acheterJetonsAvecPub() {
         boutiqueContainer.appendChild(item);
       });
     });
-window.ouvrirPopupJetonBoutique = function () {
-  const popupJeton = document.getElementById("popup-achat-jeton");
-  const popupGain = document.getElementById("popup-gain");
-  if (popupGain.classList.contains("show")) {
-    popupGain.classList.remove("show");
-    popupGain.classList.add("hidden");
-  }
-  popupJeton.classList.add("show");
-  popupJeton.classList.remove("hidden");
-};
 
-window.fermerPopupJetonBoutique = function () {
-  const popup = document.getElementById("popup-achat-jeton");
-  if (popup) {
-    popup.classList.remove("show");
-    popup.classList.add("hidden");
-  }
-};
+  window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
+  window.fermerPopupJetonBoutique = fermerPopupJetonBoutique;
 
   // ✅ Scroll en haut au chargement
   setTimeout(() => {
