@@ -1,22 +1,11 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const challengeDisplay = document.getElementById("duel-challenge");
   const canvasA = document.getElementById("canvas-joueurA");
   const canvasB = document.getElementById("canvas-joueurB");
 
-  const userData = JSON.parse(localStorage.getItem("vfind_user")) || {
-    pseudo: "Toi",
-    cadre: "polaroid_01",
-    historique: []
-  };
-function updateJetonsDisplay() {
-  const data = getUserData();
-  const jetonsSpan = document.getElementById("jetons");
-  if (jetonsSpan) {
-    jetonsSpan.textContent = data.jetons || 0;
-  }
-}
-  // Tirage d'un défi au hasard (à synchroniser en vrai serveur)
+  updateJetonsDisplay(); // ✅ Met à jour les jetons dès le chargement
+
+  // Tirage d'un défi aléatoire
   fetch("data/defis.json")
     .then(res => res.json())
     .then(defis => {
@@ -24,9 +13,10 @@ function updateJetonsDisplay() {
       challengeDisplay.textContent = defi;
     });
 
-  // Simule chargement des photos (à remplacer par vraies photos ou envoi peer-to-peer)
+  // Simulation de chargement des photos
   const demoPhoto = "logo.png";
-  drawPolaroid(demoPhoto, userData.cadre, canvasA);
+  const cadre = getCadreSelectionne(); // 📌 plus propre que userData direct
+  drawPolaroid(demoPhoto, cadre, canvasA);
   drawPolaroid(demoPhoto, "polaroid_02", canvasB);
 
   // Gestion des signalements
@@ -36,3 +26,10 @@ function updateJetonsDisplay() {
     });
   });
 });
+
+function updateJetonsDisplay() {
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan && typeof getJetons === "function") {
+    jetonsSpan.textContent = getJetons();
+  }
+}

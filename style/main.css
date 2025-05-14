@@ -150,7 +150,14 @@ header nav a:hover {
   margin-top: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   transition: background 0.3s;
+
+  /* ✅ Ajouts pour empêcher le saut à la ligne avec l’image */
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
+
 
 .points-display button:hover {
   background-color: #e6b800;

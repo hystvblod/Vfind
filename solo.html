@@ -36,6 +36,10 @@
       <a href="profil.html" class="btn-icon">👤</a>
       <a href="parametres.html" class="btn-icon">⚙️</a>
     </div>
+    <!-- ✅ Jetons visibles ici -->
+    <p style="text-align:center; margin-top: 0.5rem;">
+      🎟️ Jetons : <span id="jetons">0</span>
+    </p>
   </header>
 
   <!-- MAIN GAME STRUCTURE -->
@@ -57,6 +61,7 @@
   </main>
 
   <!-- SCRIPTS -->
+  <script src="js/userData.js"></script>
   <script src="js/solo.js"></script>
   <script src="js/camera.js"></script>
   <script>
@@ -95,6 +100,14 @@
       document.getElementById("popup-jeton").classList.remove("show");
       document.getElementById("popup-jeton").classList.add("hidden");
     };
+
+    // ✅ Met à jour les jetons automatiquement
+    document.addEventListener("DOMContentLoaded", () => {
+      const span = document.getElementById("jetons");
+      if (span && typeof getJetons === "function") {
+        span.textContent = getJetons();
+      }
+    });
   </script>
 </body>
 </html>

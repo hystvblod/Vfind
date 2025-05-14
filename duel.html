@@ -14,6 +14,10 @@
       <a href="profil.html">👤 Profil</a>
       <a href="parametres.html" class="btn-icon">⚙️</a>
     </nav>
+    <!-- ✅ Jetons affichés directement dans le header -->
+    <p style="text-align:center; margin-top: 0.5rem;">
+      🎟️ Jetons : <span id="jetons">0</span>
+    </p>
   </header>
 
   <main>
@@ -62,6 +66,14 @@
       img.classList.toggle('cover');
       img.classList.toggle('contain');
     }
+
+    // ✅ Mise à jour auto des jetons
+    document.addEventListener("DOMContentLoaded", () => {
+      const jetonsSpan = document.getElementById("jetons");
+      if (jetonsSpan && typeof getJetons === "function") {
+        jetonsSpan.textContent = getJetons();
+      }
+    });
   </script>
 </body>
 </html>
