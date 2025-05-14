@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="boutique-container">
+
 <header>
   <h1>Boutique</h1>
   <nav class="nav-icons">
@@ -14,79 +15,66 @@
     <a href="profil.html" class="icon-btn" title="Profil">👤</a>
     <a href="parametres.html" class="icon-btn" title="Paramètres">⚙️</a>
   </nav>
-  <div class="dual-buttons" style="margin-top: 10px;">
-    <div class="left">
-      <span>
-        <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
-        <span id="points">0</span>
-      </span>
-    </div>
-    <div class="right">
-      <span>
-        <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
-        <span id="jetons">0</span>
-      </span>
-    </div>
-  </div>
 </header>
 
-  <!-- Bloc affichage pièces + boutons -->
-  <section class="points-display">
-<div class="btn-inline">
-  <div class="solde-item">
-    <div class="solde-ligne">
-      <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
-      <span id="points">0</span>
+<!-- Bloc affichage pièces + boutons -->
+<section class="points-display">
+  <div class="btn-inline">
+    <div class="solde-item">
+      <div class="solde-ligne">
+        <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
+        <span id="points">0</span>
+      </div>
+      <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
+        Gagner des pièces
+      </button>
     </div>
-    <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
-      Gagner des pièces
-    </button>
-  </div>
 
-  <div class="solde-item">
-    <div class="solde-ligne">
-      <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
-      <span id="jetons">0</span>
+    <div class="solde-item">
+      <div class="solde-ligne">
+        <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+        <span id="jetons">0</span>
+      </div>
+      <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
+        Acheter jetons
+      </button>
     </div>
-    <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
-      Acheter jetons
-    </button>
+  </div>
+</section>
+
+<!-- Cadres -->
+<section class="cadres-list">
+  <h2>🎨 Cadres disponibles</h2>
+  <div id="boutique-container" class="grid-cadres">
+    <!-- Les cadres seront chargés depuis cadres.json -->
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 VFind</p>
+</footer>
+
+<!-- ✅ Popup : gagner des pièces -->
+<div id="popup-gain" class="popup hidden">
+  <h3>💰 Gagner des pièces</h3>
+  <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
+  <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
+</div>
+
+<!-- ✅ Popup : acheter des jetons -->
+<div id="popup-achat-jeton" class="popup hidden">
+  <div class="popup-inner">
+    <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+    <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+    <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
   </div>
 </div>
 
+<!-- Scripts -->
+<script src="js/storage.js"></script>
+<script src="js/userData.js"></script>
+<script src="js/pub.js"></script>
+<script src="js/boutique.js"></script>
 
-  <!-- Cadres -->
-  <section class="cadres-list">
-    <h2>🎨 Cadres disponibles</h2>
-    <div id="boutique-container" class="grid-cadres">
-      <!-- Les cadres seront chargés depuis cadres.json -->
-    </div>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 VFind</p>
-  </footer>
-
-  <!-- ✅ Popup : gagner des pièces -->
-  <div id="popup-gain" class="popup hidden">
-    <h3>💰 Gagner des pièces</h3>
-    <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
-    <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
-  </div>
-
-  <!-- ✅ Popup : acheter des jetons -->
-  <div id="popup-achat-jeton" class="popup hidden">
-    <div class="popup-inner">
-      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
-      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
-      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="js/storage.js"></script>
-  <script src="js/userData.js"></script>
-  <script src="js/pub.js"></script>
-  <script src="js/boutique.js"></script>
 </body>
 </html>
