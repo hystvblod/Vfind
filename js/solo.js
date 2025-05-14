@@ -135,16 +135,17 @@ const endTime = parseInt(endTimeRaw);
         boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
       }
 
-      li.innerHTML = `
-        <div class="defi-content">
-          <div class="defi-texte">
-            <p>${defi.texte}</p>
-            ${boutonPhoto}
-            <img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />
-          </div>
-          <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
-        </div>
-      `;
+  li.innerHTML = `
+  <div class="defi-content">
+    <div class="defi-texte">
+      <p>${defi.texte}</p>
+      ${boutonPhoto}
+    </div>
+    <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+  </div>
+  <img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />
+`;
+
 
       defiList.appendChild(li);
     });
