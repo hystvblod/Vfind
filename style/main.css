@@ -1171,3 +1171,8 @@ main {
   border: none;
   cursor: pointer;
 }
+.left-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
