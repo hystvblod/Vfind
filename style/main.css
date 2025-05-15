@@ -1197,3 +1197,38 @@ main {
   border: none;
   cursor: pointer;
 }
+/* ✅ Centrage visuel du titre Mon Profil sans casser la flèche */
+.profil-header {
+  position: relative;
+  height: 60px; /* hauteur fixe pour bien aligner */
+  padding: 0 20px;
+  background: #2f2f42;
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ Flèche à gauche */
+.profil-header .back-btn {
+  font-size: 1.5rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ✅ Titre centré au milieu visuellement */
+.profil-header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  pointer-events: none; /* évite tout bug de clic éventuel */
+}
+
+/* ✅ Décalage vertical uniquement sur cette page (profil) */
+body.profil-page .profil-container {
+  margin-top: 40px;
+}
