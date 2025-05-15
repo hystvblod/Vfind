@@ -1127,6 +1127,7 @@ body.profil-page .profil-header {
   background: #2f2f42;
   gap: 12px;
   margin-top: 20px;
+  border-bottom: none !important; /* ✅ supprime la ligne blanche */
 }
 
 body.profil-page .profil-header h1 {
@@ -1134,6 +1135,7 @@ body.profil-page .profil-header h1 {
   font-weight: bold;
   color: white;
   margin: 0 auto;
+  padding-bottom: 10px; /* ✅ espace sous le titre */
 }
 
 body.profil-page .profil-header .back-btn {
