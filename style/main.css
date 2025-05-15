@@ -991,11 +991,27 @@ main {
 
 .btn-inline {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
+  gap: 16px;
+  flex-wrap: wrap; /* wrap si besoin */
+  margin-top: 10px;
+}
+.btn-secondary,
+.jeton-button {
+  width: 160px;           /* ou 100%, selon ton besoin */
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 10px;
+  font-weight: bold;
+  background: #ffcc00;
+  border: none;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .btn-inline button {
@@ -1066,12 +1082,6 @@ main {
 .points-display .solde-ligne span {
   font-size: 1.3rem;
   font-weight: bold;
-}
-.points-display .btn-inline {
-  display: flex;
-  justify-content: space-around;
-  gap: 1rem;
-  flex-wrap: wrap;
 }
 
 .resource-line {
