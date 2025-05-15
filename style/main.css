@@ -613,17 +613,7 @@ header nav a:hover {
   cursor: pointer;
 }
 
-/* ✅ SECTION INFOS */
-.profil-top {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  text-align: center;
-  color: white;
-  font-size: 1.1rem;
-}
-.profil-top p {
-  margin: 6px 0;
-}
+
 
 /* ✅ BOUTONS DE SECTION */
 .profil-sections {
@@ -653,15 +643,7 @@ header nav a:hover {
   background-color: #ffd700;
   transform: translateY(-2px);
 }
-/* ✅ Conteneur principal centré */
-.profil-container {
-  min-height: auto;                /* plus besoin de 100vh */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;     /* ✅ aligne vers le haut */
-  align-items: center;
-  padding-bottom: 20px; 
-}
+
 
 /* ✅ Garde les boutons bien centrés */
 .profil-sections {
@@ -1139,11 +1121,6 @@ main {
 }
 
 
-
-/* ✅ Décalage vertical uniquement sur cette page (profil) */
-body.profil-page .profil-container {
-  margin-top: 40px;
-}
 /* ✅ HEADER SOLO CORRIGÉ */
 .header-solo {
   background-color: #2f2f42;
@@ -1217,44 +1194,46 @@ body.profil-page .profil-header {
   margin-top: 20px;
 }
 
-/* ✅ Décale vers le bas l’ensemble jetons + boutons (2 lignes visuelles) */
-body.profil-page .profil-top {
-  margin-top: 30px;
-}
-
-body.profil-page .profil-container {
-  margin-top: 20px;
-}
-
-.profil-top {
-  margin-top: 30px !important;
-}
-
-.profil-container {
-  margin-top: 20px !important;
-}
-.profil-header {
+body.profil-page .profil-header {
+  margin-top: 20px; /* décale le haut */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 30px 20px 10px;
+  justify-content: center;
+  padding: 20px;
   background: #2f2f42;
   position: relative;
-  height: auto;
-  gap: 12px;
 }
 
-.profil-header h1 {
+body.profil-page .profil-header h1 {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
-  margin: 0 auto;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
-.profil-header .back-btn {
-  font-size: 1.5rem;
-  color: white;
+body.profil-page .profil-header .back-btn {
+  font-size: 1.6rem;
   background: none;
   border: none;
+  color: white;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
+
+/* Décalage du contenu (pièces et boutons) */
+body.profil-page .profil-top {
+  margin-top: 40px;
+}
+
+body.profil-page .profil-container {
+  margin-top: 30px;
+}
+
+
+
+
