@@ -963,8 +963,8 @@ main {
 }
 
 .jeton-mini {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   margin-left: 6px;
 }
 
@@ -1034,7 +1034,7 @@ main {
   background: #e6b800;
 }
 .vcoin-mini {
-  width: 28px;
+  width: 34px;
   height: 28px;
   margin-left: 6px;
 
@@ -1191,12 +1191,16 @@ main {
 
 /* Taille personnalisable */
 .vcoin-solo {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: auto;
+  max-height: 32px;
+  object-fit: contain;
 }
 
 .jeton-solo {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: auto;
+  max-height: 32px;
+  object-fit: contain;
 }
 
