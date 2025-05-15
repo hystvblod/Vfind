@@ -170,12 +170,9 @@ function updateJetonsDisplay() {
       const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
       if (dataUrl) {
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-        preview.style.width = "120px";
-        preview.style.height = "150px";
-
-        const fond = document.createElement("img");
+      const preview = document.createElement("div");
+preview.className = "cadre-preview cadre-item";
+       const fond = document.createElement("img");
         fond.className = "photo-cadre";
         fond.src = `./assets/cadres/${cadreActuel}.webp`;
 
