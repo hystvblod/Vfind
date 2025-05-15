@@ -630,7 +630,7 @@ header nav a:hover {
 /* ✅ SECTION INFOS */
 .profil-top {
   margin-top: 60px;  /* 🔼 Avant : 10px */
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   text-align: center;
   color: white;
   font-size: 1.1rem;
