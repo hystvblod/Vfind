@@ -442,13 +442,42 @@ nav.nav-icons {
     align-items: center;        /* ← centre verticalement dans le bloc */
   }
 .defi-photo-container .cadre-preview {
+
   width: 80px;
   height: 100px;
   position: relative;
-  transform: scale(1); /* ✅ Pour éviter qu’il disparaisse */
-  transform-origin: top right;
-  margin-left: auto;  /* ✅ Pour l’aligner à droite */
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: limegreen; /* ou ta couleur */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25);
 }
+.defi-photo-container .photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.defi-photo-container .photo-user {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
+  object-fit: contain;
+  z-index: 1;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
     display: flex;
@@ -994,7 +1023,7 @@ main {
   justify-content: center;
   align-items: center;
   gap: 16px;
-  flex-wrap: wrap; /* wrap si besoin */
+  flex-wrap: nowrap; /* wrap si besoin */
   margin-top: 10px;
 }
 .btn-secondary,
@@ -1197,22 +1226,22 @@ main {
 
 /* Taille personnalisable */
 .vcoin-solo {
-  width: 42px;
+  width: 48px;
   height: auto;
-  max-height: 42px;
+  max-height: 48px;
   object-fit: contain;
 }
 
 .jeton-solo {
-  width: 42px;
+  width: 48px;
   height: auto;
-  max-height: 42px;
+  max-height: 48px;
   object-fit: contain;
 }
 /* ✅ Icône pièce dédiée au mode solo */
 .icon-solo-piece {
-  width: 28px;
-  height: 28px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   margin-right: 6px;
   display: inline-block;
@@ -1220,9 +1249,9 @@ main {
 
 /* ✅ Icône jeton dédiée au mode solo */
 .icon-solo-jeton {
-  width: 30px;
+  width: 42px;
   height: auto;
-  max-height: 32px;
+  max-height: 42px;
   object-fit: contain;
   margin-right: 8px;
   position: static;
@@ -1270,15 +1299,6 @@ main {
   padding-left: 30px; /* ✅ décalage vers la gauche */
   gap: 40px;
   margin-top: 8px;
-}
-
-/* ✅ Pour les icônes SOLO version compacte */
-.icon-solo-piece,
-.icon-solo-jeton {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  margin-right: 8px;
 }
 
 /* ✅ Uniformisation texte */
