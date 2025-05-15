@@ -1116,29 +1116,30 @@ main {
   height: 24px;
 }
 
-/* === PROFIL : HEADER ET MISE EN PAGE === */
 
+/* === PROFIL : HEADER ET MISE EN PAGE === */
 body.profil-page .profil-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 30px 20px 10px;
+  position: relative; /* Permet de positionner la flèche */
   background: #2f2f42;
-  gap: 12px;
+  padding: 30px 20px 20px;
   margin-top: 20px;
-  border-bottom: none !important; /* ✅ supprime la ligne blanche */
+  border-bottom: none !important; /* Supprime la ligne blanche */
+  text-align: center; /* Centre le titre */
 }
 
 body.profil-page .profil-header h1 {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
-  margin: 0 auto;
-  padding-bottom: 10px; /* ✅ espace sous le titre */
-  margin-bottom: 20px; /* ✅ à ajouter pour créer de l'espace en dessous */
+  margin: 0;
+  padding-bottom: 10px;
 }
 
 body.profil-page .profil-header .back-btn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 1.5rem;
   color: white;
   background: none;
@@ -1149,7 +1150,7 @@ body.profil-page .profil-header .back-btn {
 /* ✅ Bloc d'infos utilisateur */
 body.profil-page .profil-top {
   margin-top: 40px;
-  margin-bottom: 40px; /* ✅ ajoute de l'air avant les boutons */
+  margin-bottom: 40px;
   text-align: center;
   color: white;
   font-size: 1.1rem;
@@ -1164,8 +1165,8 @@ body.profil-page .profil-sections {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  padding: 0 20px 30px;
+  gap: 20px; /* plus d'air */
+  padding: 0 20px 40px;
 }
 
 body.profil-page .profil-sections button {
@@ -1188,5 +1189,7 @@ body.profil-page .profil-sections button:hover {
   transform: translateY(-2px);
 }
 
-
-
+/* 🔧 Patch global anti-trait blanc résiduel */
+header {
+  border-bottom: none !important;
+}
