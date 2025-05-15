@@ -451,6 +451,10 @@ nav.nav-icons {
 }
 .main-buttons a {
   width: 280px; /* ✅ Cette syntaxe est valide */
+    display: flex;
+  align-items: center; /* ✅ centre verticalement */
+  justify-content: center; /* ✅ centre horizontalement */
+  height: 70px; /* ✅ fixe une hauteur uniforme */
 }
 
 .popup-inner {
@@ -1036,8 +1040,8 @@ main {
 
 }
 .coin-icon {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   margin-right: 8px;
   vertical-align: middle;
 
