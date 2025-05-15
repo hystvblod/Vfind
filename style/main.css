@@ -1045,11 +1045,12 @@ main {
 }
 
 .top-header {
-  position: relative;           /* ✅ pour que les éléments absolus s’y placent */
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;      /* ✅ pour centrer le titre */
+  justify-content: center;
   padding: 10px 20px;
+  height: 60px;
 
 
 
@@ -1060,25 +1061,28 @@ main {
   margin: 0;
 }
 .back-button {
-  position: absolute; /* ✅ Nécessaire pour le placer sans gêner le centrage */
-  left: 15px;          /* ✅ Décalage à gauche */
-  font-size: 1.6rem;
-  color: white;
-  text-decoration: none;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
   background: none;
   border: none;
+  color: white;
   cursor: pointer;
 
 }
 
 .top-buttons {
-  position: absolute;  /* ✅ nécessaire */
+  position: absolute;
   right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   gap: 12px;
 }
 .btn-icon {
-  font-size: 1.4rem;
+ font-size: 1.4rem;
   color: white;
   text-decoration: none;
 }
@@ -1086,10 +1090,11 @@ main {
 /* ✅ SOLDE LIGNE EN DESSOUS */
 .solde-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
-  margin-top: 12px;
-  padding: 0 10px;
+  padding: 8px 30px;
+  background-color: #2f2f42;
+  margin-bottom: 10px;
 }
 
 .solde-item {
@@ -1104,13 +1109,12 @@ main {
 
 /* === PROFIL : HEADER ET MISE EN PAGE === */
 body.profil-page .profil-header {
-  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 15px 20px;
   background: #2f2f42;
-  padding: 25px 20px 10px;
-  border-bottom: none !important;
 
 }
 
@@ -1211,4 +1215,15 @@ body.profil-page header.profil-header {
 .solde-bar.solde-tighter {
   justify-content: space-around !important;
   padding: 0 20px;
+}
+.back-button {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
