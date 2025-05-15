@@ -585,22 +585,12 @@ header nav a:hover {
 }
 .profil-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 15px;
-  background: #fff;
-
-
-}
-/* ✅ EN-TÊTE PROFIL */
-.profil-header {
-  background: none;
-  padding: 30px 20px 10px;
-  display: flex;
+  flex-direction: column; /* ✅ pour empiler la flèche et le titre + icônes */
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-
+  background: none;
+  padding: 30px 20px 10px;
+  position: relative; /* ✅ permet de positionner la flèche */
 
 }
 
@@ -1169,5 +1159,14 @@ main {
   font-size: 1.1rem;
   font-weight: bold;
   color: white;
+}
+.profil-header h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+  color: white;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
