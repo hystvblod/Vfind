@@ -5,27 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Boutique</title>
   <link rel="stylesheet" href="style/main.css" />
-  <style>
-    .solde-ligne span {
-      font-size: 1.4rem;
-      font-weight: bold;
-    }
-
-    .coin-icon {
-      width: 22px;
-      height: 22px;
-      vertical-align: middle;
-      margin-right: 4px;
-    }
-
-    .btn-secondary img,
-    .jeton-button img {
-      width: 18px;
-      height: 18px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-  </style>
 </head>
 <body class="boutique-container">
 
@@ -47,17 +26,17 @@
         <span id="points">0</span>
       </div>
       <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
-        Gagner des pièces <img src="assets/img/vcoin.webp" alt="Vcoin" />
+         Gagner des pièces <img src="assets/img/vcoin.webp" class="vcoin-mini" alt="Vcoin" />
       </button>
     </div>
 
     <div class="solde-item">
       <div class="solde-ligne">
-        <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+        <img src="assets/img/jeton_p.webp" class="jeton-icone" alt="Jeton" />
         <span id="jetons">0</span>
       </div>
       <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
-        Acheter jetons <img src="assets/img/jeton_p.webp" alt="Jeton" />
+          Acheter jetons <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton" />
       </button>
     </div>
   </div>

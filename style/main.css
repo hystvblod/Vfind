@@ -963,8 +963,8 @@ main {
 }
 
 .jeton-mini {
-  width: 22px;
-  height: 22px;
+  width: 36px;
+  height: 36px;
   margin-left: 6px;
 }
 
@@ -1091,13 +1091,7 @@ main {
   margin: 20px auto;
   flex-wrap: wrap;
   margin: 0 auto 10px !important;
-}
 
-.coin-icon-large {
-  width: 80px;
-  height: 80px;
-  display: block;
-  margin: 0 auto 10px;
 }
 
 .solde-item {

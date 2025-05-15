@@ -25,7 +25,7 @@
     </div>
     <div class="solde-item">
       <div class="solde-ligne">
-        <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-mini" />
+        <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-icon" />
         <span id="jetons">0</span>
       </div>
     </div>
@@ -50,7 +50,7 @@
   <script src="js/userData.js"></script>
   <script>
     const data = getUserData();
-    document.getElementById("Vcoins").textContent = data.Vcoins || 0;
+    document.getElementById("vcoins").textContent = data.Vcoins || 0;
     document.getElementById("jetons").textContent = data.jetons || 0;
   </script>
 </body>
