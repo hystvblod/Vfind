@@ -1,161 +1,143 @@
-/* === RESET GLOBAL ET STRUCTURE === */
+/* === PATCH GLOBAL RESPONSIVE CLEAN === */
 :root {
   --vh: 100vh;
 }
 
-* {
+html, body {
+  min-height: 100vh;
+  height: auto;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-html, body {
-  height: auto;
-  min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  font-family: 'Poppins', sans-serif;
   font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  font-family: 'Poppins', sans-serif;
   background: #313142;
   color: #f0f0f0;
 }
 
-body, .page-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 100vh;
-}
-
-main {
-  flex-grow: 1;
-  width: 100%;
-  overflow-y: auto;
-  padding-bottom: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-img, .cadre-preview, .cadre-item {
+/* Empêche toute boîte de sortir de l'écran */
+* {
   max-width: 100%;
-  height: auto;
-  display: block;
+  box-sizing: border-box;
+
 }
 
-.hidden {
-  display: none !important;
-}
-/* === HEADER DU MODE SOLO === */
-.header-solo {
-  background-color: #2f2f42;
-  padding: 12px 20px 10px;
-  border-bottom: 5px solid #a8a8d0;
+/* Permet aux listes de défis de se replier proprement */
+.defi-list li {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.top-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  padding: 10px 20px;
+  .popup-inner {
+    width: 90vw;
+    height: auto;
+  }
+
+  .main-button {
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+  }
+
+  .defi-list {
+    padding: 0 10px;
+  }
+
+@media (max-width: 480px) {
+  .cadre-preview {
+    max-width: 90vw;
+    height: auto;
+  }
+
+  .cadre-item {
+    max-width: 95vw;
+  }
+
+  .defi-texte p {
+    font-size: 1.2rem;
+  }
 }
 
-.mode-title {
-  font-size: 1.8rem;
-  font-weight: bold;
+/* === RÉINITIALISATION DE BASE === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === FOND GLOBAL === */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #313142; /* fond sombre pro */
+  color: #f0f0f0;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* === EN-TÊTE === */
+header {
+  background: #313142;
+  padding: 15px 30px;
   color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 5px solid #3a3a9f;
+}
+
+header h1 {
+  font-size: 1.8rem;
   margin: 0;
 }
 
-.back-button {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.5rem;
-  background: none;
-  border: none;
+header nav a {
   color: white;
-  cursor: pointer;
-}
-
-.top-buttons {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 12px;
-}
-
-.btn-icon {
-  font-size: 1.4rem;
-  color: white;
+  margin-left: 20px;
   text-decoration: none;
-}
-/* === BARRE DE SOLDE === */
-.solde-bar {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: 8px 30px;
-  background-color: #2f2f42;
-  margin-bottom: 10px;
-}
-
-.solde-bar.solde-tighter {
-  justify-content: space-around !important;
-  padding: 0 20px;
-}
-
-.solde-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.1rem;
   font-weight: bold;
-  color: white;
+  font-size: 1rem;
+  transition: color 0.2s;
 }
 
-.coin-icon {
-  width: 32px;
-  height: 32px;
-  margin-right: 8px;
-  vertical-align: middle;
+header nav a:hover {
+ background-color: #313142;
 }
 
-.jeton-icone {
-  position: absolute;
-  bottom: 10px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  z-index: 5;
+/* === BOUTON PRINCIPAL === */
+.main-button {
+  background-color: #e0e0e0;
+  color: #000;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   cursor: pointer;
+  transition: transform 0.2s ease;
+  display: inline-flex;      /* 🔄 important pour les liens */
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem auto;
+  width: 250px;              /* ✅ taille uniforme */
+  text-decoration: none;     /* ✅ retire soulignement */
 }
 
-.jeton-icone:hover {
-  transform: scale(1.1);
+.main-button:hover {
+  transform: scale(1.05);
 }
-/* === POINTS & BOUTONS D'ACTION === */
+
+/* === AFFICHAGE DES POINTS === */
 .points-display {
+  background: none;
   margin: 20px auto 10px;
   font-size: 1.2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
 
-.points-display .solde-ligne {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 0.25rem;
-  color: white;
 }
 
 .points-display button {
@@ -166,144 +148,104 @@ img, .cadre-preview, .cadre-item {
   font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: background 0.3s;
+
+  /* ✅ Ajouts pour empêcher le saut à la ligne avec l’image */
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
+
 
 .points-display button:hover {
   background-color: #e6b800;
 }
 
-.resource-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-  gap: 8px;
-}
-
-.vcoin-mini, .jeton-mini {
-  width: 32px;
-  height: 32px;
-  margin-left: 6px;
-}
-
-/* Boutons horizontaux côte à côte */
-.btn-inline {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.btn-inline button {
-  white-space: nowrap;
-}
-
-.btn-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
 /* === LISTE DES DÉFIS === */
 .defi-list {
-  list-style: none;
-  padding: 0 20px;
-  margin: 2rem auto;
-  max-width: 600px;
+    list-style: none;
+    padding: 0 20px; /* ✅ marge gauche/droite ajoutée */
+    margin: 2rem auto;
+    max-width: 600px;
+  
 }
 
 .defi-list li {
+  position: relative;
   background-color: #5f7182;
   border-radius: 15px;
   padding: 0.5rem 0.75rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background 0.3s;
   color: white;
+  transition: background 0.3s, opacity 0.3s;
 }
 
 .defi-list li.done {
-  background-color: #555563;
+  background-color: #555563;;  /* ✅ même que les boutons d'accueil */
+  color: white;
 }
-
+.defi-list li.done .defi-texte button:hover {
+  background-color: #313142;
+}
 .defi-list li.done .defi-texte button {
   background-color: #555;
   color: white;
 }
-
 .defi-list li.done .defi-texte button:hover {
   background-color: #444;
+
 }
 
-.defi-texte {
+.defi-list p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+
+}
+
+/* CARTE CADRE */
+.cadre-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: transform 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.defi-texte p {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 0.6rem;
-  line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+.cadre-item:hover {
+  transform: translateY(-5px);
 }
 
-.defi-texte button {
-  margin-top: 8px;
-  padding: 10px 16px;
-  font-size: 1rem;
-  font-weight: bold;
+.cadre-item img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cadre-item button {
+  background-color: #4caf50;
+  color: white;
   border: none;
-  border-radius: 10px;
-  background-color: #e0e0e0;
-  color: #000;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
 
-.defi-texte button:hover {
-  background-color: #e6b800;
+.cadre-item button.owned {
+  background-color: #d3d3d3;
+  color: #333;
+  cursor: default;
 }
 
-/* ✅ Structure intérieure */
-.defi-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-top: 15px;
-}
-
-.defi-photo-container {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.defi-photo-container .cadre-preview {
-  width: 80px;
-  height: 100px;
-  position: relative;
-  transform: scale(1);
-  transform-origin: top right;
-  margin-left: auto;
-}
-/* === STRUCTURE DES CADRES (MINIATURES + PREVIEW) === */
-
-/* Cadre preview zoom */
 .cadre-preview {
   position: relative;
   width: 300px;
@@ -311,17 +253,26 @@ img, .cadre-preview, .cadre-item {
   overflow: hidden;
   margin: 0 auto;
 }
-
-/* Cadre miniature */
-.cadre-item .cadre-preview {
-  width: 80px;
-  height: 100px;
-  position: relative;
-  margin: 0 auto 10px;
-  overflow: hidden;
+/* === AFFICHAGE BOUTIQUE VERTICAL AVEC CADRE-PREVIEW COMME AVANT === */
+.list-cadres {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 20px;
 }
 
-/* Image PNG du cadre (fond) */
+.list-cadres .cadre-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  max-width: 400px;
+  margin: 0 auto;
+}
+/* ✅ CADRE PNG - FOND */
 .photo-cadre {
   position: absolute;
   top: 0;
@@ -333,51 +284,91 @@ img, .cadre-preview, .cadre-item {
   pointer-events: none;
 }
 
-/* Photo utilisateur (centrée, dans le cadre) */
+/* ✅ PHOTO UTILISATEUR - DESSUS */
 .photo-user {
   position: absolute;
   top: 20px;
   left: 20px;
   right: 20px;
   bottom: 20px;
-  max-width: calc(100% - 40px);
-  max-height: calc(100% - 40px);
   width: auto;
   height: auto;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
   object-fit: contain;
   z-index: 3;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* Photo miniature (ajustée pour mini cadre) */
-.cadre-item .photo-user {
-  top: 5.3px;
-  left: 5.3px;
-  right: 5.3px;
-  bottom: 5.3px;
-  max-width: calc(100% - 10.6px);
-  max-height: calc(100% - 10.6px);
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+nav.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
 }
-/* === POPUPS GÉNÉRALES === */
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.icon-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+/* === MASQUER === */
+.hidden {
+  display: none !important;
+}
+
+/* ✅ Feedback de gain */
+#gain-feedback {
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #28a745;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  position: relative;
+  top: 0;
+}
+
+#gain-feedback.show {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
 .popup {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.95);
-  background-color: transparent;
+  background: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   z-index: 1000;
   opacity: 0;
-  pointer-events: none;
   transition: all 0.3s ease;
+  pointer-events: none;
   max-width: 90vw;
   max-height: 90vh;
-  width: auto;
+  width: 90vw;
   height: auto;
 }
 
@@ -391,11 +382,99 @@ img, .cadre-preview, .cadre-item {
   width: 100%;
   height: auto;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cadre-preview.cadre-popup {
+  position: relative;
+  width: 300px;
+  height: 375px;
+  margin: 0 auto;
+}
+
+.photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.photo-user {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  z-index: 3;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.defi-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.defi-texte {
+    flex: 1;
+    text-align: center;        /* ✅ centre le texte multi-lignes */
+    display: flex;
+    flex-direction: column;
+    align-items: center;       /* ✅ centre les éléments (texte + boutons) horizontalement */
+  }
+  .defi-texte p {
+    margin-bottom: 0.6rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    line-height: 1.4;
+  }
+
+.defi-photo-container {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;  /* ← garde l’alignement à droite */
+    align-items: center;        /* ← centre verticalement dans le bloc */
+  }
+.defi-photo-container .cadre-preview {
+  width: 80px;
+  height: 100px;
+  position: relative;
+  transform: scale(1); /* ✅ Pour éviter qu’il disparaisse */
+  transform-origin: top right;
+  margin-left: auto;  /* ✅ Pour l’aligner à droite */
+}
+.main-buttons a {
+  width: 280px; /* ✅ Cette syntaxe est valide */
+}
+
+.popup-inner {
+  display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* === BOUTON FERMETURE === */
+.popup {
+  width: auto;
+  max-width: 90vw;
+  height: auto;
+  max-height: 90vh;
+  padding: 10px 20px 30px;
+}
+
+.close-btn {
 #close-popup {
   position: absolute;
   top: 10px;
@@ -413,15 +492,18 @@ img, .cadre-preview, .cadre-item {
   align-items: center;
   justify-content: center;
   line-height: 1;
+
 }
 
-/* === POPUP GAIN === */
+  }
+  
 #popup-gain {
   background: linear-gradient(to bottom right, #6a0dad, #1e90ff);
   color: white;
   border-radius: 20px;
   padding: 30px 20px;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  font-family: 'Poppins', sans-serif;
   text-align: center;
 }
 
@@ -448,50 +530,191 @@ img, .cadre-preview, .cadre-item {
 #popup-gain button:hover {
   background: #e6b800;
 }
+.popup {
+  background-color: transparent; /* pour retirer le fond blanc de la popup */
+}
 
-/* === POPUP ACHAT DE JETONS === */
-#popup-achat-jeton {
-  background: linear-gradient(to bottom, #2e2e50, #3f3f70);
+#startBtn {
+  margin-top: 20px;
+  padding: 15px 25px;
+  font-size: 1.2em;
+
+}
+    #pre-game {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 80px;
+      min-height: calc(100vh - 80px);
+}
+  
+/* === NAVIGATION PROFESSIONNELLE === */
+header {
+  color: #babada;
+  padding: 20px 30px;
   color: white;
-  border-radius: 20px;
-  padding: 30px 20px;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.4);
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 5px solid #babada;
 }
 
-#popup-achat-jeton h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-#popup-achat-jeton button {
-  display: block;
-  width: 100%;
-  margin: 12px auto;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 12px;
+header h1 {
+  font-size: 2rem;
   font-weight: bold;
-  font-size: 1rem;
-  background: #ffcc00;
-  color: #000;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-#popup-achat-jeton button:hover {
-  background: #e6b800;
+header nav {
+  display: flex;
+  gap: 20px;
 }
-/* === CONTAINER SOLO === */
-.solo-container {
-  padding-bottom: 2rem;
+
+header nav a {
+  background: white;
+  color: #babada;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+header nav a:hover {
+  background: #ffd700;
+  color: #000;
+  transform: scale(1.05);
+}
+.profil-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: #fff;
+}
+
+.back-btn {
+  font-size: 18px;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+
+}
+/* ✅ EN-TÊTE PROFIL */
+.profil-header {
+  background: none;
+  padding: 30px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+}
+
+.back-btn {
+  align-self: flex-start;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  color: white;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* ✅ SECTION INFOS */
+.profil-top {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+  font-size: 1.1rem;
+}
+.profil-top p {
+  margin: 6px 0;
+}
+
+/* ✅ BOUTONS DE SECTION */
+.profil-sections {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  overflow-y: auto;
+  align-items: center;
+  gap: 15px;
+  padding: 0 20px 30px;
 }
 
-/* === CONTAINER CAMÉRA (photo défi) === */
+.profil-sections button {
+  width: 90%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #4b4acb;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.profil-sections button:hover {
+  background-color: #ffd700;
+  transform: translateY(-2px);
+}
+/* ✅ Conteneur principal centré */
+.profil-container {
+  min-height: auto;                /* plus besoin de 100vh */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;     /* ✅ aligne vers le haut */
+  align-items: center;
+  padding-bottom: 20px; 
+}
+
+/* ✅ Garde les boutons bien centrés */
+.profil-sections {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.defi-texte button {
+  margin-top: 8px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+background-color: #e0e0e0; /* gris clair */
+color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  transition: background 0.2s ease;
+}
+
+.defi-texte button:hover {
+  background-color: #e6b800;
+}
+
+.timer-box {
+  background: #68686e(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  margin: 20px auto;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: bold;
+  color: white;
+  font-size: 1.2rem;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 .camera-container-fullscreen {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -514,34 +737,410 @@ img, .cadre-preview, .cadre-item {
   display: flex;
   gap: 15px;
 }
+.disabled-premium {
+  opacity: 0.6;
+  pointer-events: auto;
+}
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
 
-/* === TIMER SOLO === */
-.timer-box {
-  background: #68686e;
-  padding: 10px 20px;
-  margin: 20px auto;
+.cadre-item {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+  min-height: 160px;
+}
+
+.cadre-item:hover {
+  transform: scale(1.03);
+}
+
+.cadre-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.cadre-item button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.cadre-item button[disabled] {
+  background-color: #ccc;
+  color: #333;
+  cursor: default;
+
+}
+
+body {
+  display: block;
+}
+
+.page-container {
+  max-width: 100vw;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+main {
+  flex-grow: 1;
+  width: 100%;
+}
+.list-cadres .cadre-preview {
+  position: relative;
+  width: 300px;
+  height: 375px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.list-cadres .photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.list-cadres .photo-user {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  object-fit: contain;
+  z-index: 3;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+body, html, main, section, .container {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+img, .cadre-preview, .cadre-item {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.solo-container {
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+main, .main-container, .duel-container, .boutique-container, .cadres-container {
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+main,
+.boutique-container,
+.cadres-container,
+.duel-container,
+.gallery-container,
+.historique-container,
+.index-container,
+.parametre-container,
+.reglement-container {
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+html, body {
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body, .page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: auto;
+  width: 100%;
+}
+
+main {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+#boutique-container.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+
+}
+
+
+/* ✅ MINIATURE = version réduite exacte du zoom */
+.cadre-item .cadre-preview {
+  width: 80px;
+  height: 100px;
+  position: relative;
+  margin: 0 auto 10px;
+  overflow: hidden;
+}
+
+/* Cadre miniature */
+.cadre-item .photo-cadre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ✅ Photo miniature réduite, même marges que le zoom mais adaptées */
+.cadre-item .photo-user {
+  position: absolute;
+  top: 5.3px;
+  left: 5.3px;
+  right: 5.3px;
+  bottom: 5.3px;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 10.6px);
+  max-height: calc(100% - 10.6px);
+  object-fit: contain;
+  z-index: 2;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.jeton-icone {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  z-index: 5;
+  cursor: pointer;
+  transform: none; /* ✅ retire le centrage horizontal */
+}
+
+.jeton-icone:hover {
+  transform: scale(1.1);
+}
+.dual-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.left, .right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.jeton-button {
+  display: flex;
+  align-items: center;
+  background: #ffda77;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.jeton-button:hover {
+  background: #ffd24d;
+}
+
+.jeton-mini {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+}
+
+/* ✅ Affichage côte à côte des boutons points + jetons */
+.stacked-points {
   text-align: center;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.btn-row button {
+  white-space: nowrap;
+}
+/* ✅ Met les deux boutons sur une seule ligne */
+.horizontal-buttons {
+  text-align: center;
+}
+
+.btn-inline {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.btn-inline button {
+  white-space: nowrap;
+}
+#popup-achat-jeton {
+  background: linear-gradient(to bottom, #2e2e50, #3f3f70);
+  color: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+#popup-achat-jeton h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+#popup-achat-jeton button {
+  display: block;
+  width: 100%;
+  margin: 12px auto;
+  padding: 12px 20px;
+  border: none;
   border-radius: 12px;
   font-weight: bold;
+  font-size: 1rem;
+  background: #ffcc00;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#popup-achat-jeton button:hover {
+  background: #e6b800;
+}
+.vcoin-mini {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+}
+.back-btn {
+  font-size: 1.6rem;
   color: white;
-  font-size: 1.2rem;
-  max-width: 300px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-decoration: none;
+  padding: 6px;
+  display: inline-block;
+}
+.coin-icon {
+  width: 26px;
+  height: 26px;
+  margin-right: 8px;
+  vertical-align: middle;
+
 }
 
-/* === FEEDBACK DE GAIN (petit texte vert) === */
-#gain-feedback {
-  margin-left: 8px;
-  font-size: 16px;
+.solde-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.solde-ligne {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
   font-weight: bold;
-  color: #28a745;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.4s ease;
-  position: relative;
-  top: 0;
+  font-size: 1rem;
+  color: white;
+
+}
+.points-display .solde-ligne span {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.points-display .btn-inline {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-#gain-feedback.show {
-  opacity: 1;
-  transform: translateY(-10px);
+.resource-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  gap: 8px;
+}
+/* ✅ STYLE POUR LE PROFIL */
+.solde-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+  margin: 0 auto 10px !important;
+}
+
+.coin-icon-large {
+  width: 80px;
+  height: 80px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.solde-item {
+  text-align: center;
+}
+
+.solde-ligne {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
 }
