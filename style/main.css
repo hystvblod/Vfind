@@ -1189,10 +1189,7 @@ main {
   width: 24px;
   height: 24px;
 }
-/* ✅ Décale vers le bas le header profil (1 ligne visuelle) */
-body.profil-page .profil-header {
-  margin-top: 20px;
-}
+
 
 body.profil-page .profil-header {
   margin-top: 20px; /* décale le haut */
