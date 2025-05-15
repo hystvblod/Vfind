@@ -1232,4 +1232,7 @@ main {
   margin-right: 8px;
   position: static;
 }
+.header-solo {
+  border-bottom: none !important;
+}
 
