@@ -1226,16 +1226,16 @@ main {
 
 /* Taille personnalisable */
 .vcoin-solo {
-  width: 48px;
+  width: 62px;
   height: auto;
-  max-height: 48px;
+  max-height: 62px;
   object-fit: contain;
 }
 
 .jeton-solo {
-  width: 48px;
+  width: 58px;
   height: auto;
-  max-height: 48px;
+  max-height: 58px;
   object-fit: contain;
 }
 /* ✅ Icône pièce dédiée au mode solo */
