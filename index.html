@@ -24,15 +24,15 @@
       text-decoration: none;
       font-weight: bold;
     }
-.logo {
-  text-align: center;
-  margin-top: 2rem;
-}
-.logo img {
-  height: 150px;
-  display: block;
-  margin: 0 auto;
-}
+    .logo {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .logo img {
+      height: 150px;
+      display: block;
+      margin: 0 auto;
+    }
     .main-buttons {
       display: flex;
       flex-direction: column;
@@ -40,18 +40,26 @@
       margin-top: 3rem;
       gap: 1.5rem;
     }
-    .main-buttons a {
-      text-decoration: none;
-      font-size: 1.5rem;
+    .cartouche {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 1.6rem;
       font-weight: bold;
-      padding: 1rem 3rem;
-      border-radius: 15px;
+      padding: 1.2rem 2rem;
+      border-radius: 16px;
       background-color: #ffffff22;
       color: white;
       backdrop-filter: blur(5px);
       transition: all 0.3s ease;
+      width: 80%;
+      max-width: 320px;
+      min-height: 60px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
     }
-    .main-buttons a:hover {
+    .cartouche:hover {
       background-color: #ffffff44;
     }
     footer {
@@ -65,26 +73,24 @@
 <body class="index-page">
   <div class="page-container">
 
-  <div class="top-bar">
-    <a href="profil.html">👤</a>
-    <a href="parametres.html" class="btn-icon">⚙️</a>
+    <div class="top-bar">
+      <a href="profil.html">👤</a>
+      <a href="parametres.html" class="btn-icon">⚙️</a>
+    </div>
 
-  
-  </div>
+    <div class="logo">
+      <img src="assets/img/logo.png" alt="Logo VFind">
+    </div>
 
-  <div class="logo">
-    <img src="assets/img/logo.png" alt="Logo VFind">
-  </div>
+    <div class="main-buttons">
+      <a href="solo.html" class="cartouche">Mode Solo</a>
+      <a href="duel.html" class="cartouche">Mode Duel</a>
+      <a href="boutique.html" class="cartouche">Boutique</a>
+    </div>
 
-  <div class="main-buttons">
-    <a href="solo.html">Mode Solo</a>
-    <a href="duel.html">Mode Duel</a>
-    <a href="boutique.html">Boutique</a>
-  </div>
-
-  <footer>
-    © 2025 VFind. Tous droits réservés.
-  </footer>
+    <footer>
+      © 2025 VFind. Tous droits réservés.
+    </footer>
 
   </div>
 </body>
