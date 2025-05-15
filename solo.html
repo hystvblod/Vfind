@@ -30,32 +30,35 @@
   </div>
 
   <!-- HEADER -->
-<header class="header-solo">
-  <!-- LIGNE 1 -->
-  <div class="header-row">
-   <button class="back-btn" onclick="history.back()" title="Retour">&#8592;</button>
-    <h1>Mode Solo</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
+  <header class="header-solo" style="border-bottom: 5px solid #888;">
+    <!-- LIGNE 1 -->
+    <div class="header-row">
+      <button class="back-btn" onclick="history.back()" title="Retour">&#8592;</button>
+      <h1>Mode Solo</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">👤</a>
+        <a href="parametres.html" class="btn-icon">⚙️</a>
+      </div>
     </div>
-  </div>
 
-  <!-- LIGNE 2 -->
-<!-- Pièces -->
-<div class="solde-block">
-  <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
-  <span id="points">1234</span>
-</div>
-
-<!-- Jetons -->
-<div class="solde-block">
-  <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
-  <span id="jetons">6</span>
-</div>
-
-</header>
-</header>
+    <!-- LIGNE 2 : SOLDE -->
+    <div class="solde-container solde-solo">
+      <!-- Pièces -->
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
+          <span id="points">1234</span>
+        </div>
+      </div>
+      <!-- Jetons -->
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
+          <span id="jetons">6</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
   <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">

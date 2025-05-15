@@ -1276,3 +1276,28 @@ main {
 .btn-action-boutique:hover {
   background-color: #e6b800;
 }
+/* ✅ Barre de solde horizontale identique à la boutique */
+.solde-solo {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 8px;
+}
+
+/* ✅ Pour les icônes SOLO version compacte */
+.icon-solo-piece,
+.icon-solo-jeton {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+
+/* ✅ Uniformisation texte */
+.solde-ligne span {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  vertical-align: middle;
+  line-height: 1;
+}
