@@ -18,28 +18,27 @@
 </header>
 
 <!-- Bloc affichage pièces + boutons -->
-<section class="points-display">
-  <div class="btn-inline">
-    <div class="solde-item">
-      <div class="solde-ligne">
-        <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
-        <span id="points">0</span>
-      </div>
-      <button id="gain-btn" class="btn-secondary" onclick="ouvrirPopupGain()">
-         Gagner des pièces <img src="assets/img/vcoin.webp" class="vcoin-mini" alt="Vcoin" />
-      </button>
-    </div>
-
-    <div class="solde-item">
-      <div class="solde-ligne">
-        <img src="assets/img/jeton_p.webp" class="jeton-icone" alt="Jeton" />
-        <span id="jetons">0</span>
-      </div>
-      <button class="jeton-button" onclick="ouvrirPopupJetonBoutique()">
-          Acheter jetons <img src="assets/img/jeton_p.webp" class="jeton-mini" alt="Jeton" />
-      </button>
-    </div>
+<!-- Bloc Pièces -->
+<div class="solde-item">
+  <div class="solde-ligne">
+    <img src="assets/img/vcoin.webp" class="icon-boutique-piece" alt="Vcoin" />
+    <span id="points">100</span>
   </div>
+  <button class="btn-action-boutique">
+    Gagner des pièces <img src="assets/img/vcoin.webp" class="icon-bouton-piece" alt="Vcoin" />
+  </button>
+</div>
+
+<!-- Bloc Jetons -->
+<div class="solde-item">
+  <div class="solde-ligne">
+    <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" alt="Jeton" />
+    <span id="jetons">6</span>
+  </div>
+  <button class="btn-action-boutique">
+    Acheter jetons <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" alt="Jeton" />
+  </button>
+</div>
 </section>
 
 <!-- Cadres -->

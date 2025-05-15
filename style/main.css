@@ -1235,3 +1235,44 @@ main {
   border-bottom: none !important;
 }
 
+/* ✅ Icônes de solde en boutique */
+.icon-boutique-piece,
+.icon-boutique-jeton {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+/* ✅ Icônes à l'intérieur des boutons */
+.icon-bouton-piece,
+.icon-bouton-jeton {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-left: 8px;
+}
+
+/* ✅ Boutons jaunes uniformes */
+.btn-action-boutique {
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  width: 180px; /* ✅ même taille pour tous */
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-action-boutique:hover {
+  background-color: #e6b800;
+}
