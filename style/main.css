@@ -464,10 +464,10 @@ nav.nav-icons {
 
 .defi-photo-container .photo-user {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  bottom: 6px;
+  top: 3.6px;
+  left: 3.6px;
+  right: 3.6px;
+  bottom: 3.6px;
   width: auto;
   height: auto;
   max-width: calc(100% - 12px);
