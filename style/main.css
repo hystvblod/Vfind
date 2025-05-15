@@ -1116,6 +1116,8 @@ main {
   gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
   padding: 30px 16px 20px;
   background: none;
+  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
+
 }
 
 .header-row {
@@ -1229,15 +1231,6 @@ main {
   border-bottom: none !important;
 }
 
-/* ✅ Icônes de solde en boutique */
-.icon-boutique-piece,
-.icon-boutique-jeton {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  margin-right: 8px;
-  display: inline-block;
-}
 
 /* ✅ Icônes à l'intérieur des boutons */
 .icon-bouton-piece,
@@ -1295,4 +1288,66 @@ main {
   color: white;
   vertical-align: middle;
   line-height: 1;
+}
+/* ✅ LIGNE 1 : solde global côte à côte */
+.solde-ligne-boutique {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin: 12px 0;
+}
+
+/* ✅ Chaque item solde */
+.solde-ligne-boutique .solde-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* ✅ LIGNE 2 : bouton centrés et séparés */
+.boutique-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+/* ✅ Boutons jaunes uniformes */
+.btn-action-boutique {
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 200px;
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+/* ✅ Icônes dans les boutons */
+.icon-bouton-piece,
+.icon-bouton-jeton {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ✅ Icônes en haut */
+.icon-boutique-piece,
+.icon-boutique-jeton {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
