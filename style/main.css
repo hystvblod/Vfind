@@ -1197,16 +1197,16 @@ main {
 
 /* Taille personnalisable */
 .vcoin-solo {
-  width: 30px;
+  width: 42px;
   height: auto;
-  max-height: 32px;
+  max-height: 42px;
   object-fit: contain;
 }
 
 .jeton-solo {
-  width: 30px;
+  width: 42px;
   height: auto;
-  max-height: 32px;
+  max-height: 42px;
   object-fit: contain;
 }
 /* ✅ Icône pièce dédiée au mode solo */
