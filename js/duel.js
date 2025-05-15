@@ -1,30 +1,49 @@
 document.addEventListener("DOMContentLoaded", () => {
   const challengeDisplay = document.getElementById("duel-challenge");
-  const canvasA = document.getElementById("canvas-joueurA");
-  const canvasB = document.getElementById("canvas-joueurB");
+  const defiList = document.getElementById("duel-defi-list");
+  const cadre = getCadreSelectionne() || "polaroid_01";
 
-  updateJetonsDisplay(); // ✅ Met à jour les jetons dès le chargement
+  updateJetonsDisplay();
 
-  // Tirage d'un défi aléatoire
+  // Charger les défis
   fetch("data/defis.json")
     .then(res => res.json())
-    .then(defis => {
-      const defi = defis[Math.floor(Math.random() * defis.length)];
-      challengeDisplay.textContent = defi;
-    });
+    .then(data => {
+      const defis = data.defis.slice(0, 3); // 3 premiers défis
+      defiList.innerHTML = "";
+      defis.forEach((defi, i) => {
+        const id = defi.id;
+        const texte = defi.intitule;
 
-  // Simulation de chargement des photos
-  const demoPhoto = "logo.png";
-  const cadre = getCadreSelectionne(); // 📌 plus propre que userData direct
-  drawPolaroid(demoPhoto, cadre, canvasA);
-  drawPolaroid(demoPhoto, "polaroid_02", canvasB);
+        // Photo du joueur A (toi) → locale si dispo
+        const photoA = localStorage.getItem(`photo_defi_${id}`) || "photos/photo_joueurA.jpg";
+        // Photo du joueur B (adversaire) → image par défaut pour l’instant
+        const photoB = "photos/photo_joueurB.jpg";
 
-  // Gestion des signalements
-  document.querySelectorAll(".report-button").forEach(button => {
-    button.addEventListener("click", () => {
-      alert("Photo signalée. Merci pour ton retour.");
+        const li = document.createElement("li");
+        li.className = "defi-item";
+        li.innerHTML = `
+          <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
+          <div class="defi-content">
+            <div class="cadre-preview">
+              <img src="${photoA}" class="photo-user cover" onclick="toggleFit(this)">
+              <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
+            </div>
+            <div class="cadre-preview">
+              <img src="${photoB}" class="photo-user cover" onclick="toggleFit(this)">
+              <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
+          </div>
+        `;
+        defiList.appendChild(li);
+      });
+    })
+    .catch(err => {
+      console.error("Erreur chargement défis duel :", err);
     });
-  });
 });
 
 function updateJetonsDisplay() {
@@ -32,4 +51,9 @@ function updateJetonsDisplay() {
   if (jetonsSpan && typeof getJetons === "function") {
     jetonsSpan.textContent = getJetons();
   }
+}
+
+function toggleFit(img) {
+  img.classList.toggle("cover");
+  img.classList.toggle("contain");
 }

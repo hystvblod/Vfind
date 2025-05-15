@@ -7,54 +7,43 @@
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="duel-container">
+
+  <!-- ====== HEADER ====== -->
   <header>
-    <h1>⚔️ Mode Duel</h1>
+    <h1>Mode Duel</h1>
     <nav>
-      <a href="index.html">🏠 Accueil</a>
+      <a href="index.html" class="back-btn" title="Retour">&#8592;</a>
       <a href="profil.html">👤 Profil</a>
       <a href="parametres.html" class="btn-icon">⚙️</a>
     </nav>
-    <!-- ✅ Jetons affichés directement dans le header -->
     <p style="text-align:center; margin-top: 0.5rem;">
       🎟️ Jetons : <span id="jetons">0</span>
     </p>
   </header>
 
+  <!-- ====== MAIN ====== -->
   <main>
+
+    <!-- PUB -->
     <section class="pub-zone">
       <p>🔒 Une pub est requise pour lancer le duel</p>
       <button onclick="showAd('interstitial')" class="btn-secondary">▶️ Voir la pub</button>
     </section>
 
-    <section class="defi-zone">
-      <h2 id="duel-challenge">Défi en cours de chargement...</h2>
-      <button id="nouveau-duel" class="btn-main">🔁 Nouveau duel</button>
+    <!-- DÉFIS EN MODE DUEL -->
+    <section id="duel-list-section">
+      <h2 id="duel-challenge">Défis du jour</h2>
+      <ul id="duel-defi-list" class="defi-list"></ul>
     </section>
 
-    <section class="duel-photos">
-      <div class="duel-photo">
-        <h3>👤 Joueur A</h3>
-        <div class="cadre-preview">
-          <img src="photos/photo_joueurA.jpg" class="photo-user cover" onclick="toggleFit(this)">
-          <img src="cadres/polaroid_01.png" class="photo-cadre">
-        </div>
-        <button class="btn-flag report-button">🚩 Signaler</button>
-      </div>
-      <div class="duel-photo">
-        <h3>👤 Joueur B</h3>
-        <div class="cadre-preview">
-          <img src="photos/photo_joueurB.jpg" class="photo-user cover" onclick="toggleFit(this)">
-          <img src="cadres/polaroid_01.png" class="photo-cadre">
-        </div>
-        <button class="btn-flag report-button">🚩 Signaler</button>
-      </div>
-    </section>
   </main>
 
+  <!-- ====== FOOTER ====== -->
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
 
+  <!-- ====== SCRIPTS ====== -->
   <script src="js/storage.js"></script>
   <script src="js/userData.js"></script>
   <script src="js/polaroid.js"></script>
@@ -75,5 +64,6 @@
       }
     });
   </script>
+
 </body>
 </html>

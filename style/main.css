@@ -1136,6 +1136,8 @@ main {
 .back-btn {
   position: absolute;
   left: 0;
+  top: 50%; /* ✅ ajoute cette ligne */
+  transform: translateY(-50%); /* ✅ centre verticalement */
   font-size: 1.6rem;
   color: white;
   background: none;
