@@ -29,18 +29,35 @@
   </div>
 
   <!-- HEADER -->
-  <header class="header-solo">
+<header class="header-solo">
+  <div class="top-header-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
     <a href="index.html" class="btn-icon back-button">⬅️</a>
-    <h1 class="mode-title">📸 Mode Solo</h1>
-    <div class="top-buttons">
+    <h1 class="mode-title">Mode Solo</h1>
+    <div class="top-buttons" style="display: flex; gap: 12px;">
       <a href="profil.html" class="btn-icon">👤</a>
       <a href="parametres.html" class="btn-icon">⚙️</a>
     </div>
-    <!-- ✅ Jetons visibles ici -->
-    <p style="text-align:center; margin-top: 0.5rem;">
-      🎟️ Jetons : <span id="jetons">0</span>
-    </p>
-  </header>
+  </div>
+
+  <!-- Bloc pièces + jetons (sous le titre) -->
+  <section class="points-display" style="margin-top: 10px;">
+    <div class="btn-inline">
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
+          <span id="points">0</span>
+        </div>
+      </div>
+
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+          <span id="jetons">0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</header>
 
   <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
