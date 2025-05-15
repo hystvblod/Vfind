@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="page-container">
+
   <!-- POPUP PHOTO -->
   <div id="popup-photo" class="popup hidden">
     <div class="popup-inner">
@@ -28,31 +29,31 @@
     </div>
   </div>
 
-  <!-- HEADER -->
-<header class="header-solo">
-  <div class="top-header solo-centered">
-    <button class="back-button" onclick="history.back()">←</button>
-    <h1 class="mode-title">Mode Solo</h1>
-    <div class="top-icons">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
+  <!-- ✅ HEADER CLEAN CENTRÉ -->
+  <header class="header-solo">
+    <div class="solo-header">
+      <button class="back-button" onclick="history.back()">←</button>
+      <h1 class="solo-title">Mode Solo</h1>
+      <div class="solo-icons">
+        <a href="profil.html" class="btn-icon">👤</a>
+        <a href="parametres.html" class="btn-icon">⚙️</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ✅ BARRE DE SOLDE CENTRÉE -->
+  <div class="solde-bar solde-center">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon" />
+      <span id="vcoins">0</span>
+    </div>
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon" />
+      <span id="jetons">0</span>
     </div>
   </div>
-</header>
 
-  <!-- ✅ BARRE DE SOLDE EN DESSOUS DU HEADER -->
-<div class="solde-bar solde-tighter">
-  <div class="solde-item">
-    <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon" />
-    <span id="vcoins">0</span>
-  </div>
-  <div class="solde-item">
-    <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon" />
-    <span id="jetons">0</span>
-  </div>
-</div>
-
-  <!-- MAIN GAME STRUCTURE -->
+  <!-- ✅ STRUCTURE DU JEU -->
   <main class="solo-container">
     <section id="pre-game" class="centered">
       <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
@@ -70,22 +71,16 @@
     </section>
   </main>
 
-  <!-- SCRIPTS -->
+  <!-- ✅ SCRIPTS -->
   <script src="js/userData.js"></script>
   <script src="js/solo.js"></script>
   <script src="js/camera.js"></script>
   <script>
-    function toggleFit(img) {
-      img.classList.toggle('cover');
-      img.classList.toggle('contain');
-    }
-
     let defiIndexActuel = null;
 
     window.ouvrirPopupJeton = function(index) {
       const jetons = getJetons();
       const isPremium = localStorage.getItem("premium") === "true";
-
       document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
       document.getElementById("popup-jeton").classList.remove("hidden");
       document.getElementById("popup-jeton").classList.add("show");
@@ -93,7 +88,6 @@
 
       document.getElementById("valider-jeton-btn").onclick = () => {
         const jetons = getJetons();
-
         if (jetons > 0) {
           removeJeton();
           if (typeof validerDefi === "function") {
@@ -112,10 +106,8 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-      const span = document.getElementById("jetons");
-      if (span && typeof getJetons === "function") {
-        span.textContent = getJetons();
-      }
+      document.getElementById("vcoins").textContent = getPoints?.() || 0;
+      document.getElementById("jetons").textContent = getJetons?.() || 0;
     });
   </script>
 </body>

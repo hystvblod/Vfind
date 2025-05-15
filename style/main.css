@@ -969,8 +969,8 @@ main {
   margin-left: 6px;
 }
 .coin-icon {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   margin-right: 8px;
   vertical-align: middle;
 
@@ -1030,9 +1030,9 @@ main {
 }
 
 .left-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  position: relative;
+  flex: 1;
+  justify-content: center;
 
 }
 
@@ -1045,16 +1045,13 @@ main {
 }
 
 .top-header {
+  position: relative;           /* ✅ pour que les éléments absolus s’y placent */
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
+  justify-content: center;      /* ✅ pour centrer le titre */
+  padding: 10px 20px;
 
-.left-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+
 
 .mode-title {
   font-size: 1.8rem;
@@ -1062,21 +1059,23 @@ main {
   color: white;
   margin: 0;
 }
-
 .back-button {
+  position: absolute; /* ✅ Nécessaire pour le placer sans gêner le centrage */
+  left: 15px;          /* ✅ Décalage à gauche */
   font-size: 1.6rem;
   color: white;
   text-decoration: none;
   background: none;
   border: none;
   cursor: pointer;
+
 }
 
 .top-buttons {
+  position: absolute;  /* ✅ nécessaire */
+  right: 15px;
   display: flex;
-  align-items: center;
   gap: 12px;
-  margin-left: auto;
 }
 .btn-icon {
   font-size: 1.4rem;
@@ -1100,11 +1099,6 @@ main {
   font-size: 1.1rem;
   font-weight: bold;
   color: white;
-}
-
-.coin-icon {
-  width: 32px;
-  height: 32px;
 }
 
 
@@ -1209,25 +1203,8 @@ body.profil-page header.profil-header {
   border-bottom: none !important;
   box-shadow: none !important;
 }
-/* 🔧 Centrage du titre dans Mode Solo */
-.top-header.solo-centered {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 40px;
-}
 
-.top-header.solo-centered .back-button {
-  position: absolute;
-  left: 10px;
-}
 
-.top-header.solo-centered .top-icons {
-  position: absolute;
-  right: 10px;
-  display: flex;
-  gap: 12px;
 }
 
 /* ✅ Réduction du décalage des icônes jeton/pièce */
