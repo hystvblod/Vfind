@@ -1213,4 +1213,23 @@ main {
   max-height: 32px;
   object-fit: contain;
 }
+/* ✅ Icône pièce dédiée au mode solo */
+.icon-solo-piece {
+  width: 30px;
+  height: auto;
+  max-height: 32px;
+  object-fit: contain;
+  margin-right: 8px;
+  position: static;
+}
+
+/* ✅ Icône jeton dédiée au mode solo */
+.icon-solo-jeton {
+  width: 30px;
+  height: auto;
+  max-height: 32px;
+  object-fit: contain;
+  margin-right: 8px;
+  position: static;
+}
 
