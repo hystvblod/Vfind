@@ -1209,3 +1209,29 @@ body.profil-page header.profil-header {
   border-bottom: none !important;
   box-shadow: none !important;
 }
+/* 🔧 Centrage du titre dans Mode Solo */
+.top-header.solo-centered {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+}
+
+.top-header.solo-centered .back-button {
+  position: absolute;
+  left: 10px;
+}
+
+.top-header.solo-centered .top-icons {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  gap: 12px;
+}
+
+/* ✅ Réduction du décalage des icônes jeton/pièce */
+.solde-bar.solde-tighter {
+  justify-content: space-around !important;
+  padding: 0 20px;
+}
