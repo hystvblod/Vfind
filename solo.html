@@ -29,35 +29,30 @@
   </div>
 
   <!-- HEADER -->
-<header class="header-solo">
-  <div class="top-header-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+<header class="header-solo" style="padding: 0 20px; margin-top: 10px;">
+  <!-- Ligne 1 : flèche, titre, icônes -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
     <a href="index.html" class="btn-icon back-button">⬅️</a>
-    <h1 class="mode-title">Mode Solo</h1>
+    <h1 class="mode-title" style="margin: 0 auto; font-size: 1.8rem;">Mode Solo</h1>
     <div class="top-buttons" style="display: flex; gap: 12px;">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
+      <a href="profil.html" class="btn-icon" title="Profil">👤</a>
+      <a href="parametres.html" class="btn-icon" title="Paramètres">⚙️</a>
     </div>
   </div>
 
-  <!-- Bloc pièces + jetons (sous le titre) -->
-  <section class="points-display" style="margin-top: 10px;">
-    <div class="btn-inline">
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
-          <span id="points">0</span>
-        </div>
-      </div>
-
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
-          <span id="jetons">0</span>
-        </div>
-      </div>
+  <!-- Ligne 2 : pièces à gauche, jetons à droite -->
+  <div class="btn-inline" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+    <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
+      <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
+      <span id="points">0</span>
     </div>
-  </section>
+    <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
+      <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+      <span id="jetons">0</span>
+    </div>
+  </div>
 </header>
+
 
   <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
