@@ -161,43 +161,48 @@ function updateJetonsDisplay() {
     jetonsSpan.textContent = data.jetons || 0;
   }
 }
-  function afficherPhotosSauvegardees() {
-    const cadreActuel = getCadreSelectionne();
+function afficherPhotosSauvegardees() {
+  const cadreActuel = getCadreSelectionne();
 
+  document.querySelectorAll(".defi-item").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
-    document.querySelectorAll(".defi-item").forEach(defiEl => {
-      const id = defiEl.getAttribute("data-defi-id");
-      const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+    if (dataUrl) {
+      const containerCadre = document.createElement("div");
+      containerCadre.className = "cadre-item";
 
-      if (dataUrl) {
       const preview = document.createElement("div");
-preview.className = "cadre-preview cadre-item";
-       const fond = document.createElement("img");
-        fond.className = "photo-cadre";
-        fond.src = `./assets/cadres/${cadreActuel}.webp`;
+      preview.className = "cadre-preview";
 
-        const photo = document.createElement("img");
-        photo.className = "photo-user";
-        photo.src = dataUrl;
-        photo.onclick = () => agrandirPhoto(dataUrl, id);
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
 
-        preview.appendChild(fond);
-        preview.appendChild(photo);
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
 
-        const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-        if (container) {
-          container.innerHTML = '';
-          container.appendChild(preview);
-          defiEl.classList.add("done");
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      containerCadre.appendChild(preview);
 
-          const pubBtn = defiEl.querySelector("button:nth-child(3)");
-          if (pubBtn && pubBtn.textContent.includes("pub")) {
-            pubBtn.remove();
-          }
+      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(containerCadre); // ✅ ICI : on ajoute bien le bon bloc
+        defiEl.classList.add("done");
+
+        const pubBtn = defiEl.querySelector("button:nth-child(3)");
+        if (pubBtn && pubBtn.textContent.includes("pub")) {
+          pubBtn.remove();
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
   function endGame() {
     const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
