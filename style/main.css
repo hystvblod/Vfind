@@ -1,3 +1,77 @@
+
+/* === HEADER GLOBAL UNIFIÉ === */
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  background: #2f2f42;
+  border-bottom: 5px solid #babada;
+  padding: 0 20px;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  text-align: center;
+}
+
+.back-button {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.6rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.right-buttons {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.btn-icon {
+  font-size: 1.4rem;
+  color: white;
+  text-decoration: none;
+}
+
+
+/* === BARRE DE SOLDE === */
+.solde-bar {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: #2f2f42;
+  padding: 10px 30px;
+  margin-bottom: 10px;
+}
+
+.solde-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.coin-icon {
+  width: 28px;
+  height: 28px;
+}
+
+
 /* === PATCH GLOBAL RESPONSIVE CLEAN === */
 :root {
   --vh: 100vh;
