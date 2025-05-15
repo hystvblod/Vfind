@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLang = savedLang;
   }
 
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+  const cadreActuel = getCadreSelectionne(); // ✅ Utilise la bonne fonction
+
 
   fetch("./data/defis.json")
     .then((res) => res.json())
@@ -161,7 +162,8 @@ function updateJetonsDisplay() {
   }
 }
   function afficherPhotosSauvegardees() {
-    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+    const cadreActuel = getCadreSelectionne();
+
 
     document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
@@ -228,7 +230,7 @@ function updateJetonsDisplay() {
   }
 
   function agrandirPhoto(dataUrl, id) {
-    const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+ const cadreActuel = getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
     document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
 
