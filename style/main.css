@@ -1273,7 +1273,8 @@ main {
 /* ✅ Barre de solde horizontale identique à la boutique */
 .solde-solo {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 30px; /* ✅ décalage vers la gauche */
   gap: 40px;
   margin-top: 8px;
 }
