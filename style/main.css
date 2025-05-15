@@ -85,7 +85,6 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 5px solid #3a3a9f;
 }
 
 header h1 {
@@ -1149,7 +1148,7 @@ body.profil-page .profil-header .back-btn {
 
 /* ✅ Bloc d'infos utilisateur */
 body.profil-page .profil-top {
-  margin-top: 30px;
+  margin-top: 40px;
   margin-bottom: 40px; /* ✅ ajoute de l'air avant les boutons */
   text-align: center;
   color: white;
