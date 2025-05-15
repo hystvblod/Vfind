@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="page-container">
+
   <!-- POPUP PHOTO -->
   <div id="popup-photo" class="popup hidden">
     <div class="popup-inner">
@@ -29,30 +30,29 @@
   </div>
 
   <!-- HEADER -->
-<header class="header-solo" style="padding: 0 20px; margin-top: 10px;">
-  <!-- Ligne 1 : flèche, titre, icônes -->
-  <div style="display: flex; align-items: center; justify-content: space-between;">
-    <a href="index.html" class="btn-icon back-button">⬅️</a>
-    <h1 class="mode-title" style="margin: 0 auto; font-size: 1.8rem;">Mode Solo</h1>
-    <div class="top-buttons" style="display: flex; gap: 12px;">
-      <a href="profil.html" class="btn-icon" title="Profil">👤</a>
-      <a href="parametres.html" class="btn-icon" title="Paramètres">⚙️</a>
+  <header class="header-solo" style="padding: 0 20px; margin-top: 10px;">
+    <!-- Ligne 1 : flèche, titre centré, icônes -->
+    <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+      <a href="index.html" class="btn-icon back-button" style="position: absolute; left: 0;">←</a>
+      <h1 class="mode-title" style="margin: 0; font-size: 1.8rem;">Mode Solo</h1>
+      <div class="top-buttons" style="position: absolute; right: 0; display: flex; gap: 12px;">
+        <a href="profil.html" class="btn-icon" title="Profil">👤</a>
+        <a href="parametres.html" class="btn-icon" title="Paramètres">⚙️</a>
+      </div>
     </div>
-  </div>
 
-  <!-- Ligne 2 : pièces à gauche, jetons à droite -->
-  <div class="btn-inline" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-    <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
-      <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
-      <span id="points">0</span>
+    <!-- Ligne 2 : pièces à gauche, jetons à droite -->
+    <div class="btn-inline" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+      <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
+        <img src="assets/img/vcoin.webp" class="coin-icon" alt="Vcoin" />
+        <span id="points">0</span>
+      </div>
+      <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
+        <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
+        <span id="jetons">0</span>
+      </div>
     </div>
-    <div class="solde-item" style="display: flex; align-items: center; gap: 6px;">
-      <img src="assets/img/jeton_p.webp" class="coin-icon" alt="Jeton" />
-      <span id="jetons">0</span>
-    </div>
-  </div>
-</header>
-
+  </header>
 
   <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
@@ -86,27 +86,23 @@
 
     window.ouvrirPopupJeton = function(index) {
       const jetons = getJetons();
-      const isPremium = localStorage.getItem("premium") === "true";
-
       document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
       document.getElementById("popup-jeton").classList.remove("hidden");
       document.getElementById("popup-jeton").classList.add("show");
       defiIndexActuel = index;
 
-  document.getElementById("valider-jeton-btn").onclick = () => {
-  const jetons = getJetons();
-
-  if (jetons > 0) {
-    removeJeton(); // ✅ toujours retirer 1 jeton
-    if (typeof validerDefi === "function") {
-      validerDefi(defiIndexActuel);
-    }
-    fermerPopupJeton();
-  } else {
-    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
-  }
-};
-
+      document.getElementById("valider-jeton-btn").onclick = () => {
+        const jetons = getJetons();
+        if (jetons > 0) {
+          removeJeton();
+          if (typeof validerDefi === "function") {
+            validerDefi(defiIndexActuel);
+          }
+          fermerPopupJeton();
+        } else {
+          alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+        }
+      };
     };
 
     window.fermerPopupJeton = function () {
@@ -114,12 +110,12 @@
       document.getElementById("popup-jeton").classList.add("hidden");
     };
 
-    // ✅ Met à jour les jetons automatiquement
+    // ✅ Mise à jour dynamique des jetons
     document.addEventListener("DOMContentLoaded", () => {
-      const span = document.getElementById("jetons");
-      if (span && typeof getJetons === "function") {
-        span.textContent = getJetons();
-      }
+      const jetonsEl = document.getElementById("jetons");
+      const pointsEl = document.getElementById("points");
+      if (typeof getJetons === "function") jetonsEl.textContent = getJetons();
+      if (typeof getPoints === "function") pointsEl.textContent = getPoints();
     });
   </script>
 </body>
