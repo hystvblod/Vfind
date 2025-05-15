@@ -1282,7 +1282,7 @@ main {
 /* ✅ LIGNE 1 : solde global côte à côte */
 .solde-ligne-boutique {
   display: flex;
-  justify-content: space-between; /* ✅ séparation gauche/droite */
+  justify-content: space-around; /* ✅ séparation gauche/droite */
   align-items: center;
   padding: 0 20px;
   margin: 20px 0;
