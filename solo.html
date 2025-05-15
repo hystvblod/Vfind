@@ -29,30 +29,30 @@
   </div>
 
   <!-- HEADER -->
-<header class="header-solo">
-  <div class="top-header">
-    <div class="left-title">
-      <button class="back-button" onclick="history.back()">←</button>
-      <h1 class="mode-title">Mode Solo</h1>
+  <header class="header-solo">
+    <div class="top-header">
+      <div class="left-title">
+        <button class="back-button" onclick="history.back()">←</button>
+        <h1 class="mode-title">Mode Solo</h1>
+      </div>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">👤</a>
+        <a href="parametres.html" class="btn-icon">⚙️</a>
+      </div>
     </div>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
-    </div>
-  </div>
+  </header>
 
-<div class="solde-bar">
-  <div class="solde-item">
-    <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon" />
-    <span id="vcoins">0</span>
+  <!-- ✅ BARRE DE SOLDE EN DESSOUS DU HEADER -->
+  <div class="solde-bar">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" alt="VCoins" class="coin-icon" />
+      <span id="vcoins">0</span>
+    </div>
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon" />
+      <span id="jetons">0</span>
+    </div>
   </div>
-  <div class="solde-item">
-    <img src="assets/img/jeton_p.webp" alt="Jetons" class="coin-icon" />
-    <span id="jetons">0</span>
-  </div>
-</div>
-</div>
-</header>
 
   <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
@@ -93,20 +93,19 @@
       document.getElementById("popup-jeton").classList.add("show");
       defiIndexActuel = index;
 
-  document.getElementById("valider-jeton-btn").onclick = () => {
-  const jetons = getJetons();
+      document.getElementById("valider-jeton-btn").onclick = () => {
+        const jetons = getJetons();
 
-  if (jetons > 0) {
-    removeJeton(); // ✅ toujours retirer 1 jeton
-    if (typeof validerDefi === "function") {
-      validerDefi(defiIndexActuel);
-    }
-    fermerPopupJeton();
-  } else {
-    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
-  }
-};
-
+        if (jetons > 0) {
+          removeJeton();
+          if (typeof validerDefi === "function") {
+            validerDefi(defiIndexActuel);
+          }
+          fermerPopupJeton();
+        } else {
+          alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+        }
+      };
     };
 
     window.fermerPopupJeton = function () {
@@ -114,7 +113,6 @@
       document.getElementById("popup-jeton").classList.add("hidden");
     };
 
-    // ✅ Met à jour les jetons automatiquement
     document.addEventListener("DOMContentLoaded", () => {
       const span = document.getElementById("jetons");
       if (span && typeof getJetons === "function") {
