@@ -308,13 +308,6 @@ nav.nav-icons {
   margin-top: 10px;
 }
 
-.back-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-}
 
 .icon-btn {
   display: inline-flex;
@@ -591,57 +584,6 @@ header nav a:hover {
   background: #ffd700;
   color: #000;
   transform: scale(1.05);
-}
-
-
-.back-btn {
-  font-size: 18px;
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-
-}
-
-.back-btn {
-  align-self: flex-start;
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  color: white;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-
-
-/* ✅ BOUTONS DE SECTION */
-.profil-sections {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  padding: 0 20px 30px;
-}
-
-.profil-sections button {
-  width: 90%;
-  max-width: 320px;
-  padding: 14px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 12px;
-  background-color: #ffffff;
-  color: #4b4acb;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s;
-}
-
-.profil-sections button:hover {
-  background-color: #ffd700;
-  transform: translateY(-2px);
 }
 
 
@@ -1027,13 +969,6 @@ main {
   height: 22px;
   margin-left: 6px;
 }
-.back-btn {
-  font-size: 1.6rem;
-  color: white;
-  text-decoration: none;
-  padding: 6px;
-  display: inline-block;
-}
 .coin-icon {
   width: 26px;
   height: 26px;
@@ -1182,6 +1117,73 @@ main {
   height: 24px;
 }
 
+/* === PROFIL : HEADER ET MISE EN PAGE === */
+
+body.profil-page .profil-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30px 20px 10px;
+  background: #2f2f42;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+body.profil-page .profil-header h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0 auto;
+}
+
+body.profil-page .profil-header .back-btn {
+  font-size: 1.5rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ✅ Bloc d'infos utilisateur */
+body.profil-page .profil-top {
+  margin-top: 30px;
+  text-align: center;
+  color: white;
+  font-size: 1.1rem;
+}
+
+body.profil-page .profil-top p {
+  margin: 6px 0;
+}
+
+/* ✅ Boutons de section */
+body.profil-page .profil-sections {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 0 20px 30px;
+}
+
+body.profil-page .profil-sections button {
+  width: 90%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #4b4acb;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+body.profil-page .profil-sections button:hover {
+  background-color: #ffd700;
+  transform: translateY(-2px);
+}
 
 
 
