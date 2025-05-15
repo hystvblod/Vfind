@@ -1300,3 +1300,16 @@ body.profil-page .profil-container {
   width: 24px;
   height: 24px;
 }
+/* ✅ Décale vers le bas le header profil (1 ligne visuelle) */
+body.profil-page .profil-header {
+  margin-top: 20px;
+}
+
+/* ✅ Décale vers le bas l’ensemble jetons + boutons (2 lignes visuelles) */
+body.profil-page .profil-top {
+  margin-top: 30px;
+}
+
+body.profil-page .profil-container {
+  margin-top: 20px;
+}
