@@ -1215,12 +1215,11 @@ main {
 }
 /* ✅ Icône pièce dédiée au mode solo */
 .icon-solo-piece {
-  width: 30px;
-  height: auto;
-  max-height: 32px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  margin-right: 8px;
-  position: static;
+  margin-right: 6px;
+  display: inline-block;
 }
 
 /* ✅ Icône jeton dédiée au mode solo */
