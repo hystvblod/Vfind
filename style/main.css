@@ -1171,4 +1171,32 @@ main {
   padding-top: 20px;
   padding-bottom: 20px;
 }
+.profil-solde-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  margin-bottom: 15px;
+}
+
+.solde-piece,
+.solde-jeton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* Taille personnalisable */
+.vcoin-solo {
+  width: 28px;
+  height: 28px;
+}
+
+.jeton-solo {
+  width: 32px;
+  height: 32px;
+}
 

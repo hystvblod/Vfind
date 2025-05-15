@@ -7,14 +7,15 @@
   <link rel="stylesheet" href="style/main.css"/>
 </head>
 <body class="vfind-bg">
-<header class="profil-header" style="padding: 20px 16px 10px;">
-  <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-    <a href="javascript:history.back()" class="back-btn" style="position: absolute; left: 0;">←</a>
-    <h1 style="margin: 0; font-size: 1.8rem;">Mon Profil</h1>
-  </div>
+
+<!-- ✅ HEADER avec bouton retour + titre + bouton paramètres -->
+<header class="profil-header" style="padding: 20px 16px 10px; position: relative;">
+  <a href="javascript:history.back()" class="back-btn" style="position: absolute; left: 0;">←</a>
+  <h1 style="margin: 0; font-size: 1.8rem;">Mon Profil</h1>
+  <a href="parametres.html" class="icon-btn" title="Paramètres" style="position: absolute; right: 0; font-size: 1.5rem;">⚙️</a>
 </header>
 
-  <!-- ✅ Bloc unique avec les bonnes valeurs -->
+<!-- ✅ Bloc solde -->
 <section class="profil-top">
   <div class="profil-solde-bar">
     <div class="solde-piece">
@@ -28,26 +29,28 @@
   </div>
 </section>
 
-  <main class="profil-container">
-    <section class="profil-sections">
-      <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
-      <button onclick="location.href='amis.html'">👤 Amis</button>
-      <button onclick="location.href='historique.html'">📜 Historique</button>
-      <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
-      <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
-    </section>    
-  </main>
+<!-- ✅ Boutons sections -->
+<main class="profil-container">
+  <section class="profil-sections">
+    <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
+    <button onclick="location.href='amis.html'">👤 Amis</button>
+    <button onclick="location.href='historique.html'">📜 Historique</button>
+    <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
+    <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
+  </section>    
+</main>
 
-  <footer>
-    <p>© 2025 VFind</p>
-  </footer>
+<footer>
+  <p>© 2025 VFind</p>
+</footer>
 
-  <!-- ✅ Script de mise à jour dynamique -->
-  <script src="js/userData.js"></script>
-  <script>
-    const data = getUserData();
-    document.getElementById("vcoins").textContent = data.Vcoins || 0;
-    document.getElementById("jetons").textContent = data.jetons || 0;
-  </script>
+<!-- ✅ Script dynamique -->
+<script src="js/userData.js"></script>
+<script>
+  const data = getUserData();
+  document.getElementById("vcoins").textContent = data.Vcoins || 0;
+  document.getElementById("jetons").textContent = data.jetons || 0;
+</script>
+
 </body>
 </html>
