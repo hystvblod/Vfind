@@ -893,8 +893,8 @@ main {
 }
 
 .jeton-mini {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
   margin-left: 6px;
 }
 
@@ -964,8 +964,8 @@ main {
   background: #e6b800;
 }
 .vcoin-mini {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
   margin-left: 6px;
 }
 .coin-icon {
@@ -975,7 +975,6 @@ main {
   vertical-align: middle;
 
 }
-
 
 .solde-ligne {
   display: flex;
@@ -1111,13 +1110,12 @@ main {
 
 /* === PROFIL : HEADER ET MISE EN PAGE === */
 body.profil-page .profil-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: #2f2f42;
   padding: 25px 20px 10px;
-  margin-top: 0;
   border-bottom: none !important;
 
 }
@@ -1126,8 +1124,8 @@ body.profil-page .profil-header h1 {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
-  margin: 0;
-  padding: 0;
+  margin: 0 auto;
+  text-align: center;
 }
 
 body.profil-page .profil-header .back-btn {
@@ -1182,10 +1180,7 @@ body.profil-page .profil-sections button {
 body.profil-page .profil-sections button:hover {
   background-color: #ffd700;
   transform: translateY(-2px);
-}
-/* 🔧 Patch global anti-trait blanc résiduel */
-header {
-  border-bottom: none !important;
+
 }
 /* ✅ Cartouches centrés et harmonieux */
 .cartouche {
@@ -1209,4 +1204,8 @@ header {
 
 .cartouche:hover {
   background-color: #ffffff44;
+}
+body.profil-page header.profil-header {
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
