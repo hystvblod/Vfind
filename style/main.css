@@ -1150,7 +1150,7 @@ body.profil-page .profil-header .back-btn {
 /* ✅ Bloc d'infos utilisateur */
 body.profil-page .profil-top {
   margin-top: 30px;
-  margin-bottom: 30px; /* ✅ ajoute de l'air avant les boutons */
+  margin-bottom: 40px; /* ✅ ajoute de l'air avant les boutons */
   text-align: center;
   color: white;
   font-size: 1.1rem;
