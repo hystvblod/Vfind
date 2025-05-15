@@ -976,12 +976,6 @@ main {
 
 }
 
-.solde-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 0.5rem;
-}
 
 .solde-ligne {
   display: flex;
@@ -1029,9 +1023,6 @@ main {
   margin: 0 auto 10px;
 }
 
-.solde-item {
-  text-align: center;
-}
 
 .solde-ligne {
   font-size: 1.2rem;
@@ -1086,6 +1077,7 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 .btn-icon {
   font-size: 1.4rem;
@@ -1106,25 +1098,28 @@ main {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: bold;
   color: white;
 }
 
 .coin-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 }
 
 
 /* === PROFIL : HEADER ET MISE EN PAGE === */
 body.profil-page .profil-header {
-  position: relative; /* Permet de positionner la flèche */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   background: #2f2f42;
-  padding: 30px 20px 20px;
-  margin-top: 20px;
-  border-bottom: none !important; /* Supprime la ligne blanche */
-  text-align: center; /* Centre le titre */
+  padding: 25px 20px 10px;
+  margin-top: 0;
+  border-bottom: none !important;
+
 }
 
 body.profil-page .profil-header h1 {
@@ -1132,7 +1127,7 @@ body.profil-page .profil-header h1 {
   font-weight: bold;
   color: white;
   margin: 0;
-  padding-bottom: 10px;
+  padding: 0;
 }
 
 body.profil-page .profil-header .back-btn {
@@ -1149,8 +1144,8 @@ body.profil-page .profil-header .back-btn {
 
 /* ✅ Bloc d'infos utilisateur */
 body.profil-page .profil-top {
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   text-align: center;
   color: white;
   font-size: 1.1rem;
@@ -1165,10 +1160,9 @@ body.profil-page .profil-sections {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px; /* plus d'air */
-  padding: 0 20px 40px;
+  gap: 18px;
+  padding: 0 20px 50px;
 }
-
 body.profil-page .profil-sections button {
   width: 90%;
   max-width: 320px;
@@ -1182,13 +1176,13 @@ body.profil-page .profil-sections button {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s;
+
 }
 
 body.profil-page .profil-sections button:hover {
   background-color: #ffd700;
   transform: translateY(-2px);
 }
-
 /* 🔧 Patch global anti-trait blanc résiduel */
 header {
   border-bottom: none !important;
