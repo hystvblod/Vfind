@@ -302,8 +302,5 @@ window.fermerPopupJeton = function () {
   document.getElementById("popup-jeton").classList.remove("show");
   document.getElementById("popup-jeton").classList.add("hidden");
 };
-const userData = getUserData();
-document.getElementById("vcoins").textContent = userData.vcoins || 0;
-document.getElementById("jetons").textContent = userData.jetons || 0;
 
 });

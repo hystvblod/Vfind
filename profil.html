@@ -6,29 +6,29 @@
   <title>VFind - Profil</title>
   <link rel="stylesheet" href="style/main.css"/>
 </head>
-<body class="vfind-bg profil-page">
+<body class="vfind-bg">
+  <header class="profil-header">
+    <a href="javascript:history.back()" class="back-btn">←</a>
+    <h1>Mon Profil</h1>
+  </header>
 
-<header class="profil-header">
-  <a href="javascript:history.back()" class="back-btn">←</a>
-  <h1>Mon Profil</h1>
-  </header> <!-- ✅ ICI fermeture correcte -->
-
-  <section class="profil-top">
-    <div class="solde-container">
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/vcoin.webp" alt="VCoins" class="vcoin-mini" />
-          <span id="vcoins">0</span>
-        </div>
-      </div>
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-mini" />
-          <span id="jetons">0</span>
-        </div>
+  <!-- ✅ Bloc unique avec les bonnes valeurs -->
+<section class="profil-top">
+  <div class="solde-container">
+    <div class="solde-item">
+      <div class="solde-ligne">
+        <img src="assets/img/vcoin.webp" alt="VCoins" class="vcoin-mini" />
+        <span id="vcoins">0</span>
       </div>
     </div>
-  </section>
+    <div class="solde-item">
+      <div class="solde-ligne">
+        <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-mini" />
+        <span id="jetons">0</span>
+      </div>
+    </div>
+  </div>
+</section>
 
   <main class="profil-container">
     <section class="profil-sections">
@@ -48,7 +48,7 @@
   <script src="js/userData.js"></script>
   <script>
     const data = getUserData();
-    document.getElementById("vcoins").textContent = data.Vcoins || 0;
+    document.getElementById("Vcoins").textContent = data.Vcoins || 0;
     document.getElementById("jetons").textContent = data.jetons || 0;
   </script>
 </body>
