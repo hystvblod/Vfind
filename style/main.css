@@ -543,15 +543,7 @@ nav.nav-icons {
 }
   
 /* === NAVIGATION PROFESSIONNELLE === */
-header {
-  color: #babada;
-  padding: 20px 30px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 5px solid #babada;
-}
+
 
 header h1 {
   font-size: 2rem;
@@ -1115,7 +1107,7 @@ main {
   gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
   padding: 30px 16px 20px;
   background: none;
-  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
+
 
 }
 
