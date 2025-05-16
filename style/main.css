@@ -1368,3 +1368,11 @@ main {
   color: white;
   margin: 0;
 }
+.nav-icons {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+}
