@@ -1168,12 +1168,16 @@ main {
   color: white;
 }
 .profil-header-row h1 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-size: 1.8rem;
   font-weight: bold;
-  margin: 0;
   color: white;
-  text-align: center;
-  line-height: 1; /* optionnel mais propre */
+  margin: 0;
+  z-index: 1;
+  white-space: nowrap;
 }
 
 .profil-solde-bar {
