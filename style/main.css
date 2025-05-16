@@ -1368,3 +1368,11 @@ main {
   display: flex;
   gap: 12px;
 }
+.nav-icons a {
+  background: none !important;
+  color: white !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 1.6rem;
+}
