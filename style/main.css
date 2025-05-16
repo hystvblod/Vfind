@@ -1355,7 +1355,19 @@ main {
   font-size: 1.6rem;
 }
 .titre-centre-boutique {
-  position: absolute;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  padding-top: 12px;    /* ✅ espace visuel au-dessus */
+  padding-bottom: 12px; /* ✅ espace visuel en dessous */
+}
+.titre-centre-profil {
+  position: relative;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
