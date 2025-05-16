@@ -1123,7 +1123,9 @@ main {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* centre le titre */
+  height: 64px;
+  padding: 0 20px;
 }
 
 .header-row h1 {
@@ -1376,15 +1378,6 @@ main {
   align-items: center;
   gap: 12px;
 }
-
-.titre-centre-boutique {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-  text-align: center;
-}
-
 
 .titre-centre {
   position: absolute;
