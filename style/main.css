@@ -1403,37 +1403,3 @@ main {
   display: flex;
   gap: 12px;
 }
-.header-row-fixed {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 16px;
-  height: 60px;
-}
-
-.header-left,
-.header-center,
-.header-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-.header-left {
-  justify-content: flex-start;
-}
-
-.header-center {
-  justify-content: center;
-}
-
-.header-right {
-  justify-content: flex-end;
-}
-
-.header-center h1 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-}
