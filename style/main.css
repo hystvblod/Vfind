@@ -1378,4 +1378,19 @@ main {
   padding-top: 12px;    /* ✅ espace visuel au-dessus */
   padding-bottom: 12px; /* ✅ espace visuel en dessous */
 }
+.profil-header .header-row h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+  text-align: center;
+}
+.profil-header .header-row h1 {
+  display: block !important; /* ❗ annule le display: flex hérité */
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+  text-align: center;
+}
 
