@@ -1102,6 +1102,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 60px
 }
 
 .header-row h1 {
