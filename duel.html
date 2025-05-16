@@ -23,25 +23,26 @@
 
   <!-- ====== MAIN ====== -->
   <main>
-
-    <!-- PUB -->
-    <section class="pub-zone">
-      <p>🔒 Une pub est requise pour lancer le duel</p>
-      <button onclick="showAd('interstitial')" class="btn-secondary">▶️ Voir la pub</button>
-    </section>
-
-    <!-- DÉFIS EN MODE DUEL -->
     <section id="duel-list-section">
       <h2 id="duel-challenge">Défis du jour</h2>
       <ul id="duel-defi-list" class="defi-list"></ul>
     </section>
-
   </main>
 
   <!-- ====== FOOTER ====== -->
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
+
+  <!-- ✅ POPUP VALIDATION PAR JETON -->
+  <div id="popup-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
+      <p id="solde-jeton">Jetons disponibles : --</p>
+      <button id="valider-jeton-btn">✅ Valider</button>
+      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+    </div>
+  </div>
 
   <!-- ====== SCRIPTS ====== -->
   <script src="js/storage.js"></script>
@@ -56,7 +57,6 @@
       img.classList.toggle('contain');
     }
 
-    // ✅ Mise à jour auto des jetons
     document.addEventListener("DOMContentLoaded", () => {
       const jetonsSpan = document.getElementById("jetons");
       if (jetonsSpan && typeof getJetons === "function") {
