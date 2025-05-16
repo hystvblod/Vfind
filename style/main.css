@@ -563,9 +563,9 @@ header nav a:hover {
   transform: scale(1.05);
 }
 .profil-header {
-  padding: 30px 20px 10px;
   position: relative;
-  background: none;
+  padding: 20px;
+  border-bottom: 4px solid #444;
 }
 
 /* ✅ SECTION INFOS */
@@ -1094,10 +1094,10 @@ main {
 
 .header-row {
   position: relative;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px
 }
 
 .header-row h1 {
@@ -1243,8 +1243,8 @@ main {
   display: flex;
   justify-content: flex-start;
   padding-left: 30px; /* ✅ décalage vers la gauche */
-  gap: 40px;
-  margin-top: 8px;
+  gap: 0px;
+  margin-top: 20px;
 }
 
 /* ✅ Uniformisation texte */
@@ -1353,5 +1353,17 @@ main {
 .nav-icons a {
   color: white;
   font-size: 1.6rem;
+}
+.titre-centre-boutique {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  padding-top: 12px;    /* ✅ espace visuel au-dessus */
+  padding-bottom: 12px; /* ✅ espace visuel en dessous */
 }
 
