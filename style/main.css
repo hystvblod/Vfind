@@ -1393,20 +1393,22 @@ main {
   gap: 12px;
 }
 .profil-header-row {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center; /* centre le h1 seulement */
   height: 64px;
   padding: 0 20px;
-  box-sizing: border-box;
+  position: relative;
+  background: #313142;
 }
 
 .profil-header-row h1 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
   font-size: 1.8rem;
   font-weight: bold;
-  margin: 0;
   color: white;
+  line-height: 1;
 }
 
 .top-buttons-profil {
