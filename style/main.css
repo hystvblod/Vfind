@@ -586,7 +586,7 @@ header nav a:hover {
 }
 .profil-header {
   display: flex;
-  flex-direction: column; /* ✅ pour empiler la flèche et le titre + icônes */
+  flex-direction: row; /* ✅ pour empiler la flèche et le titre + icônes */
   align-items: center;
   justify-content: center;
   background: none;
