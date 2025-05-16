@@ -1405,18 +1405,17 @@ main {
   padding: 0 20px;
   box-sizing: border-box;
 }
-
-.profil-header-row h1 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-  padding-right: 60px; /* espace suffisant pour bouton à droite */
-  text-align: center;
-  flex-grow: 1;
+.profil-header-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centre le titre */
+  height: 64px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-.back-btn {
+.profil-back-btn {
   position: absolute;
   left: 20px;
   top: 50%;
@@ -1430,7 +1429,7 @@ main {
   z-index: 10;
 }
 
-.top-buttons-profil {
+.profil-top-buttons {
   position: absolute;
   right: 20px;
   top: 50%;
@@ -1438,4 +1437,16 @@ main {
   display: flex;
   gap: 12px;
   z-index: 10;
+}
+
+.profil-header-row h1 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: white;
+  max-width: calc(100% - 140px); /* pour ne pas dépasser entre flèche et boutons */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
 }
