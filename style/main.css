@@ -1396,3 +1396,46 @@ main {
   display: flex;
   gap: 12px;
 }
+.profil-header-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.profil-header-row h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  padding-right: 60px; /* espace suffisant pour bouton à droite */
+  text-align: center;
+  flex-grow: 1;
+}
+
+.back-btn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.6rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 10;
+}
+
+.top-buttons-profil {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
