@@ -309,7 +309,21 @@ nav.nav-icons {
 }
 
 
-icon-btn img {
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+.nav-icons .icon-btn {
+  font-size: 1.8rem; /* ✅ agrandit les emojis */
+  padding: 4px 10px;
+}
+
+.icon-btn img {
   width: 24px;
   height: 24px;
 }
@@ -529,7 +543,15 @@ icon-btn img {
 }
   
 /* === NAVIGATION PROFESSIONNELLE === */
-
+header {
+  color: #babada;
+  padding: 20px 30px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 5px solid #babada;
+}
 
 header h1 {
   font-size: 2rem;
@@ -563,9 +585,14 @@ header nav a:hover {
   transform: scale(1.05);
 }
 .profil-header {
-  position: relative;
-  padding: 20px;
-  border-bottom: 4px solid #444;
+  display: flex;
+  flex-direction: column; /* ✅ pour empiler la flèche et le titre + icônes */
+  align-items: center;
+  justify-content: center;
+  background: none;
+  padding: 30px 20px 10px;
+  position: relative; /* ✅ permet de positionner la flèche */
+
 }
 
 /* ✅ SECTION INFOS */
@@ -1088,13 +1115,12 @@ main {
   gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
   padding: 30px 16px 20px;
   background: none;
-
+  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
 
 }
 
 .header-row {
   position: relative;
-  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1243,8 +1269,8 @@ main {
   display: flex;
   justify-content: flex-start;
   padding-left: 30px; /* ✅ décalage vers la gauche */
-  gap: 0px;
-  margin-top: 20px;
+  gap: 40px;
+  margin-top: 8px;
 }
 
 /* ✅ Uniformisation texte */
@@ -1326,12 +1352,39 @@ main {
   object-fit: contain;
 }
 .header-boutique {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
   position: relative;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #313142;
+  border-bottom: 4px solid #3a3a9f;
+  padding: 0 20px;
 }
+
+.header-left {
+  position: absolute;
+  left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.nav-icons {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titre-centre-boutique {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  text-align: center;
+}
+
 
 .titre-centre {
   position: absolute;
@@ -1350,47 +1403,37 @@ main {
   display: flex;
   gap: 12px;
 }
-.nav-icons a {
-  color: white;
-  font-size: 1.6rem;
-}
-.titre-centre-boutique {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-  padding-top: 12px;    /* ✅ espace visuel au-dessus */
-  padding-bottom: 12px; /* ✅ espace visuel en dessous */
-}
-.titre-centre-profil {
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-  padding-top: 12px;    /* ✅ espace visuel au-dessus */
-  padding-bottom: 12px; /* ✅ espace visuel en dessous */
-}
-.profil-header .header-row h1 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin: 0;
-  color: white;
-  text-align: center;
-}
-.profil-header .header-row h1 {
-  display: block !important; /* ❗ annule le display: flex hérité */
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin: 0;
-  color: white;
-  text-align: center;
+.header-row-fixed {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  height: 60px;
 }
 
+.header-left,
+.header-center,
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.header-left {
+  justify-content: flex-start;
+}
+
+.header-center {
+  justify-content: center;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
+.header-center h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
