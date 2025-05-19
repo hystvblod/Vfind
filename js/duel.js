@@ -1,4 +1,4 @@
-// ✅ DUEL.JS FINAL
+// ✅ DUEL.JS FINAL (ENREGISTREMENT HISTORIQUE + LOGIQUE ORIGINALE)
 
 document.addEventListener("DOMContentLoaded", () => {
   const defiList = document.getElementById("duel-defi-list");
@@ -98,7 +98,16 @@ window.fermerPopupJeton = function () {
   document.getElementById("popup-jeton").classList.add("hidden");
 };
 
-// ✅ VALIDER UN DÉFI APRÈS PUB
+// =======================
+// ✅ HISTORIQUE DUEL : Enregistre les défis duel validés pour le calendrier
+// =======================
+
+const HISTORY_KEY = "vfindHistorique"; // même clé que solo
+
+// On garde en mémoire quels défis sont validés
+let defisDuelValides = [null, null, null];
+
+// Pour chaque défi validé (après pub), on enregistre le texte du défi
 window.validerDefi = function(index) {
   const defis = document.querySelectorAll("#duel-defi-list li");
   const li = defis[index];
@@ -108,7 +117,31 @@ window.validerDefi = function(index) {
 
   li.classList.add("done");
 
+  // Récupère le texte du défi pour l'historique
+  const texteDefi = li.querySelector("p").textContent.trim();
+  defisDuelValides[index] = texteDefi;
+
   setTimeout(() => {
     alert("✅ Merci d’avoir regardé la pub !");
+    // Vérifie si tous les défis du duel sont validés
+    if (defisDuelValides.every(Boolean)) {
+      enregistrerDuelHistorique(defisDuelValides);
+      // Reset mémoire pour le prochain duel
+      defisDuelValides = [null, null, null];
+    }
   }, 2000);
 };
+
+// Fonction d'enregistrement dans l'historique
+function enregistrerDuelHistorique(defisValides) {
+  const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  const now = new Date();
+  const date = now.toLocaleDateString("fr-FR");
+  const time = now.toLocaleTimeString("fr-FR");
+  const dateStr = `${date}, ${time}`;
+  historique.unshift({
+    date: dateStr,
+    defis_duel: defisValides, // tableau de 3 strings (défis duel validés)
+  });
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
+}

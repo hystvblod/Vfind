@@ -213,7 +213,13 @@ function afficherPhotosSauvegardees() {
       date,
       defis: defis.map((d) => d.texte),
     });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
+  // À la fin d'une partie solo
+// AVANT (limite tout l'historique, ce qui n'est pas bon pour le calendrier)
+localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
+
+// APRÈS (on garde tout l'historique pour les stats)
+localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
+
 
     localStorage.removeItem(DEFI_STORAGE_KEY);
     localStorage.removeItem(TIMER_STORAGE_KEY);
