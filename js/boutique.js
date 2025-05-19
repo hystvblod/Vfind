@@ -142,9 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----- Gestion catégories -----
   const CATEGORIES = [
-    { key: 'classique', nom: 'Classique 🎞️' },
-    { key: 'deluxe', nom: 'Deluxe 🌈' },
-    { key: 'premium', nom: 'Premium 👑' },
+    { key: 'classique', nom: 'Classique' },
+    { key: 'deluxe', nom: 'Deluxe' },
+    { key: 'premium', nom: 'Premium' },
     { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
   ];
 
