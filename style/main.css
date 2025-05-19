@@ -543,7 +543,15 @@ nav.nav-icons {
 }
   
 /* === NAVIGATION PROFESSIONNELLE === */
-
+header {
+  color: #babada;
+  padding: 20px 30px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 5px solid #babada;
+}
 
 header h1 {
   font-size: 2rem;
@@ -855,6 +863,14 @@ main {
   flex-grow: 1;
   overflow-y: auto;
 }
+#boutique-container.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+
+}
 
 
 /* ✅ MINIATURE = version réduite exacte du zoom */
@@ -970,11 +986,11 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: nowrap; /* wrap si besoin */
   margin-top: 10px;
-  margin: 8px auto 10px; /* ✅ espace haut/bas */
-  padding: 0 10px;         /* ✅ espace gauche/droite */
+  margin: 20px auto 30px; /* ✅ espace haut/bas */
+  padding: 0 20px;         /* ✅ espace gauche/droite */
 }
 .btn-secondary,
 .jeton-button {
@@ -1092,13 +1108,14 @@ main {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 6px; /* réduit l'espace vertical */
-  padding: 22px 8px 6px; /* plus serré */
+  gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
+  padding: 30px 16px 20px;
   background: none;
-  border-bottom: none !important;
+  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
+    border-bottom: none !important;
   box-shadow: none !important;
-}
 
+}
 
 .header-row {
   position: relative;
@@ -1226,10 +1243,30 @@ main {
   height: 24px;
   object-fit: contain;
   margin-left: 8px;
-
 }
 
+/* ✅ Boutons jaunes uniformes */
+.btn-action-boutique {
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  width: 180px; /* ✅ même taille pour tous */
+  text-align: center;
+  white-space: nowrap;
+}
 
+.btn-action-boutique:hover {
+  background-color: #e6b800;
+}
 /* ✅ Barre de solde horizontale identique à la boutique */
 .solde-solo {
   display: flex;
@@ -1253,8 +1290,7 @@ main {
   justify-content: space-around; /* ✅ séparation gauche/droite */
   align-items: center;
   padding: 0 20px;
-   margin: 7px 0 6px 0 !important;
-  padding: 0 8px !important;
+  margin: 20px 0;
 }
 
 /* ✅ Chaque item solde */
@@ -1278,24 +1314,22 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
-  font-size: 1em;
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-  border-radius: 16px;
-  padding: 8px 16px;
   background-color: #ffcc00;
-  color: #24263a !important;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 6px 0 #0002;
-  border: none;
+  justify-content: center;
+  gap: 10px;
+  width: 200px;
   white-space: nowrap;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-
 }
-
 
 /* ✅ Icônes dans les boutons */
 .icon-bouton-piece {
@@ -1426,53 +1460,4 @@ main {
   margin-bottom: 18px;
   color: #ffd700;
 }
-/* --- Homogénéité blocs cadre boutique --- */
-.grid-cadres .cadre-item {
-  min-height: 260px;       /* Ajuste si besoin, ex: 240-280px selon contenu */
-  width: 180px;            /* Même largeur partout, ajuste à ta grille si besoin */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding-bottom: 16px;
-}
 
-/* Titre du cadre sur 2 lignes max, centré */
-.grid-cadres .cadre-item h3,
-.grid-cadres .cadre-item .cadre-titre {
-  min-height: 44px;         /* déjà présent : place pour 2 lignes */
-  max-height: 44px;         /* 🔥 force à 2 lignes max */
-  overflow: hidden;         /* cache le surplus */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  font-size: 1.07rem;
-  font-weight: 600;
-  line-height: 1.2;
-  word-break: break-word;   /* coupe si trop long */
-}
-
-/* Le bouton d'action aligné en bas, largeur fixe */
-.grid-cadres .cadre-item button,
-.grid-cadres .cadre-item .premium-required {
-  width: 90%;
-  margin-top: auto;     /* pousse le bouton en bas du bloc */
-  min-height: 36px;
-  font-size: 1rem;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* Si "Premium requis" est un bouton ou un div */
-.grid-cadres .cadre-item .premium-required {
-  background: #66697a;
-  color: #eee;
-  border: none;
-  font-weight: 700;
-  pointer-events: none;
-}
