@@ -1309,6 +1309,7 @@ main {
   text-align: center;
   white-space: nowrap;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  font-family: 'Poppins', Arial, sans-serif !important;
 }
 
 
