@@ -1108,14 +1108,13 @@ main {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
-  padding: 30px 16px 20px;
+  gap: 6px; /* réduit l'espace vertical */
+  padding: 22px 8px 6px; /* plus serré */
   background: none;
-  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
-    border-bottom: none !important;
+  border-bottom: none !important;
   box-shadow: none !important;
-
 }
+
 
 .header-row {
   position: relative;
@@ -1243,25 +1242,7 @@ main {
   height: 24px;
   object-fit: contain;
   margin-left: 8px;
-}
 
-/* ✅ Boutons jaunes uniformes */
-.btn-action-boutique {
-  background-color: #ffcc00;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 1rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  width: 170px; /* ✅ même taille pour tous */
-  text-align: center;
-  white-space: nowrap;
 }
 
 .btn-action-boutique:hover {
@@ -1315,21 +1296,20 @@ main {
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
   background-color: #ffcc00;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 1rem;
-  font-weight: bold;
+  width: 170px !important;
+  min-width: 120px;
+  max-width: 220px;
+  padding: 13px 0 !important;
+  font-size: 1.06rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  width: 200px;
-  white-space: nowrap;
+  gap: 8px;
   text-align: center;
+  white-space: nowrap;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  cursor: pointer;
 }
+
 
 /* ✅ Icônes dans les boutons */
 .icon-bouton-piece {
