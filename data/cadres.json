@@ -118,6 +118,31 @@
     "nom": "Marbre noire",
     "prix": 1200
   },
+    {
+    "id": "polaroid_26",
+    "nom": "Bois",
+    "prix": 1200
+  },
+      {
+    "id": "polaroid_27",
+    "nom": "Brouillard",
+    "prix": 1200
+  },
+        {
+    "id": "polaroid_28",
+    "nom": "Zebre",
+    "prix": 1200
+  },
+        {
+    "id": "polaroid_29",
+    "nom": "Lépoard",
+    "prix": 1200
+  },
+          {
+    "id": "polaroid_30",
+    "nom": "Girly",
+    "prix": 1200
+  },
   {
     "id": "polaroid_40",
     "nom": "Or paillettes",
@@ -146,6 +171,21 @@
       {
     "id": "polaroid_101",
     "nom": "Chat Kawaii",
+    "prix": 1200
+  },
+        {
+    "id": "polaroid_102",
+    "nom": "Briques",
+    "prix": 1200
+  },
+          {
+    "id": "polaroid_103",
+    "nom": "Vitraux",
+    "prix": 1200
+  },
+           {
+    "id": "polaroid_104",
+    "nom": "Ecole",
     "prix": 1200
   }
 ]
