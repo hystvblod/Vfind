@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLang = savedLang;
   }
 
-  const cadreActuel = getCadreSelectionne(); // ✅ Utilise la bonne fonction
+  const cadreActuel = getCadreSelectionne();
 
   fetch("./data/defis.json")
     .then((res) => res.json())
@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const isPremium = getUserData().premium === true;
       const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
+      const jetonValide = localStorage.getItem(`defi_jeton_${defi.id}`) === "1";
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
 
       let boutonPhoto = "";
@@ -142,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
         </div>
-        ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
+        ${!hasPhoto && !jetonValide ? `<img src="assets/img/jetonpp.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
       `;
 
       defiList.appendChild(li);
@@ -164,39 +165,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
+      const jetonValide = localStorage.getItem(`defi_jeton_${id}`) === "1";
       const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
-      if (dataUrl) {
-        const containerCadre = document.createElement("div");
-        containerCadre.className = "cadre-item";
+      const containerCadre = document.createElement("div");
+      containerCadre.className = "cadre-item";
 
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
 
-        const fond = document.createElement("img");
-        fond.className = "photo-cadre";
-        fond.src = `./assets/cadres/${cadreActuel}.webp`;
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
 
-        const photo = document.createElement("img");
-        photo.className = "photo-user";
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      if (jetonValide) {
+        photo.src = "assets/img/jetonpp.webp";
+        photo.classList.add("jeton-inside");
+        photo.style.objectFit = "contain";
+        photo.style.background = "rgba(255,220,100,0.1)";
+        photo.onclick = null;
+      } else if (dataUrl) {
         photo.src = dataUrl;
         photo.onclick = () => agrandirPhoto(dataUrl, id);
+      } else {
+        photo.src = "photos/photo_joueurA.jpg";
+        photo.onclick = null;
+      }
 
-        preview.appendChild(fond);
-        preview.appendChild(photo);
-        containerCadre.appendChild(preview);
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      containerCadre.appendChild(preview);
 
-        const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-        if (container) {
-          container.innerHTML = '';
-          container.appendChild(containerCadre);
-          defiEl.classList.add("done");
-
-          const pubBtn = defiEl.querySelector("button:nth-child(3)");
-          if (pubBtn && pubBtn.textContent.includes("pub")) {
-            pubBtn.remove();
-          }
-        }
+      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(containerCadre);
+        defiEl.classList.add("done");
       }
     });
   }
@@ -212,7 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
       date,
       defis: defis.map((d) => d.texte),
     });
-    // On garde tout l'historique (pour stats/calendrier)
     localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
 
     // -- MÉNAGE PHOTOS : On garde photos que pour 7 dernières sessions --
@@ -221,10 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionsToDelete.forEach(session => {
       if (session.defis) {
         session.defis.forEach(texte => {
-          // Supprime la photo associée à ce défi si elle existe (id exact à adapter selon ton stockage)
-          // Si tu stockes l'id réel au lieu du texte, adapte la clé ici.
-          // Exemple (si stockage par texte du défi) :
-          // localStorage.removeItem('photo_defi_' + texte); <-- adapte avec ton système d'id réel si besoin
+          // Ici, on pourrait supprimer les photos anciennes
         });
       }
     });
@@ -272,12 +274,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  window.validerDefi = function(index) {
+  // ----------- AJOUT ICI : prise en compte jeton lors validation ----------
+  window.validerDefi = function(index, viaJeton = false) {
     const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
     if (!defis[index].done) {
       defis[index].done = true;
       localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
       document.querySelectorAll("#defi-list li")[index]?.classList.add("done");
+      if (viaJeton) {
+        localStorage.setItem(`defi_jeton_${defis[index].id}`, "1");
+      }
       loadDefis();
     }
   };
@@ -289,6 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
       validerDefi(index);
     }, 3000);
   };
+
   window.ouvrirPopupJeton = function(index) {
     const jetons = getJetons();
     document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
@@ -303,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (success) {
           updateJetonsDisplay();
           if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel);
+            validerDefi(defiIndexActuel, true); // <--- validation par jeton !
           }
           fermerPopupJeton();
         } else {
