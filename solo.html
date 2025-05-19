@@ -5,14 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Mode Solo</title>
   <link rel="stylesheet" href="style/main.css" />
-  <style>
-    .photo-user.jeton-inside {
-      background: none;
-      object-fit: contain !important;
-      filter: drop-shadow(0 2px 10px #ffcc0055);
-      /* Pour bien voir le jeton dans le cadre */
-    }
-  </style>
 </head>
 <body class="page-container">
 
@@ -110,7 +102,7 @@
         if (jetons > 0) {
           removeJeton();
           if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel, true); // true = validé via jeton
+            validerDefi(defiIndexActuel);
           }
           fermerPopupJeton();
         } else {

@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLang = savedLang;
   }
 
-  const cadreActuel = getCadreSelectionne();
+  const cadreActuel = getCadreSelectionne(); // ✅ Utilise la bonne fonction
+
 
   fetch("./data/defis.json")
     .then((res) => res.json())
@@ -84,28 +85,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTimer() {
-    const interval = setInterval(() => {
-      const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
-      if (!endTimeRaw) return;
+  const interval = setInterval(() => {
+    const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
+if (!endTimeRaw) return;
 
-      const endTime = parseInt(endTimeRaw);
-      const now = Date.now();
-      const diff = endTime - now;
+const endTime = parseInt(endTimeRaw);
 
-      if (diff <= 0) {
-        clearInterval(interval);
-        endGame();
-        return;
-      }
+    const now = Date.now();
+    const diff = endTime - now;
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      if (timerDisplay) {
-        timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
-      }
-    }, 1000);
-  }
+    if (diff <= 0) {
+      clearInterval(interval);
+      endGame();
+      return;
+    }
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    if (timerDisplay) {
+      timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    }
+  }, 1000);
+}
 
   function loadDefis() {
     let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
@@ -118,13 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
     defiList.innerHTML = '';
     defis.forEach((defi, index) => {
       const li = document.createElement("li");
-      li.className = "defi-item";
+     li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
       const isPremium = getUserData().premium === true;
       const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
-      const jetonValide = localStorage.getItem(`defi_jeton_${defi.id}`) === "1";
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
 
       let boutonPhoto = "";
@@ -135,39 +136,39 @@ document.addEventListener("DOMContentLoaded", () => {
         boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
       }
 
-      li.innerHTML = `
-        <div class="defi-content">
-          <div class="defi-texte">
-            <p>${defi.texte}</p>
-            ${boutonPhoto}
-          </div>
-          <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
-        </div>
-        ${!hasPhoto && !jetonValide ? `<img src="assets/img/jetonpp.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
-      `;
+  li.innerHTML = `
+  <div class="defi-content">
+    <div class="defi-texte">
+      <p>${defi.texte}</p>
+      ${boutonPhoto}
+    </div>
+    <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+  </div>
+  ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
+
+`;
+
 
       defiList.appendChild(li);
     });
 
     afficherPhotosSauvegardees();
   }
-
-  function updateJetonsDisplay() {
-    const data = getUserData();
-    const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan) {
-      jetonsSpan.textContent = data.jetons || 0;
-    }
+function updateJetonsDisplay() {
+  const data = getUserData();
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) {
+    jetonsSpan.textContent = data.jetons || 0;
   }
+}
+function afficherPhotosSauvegardees() {
+  const cadreActuel = getCadreSelectionne();
 
-  function afficherPhotosSauvegardees() {
-    const cadreActuel = getCadreSelectionne();
+  document.querySelectorAll(".defi-item").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
-    document.querySelectorAll(".defi-item").forEach(defiEl => {
-      const id = defiEl.getAttribute("data-defi-id");
-      const jetonValide = localStorage.getItem(`defi_jeton_${id}`) === "1";
-      const dataUrl = localStorage.getItem(`photo_defi_${id}`);
-
+    if (dataUrl) {
       const containerCadre = document.createElement("div");
       containerCadre.className = "cadre-item";
 
@@ -180,19 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const photo = document.createElement("img");
       photo.className = "photo-user";
-      if (jetonValide) {
-        photo.src = "assets/img/jetonpp.webp";
-        photo.classList.add("jeton-inside");
-        photo.style.objectFit = "contain";
-        photo.style.background = "rgba(255,220,100,0.1)";
-        photo.onclick = null;
-      } else if (dataUrl) {
-        photo.src = dataUrl;
-        photo.onclick = () => agrandirPhoto(dataUrl, id);
-      } else {
-        photo.src = "photos/photo_joueurA.jpg";
-        photo.onclick = null;
-      }
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
 
       preview.appendChild(fond);
       preview.appendChild(photo);
@@ -201,35 +191,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
       if (container) {
         container.innerHTML = '';
-        container.appendChild(containerCadre);
+        container.appendChild(containerCadre); // ✅ ICI : on ajoute bien le bon bloc
         defiEl.classList.add("done");
-      }
-    });
-  }
 
-  // ✅ FIN DE PARTIE SOLO : Statistiques illimitées, photos limitées
+        const pubBtn = defiEl.querySelector("button:nth-child(3)");
+        if (pubBtn && pubBtn.textContent.includes("pub")) {
+          pubBtn.remove();
+        }
+      }
+    }
+  });
+}
+
+
   function endGame() {
     const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
     const date = new Date().toLocaleString("fr-FR");
 
-    // -- HISTORIQUE --
     const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
     historique.unshift({
       date,
       defis: defis.map((d) => d.texte),
     });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
-
-    // -- MÉNAGE PHOTOS : On garde photos que pour 7 dernières sessions --
-    const MAX_PHOTO_DAYS = 7;
-    const sessionsToDelete = historique.slice(MAX_PHOTO_DAYS);
-    sessionsToDelete.forEach(session => {
-      if (session.defis) {
-        session.defis.forEach(texte => {
-          // Ici, on pourrait supprimer les photos anciennes
-        });
-      }
-    });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
 
     localStorage.removeItem(DEFI_STORAGE_KEY);
     localStorage.removeItem(TIMER_STORAGE_KEY);
@@ -248,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function agrandirPhoto(dataUrl, id) {
-    const cadreActuel = getCadreSelectionne();
+ const cadreActuel = getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
     document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
 
@@ -274,16 +258,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ----------- AJOUT ICI : prise en compte jeton lors validation ----------
-  window.validerDefi = function(index, viaJeton = false) {
+  window.validerDefi = function(index) {
     const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
     if (!defis[index].done) {
       defis[index].done = true;
       localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
       document.querySelectorAll("#defi-list li")[index]?.classList.add("done");
-      if (viaJeton) {
-        localStorage.setItem(`defi_jeton_${defis[index].id}`, "1");
-      }
       loadDefis();
     }
   };
@@ -295,35 +275,36 @@ document.addEventListener("DOMContentLoaded", () => {
       validerDefi(index);
     }, 3000);
   };
-
   window.ouvrirPopupJeton = function(index) {
-    const jetons = getJetons();
-    document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-    document.getElementById("popup-jeton").classList.remove("hidden");
-    document.getElementById("popup-jeton").classList.add("show");
-    defiIndexActuel = index;
+  const jetons = getJetons(); // lecture à jour
+  document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+  document.getElementById("popup-jeton").classList.remove("hidden");
+  document.getElementById("popup-jeton").classList.add("show");
+  defiIndexActuel = index;
 
-    document.getElementById("valider-jeton-btn").onclick = () => {
-      const jetons = getJetons();
-      if (jetons > 0) {
-        const success = removeJeton();
-        if (success) {
-          updateJetonsDisplay();
-          if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel, true); // <--- validation par jeton !
-          }
-          fermerPopupJeton();
-        } else {
-          alert("❌ Erreur lors de la soustraction du jeton.");
-        }
-      } else {
-        alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+document.getElementById("valider-jeton-btn").onclick = () => {
+  const jetons = getJetons(); // ⚠️ on lit le nombre actuel
+  if (jetons > 0) {
+    const success = removeJeton();
+    if (success) {
+      updateJetonsDisplay(); // ✅ met à jour visuellement tout de suite
+      if (typeof validerDefi === "function") {
+        validerDefi(defiIndexActuel);
       }
-    };
-  };
+      fermerPopupJeton();
+    } else {
+      alert("❌ Erreur lors de la soustraction du jeton.");
+    }
+  } else {
+    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+  }
+};
 
-  window.fermerPopupJeton = function () {
-    document.getElementById("popup-jeton").classList.remove("show");
-    document.getElementById("popup-jeton").classList.add("hidden");
-  };
+};
+
+window.fermerPopupJeton = function () {
+  document.getElementById("popup-jeton").classList.remove("show");
+  document.getElementById("popup-jeton").classList.add("hidden");
+};
+
 });
