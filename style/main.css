@@ -1245,9 +1245,7 @@ main {
 
 }
 
-.btn-action-boutique:hover {
-  background-color: #e6b800;
-}
+
 /* ✅ Barre de solde horizontale identique à la boutique */
 .solde-solo {
   display: flex;
@@ -1296,21 +1294,22 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
+  font-size: 1em;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  border-radius: 16px;
+  padding: 8px 16px;
   background-color: #ffcc00;
-   color: #fff !important;  /* ✅ texte blanc */
-  width: 170px !important;
-  min-width: 120px;
-  max-width: 220px;
-  padding: 13px 0 !important;
-  font-size: 1.06rem;
+  color: #24263a !important;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  text-align: center;
+  box-shadow: 0 2px 6px 0 #0002;
+  border: none;
   white-space: nowrap;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  font-family: 'Poppins', Arial, sans-serif !important;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+
 }
 
 
