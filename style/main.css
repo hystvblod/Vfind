@@ -1101,7 +1101,7 @@ main {
   gap: 12px; /* ✅ Ajoute de l'espace entre LIGNE 1 et LIGNE 2 */
   padding: 30px 16px 20px;
   background: none;
-  border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
+  border-bottom: 5px solid #babada; /* ✅ identique à Boutique */
     border-bottom: none !important;
   box-shadow: none !important;
 
@@ -1425,7 +1425,7 @@ main {
 }
 .btn-categorie {
   background: #24263a;
-  color: #ffffff44;
+  color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 16px;
@@ -1450,11 +1450,17 @@ main {
   margin-bottom: 18px;
   color: #ffffff44;
 }
+/* HARD RESET : plus AUCUN trait de séparation header */
+header,
 .header-solo,
 .header-row,
 .header-boutique,
-header {
+.top-buttons,
+.top-buttons-profil,
+.nav-icons {
+  border: none !important;
   border-bottom: none !important;
   box-shadow: none !important;
+  background-image: none !important;
 }
 
