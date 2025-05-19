@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 
+  // ------- Affichage des cadres par catégorie AVEC titres -------
   const ownedFrames = getUserData().cadres;
   fetch("data/cadres.json")
     .then(res => res.json())
@@ -124,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const boutiqueContainer = document.getElementById("boutique-container");
       boutiqueContainer.innerHTML = "";
 
-      // Fonction pour catégoriser selon le numéro de polaroid
       function getCategorie(id) {
         const num = parseInt(id.replace('polaroid_', ''));
         if (num >= 1 && num <= 10) return 'classique';
@@ -134,28 +134,24 @@ document.addEventListener("DOMContentLoaded", () => {
         return 'autre';
       }
 
-      // Définir les catégories et leur ordre
       const categories = [
         { key: 'classique', nom: 'Classique 🎞️' },
         { key: 'deluxe', nom: 'Deluxe 🌈' },
         { key: 'premium', nom: 'Premium 👑' },
-        { key: 'bloque', nom: 'Cadres défi / spéciaux 🔒' }
+        { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
       ];
 
       categories.forEach(cat => {
-        // Filtrer les cadres de cette catégorie
         const cadresCat = data.filter(cadre => getCategorie(cadre.id) === cat.key);
         if (!cadresCat.length) return;
 
-        // Ajouter un titre de catégorie
+        // ---- Titre sur une ligne pleine (dans le grid) ----
         const titre = document.createElement("h3");
         titre.textContent = cat.nom;
+        titre.style.gridColumn = "1 / -1"; // pour occuper toute la ligne dans la grid
         boutiqueContainer.appendChild(titre);
 
-        // Créer une grid pour cette catégorie
-        const grid = document.createElement("div");
-        grid.className = "grid-cadres";
-
+        // ---- Affichage de tous les cadres de cette catégorie ----
         cadresCat.forEach(cadre => {
           const item = document.createElement("div");
           item.classList.add("cadre-item");
@@ -200,33 +196,31 @@ document.addEventListener("DOMContentLoaded", () => {
           const price = document.createElement("p");
           price.textContent = `${cadre.prix} pièces`;
 
-       const button = document.createElement("button");
-
-if (getCategorie(cadre.id) === "bloque") {
-  button.textContent = "Réservé";
-  button.disabled = true;
-  button.classList.add("disabled-premium");
-} else if (getCategorie(cadre.id) === "premium" && !isPremiumUser()) {
-  button.textContent = "Premium requis";
-  button.disabled = true;
-  button.classList.add("disabled-premium");
-  button.title = "Ce cadre nécessite un compte premium";
-} else if (ownedFrames.includes(cadre.id)) {
-  button.textContent = "Acheté";
-  button.disabled = true;
-} else {
-  button.textContent = "Acheter";
-  button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-}
+          const button = document.createElement("button");
+          // Gestion premium/réservé
+          if (getCategorie(cadre.id) === "bloque") {
+            button.textContent = "Réservé";
+            button.disabled = true;
+            button.classList.add("disabled-premium");
+          } else if (getCategorie(cadre.id) === "premium" && !isPremium()) {
+            button.textContent = "Premium requis";
+            button.disabled = true;
+            button.classList.add("disabled-premium");
+            button.title = "Ce cadre nécessite un compte premium";
+          } else if (ownedFrames.includes(cadre.id)) {
+            button.textContent = "Acheté";
+            button.disabled = true;
+          } else {
+            button.textContent = "Acheter";
+            button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+          }
 
           item.appendChild(wrapper);
           item.appendChild(title);
           item.appendChild(price);
           item.appendChild(button);
-          grid.appendChild(item);
+          boutiqueContainer.appendChild(item);
         });
-
-        boutiqueContainer.appendChild(grid);
       });
     });
 
@@ -246,4 +240,4 @@ if (getCategorie(cadre.id) === "bloque") {
       closePopup();
     }
   });
-}); // <== Cette parenthèse et ce point-virgule FERMER TOUT
+});
