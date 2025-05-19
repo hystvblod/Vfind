@@ -986,11 +986,11 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: nowrap; /* wrap si besoin */
   margin-top: 10px;
-  margin: 20px auto 30px; /* ✅ espace haut/bas */
-  padding: 0 20px;         /* ✅ espace gauche/droite */
+  margin: 8px auto 10px; /* ✅ espace haut/bas */
+  padding: 0 10px;         /* ✅ espace gauche/droite */
 }
 .btn-secondary,
 .jeton-button {
@@ -1271,7 +1271,8 @@ main {
   justify-content: space-around; /* ✅ séparation gauche/droite */
   align-items: center;
   padding: 0 20px;
-  margin: 20px 0;
+   margin: 7px 0 6px 0 !important;
+  padding: 0 8px !important;
 }
 
 /* ✅ Chaque item solde */
