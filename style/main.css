@@ -543,15 +543,7 @@ nav.nav-icons {
 }
   
 /* === NAVIGATION PROFESSIONNELLE === */
-header {
-  color: #babada;
-  padding: 20px 30px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 5px solid #babada;
-}
+
 
 header h1 {
   font-size: 2rem;
