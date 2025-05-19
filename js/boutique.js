@@ -121,63 +121,107 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("data/cadres.json")
     .then(res => res.json())
     .then(data => {
-      data.forEach(cadre => {
-        const item = document.createElement("div");
-        item.classList.add("cadre-item");
+      const boutiqueContainer = document.getElementById("boutique-container");
+      boutiqueContainer.innerHTML = "";
 
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("cadre-preview");
-        wrapper.style.width = "80px";
-        wrapper.style.height = "100px";
-        wrapper.style.position = "relative";
-        wrapper.style.margin = "0 auto 10px";
+      // Fonction pour catégoriser selon le numéro de polaroid
+      function getCategorie(id) {
+        const num = parseInt(id.replace('polaroid_', ''));
+        if (num >= 1 && num <= 10) return 'classique';
+        if (num >= 11 && num <= 100) return 'deluxe';
+        if (num >= 101 && num <= 200) return 'premium';
+        if (num >= 900 && num <= 1000) return 'bloque';
+        return 'autre';
+      }
 
-        const cadreImg = document.createElement("img");
-        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-        cadreImg.className = "photo-cadre";
+      // Définir les catégories et leur ordre
+      const categories = [
+        { key: 'classique', nom: 'Classique 🎞️' },
+        { key: 'deluxe', nom: 'Deluxe 🌈' },
+        { key: 'premium', nom: 'Premium 👑' },
+        { key: 'bloque', nom: 'Cadres défi / spéciaux 🔒' }
+      ];
 
-        const photo = document.createElement("img");
-        photo.src = "assets/img/exemple.jpg";
-        photo.className = "photo-user";
+      categories.forEach(cat => {
+        // Filtrer les cadres de cette catégorie
+        const cadresCat = data.filter(cadre => getCategorie(cadre.id) === cat.key);
+        if (!cadresCat.length) return;
 
-        wrapper.appendChild(cadreImg);
-        wrapper.appendChild(photo);
+        // Ajouter un titre de catégorie
+        const titre = document.createElement("h3");
+        titre.textContent = cat.nom;
+        boutiqueContainer.appendChild(titre);
 
-        wrapper.addEventListener("click", () => {
-          const popup = document.createElement("div");
-          popup.className = "popup show";
-          popup.innerHTML = `
-            <div class="popup-inner">
-              <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-              <div class="cadre-preview cadre-popup">
-                <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
-                <img class="photo-user" src="assets/img/exemple.jpg" />
+        // Créer une grid pour cette catégorie
+        const grid = document.createElement("div");
+        grid.className = "grid-cadres";
+
+        cadresCat.forEach(cadre => {
+          const item = document.createElement("div");
+          item.classList.add("cadre-item");
+
+          // -- Affichage miniature --
+          const wrapper = document.createElement("div");
+          wrapper.classList.add("cadre-preview");
+          wrapper.style.width = "80px";
+          wrapper.style.height = "100px";
+          wrapper.style.position = "relative";
+          wrapper.style.margin = "0 auto 10px";
+
+          const cadreImg = document.createElement("img");
+          cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+          cadreImg.className = "photo-cadre";
+
+          const photo = document.createElement("img");
+          photo.src = "assets/img/exemple.jpg";
+          photo.className = "photo-user";
+
+          wrapper.appendChild(cadreImg);
+          wrapper.appendChild(photo);
+
+          wrapper.addEventListener("click", () => {
+            const popup = document.createElement("div");
+            popup.className = "popup show";
+            popup.innerHTML = `
+              <div class="popup-inner">
+                <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+                <div class="cadre-preview cadre-popup">
+                  <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+                  <img class="photo-user" src="assets/img/exemple.jpg" />
+                </div>
               </div>
-            </div>
-          `;
-          document.body.appendChild(popup);
+            `;
+            document.body.appendChild(popup);
+          });
+
+          const title = document.createElement("h3");
+          title.textContent = cadre.nom;
+
+          const price = document.createElement("p");
+          price.textContent = `${cadre.prix} pièces`;
+
+          const button = document.createElement("button");
+          // Pour les cadres "bloque", le bouton est désactivé et texte différent
+          if (getCategorie(cadre.id) === "bloque") {
+            button.textContent = "Réservé";
+            button.disabled = true;
+            button.classList.add("disabled-premium");
+          } else if (ownedFrames.includes(cadre.id)) {
+            button.textContent = "Acheté";
+            button.disabled = true;
+          } else {
+            button.textContent = "Acheter";
+            button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+          }
+
+          item.appendChild(wrapper);
+          item.appendChild(title);
+          item.appendChild(price);
+          item.appendChild(button);
+          grid.appendChild(item);
         });
 
-        const title = document.createElement("h3");
-        title.textContent = cadre.nom;
-
-        const price = document.createElement("p");
-        price.textContent = `${cadre.prix} pièces`;
-
-        const button = document.createElement("button");
-        if (ownedFrames.includes(cadre.id)) {
-          button.textContent = "Acheté";
-          button.disabled = true;
-        } else {
-          button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-        }
-
-        item.appendChild(wrapper);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-        boutiqueContainer.appendChild(item);
+        boutiqueContainer.appendChild(grid);
       });
     });
 
@@ -197,4 +241,4 @@ document.addEventListener("DOMContentLoaded", () => {
       closePopup();
     }
   });
-});
+}); // <== Cette parenthèse et ce point-virgule FERMER TOUT
