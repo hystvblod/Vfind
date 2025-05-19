@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const cadreActuel = getCadreSelectionne(); // ✅ Utilise la bonne fonction
 
-
   fetch("./data/defis.json")
     .then((res) => res.json())
     .then((data) => {
@@ -85,29 +84,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTimer() {
-  const interval = setInterval(() => {
-    const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
-if (!endTimeRaw) return;
+    const interval = setInterval(() => {
+      const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
+      if (!endTimeRaw) return;
 
-const endTime = parseInt(endTimeRaw);
+      const endTime = parseInt(endTimeRaw);
+      const now = Date.now();
+      const diff = endTime - now;
 
-    const now = Date.now();
-    const diff = endTime - now;
+      if (diff <= 0) {
+        clearInterval(interval);
+        endGame();
+        return;
+      }
 
-    if (diff <= 0) {
-      clearInterval(interval);
-      endGame();
-      return;
-    }
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    if (timerDisplay) {
-      timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
-    }
-  }, 1000);
-}
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      if (timerDisplay) {
+        timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
+      }
+    }, 1000);
+  }
 
   function loadDefis() {
     let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
@@ -120,7 +118,7 @@ const endTime = parseInt(endTimeRaw);
     defiList.innerHTML = '';
     defis.forEach((defi, index) => {
       const li = document.createElement("li");
-     li.className = "defi-item";
+      li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
@@ -136,90 +134,100 @@ const endTime = parseInt(endTimeRaw);
         boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
       }
 
-  li.innerHTML = `
-  <div class="defi-content">
-    <div class="defi-texte">
-      <p>${defi.texte}</p>
-      ${boutonPhoto}
-    </div>
-    <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
-  </div>
-  ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
-
-`;
-
+      li.innerHTML = `
+        <div class="defi-content">
+          <div class="defi-texte">
+            <p>${defi.texte}</p>
+            ${boutonPhoto}
+          </div>
+          <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+        </div>
+        ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
+      `;
 
       defiList.appendChild(li);
     });
 
     afficherPhotosSauvegardees();
   }
-function updateJetonsDisplay() {
-  const data = getUserData();
-  const jetonsSpan = document.getElementById("jetons");
-  if (jetonsSpan) {
-    jetonsSpan.textContent = data.jetons || 0;
+
+  function updateJetonsDisplay() {
+    const data = getUserData();
+    const jetonsSpan = document.getElementById("jetons");
+    if (jetonsSpan) {
+      jetonsSpan.textContent = data.jetons || 0;
+    }
   }
-}
-function afficherPhotosSauvegardees() {
-  const cadreActuel = getCadreSelectionne();
 
-  document.querySelectorAll(".defi-item").forEach(defiEl => {
-    const id = defiEl.getAttribute("data-defi-id");
-    const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+  function afficherPhotosSauvegardees() {
+    const cadreActuel = getCadreSelectionne();
 
-    if (dataUrl) {
-      const containerCadre = document.createElement("div");
-      containerCadre.className = "cadre-item";
+    document.querySelectorAll(".defi-item").forEach(defiEl => {
+      const id = defiEl.getAttribute("data-defi-id");
+      const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
-      const preview = document.createElement("div");
-      preview.className = "cadre-preview";
+      if (dataUrl) {
+        const containerCadre = document.createElement("div");
+        containerCadre.className = "cadre-item";
 
-      const fond = document.createElement("img");
-      fond.className = "photo-cadre";
-      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+        const preview = document.createElement("div");
+        preview.className = "cadre-preview";
 
-      const photo = document.createElement("img");
-      photo.className = "photo-user";
-      photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id);
+        const fond = document.createElement("img");
+        fond.className = "photo-cadre";
+        fond.src = `./assets/cadres/${cadreActuel}.webp`;
 
-      preview.appendChild(fond);
-      preview.appendChild(photo);
-      containerCadre.appendChild(preview);
+        const photo = document.createElement("img");
+        photo.className = "photo-user";
+        photo.src = dataUrl;
+        photo.onclick = () => agrandirPhoto(dataUrl, id);
 
-      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-      if (container) {
-        container.innerHTML = '';
-        container.appendChild(containerCadre); // ✅ ICI : on ajoute bien le bon bloc
-        defiEl.classList.add("done");
+        preview.appendChild(fond);
+        preview.appendChild(photo);
+        containerCadre.appendChild(preview);
 
-        const pubBtn = defiEl.querySelector("button:nth-child(3)");
-        if (pubBtn && pubBtn.textContent.includes("pub")) {
-          pubBtn.remove();
+        const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+        if (container) {
+          container.innerHTML = '';
+          container.appendChild(containerCadre);
+          defiEl.classList.add("done");
+
+          const pubBtn = defiEl.querySelector("button:nth-child(3)");
+          if (pubBtn && pubBtn.textContent.includes("pub")) {
+            pubBtn.remove();
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
 
-
+  // ✅ FIN DE PARTIE SOLO : Statistiques illimitées, photos limitées
   function endGame() {
     const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
     const date = new Date().toLocaleString("fr-FR");
 
+    // -- HISTORIQUE --
     const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
     historique.unshift({
       date,
       defis: defis.map((d) => d.texte),
     });
-  // À la fin d'une partie solo
-// AVANT (limite tout l'historique, ce qui n'est pas bon pour le calendrier)
-localStorage.setItem(HISTORY_KEY, JSON.stringify(historique.slice(0, 7)));
+    // On garde tout l'historique (pour stats/calendrier)
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
 
-// APRÈS (on garde tout l'historique pour les stats)
-localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
-
+    // -- MÉNAGE PHOTOS : On garde photos que pour 7 dernières sessions --
+    const MAX_PHOTO_DAYS = 7;
+    const sessionsToDelete = historique.slice(MAX_PHOTO_DAYS);
+    sessionsToDelete.forEach(session => {
+      if (session.defis) {
+        session.defis.forEach(texte => {
+          // Supprime la photo associée à ce défi si elle existe (id exact à adapter selon ton stockage)
+          // Si tu stockes l'id réel au lieu du texte, adapte la clé ici.
+          // Exemple (si stockage par texte du défi) :
+          // localStorage.removeItem('photo_defi_' + texte); <-- adapte avec ton système d'id réel si besoin
+        });
+      }
+    });
 
     localStorage.removeItem(DEFI_STORAGE_KEY);
     localStorage.removeItem(TIMER_STORAGE_KEY);
@@ -238,7 +246,7 @@ localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
   }
 
   function agrandirPhoto(dataUrl, id) {
- const cadreActuel = getCadreSelectionne();
+    const cadreActuel = getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
     document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
 
@@ -282,35 +290,33 @@ localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
     }, 3000);
   };
   window.ouvrirPopupJeton = function(index) {
-  const jetons = getJetons(); // lecture à jour
-  document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-  document.getElementById("popup-jeton").classList.remove("hidden");
-  document.getElementById("popup-jeton").classList.add("show");
-  defiIndexActuel = index;
+    const jetons = getJetons();
+    document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+    document.getElementById("popup-jeton").classList.remove("hidden");
+    document.getElementById("popup-jeton").classList.add("show");
+    defiIndexActuel = index;
 
-document.getElementById("valider-jeton-btn").onclick = () => {
-  const jetons = getJetons(); // ⚠️ on lit le nombre actuel
-  if (jetons > 0) {
-    const success = removeJeton();
-    if (success) {
-      updateJetonsDisplay(); // ✅ met à jour visuellement tout de suite
-      if (typeof validerDefi === "function") {
-        validerDefi(defiIndexActuel);
+    document.getElementById("valider-jeton-btn").onclick = () => {
+      const jetons = getJetons();
+      if (jetons > 0) {
+        const success = removeJeton();
+        if (success) {
+          updateJetonsDisplay();
+          if (typeof validerDefi === "function") {
+            validerDefi(defiIndexActuel);
+          }
+          fermerPopupJeton();
+        } else {
+          alert("❌ Erreur lors de la soustraction du jeton.");
+        }
+      } else {
+        alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
       }
-      fermerPopupJeton();
-    } else {
-      alert("❌ Erreur lors de la soustraction du jeton.");
-    }
-  } else {
-    alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
-  }
-};
+    };
+  };
 
-};
-
-window.fermerPopupJeton = function () {
-  document.getElementById("popup-jeton").classList.remove("show");
-  document.getElementById("popup-jeton").classList.add("hidden");
-};
-
+  window.fermerPopupJeton = function () {
+    document.getElementById("popup-jeton").classList.remove("show");
+    document.getElementById("popup-jeton").classList.add("hidden");
+  };
 });
