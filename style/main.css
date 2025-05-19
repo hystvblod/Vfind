@@ -1503,24 +1503,23 @@ header,
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeOut 1.8s ease-out 2.2s forwards;
+  animation: fadeOut 1s ease-out 2.8s forwards;
 }
 
 .logo-img {
-  width: 140px; /* Ajuste si besoin */
+  width: 120px;
   opacity: 0;
-  transform: translateY(20px) scale(0.9);
-  animation: appear 1.2s ease-out forwards;
+  animation: growIntro 1.2s ease-out forwards;
 }
 
-@keyframes appear {
+@keyframes growIntro {
   0% {
     opacity: 0;
-    transform: translateY(20px) scale(0.9);
+    transform: scale(0.9);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1.8); /* 🟢 effet final XXL */
   }
 }
 
@@ -1531,3 +1530,4 @@ header,
     pointer-events: none;
   }
 }
+
