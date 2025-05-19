@@ -1112,6 +1112,8 @@ main {
   padding: 30px 16px 20px;
   background: none;
   border-bottom: 5px solid #babada !important; /* ✅ identique à Boutique */
+    border-bottom: none !important;
+  box-shadow: none !important;
 
 }
 
@@ -1232,9 +1234,6 @@ main {
   margin-right: 8px;
   position: static;
 }
-.header-solo {
-  border-bottom: none !important;
-}
 
 
 /* ✅ Icônes à l'intérieur des boutons */
@@ -1260,7 +1259,7 @@ main {
   gap: 10px;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  width: 180px; /* ✅ même taille pour tous */
+  width: 170px; /* ✅ même taille pour tous */
   text-align: center;
   white-space: nowrap;
 }
