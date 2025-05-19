@@ -542,16 +542,6 @@ nav.nav-icons {
       min-height: calc(100vh - 80px);
 }
   
-/* === NAVIGATION PROFESSIONNELLE === */
-header {
-  color: #babada;
-  padding: 20px 30px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 5px solid #babada;
-}
 
 header h1 {
   font-size: 2rem;
@@ -1289,15 +1279,15 @@ main {
   display: flex;
   justify-content: space-around; /* ✅ séparation gauche/droite */
   align-items: center;
-  padding: 0 20px;
-  margin: 20px 0;
+  padding: 08px;
+  margin: 10px 0;
 }
 
 /* ✅ Chaque item solde */
 .solde-ligne-boutique .solde-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   font-size: 1.2rem;
   font-weight: bold;
   color: white;
@@ -1435,7 +1425,7 @@ main {
 }
 .btn-categorie {
   background: #24263a;
-  color: #ffd700;
+  color: #ffffff44;
   border: none;
   padding: 8px 16px;
   border-radius: 16px;
@@ -1451,13 +1441,20 @@ main {
 }
 .btn-categorie.active,
 .btn-categorie:hover {
-  background: #ffd700;
+  background: #ffffff44;
   color: #24263a;
 }
 .titre-categorie {
   text-align: center;
   font-size: 1.3em;
   margin-bottom: 18px;
-  color: #ffd700;
+  color: #ffffff44;
+}
+.header-solo,
+.header-row,
+.header-boutique,
+header {
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
