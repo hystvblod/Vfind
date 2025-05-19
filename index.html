@@ -24,15 +24,15 @@
       text-decoration: none;
       font-weight: bold;
     }
-.logo {
-  text-align: center;
-  margin-top: 2rem;
-}
-.logo img {
-  height: 150px;
-  display: block;
-  margin: 0 auto;
-}
+    .logo {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .logo img {
+      height: 150px;
+      display: block;
+      margin: 0 auto;
+    }
     .main-buttons {
       display: flex;
       flex-direction: column;
@@ -60,32 +60,87 @@
       color: #ccc;
       font-size: 0.9rem;
     }
+
+    /* === ANIMATION INTRO LOGO === */
+    #intro-logo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #1e1e2f;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 1.8s ease-out 2.2s forwards;
+    }
+
+    .logo-img {
+      width: 140px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      animation: appear 1.2s ease-out forwards;
+    }
+
+    @keyframes appear {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
   </style>
 </head>
 <body class="index-page">
+
+  <!-- ANIMATION INTRO LOGO -->
+  <div id="intro-logo">
+    <img src="assets/img/logo.png" alt="Logo VFind" class="logo-img" />
+  </div>
+
   <div class="page-container">
 
-  <div class="top-buttons">
-    <a href="profil.html">👤</a>
-    <a href="parametres.html" class="btn-icon">⚙️</a>
+    <div class="top-buttons">
+      <a href="profil.html">👤</a>
+      <a href="parametres.html" class="btn-icon">⚙️</a>
+    </div>
 
-  
-  </div>
+    <div class="logo">
+      <img src="assets/img/logo.png" alt="Logo VFind">
+    </div>
 
-  <div class="logo">
-    <img src="assets/img/logo.png" alt="Logo VFind">
-  </div>
+    <div class="main-buttons">
+      <a href="solo.html">Mode Solo</a>
+      <a href="duel.html">Mode Duel</a>
+      <a href="boutique.html">Boutique</a>
+    </div>
 
-  <div class="main-buttons">
-    <a href="solo.html">Mode Solo</a>
-    <a href="duel.html">Mode Duel</a>
-    <a href="boutique.html">Boutique</a>
-  </div>
-
-  <footer>
-    © 2025 VFind. Tous droits réservés.
-  </footer>
+    <footer>
+      © 2025 VFind. Tous droits réservés.
+    </footer>
 
   </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const intro = document.getElementById("intro-logo");
+        if (intro) intro.remove();
+      }, 3000);
+    });
+  </script>
+
 </body>
 </html>
