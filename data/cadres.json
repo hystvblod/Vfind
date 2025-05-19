@@ -143,6 +143,21 @@
     "nom": "Girly",
     "prix": 1200
   },
+            {
+    "id": "polaroid_31",
+    "nom": "Confettis",
+    "prix": 1200
+  },
+             {
+    "id": "polaroid_32",
+    "nom": "Nuages",
+    "prix": 1200
+  },
+               {
+    "id": "polaroid_33",
+    "nom": "Bulles",
+    "prix": 1200
+  },
   {
     "id": "polaroid_40",
     "nom": "Or paillettes",
@@ -203,9 +218,39 @@
     "nom": "VIP",
     "prix": 5000
   },
+                   {
+    "id": "polaroid_108",
+    "nom": "Feu",
+    "prix": 5000
+  },
+                     {
+    "id": "polaroid_109",
+    "nom": "Nature",
+    "prix": 5000
+  },
+                       {
+    "id": "polaroid_110",
+    "nom": "Fleurs dorées",
+    "prix": 5000
+  },
+                         {
+    "id": "polaroid_111",
+    "nom": "Sable",
+    "prix": 5000
+  },
+                           {
+    "id": "polaroid_112",
+    "nom": "USA",
+    "prix": 5000
+  },
                  {
     "id": "polaroid_900",
     "nom": "Vzone",
+    "prix":0
+  },
+                 {
+    "id": "polaroid_901",
+    "nom": "Marine",
     "prix":0
   }
 ]
