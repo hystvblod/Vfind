@@ -3,22 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Duel</title>
+  <title>VFind - Duel (Partie)</title>
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="duel-container">
 
   <!-- ====== HEADER UNIFIÉ ====== -->
-<header class="header-boutique">
-  <a href="index.html" class="back-btn" title="Retour">&#8592;</a>
-  <h1 class="titre-centre">Mode Duel</h1>
-  <div class="top-buttons">
-    <a href="profil.html" title=>👤</a>
-    <a href="parametres.html" title=>⚙️</a>
+  <header class="header-boutique">
+    <a href="duel.html" class="back-btn" title="Retour">&#8592;</a>
+    <h1 class="titre-centre">Mode Duel</h1>
+    <div class="top-buttons">
+      <a href="profil.html" title="Profil">👤</a>
+      <a href="parametres.html" title="Paramètres">⚙️</a>
+    </div>
+  </header>
+
+  <!-- NOM ADVERSAIRE -->
+  <div style="text-align:center; margin-top: 1rem; font-size: 1.2rem;">
+    ⚔️ Contre <strong id="nom-adversaire">...</strong>
   </div>
-</header>
-
-
 
   <!-- ====== MAIN ====== -->
   <main>
@@ -49,20 +52,6 @@
   <script src="js/polaroid.js"></script>
   <script src="js/pub.js"></script>
   <script src="js/duel.js"></script>
-
-  <script>
-    function toggleFit(img) {
-      img.classList.toggle('cover');
-      img.classList.toggle('contain');
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const jetonsSpan = document.getElementById("jetons");
-      if (jetonsSpan && typeof getJetons === "function") {
-        jetonsSpan.textContent = getJetons();
-      }
-    });
-  </script>
 
 </body>
 </html>

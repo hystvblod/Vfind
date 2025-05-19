@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Duel avec un ami - VFind</title>
+  <link rel="stylesheet" href="style/main.css" />
+</head>
+<body class="duel-container">
+  <header class="header-boutique">
+    <a href="duel.html" class="back-btn">&#8592;</a>
+    <h1 class="titre-centre">Duel avec un ami</h1>
+    <div class="top-buttons">
+      <a href="profil.html">👤</a>
+      <a href="parametres.html">⚙️</a>
+    </div>
+  </header>
+
+  <main>
+    <div style="text-align:center;margin-top:2rem;">
+      <button class="main-button" onclick="ajouterAmi()">Ajouter un ami</button>
+      <h3>Mes amis</h3>
+      <ul id="liste-amis"></ul>
+      <h3>Demandes de duel reçues</h3>
+      <ul id="demandes-recue"></ul>
+      <h3>Demandes de duel envoyées</h3>
+      <ul id="demandes-envoyees"></ul>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+  <script src="js/amis.js"></script>
+</body>
+</html>

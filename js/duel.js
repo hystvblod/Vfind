@@ -1,21 +1,33 @@
-// ✅ DUEL.JS FINAL (ENREGISTREMENT HISTORIQUE + LOGIQUE ORIGINALE)
+// ✅ DUEL.JS FINAL (ADVERSAIRE ALÉATOIRE OU AMI, ENREGISTRE HISTORIQUE)
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Récupère le mode et l'adversaire depuis l'URL
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode") || "random";
+  const adversaire = params.get("adversaire") || (mode === "random" ? "Adversaire mystère" : "Ton ami");
+
   const defiList = document.getElementById("duel-defi-list");
-  const cadre = getCadreSelectionne(); // pas de fallback ici, comme dans solo
+  const cadre = getCadreSelectionne ? getCadreSelectionne() : "polaroid_01";
   updateJetonsDisplay();
+
+  // Affiche le nom de l'adversaire sur la page si tu as un endroit prévu :
+  const advName = document.getElementById("nom-adversaire");
+  if (advName) advName.textContent = adversaire;
 
   fetch("data/defis.json")
     .then(res => res.json())
     .then(data => {
-      const defis = data.defis.slice(0, 3);
+      // Tu peux améliorer ici : randomise les défis, ou choisis selon ton mode
+      const defis = data.defis.slice(0, 3); // à custom selon ton besoin
       defiList.innerHTML = "";
 
       defis.forEach((defi, index) => {
         const id = defi.id;
         const texte = defi.intitule;
         const photoA = localStorage.getItem(`photo_defi_${id}`) || null;
-        const photoB = "photos/photo_joueurB.jpg";
+        const photoB = mode === "ami"
+          ? localStorage.getItem(`photo_ami_${id}`) || "photos/photo_joueurB.jpg"
+          : "photos/photo_joueurB.jpg";
 
         const li = document.createElement("li");
         li.className = "defi-item";
@@ -51,6 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Erreur chargement défis duel :", err);
     });
 });
+
+// ============ Utilitaires ============
 
 function updateJetonsDisplay() {
   const jetonsSpan = document.getElementById("jetons");
@@ -98,16 +112,11 @@ window.fermerPopupJeton = function () {
   document.getElementById("popup-jeton").classList.add("hidden");
 };
 
-// =======================
-// ✅ HISTORIQUE DUEL : Enregistre les défis duel validés pour le calendrier
-// =======================
+// ============ HISTORIQUE DUEL ============
 
-const HISTORY_KEY = "vfindHistorique"; // même clé que solo
-
-// On garde en mémoire quels défis sont validés
+const HISTORY_KEY = "vfindHistorique";
 let defisDuelValides = [null, null, null];
 
-// Pour chaque défi validé (après pub), on enregistre le texte du défi
 window.validerDefi = function(index) {
   const defis = document.querySelectorAll("#duel-defi-list li");
   const li = defis[index];
@@ -116,23 +125,18 @@ window.validerDefi = function(index) {
   if (!url) return;
 
   li.classList.add("done");
-
-  // Récupère le texte du défi pour l'historique
   const texteDefi = li.querySelector("p").textContent.trim();
   defisDuelValides[index] = texteDefi;
 
   setTimeout(() => {
     alert("✅ Merci d’avoir regardé la pub !");
-    // Vérifie si tous les défis du duel sont validés
     if (defisDuelValides.every(Boolean)) {
       enregistrerDuelHistorique(defisDuelValides);
-      // Reset mémoire pour le prochain duel
       defisDuelValides = [null, null, null];
     }
   }, 2000);
 };
 
-// Fonction d'enregistrement dans l'historique
 function enregistrerDuelHistorique(defisValides) {
   const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
   const now = new Date();
@@ -141,7 +145,7 @@ function enregistrerDuelHistorique(defisValides) {
   const dateStr = `${date}, ${time}`;
   historique.unshift({
     date: dateStr,
-    defis_duel: defisValides, // tableau de 3 strings (défis duel validés)
+    defis_duel: defisValides,
   });
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
 }
