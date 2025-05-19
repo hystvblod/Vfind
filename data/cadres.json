@@ -199,6 +199,11 @@
     "prix": 1200
   },
                  {
+    "id": "polaroid_107",
+    "nom": "VIP",
+    "prix": 5000
+  },
+                 {
     "id": "polaroid_900",
     "nom": "Vzone",
     "prix":
