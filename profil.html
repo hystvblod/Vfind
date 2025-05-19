@@ -45,8 +45,8 @@
     <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
   </section>
 
-  <!-- ✅ Container calendrier caché au départ -->
-  <div id="calendrier-container" style="display:none; margin-top:1em;"></div>
+  <!-- ✅ Container calendrier toujours affiché -->
+  <div id="calendrier-container" style="margin-top:1em;"></div>
 </main>
 
 <footer>
@@ -61,14 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("vcoins").textContent = data.Vcoins || 0;
   document.getElementById("jetons").textContent = data.jetons || 0;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const data = typeof getUserData === "function" ? getUserData() : {};
-  document.getElementById("vcoins").textContent = data.Vcoins || 0;
-  document.getElementById("jetons").textContent = data.jetons || 0;
-
-  afficherCalendrier(); // affichage direct au chargement
-});
-
+  afficherCalendrier(); // affichage direct
 
   function afficherCalendrier() {
     const historique = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
@@ -108,10 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       html += `<div class="jour" style="background:${color}">${j}</div>`;
     }
+
     html += "</div>";
     document.getElementById('calendrier-container').innerHTML = html;
   }
 
+  // === Style du calendrier
   const style = document.createElement('style');
   style.textContent = `
     #calendrier-container { margin: 1.5em 0; }
