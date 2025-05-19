@@ -1,4 +1,4 @@
-// ✅ DUEL.JS FINAL (ADVERSAIRE ALÉATOIRE OU AMI, ENREGISTRE HISTORIQUE)
+// ✅ DUEL.JS FINAL (JETONPP.WEBP AFFICHÉ DANS LE CADRE SI VALIDÉ AVEC JETON)
 
 document.addEventListener("DOMContentLoaded", () => {
   // Récupère le mode et l'adversaire depuis l'URL
@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const photoB = mode === "ami"
           ? localStorage.getItem(`photo_ami_${id}`) || "photos/photo_joueurB.jpg"
           : "photos/photo_joueurB.jpg";
+        const jetonValide = localStorage.getItem(`defi_jeton_${id}`) === "1";
+        const photoJeton = "assets/img/jetonpp.webp"; // Ton vrai fichier .webp jeton !
 
         const hasPhoto = !!photoA;
         const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
@@ -43,7 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="joueur-col">
               <span class="col-title">Toi</span>
               <div class="cadre-preview">
-                <img src="${photoA || "photos/photo_joueurA.jpg"}" class="photo-user cover" onclick="toggleFit(this)">
+                <img src="${jetonValide ? photoJeton : (photoA || "photos/photo_joueurA.jpg")}"
+                     class="photo-user cover${jetonValide ? ' jeton-inside' : ''}"
+                     ${jetonValide ? '' : 'onclick="toggleFit(this)"'}>
                 <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
               </div>
             </div>
@@ -57,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="btn-row">
             ${boutonPhoto}
-            ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
+            ${(!hasPhoto && !jetonValide) ? `<img src="assets/img/jetonpp.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
             <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
           </div>
         `;
@@ -101,7 +105,7 @@ window.ouvrirPopupJeton = function (index) {
       if (success) {
         updateJetonsDisplay();
         if (typeof validerDefi === "function") {
-          validerDefi(defiIndexActuel);
+          validerDefi(defiIndexActuel, true); // ✅ précise la validation par jeton !
         }
         fermerPopupJeton();
       } else {
@@ -123,14 +127,20 @@ window.fermerPopupJeton = function () {
 const HISTORY_KEY = "vfindHistorique";
 let defisDuelValides = [null, null, null];
 
-window.validerDefi = function(index) {
+// Validation d'un défi, gère aussi l'affichage du jeton dans le cadre !
+window.validerDefi = function(index, viaJeton = false) {
   const defis = document.querySelectorAll("#duel-defi-list li");
   const li = defis[index];
   const id = li.getAttribute("data-defi-id");
   const url = localStorage.getItem(`photo_defi_${id}`);
-  if (!url) return;
+
+  // Accepte la validation SANS photo SI viaJeton === true
+  if (!url && !viaJeton) return;
 
   li.classList.add("done");
+  if (viaJeton) {
+    localStorage.setItem(`defi_jeton_${id}`, "1");
+  }
   const texteDefi = li.querySelector("p").textContent.trim();
   defisDuelValides[index] = texteDefi;
 
@@ -140,6 +150,8 @@ window.validerDefi = function(index) {
       enregistrerDuelHistorique(defisDuelValides);
       defisDuelValides = [null, null, null];
     }
+    // Recharge la page pour afficher le jeton dans le cadre
+    window.location.reload();
   }, 2000);
 };
 
