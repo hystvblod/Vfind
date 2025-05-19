@@ -9,83 +9,79 @@
 <body class="boutique-container">
 
   <header class="header-solo">
-  <div class="header-row">
-    <a href="index.html" class="back-btn" title="Retour">&#8592;</a>
-    <h1>Boutique</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">👤</a>
-      <a href="parametres.html" class="btn-icon">⚙️</a>
+    <div class="header-row">
+      <a href="index.html" class="back-btn" title="Retour">&#8592;</a>
+      <h1>Boutique</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">👤</a>
+        <a href="parametres.html" class="btn-icon">⚙️</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- LIGNE 1 : SOLDE GLOBAL -->
+  <div class="solde-ligne-boutique">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
+      <span id="points">100</span>
+    </div>
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
+      <span id="jetons">6</span>
     </div>
   </div>
-</header>
 
-
-<!-- LIGNE 1 : SOLDE GLOBAL -->
-<div class="solde-ligne-boutique">
-  <div class="solde-item">
-    <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
-    <span id="points">100</span>
+  <!-- LIGNE 2 : BOUTONS -->
+  <div class="btn-inline">
+    <button class="btn-action-boutique" id="gain-btn">
+      Gagner des pièces
+      <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
+    </button>
+    <button class="btn-action-boutique" onclick="ouvrirPopupJetonBoutique()">
+      Acheter jetons
+      <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
+    </button>
   </div>
-  <div class="solde-item">
-    <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
-    <span id="jetons">6</span>
+
+  <!-- SECTION BOUTIQUE -->
+  <section class="cadres-list">
+    <h2>🎨 Cadres disponibles</h2>
+    <div id="boutique-categories"></div>
+    <div id="boutique-container" class="grid-cadres">
+      <!-- Les cadres seront chargés ici par JS -->
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+
+  <!-- ✅ Popup : gagner des pièces -->
+  <div id="popup-gain" class="popup hidden">
+    <h3>Gagner pièces</h3>
+    <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
+    <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
   </div>
-</div>
 
-<!-- LIGNE 2 : BOUTONS -->
-<div class="btn-inline">
-  <button class="btn-action-boutique">
-    Gagner des pièces
-    <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
-  </button>
-  <button class="btn-action-boutique">
-    Acheter jetons
-    <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
-  </button>
-</div>
-
-</section>
-
-<!-- Cadres -->
-<section class="cadres-list">
-  <h2>🎨 Cadres disponibles</h2>
-  <div id="boutique-tabs" class="boutique-tabs"></div>
-  <div id="boutique-container" class="grid-cadres">
-    <!-- Les cadres seront chargés depuis cadres.json -->
+  <!-- ✅ Popup : acheter des jetons -->
+  <div id="popup-achat-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
+    </div>
   </div>
-</section>
 
-<footer>
-  <p>&copy; 2025 VFind</p>
-</footer>
-
-<!-- ✅ Popup : gagner des pièces -->
-<div id="popup-gain" class="popup hidden">
-  <h3>Gagner pièces</h3>
-  <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
-  <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
-</div>
-
-<!-- ✅ Popup : acheter des jetons -->
-<div id="popup-achat-jeton" class="popup hidden">
-  <div class="popup-inner">
-    <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
-    <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
-    <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
-  </div>
-</div>
-
-<!-- Scripts -->
-<script src="js/storage.js"></script>
-<script src="js/userData.js"></script>
-<script src="js/pub.js"></script>
-<script src="js/boutique.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    if (typeof updatePointsDisplay === "function") updatePointsDisplay();
-    if (typeof updateJetonsDisplay === "function") updateJetonsDisplay();
-  });
-</script>
-
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/userData.js"></script>
+  <script src="js/pub.js"></script>
+  <script src="js/boutique.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof updatePointsDisplay === "function") updatePointsDisplay();
+      if (typeof updateJetonsDisplay === "function") updateJetonsDisplay();
+    });
+  </script>
 </body>
 </html>

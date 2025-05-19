@@ -1,18 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
   const boutiqueContainer = document.getElementById("boutique-container");
+  const catBarContainer = document.getElementById("boutique-categories");
   const pointsDisplay = document.getElementById("points");
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
 
+  // --- Points et jetons ---
   let userPoints = getPoints();
   updatePointsDisplay();
   updateJetonsDisplay();
 
-  // Fonctions utilitaires
   function updatePointsDisplay() {
-    if (pointsDisplay) {
-      pointsDisplay.textContent = getPoints();
-    }
+    if (pointsDisplay) pointsDisplay.textContent = getPoints();
   }
 
   function updateJetonsDisplay() {
@@ -22,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // --- Feedback popups ---
   function showFeedback(text) {
     if (!feedback) return;
     feedback.textContent = text;
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     location.reload();
   }
 
-  // Popup
+  // --- Popups et pub ---
   const gainBtn = document.getElementById("gain-btn");
   if (gainBtn) {
     gainBtn.addEventListener("click", () => {
@@ -124,8 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ------------- Affichage des catégories switchables -------------
-
+  // ----- Gestion catégories -----
   const CATEGORIES = [
     { key: 'classique', nom: 'Classique 🎞️' },
     { key: 'deluxe', nom: 'Deluxe 🌈' },
@@ -142,14 +141,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'autre';
   }
 
-  // ---- Charge les cadres et affiche la catégorie sélectionnée
   let CADRES_DATA = [];
-  let currentCategory = 'classique'; // Catégorie affichée par défaut
+  let currentCategory = 'classique'; // Par défaut
 
   function renderBoutique(categoryKey) {
-    boutiqueContainer.innerHTML = "";
-
-    // Affiche les boutons de switch catégories
+    // --- Affichage barre catégories ---
+    catBarContainer.innerHTML = "";
     const bar = document.createElement("div");
     bar.className = "categories-bar";
     CATEGORIES.forEach(cat => {
@@ -162,15 +159,15 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       bar.appendChild(btn);
     });
-    boutiqueContainer.appendChild(bar);
+    catBarContainer.appendChild(bar);
 
-    // Titre dynamique
+    // --- Affichage des cadres ---
+    boutiqueContainer.innerHTML = "";
     const titre = document.createElement("h3");
     titre.textContent = CATEGORIES.find(c => c.key === categoryKey).nom;
     titre.className = "titre-categorie";
     boutiqueContainer.appendChild(titre);
 
-    // Affiche les cadres de la catégorie choisie
     const grid = document.createElement("div");
     grid.className = "grid-cadres";
     const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
