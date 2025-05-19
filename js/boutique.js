@@ -162,11 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
     catBarContainer.appendChild(bar);
 
     // --- Affichage des cadres ---
-    boutiqueContainer.innerHTML = "";
-    const titre = document.createElement("h3");
-    titre.textContent = CATEGORIES.find(c => c.key === categoryKey).nom;
-    titre.className = "titre-categorie";
-    boutiqueContainer.appendChild(titre);
 
     const grid = document.createElement("div");
     grid.className = "grid-cadres";
