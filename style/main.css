@@ -1442,4 +1442,49 @@ main {
   margin-bottom: 18px;
   color: #ffd700;
 }
+/* --- Homogénéité blocs cadre boutique --- */
+.grid-cadres .cadre-item {
+  min-height: 260px;       /* Ajuste si besoin, ex: 240-280px selon contenu */
+  width: 180px;            /* Même largeur partout, ajuste à ta grille si besoin */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 16px;
+}
 
+/* Titre du cadre sur 2 lignes max, centré */
+.grid-cadres .cadre-item h3,
+.grid-cadres .cadre-item .cadre-titre {
+  min-height: 44px;       /* Place pour 2 lignes, ajuste si besoin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  font-size: 1.07rem;
+  font-weight: 600;
+}
+
+/* Le bouton d'action aligné en bas, largeur fixe */
+.grid-cadres .cadre-item button,
+.grid-cadres .cadre-item .premium-required {
+  width: 90%;
+  margin-top: auto;     /* pousse le bouton en bas du bloc */
+  min-height: 36px;
+  font-size: 1rem;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Si "Premium requis" est un bouton ou un div */
+.grid-cadres .cadre-item .premium-required {
+  background: #66697a;
+  color: #eee;
+  border: none;
+  font-weight: 700;
+  pointer-events: none;
+}
