@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="btn-row">
             ${boutonPhoto}
-            ${(!hasPhoto && !jetonValide) ? `<img src="assets/img/jetonpp.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
+            ${(!hasPhoto && !jetonValide) ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
             <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
           </div>
         `;
