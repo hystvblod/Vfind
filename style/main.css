@@ -1297,6 +1297,7 @@ main {
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
   background-color: #ffcc00;
+   color: #fff !important;  /* ✅ texte blanc */
   width: 170px !important;
   min-width: 120px;
   max-width: 220px;
