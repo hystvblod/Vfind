@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VFind - Calendrier</title>
+  <link rel="stylesheet" href="style/main.css">
+</head>
+<body class="vfind-bg">
+
+<header class="header-solo">
+  <div class="header-row">
+    <a href="profil.html" class="back-btn">←</a>
+    <h1>Mon calendrier</h1>
+    <div class="top-buttons">
+      <a href="profil.html" class="btn-icon">👤</a>
+      <a href="parametres.html" class="btn-icon">⚙️</a>
+    </div>
+  </div>
+</header>
+
+<main class="profil-container">
+  <div id="calendrier-container" style="margin-top: 1em;"></div>
+</main>
+
+<footer>
+  <p>© 2025 VFind</p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  afficherCalendrier();
+
+  function afficherCalendrier() {
+    const historique = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
+    const parJour = {};
+    historique.forEach(entree => {
+      const dateStr = entree.date.split(',')[0].split('/').reverse().join('-');
+      if (!parJour[dateStr]) parJour[dateStr] = [];
+      parJour[dateStr].push(entree);
+    });
+
+    const today = new Date();
+    const annee = today.getFullYear();
+    const mois = today.getMonth();
+    const premierJour = new Date(annee, mois, 1);
+    const nbJours = new Date(annee, mois + 1, 0).getDate();
+
+    let html = '<div class="calendrier">';
+    html += '<div class="sem">Lun</div><div class="sem">Mar</div><div class="sem">Mer</div><div class="sem">Jeu</div><div class="sem">Ven</div><div class="sem">Sam</div><div class="sem">Dim</div>';
+    const decal = (premierJour.getDay() + 6) % 7;
+    for (let i = 0; i < decal; i++) html += '<div class="jour vide"></div>';
+
+    for (let j = 1; j <= nbJours; j++) {
+      const d = new Date(annee, mois, j);
+      const dstr = d.toISOString().slice(0, 10);
+      const sessions = parJour[dstr] || [];
+
+      let color = "#ffffff";
+      if (d < today) {
+        let vertFonce = false;
+        let totalDefis = 0;
+        sessions.forEach(s => {
+          if ((s.defis && s.defis.length === 3) || (s.defis_duel && s.defis_duel.length === 3)) vertFonce = true;
+          totalDefis += (s.defis ? s.defis.length : 0) + (s.defis_duel ? s.defis_duel.length : 0);
+        });
+        if (vertFonce) color = "#089e29";
+        else if (totalDefis > 0) color = "#baffc7";
+        else color = "#ff2c2c";
+      }
+
+      html += `<div class="jour" style="background:${color}">${j}</div>`;
+    }
+
+    html += '</div>';
+    document.getElementById('calendrier-container').innerHTML = html;
+  }
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .calendrier {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin: 1em auto;
+      max-width: 420px;
+    }
+    .jour, .sem {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .sem {
+      background: none;
+      color: #ccc;
+      box-shadow: none;
+    }
+    .jour.vide {
+      background: none;
+      box-shadow: none;
+    }
+  `;
+  document.head.appendChild(style);
+});
+</script>
+</body>
+</html>
