@@ -1170,15 +1170,16 @@ main {
 }
 .profil-header-row h1 {
   position: absolute;
-  left: 50%;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
   margin: 0;
-  z-index: 1;
+  line-height: 1;
   white-space: nowrap;
+  z-index: 1;
 }
 
 .profil-solde-bar {
@@ -1425,4 +1426,32 @@ main {
   display: flex;
   gap: 12px;
   z-index: 2;
+}
+.categories-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.btn-categorie {
+  background: #24263a;
+  color: #ffd700;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: background 0.18s;
+}
+.btn-categorie.active,
+.btn-categorie:hover {
+  background: #ffd700;
+  color: #24263a;
+}
+.titre-categorie {
+  text-align: center;
+  font-size: 1.3em;
+  margin-bottom: 18px;
+  color: #ffd700;
 }
