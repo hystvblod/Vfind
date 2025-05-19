@@ -20,10 +20,6 @@
   </div>
 </header>
 
-
-
-
-
 <!-- ✅ Bloc solde -->
 <section class="profil-top">
   <div class="profil-solde-bar">
@@ -43,10 +39,14 @@
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
     <button onclick="location.href='amis.html'">👤 Amis</button>
+    <button id="btn-calendrier">📅 Calendrier</button>
     <button onclick="location.href='historique.html'">📜 Historique</button>
     <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
     <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
-  </section>    
+  </section>
+
+  <!-- ✅ Container calendrier caché au départ -->
+  <div id="calendrier-container" style="display:none; margin-top:1em;"></div>
 </main>
 
 <footer>
@@ -59,7 +59,76 @@
   const data = getUserData();
   document.getElementById("vcoins").textContent = data.Vcoins || 0;
   document.getElementById("jetons").textContent = data.jetons || 0;
-</script>
 
+  // ========================
+  // === SCRIPT CALENDRIER ==
+  // ========================
+  document.getElementById('btn-calendrier').onclick = function() {
+    const cont = document.getElementById('calendrier-container');
+    cont.style.display = (cont.style.display === 'none') ? 'block' : 'none';
+    if (cont.style.display === 'block') afficherCalendrier();
+  };
+
+  function afficherCalendrier() {
+    const historique = JSON.parse(localStorage.getItem('vfind_historique')) || [];
+    const parJour = {};
+    historique.forEach(entree => {
+      // Prend la date au format YYYY-MM-DD
+      const dateStr = entree.date.split(',')[0].split('/').reverse().join('-');
+      if (!parJour[dateStr]) parJour[dateStr] = [];
+      parJour[dateStr].push(entree);
+    });
+
+    // Calcule le mois en cours
+    const today = new Date();
+    const annee = today.getFullYear();
+    const mois = today.getMonth();
+    const premierJour = new Date(annee, mois, 1);
+    const nbJours = new Date(annee, mois + 1, 0).getDate();
+
+    let html = '<div class="calendrier">';
+    html += '<div class="sem">Lun</div><div class="sem">Mar</div><div class="sem">Mer</div><div class="sem">Jeu</div><div class="sem">Ven</div><div class="sem">Sam</div><div class="sem">Dim</div>';
+    // Décalage 1er jour
+    let decal = (premierJour.getDay() + 6) % 7;
+    html += '<div class="vide" style="grid-column:1/span '+decal+';"></div>'.repeat(decal);
+
+    for (let j = 1; j <= nbJours; j++) {
+      const d = new Date(annee, mois, j);
+      const dstr = d.toISOString().slice(0, 10);
+      const sessions = parJour[dstr] || [];
+
+      // LOGIQUE : 3 solo OU 3 duel dans la même session = vert foncé. Sinon vert clair si au moins 1 défi, sinon rouge.
+      let vertFonce = false;
+      let totalDefis = 0;
+      sessions.forEach(s => {
+        if ((s.defis && s.defis.length === 3) || (s.defis_duel && s.defis_duel.length === 3)) vertFonce = true;
+        totalDefis += (s.defis ? s.defis.length : 0) + (s.defis_duel ? s.defis_duel.length : 0);
+      });
+
+      let color = "#ff2c2c"; // Rouge
+      if (vertFonce) color = "#089e29"; // Vert foncé (3 solo ou 3 duel)
+      else if (totalDefis > 0) color = "#baffc7"; // Vert clair
+
+      html += `<div class="jour" style="background:${color}">${j}</div>`;
+    }
+    html += "</div>";
+    document.getElementById('calendrier-container').innerHTML = html;
+  }
+
+  // Un peu de style pour le calendrier
+  const style = document.createElement('style');
+  style.textContent = `
+  #calendrier-container { margin: 1.5em 0; }
+  .calendrier { display: grid; grid-template-columns: repeat(7, 38px); gap: 7px; }
+  .calendrier .jour {
+    border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 1.1rem; box-shadow: 0 1px 4px #0002; cursor: pointer; transition: .2s;
+  }
+  .calendrier .jour:hover { box-shadow: 0 2px 8px #0003; transform: scale(1.06);}
+  .calendrier .sem { font-size: .95em; font-weight: 600; color: #666; background: none; border-radius: 0; text-align: center;}
+  `;
+  document.head.appendChild(style);
+
+</script>
 </body>
 </html>
