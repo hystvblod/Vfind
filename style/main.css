@@ -1448,7 +1448,9 @@ main {
 /* Titre du cadre sur 2 lignes max, centré */
 .grid-cadres .cadre-item h3,
 .grid-cadres .cadre-item .cadre-titre {
-  min-height: 44px;       /* Place pour 2 lignes, ajuste si besoin */
+  min-height: 44px;         /* déjà présent : place pour 2 lignes */
+  max-height: 44px;         /* 🔥 force à 2 lignes max */
+  overflow: hidden;         /* cache le surplus */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1456,6 +1458,8 @@ main {
   width: 100%;
   font-size: 1.07rem;
   font-weight: 600;
+  line-height: 1.2;
+  word-break: break-word;   /* coupe si trop long */
 }
 
 /* Le bouton d'action aligné en bas, largeur fixe */
