@@ -200,19 +200,25 @@ document.addEventListener("DOMContentLoaded", () => {
           const price = document.createElement("p");
           price.textContent = `${cadre.prix} pièces`;
 
-          const button = document.createElement("button");
-          // Pour les cadres "bloque", le bouton est désactivé et texte différent
-          if (getCategorie(cadre.id) === "bloque") {
-            button.textContent = "Réservé";
-            button.disabled = true;
-            button.classList.add("disabled-premium");
-          } else if (ownedFrames.includes(cadre.id)) {
-            button.textContent = "Acheté";
-            button.disabled = true;
-          } else {
-            button.textContent = "Acheter";
-            button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-          }
+       const button = document.createElement("button");
+
+if (getCategorie(cadre.id) === "bloque") {
+  button.textContent = "Réservé";
+  button.disabled = true;
+  button.classList.add("disabled-premium");
+} else if (getCategorie(cadre.id) === "premium" && !isPremiumUser()) {
+  button.textContent = "Premium requis";
+  button.disabled = true;
+  button.classList.add("disabled-premium");
+  button.title = "Ce cadre nécessite un compte premium";
+} else if (ownedFrames.includes(cadre.id)) {
+  button.textContent = "Acheté";
+  button.disabled = true;
+} else {
+  button.textContent = "Acheter";
+  button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+}
+
 
           item.appendChild(wrapper);
           item.appendChild(title);
