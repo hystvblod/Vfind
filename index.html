@@ -63,25 +63,25 @@
 
     /* === ANIMATION INTRO LOGO === */
     #intro-logo {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #1e1e2f;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeOut 1.8s ease-out 2.2s forwards;
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #1e1e2f;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 1.2s ease-out 2.2s forwards; /* 🟢 plus rapide */
     }
 
     .logo-img {
-      width: 140px;
-      opacity: 0;
-      transform: translateY(20px) scale(0.9);
-      animation: appear 1.2s ease-out forwards;
-    }
+  width: 180px; /* 🟢 plus grand */
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  animation: appear 1.2s ease-out forwards;
+}
 
     @keyframes appear {
       0% {
@@ -133,14 +133,14 @@
 
   </div>
 
-  <script>
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        const intro = document.getElementById("intro-logo");
-        if (intro) intro.remove();
-      }, 3000);
-    });
-  </script>
+<script>
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      const intro = document.getElementById("intro-logo");
+      if (intro) intro.remove();
+    }, 2200); // 🟢 plus rapide (2.2 secondes au total)
+  });
+</script>
 
 </body>
 </html>
