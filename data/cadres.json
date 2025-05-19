@@ -165,7 +165,7 @@
   },
     {
     "id": "polaroid_51",
-    "nom": "VIP",
+    "nom": "Mosaïque Bleue",
     "prix": 5000
   },
       {
@@ -192,5 +192,15 @@
     "id": "polaroid_105",
     "nom": "Fleurs",
     "prix": 1200
+  },
+               {
+    "id": "polaroid_106",
+    "nom": "mousse",
+    "prix": 1200
+  },
+                 {
+    "id": "polaroid_900",
+    "nom": "Vzone",
+    "prix":
   }
 ]
