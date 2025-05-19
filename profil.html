@@ -39,7 +39,7 @@
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
     <button onclick="location.href='amis.html'">👥 Mes amis</button>
-    <button id="btn-calendrier">📅 Calendrier</button>
+    <h2 style="margin:1em 0 0.5em;">📅 Mon calendrier</h2>
     <button onclick="location.href='historique.html'">📜 Historique</button>
     <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
     <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
@@ -61,12 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("vcoins").textContent = data.Vcoins || 0;
   document.getElementById("jetons").textContent = data.jetons || 0;
 
-  // === SCRIPT CALENDRIER ===
-  document.getElementById('btn-calendrier').onclick = function() {
-    const cont = document.getElementById('calendrier-container');
-    cont.style.display = (cont.style.display === 'none') ? 'block' : 'none';
-    if (cont.style.display === 'block') afficherCalendrier();
-  };
+document.addEventListener("DOMContentLoaded", () => {
+  const data = typeof getUserData === "function" ? getUserData() : {};
+  document.getElementById("vcoins").textContent = data.Vcoins || 0;
+  document.getElementById("jetons").textContent = data.jetons || 0;
+
+  afficherCalendrier(); // affichage direct au chargement
+});
+
 
   function afficherCalendrier() {
     const historique = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
