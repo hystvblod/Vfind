@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adversaire = params.get("adversaire") || (mode === "random" ? "Adversaire mystère" : "Ton ami");
 
   const defiList = document.getElementById("duel-defi-list");
-  const cadre = getCadreSelectionne ? getCadreSelectionne() : "polaroid_01";
+  const cadre = (typeof getCadreSelectionne === "function" ? getCadreSelectionne() : "polaroid_01");
   updateJetonsDisplay();
 
   // Affiche le nom de l'adversaire sur la page si tu as un endroit prévu :
@@ -22,31 +22,44 @@ document.addEventListener("DOMContentLoaded", () => {
       defiList.innerHTML = "";
 
       defis.forEach((defi, index) => {
-  li.innerHTML = `
-  <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
-  <div class="defi-content split">
-    <div class="joueur-col">
-      <span class="col-title">Toi</span>
-      <div class="cadre-preview">
-        <img src="${photoA || "photos/photo_joueurA.jpg"}" class="photo-user cover" onclick="toggleFit(this)">
-        <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
-      </div>
-    </div>
-    <div class="adversaire-col">
-      <span class="col-title">${adversaire}</span>
-      <div class="cadre-preview">
-        <img src="${photoB}" class="photo-user cover" onclick="toggleFit(this)">
-        <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
-      </div>
-    </div>
-  </div>
-  <div class="btn-row">
-    ${boutonPhoto}
-    ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
-    <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
-  </div>
-`;
+        const id = defi.id;
+        const texte = defi.intitule;
+        const photoA = localStorage.getItem(`photo_defi_${id}`) || null;
+        const photoB = mode === "ami"
+          ? localStorage.getItem(`photo_ami_${id}`) || "photos/photo_joueurB.jpg"
+          : "photos/photo_joueurB.jpg";
 
+        const hasPhoto = !!photoA;
+        const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+        const boutonPhoto = `<button onclick="ouvrirCameraPour(${id})">${boutonTexte}</button>`;
+
+        const li = document.createElement("li");
+        li.className = "defi-item";
+        li.setAttribute("data-defi-id", id);
+
+        li.innerHTML = `
+          <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
+          <div class="defi-content split">
+            <div class="joueur-col">
+              <span class="col-title">Toi</span>
+              <div class="cadre-preview">
+                <img src="${photoA || "photos/photo_joueurA.jpg"}" class="photo-user cover" onclick="toggleFit(this)">
+                <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
+              </div>
+            </div>
+            <div class="adversaire-col">
+              <span class="col-title">${adversaire}</span>
+              <div class="cadre-preview">
+                <img src="${photoB}" class="photo-user cover" onclick="toggleFit(this)">
+                <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            ${boutonPhoto}
+            ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
+            <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
+          </div>
         `;
 
         defiList.appendChild(li);
