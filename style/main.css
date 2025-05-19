@@ -855,14 +855,6 @@ main {
   flex-grow: 1;
   overflow-y: auto;
 }
-#boutique-container.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
-
-}
 
 
 /* ✅ MINIATURE = version réduite exacte du zoom */
@@ -1483,4 +1475,14 @@ main {
   border: none;
   font-weight: 700;
   pointer-events: none;
+}
+@media (max-width: 900px) {
+  .grid-cadres {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .grid-cadres {
+    grid-template-columns: 1fr;
+  }
 }
