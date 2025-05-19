@@ -187,5 +187,10 @@
     "id": "polaroid_104",
     "nom": "Ecole",
     "prix": 1200
+  },
+             {
+    "id": "polaroid_105",
+    "nom": "Fleurs",
+    "prix": 1200
   }
 ]
