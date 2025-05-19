@@ -23,6 +23,21 @@
   "nom": "Vert",
   "prix": 600
 },
+{
+  "id": "polaroid_06",
+  "nom": "Rouge",
+  "prix": 600
+},
+{
+  "id": "polaroid_07",
+  "nom": "Violet",
+  "prix": 600
+},
+{
+  "id": "polaroid_08",
+  "nom": "Bleu",
+  "prix": 600
+},
   {
     "id": "polaroid_10",
     "nom": "Or",

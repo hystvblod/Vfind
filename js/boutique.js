@@ -219,7 +219,6 @@ if (getCategorie(cadre.id) === "bloque") {
   button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
 }
 
-
           item.appendChild(wrapper);
           item.appendChild(title);
           item.appendChild(price);
