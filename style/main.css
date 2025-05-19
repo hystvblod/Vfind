@@ -1507,7 +1507,7 @@ header,
 }
 
 .logo-img {
-  width: 120px;
+
   opacity: 0;
   animation: growIntro 1.2s ease-out forwards;
 }
