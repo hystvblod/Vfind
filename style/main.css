@@ -1429,29 +1429,32 @@ main {
 }
 .categories-bar {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;            /* Permet de revenir à la ligne si pas la place */
+  gap: 8px;
   justify-content: center;
   margin-bottom: 10px;
 }
+
 .btn-categorie {
   background: #24263a;
   color: #ffd700;
   border: none;
-  padding: 7px 16px;
+  padding: 8px 16px;
   border-radius: 16px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1em;
   transition: background 0.18s;
+  white-space: nowrap;        /* Le texte ne passe pas à la ligne */
+  min-width: unset;           /* Corrige certains reset CSS qui mettent 100% */
+  width: auto;                /* Force la largeur auto sur mobile */
+  flex: 0 0 auto;             /* NE PAS ÉTIRER les boutons ! */
+  box-shadow: 0 2px 6px 0 #0002;
 }
+
 .btn-categorie.active,
 .btn-categorie:hover {
   background: #ffd700;
   color: #24263a;
-}
-.titre-categorie {
-  text-align: center;
-  font-size: 1.3em;
-  margin-bottom: 18px;
-  color: #ffd700;
+
 }
