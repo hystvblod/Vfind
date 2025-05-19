@@ -145,103 +145,107 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = 'classique'; // Par défaut
 
   function renderBoutique(categoryKey) {
-    // --- Affichage barre catégories ---
-    catBarContainer.innerHTML = "";
-    const bar = document.createElement("div");
-    bar.className = "categories-bar";
-    CATEGORIES.forEach(cat => {
-      const btn = document.createElement("button");
-      btn.textContent = cat.nom;
-      btn.className = "btn-categorie" + (cat.key === categoryKey ? " active" : "");
-      btn.onclick = () => {
-        currentCategory = cat.key;
-        renderBoutique(cat.key);
-      };
-      bar.appendChild(btn);
-    });
-    catBarContainer.appendChild(bar);
+  // 1. On affiche la barre des catégories (inchangé)
+  catBarContainer.innerHTML = "";
+  const bar = document.createElement("div");
+  bar.className = "categories-bar";
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.textContent = cat.nom;
+    btn.className = "btn-categorie" + (cat.key === categoryKey ? " active" : "");
+    btn.onclick = () => {
+      currentCategory = cat.key;
+      renderBoutique(cat.key);
+    };
+    bar.appendChild(btn);
+  });
+  catBarContainer.appendChild(bar);
 
-    // --- Affichage des cadres ---
+  // 2. **VIDE TOTALEMENT le container** avant d'ajouter la nouvelle grid !
+  boutiqueContainer.innerHTML = "";
 
-    const grid = document.createElement("div");
-    grid.className = "grid-cadres";
-    const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
-    if (!cadresCat.length) {
-      const empty = document.createElement("p");
-      empty.textContent = "Aucun cadre dans cette catégorie.";
-      grid.appendChild(empty);
-    } else {
-      const ownedFrames = getUserData().cadres;
-      cadresCat.forEach(cadre => {
-        const item = document.createElement("div");
-        item.classList.add("cadre-item");
+  // 3. On crée la grid-cadres (et seulement une à la fois)
+  const grid = document.createElement("div");
+  grid.className = "grid-cadres";
+  const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
+  if (!cadresCat.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Aucun cadre dans cette catégorie.";
+    grid.appendChild(empty);
+  } else {
+    const ownedFrames = getUserData().cadres;
+    cadresCat.forEach(cadre => {
+      const item = document.createElement("div");
+      item.classList.add("cadre-item");
 
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("cadre-preview");
-        wrapper.style.width = "80px";
-        wrapper.style.height = "100px";
-        wrapper.style.position = "relative";
-        wrapper.style.margin = "0 auto 10px";
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("cadre-preview");
+      wrapper.style.width = "80px";
+      wrapper.style.height = "100px";
+      wrapper.style.position = "relative";
+      wrapper.style.margin = "0 auto 10px";
 
-        const cadreImg = document.createElement("img");
-        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-        cadreImg.className = "photo-cadre";
+      const cadreImg = document.createElement("img");
+      cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+      cadreImg.className = "photo-cadre";
 
-        const photo = document.createElement("img");
-        photo.src = "assets/img/exemple.jpg";
-        photo.className = "photo-user";
+      const photo = document.createElement("img");
+      photo.src = "assets/img/exemple.jpg";
+      photo.className = "photo-user";
 
-        wrapper.appendChild(cadreImg);
-        wrapper.appendChild(photo);
+      wrapper.appendChild(cadreImg);
+      wrapper.appendChild(photo);
 
-        wrapper.addEventListener("click", () => {
-          const popup = document.createElement("div");
-          popup.className = "popup show";
-          popup.innerHTML = `
-            <div class="popup-inner">
-              <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-              <div class="cadre-preview cadre-popup">
-                <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
-                <img class="photo-user" src="assets/img/exemple.jpg" />
-              </div>
+      wrapper.addEventListener("click", () => {
+        const popup = document.createElement("div");
+        popup.className = "popup show";
+        popup.innerHTML = `
+          <div class="popup-inner">
+            <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+            <div class="cadre-preview cadre-popup">
+              <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+              <img class="photo-user" src="assets/img/exemple.jpg" />
             </div>
-          `;
-          document.body.appendChild(popup);
-        });
-
-        const title = document.createElement("h3");
-        title.textContent = cadre.nom;
-
-        const price = document.createElement("p");
-        price.textContent = `${cadre.prix} pièces`;
-
-        const button = document.createElement("button");
-        if (categoryKey === "bloque") {
-          button.textContent = "Réservé";
-          button.disabled = true;
-          button.classList.add("disabled-premium");
-        } else if (categoryKey === "premium" && !isPremium()) {
-          button.textContent = "Premium requis";
-          button.disabled = true;
-          button.classList.add("disabled-premium");
-          button.title = "Ce cadre nécessite un compte premium";
-        } else if (ownedFrames.includes(cadre.id)) {
-          button.textContent = "Acheté";
-          button.disabled = true;
-        } else {
-          button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-        }
-
-        item.appendChild(wrapper);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-        grid.appendChild(item);
+          </div>
+        `;
+        document.body.appendChild(popup);
       });
-    }
-    boutiqueContainer.appendChild(grid);
+
+      const title = document.createElement("h3");
+      title.textContent = cadre.nom;
+
+      const price = document.createElement("p");
+      price.textContent = `${cadre.prix} pièces`;
+
+      const button = document.createElement("button");
+      if (categoryKey === "bloque") {
+        button.textContent = "Réservé";
+        button.disabled = true;
+        button.classList.add("disabled-premium");
+      } else if (categoryKey === "premium" && !isPremium()) {
+        button.textContent = "Premium requis";
+        button.disabled = true;
+        button.classList.add("disabled-premium");
+        button.title = "Ce cadre nécessite un compte premium";
+      } else if (ownedFrames.includes(cadre.id)) {
+        button.textContent = "Acheté";
+        button.disabled = true;
+      } else {
+        button.textContent = "Acheter";
+        button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+      }
+
+      item.appendChild(wrapper);
+      item.appendChild(title);
+      item.appendChild(price);
+      item.appendChild(button);
+      grid.appendChild(item);
+    });
   }
+  // 4. Ajoute la nouvelle grid dans le container vidé
+  boutiqueContainer.appendChild(grid);
+}
+
 
   // Chargement des cadres
   fetch("data/cadres.json")
