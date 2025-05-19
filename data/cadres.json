@@ -142,5 +142,10 @@
     "id": "polaroid_51",
     "nom": "VIP",
     "prix": 5000
+  },
+      {
+    "id": "polaroid_101",
+    "nom": "Chat Kawaii",
+    "prix": 5000
   }
 ]
