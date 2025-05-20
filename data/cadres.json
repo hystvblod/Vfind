@@ -158,6 +158,11 @@
     "nom": "Bulles",
     "prix": 1200
   },
+                 {
+    "id": "polaroid_34",
+    "nom": "Rose poudré",
+    "prix": 1200
+  },
   {
     "id": "polaroid_40",
     "nom": "Or paillettes",
