@@ -157,13 +157,42 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'autre';
   }
 
-  // === Ajout: vérification 10 jours de défis ===
-  function hasCompleted10Days() {
-    const historique = getUserData().historique || [];
-    const joursUniques = new Set(
-      historique.map(item => item.date?.slice(0, 10))
-    );
-    return joursUniques.size >= 10;
+  // --- Vérification stricte 10 jours complets dans le même mode ---
+  function hasCompleted10FullDaysStrict() {
+    // Historique solo et duel
+    const historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
+    const historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
+
+    // { dateISO: { solo: n, duel: n } }
+    const joursModes = {};
+
+    // SOLO
+    historiqueSolo.forEach(e => {
+      const d = e.date?.slice(0,10);
+      if (!d) return;
+      if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
+      // Pour chaque défi validé ce jour-là en solo
+      joursModes[d].solo += e.defi ? (Array.isArray(e.defi) ? e.defi.length : 1) : 0;
+    });
+
+    // DUEL
+    historiqueDuel.forEach(e => {
+      // Date format JJ/MM/YYYY, HH:MM:SS → AAAA-MM-JJ
+      const parts = e.date.split(',')[0].split('/');
+      if (parts.length === 3) {
+        const d = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
+        joursModes[d].duel += e.defis_duel ? e.defis_duel.length : 0;
+      }
+    });
+
+    // Compte les jours où SOLO **ou** DUEL a 3 défis (pas la somme !)
+    let joursComplet = 0;
+    Object.values(joursModes).forEach(obj => {
+      if (obj.solo >= 3 || obj.duel >= 3) joursComplet++;
+    });
+
+    return joursComplet >= 10;
   }
 
   let CADRES_DATA = [];
@@ -254,10 +283,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const button = document.createElement("button");
 
-        // Gestion spéciale du déblocage 10 jours de défis pour polaroid_902
+        // Gestion spéciale du déblocage 10 jours de défis pour polaroid_901
         if (categoryKey === "bloque") {
-          if (cadre.id === "polaroid_902") {
-            if (hasCompleted10Days()) {
+          if (cadre.id === "polaroid_901") {
+            if (hasCompleted10FullDaysStrict()) {
               if (!ownedFrames.includes(cadre.id)) {
                 acheterCadre(cadre.id);
                 ownedFrames.push(cadre.id);
@@ -266,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
               button.disabled = true;
               button.classList.add("btn-success");
             } else {
-              button.textContent = "Gagne 10 jours de défis";
+              button.textContent = "Gagne 10 jours de défis complets";
               button.disabled = true;
               button.classList.add("disabled-premium");
             }
@@ -288,11 +317,19 @@ document.addEventListener("DOMContentLoaded", () => {
           button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
         }
 
-        item.appendChild(wrapper);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-        grid.appendChild(item);
+item.appendChild(wrapper);
+item.appendChild(title);
+
+if (categoryKey === "bloque" && cadre.unlock) {
+  const unlockMsg = document.createElement("p");
+  unlockMsg.className = "unlock-msg";
+  unlockMsg.textContent = cadre.unlock;
+  item.appendChild(unlockMsg);
+}
+
+item.appendChild(price);
+item.appendChild(button);
+
       });
     }
     // Ajoute la NOUVELLE grid dans le container vidé

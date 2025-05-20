@@ -1516,6 +1516,13 @@ header,
   text-align: center;
   line-height: 1.3;
 }
+.unlock-msg {
+  color: #FFD700;
+  font-size: 0.98em;
+  font-style: italic;
+  margin: 0.4em 0 0.7em 0;
+  text-align: center;
+}
 
 
 
