@@ -499,9 +499,7 @@ nav.nav-icons {
 #popup-gain button:hover {
   background: #e6b800;
 }
-.popup {
-  background-color: transparent; /* pour retirer le fond blanc de la popup */
-}
+
 
 #startBtn {
   margin-top: 20px;
