@@ -5,26 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Profil</title>
   <link rel="stylesheet" href="style/main.css"/>
+  <style>
+    .id-user {
+      color: red;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+    .popup-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup {
+      background: #fff;
+      color: black;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 90vw;
+    }
+    .popup input {
+      padding: 0.5rem;
+      margin-top: 1rem;
+      width: 80%;
+    }
+    .popup button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body class="vfind-bg">
 
-<!-- ✅ HEADER PROFIL cohérent avec SOLO -->
 <header class="header-solo">
   <div class="header-row">
-  <a href="index.html" class="back-btn" title="Retour">
-  <img src="assets/icons/arrow_back.svg" alt="Retour" />
-</a>
+    <a href="index.html" class="back-btn" title="Retour">
+      <img src="assets/icons/arrow_back.svg" alt="Retour" />
+    </a>
     <h1>Mon Profil</h1>
     <div class="top-buttons">
-     <a href="parametres.html" class="btn-icon">
-  <img src="assets/icons/settings.svg" alt="Paramètres" />
-</a>
-
+      <a href="parametres.html" class="btn-icon">
+        <img src="assets/icons/settings.svg" alt="Paramètres" />
+      </a>
     </div>
   </div>
 </header>
 
-<!-- ✅ Bloc solde -->
 <section class="profil-top">
   <div class="profil-solde-bar">
     <div class="solde-piece">
@@ -38,7 +72,8 @@
   </div>
 </section>
 
-<!-- ✅ Boutons sections -->
+<div class="id-user" id="idUserDisplay">(ID...)</div>
+
 <main class="profil-container">
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
@@ -54,14 +89,96 @@
   <p>© 2025 VFind</p>
 </footer>
 
-<!-- ✅ Script dynamique -->
-<script src="js/userData.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const data = typeof getUserData === "function" ? getUserData() : {};
-  document.getElementById("vcoins").textContent = data.Vcoins || 0;
-  document.getElementById("jetons").textContent = data.jetons || 0;
-});
+<!-- ✅ POPUP -->
+<div class="popup-bg" id="popupID">
+  <div class="popup">
+    <p>Souhaitez-vous modifier votre identifiant public ?</p>
+    <input type="text" id="newIdInput" placeholder="Nouvel ID unique" />
+    <br />
+    <button id="validateId">Valider</button>
+    <button onclick="document.getElementById('popupID').style.display='none'">Annuler</button>
+    <p id="idError" style="color:red;margin-top:1rem;"></p>
+  </div>
+</div>
+
+<!-- ✅ FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
+    authDomain: "vfind-12866.firebaseapp.com",
+    projectId: "vfind-12866",
+    storageBucket: "vfind-12866.appspot.com",
+    messagingSenderId: "953801570333",
+    appId: "1:953801570333:web:92ed5e604d0df316046ef4",
+    measurementId: "G-WTSN5KCBDJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return await signInAnonymously(auth);
+
+    const uid = user.uid;
+    const ref = doc(db, "users", uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        points: 100,
+        jetons: 3,
+        pseudoPublic: "",
+        idFixe: false
+      });
+    }
+
+    const profil = (await getDoc(ref)).data();
+    document.getElementById("vcoins").textContent = profil.points || 0;
+    document.getElementById("jetons").textContent = profil.jetons || 0;
+
+    const idDisplay = document.getElementById("idUserDisplay");
+    idDisplay.textContent = profil.pseudoPublic ? "ID : " + profil.pseudoPublic : "🔴 Cliquez pour créer votre ID";
+    if (!profil.idFixe) {
+      idDisplay.style.textDecoration = "underline";
+      idDisplay.onclick = () => {
+        document.getElementById("popupID").style.display = "flex";
+        document.getElementById("newIdInput").value = "";
+        document.getElementById("idError").textContent = "";
+      };
+
+      document.getElementById("validateId").onclick = async () => {
+        const newId = document.getElementById("newIdInput").value.trim();
+        const err = document.getElementById("idError");
+
+        if (newId.length < 3) {
+          err.textContent = "ID trop court (min 3 caractères)";
+          return;
+        }
+
+        // Vérifie si déjà pris
+        const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
+        const res = await getDocs(q);
+
+        if (!res.empty) {
+          err.textContent = "ID déjà pris 😕";
+        } else {
+          await updateDoc(ref, {
+            pseudoPublic: newId,
+            idFixe: true
+          });
+          idDisplay.textContent = "ID : " + newId;
+          document.getElementById("popupID").style.display = "none";
+          idDisplay.style.textDecoration = "none";
+          idDisplay.onclick = null;
+        }
+      };
+    }
+  });
 </script>
 </body>
 </html>
