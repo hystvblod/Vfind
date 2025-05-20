@@ -1523,6 +1523,54 @@ header,
   margin: 0.4em 0 0.7em 0;
   text-align: center;
 }
+.top-buttons-home {
+  margin-top: 2.2rem; /* ou la valeur que tu veux */
+}
+#popup-unlock-info {
+  background: linear-gradient(to bottom, #2e2e50, #3f3f70); /* comme #popup-achat-jeton */
+  color: white;
+  border-radius: 20px;
+  padding: 30px 24px 26px 24px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  z-index: 10100;
+  max-width: 95vw;
+  width: 370px;
+  min-width: 210px;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: all 0.3s;
+}
+#popup-unlock-info .popup-inner {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  width: 100%;
+  color: #fff;
+}
+#popup-unlock-info h2 {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 1.3em;
+  letter-spacing: 0.02em;
+}
+
+#popup-unlock-info button#close-popup {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255,255,255,0.19);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 8px 13px;
+  font-size: 1.2em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  cursor: pointer;
+}
 
 
 
