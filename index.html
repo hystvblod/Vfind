@@ -159,28 +159,56 @@
 
 <!-- === COLLE ICI LA BALISE FIREBASE === -->
 <script type="module">
-  // Import the functions you need from the SDKs you need
+  // Imports Firebase
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  // Config Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
     authDomain: "vfind-12866.firebaseapp.com",
     projectId: "vfind-12866",
-    storageBucket: "vfind-12866.firebasestorage.app",
+    storageBucket: "vfind-12866.appspot.com",
     messagingSenderId: "953801570333",
     appId: "1:953801570333:web:92ed5e604d0df316046ef4",
     measurementId: "G-WTSN5KCBDJ"
   };
 
-  // Initialize Firebase
+  // Initialisation Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Connexion automatique anonyme + création profil
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const profilRef = doc(db, "users", uid);
+      const snap = await getDoc(profilRef);
+
+      if (!snap.exists()) {
+        // ✅ Création du profil avec données par défaut
+        await setDoc(profilRef, {
+          pseudo: "Joueur",
+          points: 100,
+          jetons: 3,
+          amis: [],
+          demandesRecues: [],
+          demandesEnvoyees: [],
+          photoProfil: ""
+        });
+        console.log("✔️ Nouveau profil créé :", uid);
+      } else {
+        console.log("🔁 Profil déjà existant :", uid);
+      }
+
+    } else {
+      await signInAnonymously(auth);
+    }
+  });
 </script>
+
 <!-- === FIN BALISE FIREBASE === -->
 
 </body>
