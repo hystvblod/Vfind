@@ -499,7 +499,9 @@ nav.nav-icons {
 #popup-gain button:hover {
   background: #e6b800;
 }
-
+.popup {
+  background-color: transparent; /* pour retirer le fond blanc de la popup */
+}
 
 #startBtn {
   margin-top: 20px;
@@ -1520,16 +1522,6 @@ header,
   font-style: italic;
   margin: 0.4em 0 0.7em 0;
   text-align: center;
-}
-.top-buttons-home {
-  margin-top: 2.2rem; /* ou la valeur que tu veux */
-}
-#popup-unlock-info.popup {
-  background: linear-gradient(to bottom, #2e2e50, #3f3f70) !important;
-  border-radius: 22px;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.34);
-  color: white;
-  padding: 0;
 }
 
 
