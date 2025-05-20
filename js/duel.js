@@ -15,23 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("data/defis.json")
     .then(res => res.json())
     .then(data => {
-      const defis = data.defis.slice(0, 3); // à custom selon ton besoin
+      const defis = data.defis.slice(0, 3);
       defiList.innerHTML = "";
 
       defis.forEach((defi, index) => {
         const id = defi.id;
         const texte = defi.intitule;
 
-        // Les deux clés pour les photos (dépend du mode)
         const photoA = localStorage.getItem("photo_defi_" + id) || null;
         const photoB = mode === "ami"
           ? localStorage.getItem("photo_ami_" + id) || null
           : localStorage.getItem("photo_adversaire_" + id) || null;
 
         const jetonValide = localStorage.getItem("defi_jeton_" + id) === "1";
-        const photoJeton = "assets/img/jetonpp.webp";
-
-        // Pour afficher "Signaler" seulement si l'adversaire a vraiment mis une photo
         const advHasPhoto = !!photoB;
 
         const boutonTexte = photoA ? "📸 Reprendre une photo" : "📸 Prendre une photo";
@@ -44,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
           ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`
           : "";
 
-        // Structure HTML de base SANS images ni cadres directement injectés
         const html = `
           <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
           <div class="defi-content split">
@@ -72,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
       afficherPhotosCadresDuel(cadre, mode);
     });
 
-  // Injecte dynamiquement les cadres + photos, seulement si présente (comme solo)
   function afficherPhotosCadresDuel(cadre, mode) {
     document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
@@ -81,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ? localStorage.getItem("photo_ami_" + id)
         : localStorage.getItem("photo_adversaire_" + id);
 
-      // JOUEUR (gauche)
       if (photoA) {
         const container = defiEl.querySelector(`[data-photo-joueur="${id}"]`);
         if (container) {
@@ -94,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // ADVERSAIRE (droite)
       if (photoB) {
         const container = defiEl.querySelector(`[data-photo-adversaire="${id}"]`);
         if (container) {
@@ -109,8 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ============ Utilitaires ============
-
   function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
     if (jetonsSpan && typeof getJetons === "function") {
@@ -123,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
     img.classList.toggle("contain");
   };
 
-  // ✅ POPUP JETON (idem que solo)
   let defiIndexActuel = null;
 
   window.ouvrirPopupJeton = function (index) {
@@ -157,19 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("popup-jeton").classList.add("hidden");
   };
 
-  // ============ HISTORIQUE DUEL ============
-
   const HISTORY_KEY = "vfindHistorique";
   let defisDuelValides = [null, null, null];
 
-  // Validation d'un défi, gère aussi l'affichage du jeton dans le cadre !
   window.validerDefi = function(index, viaJeton = false) {
     const defis = document.querySelectorAll("#duel-defi-list li");
     const li = defis[index];
     const id = li.getAttribute("data-defi-id");
     const url = localStorage.getItem("photo_defi_" + id);
-
-    // Accepte la validation SANS photo SI viaJeton === true
     if (!url && !viaJeton) return;
 
     li.classList.add("done");
@@ -185,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
         enregistrerDuelHistorique(defisDuelValides);
         defisDuelValides = [null, null, null];
       }
-      // Recharge la page pour afficher le jeton dans le cadre
       window.location.reload();
     }, 2000);
   };
@@ -203,4 +186,38 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
   }
 
+  // ===================== TIMER DUEL 24H =====================
+  const DUEL_TIMER_KEY = "vfind_duel_timer";
+  const duelTimerEl = document.getElementById("timer");
+
+  function initDuelTimer() {
+    let endTime = localStorage.getItem(DUEL_TIMER_KEY);
+    const now = Date.now();
+
+    if (!endTime || now > parseInt(endTime)) {
+      endTime = now + 24 * 60 * 60 * 1000;
+      localStorage.setItem(DUEL_TIMER_KEY, endTime.toString());
+    }
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const remaining = parseInt(endTime) - now;
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        if (duelTimerEl) duelTimerEl.textContent = "00:00:00";
+        return;
+      }
+
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+      if (duelTimerEl) {
+        duelTimerEl.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      }
+    }, 1000);
+  }
+
+  initDuelTimer();
 });
