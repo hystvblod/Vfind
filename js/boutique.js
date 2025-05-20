@@ -1,3 +1,5 @@
+// === BOUTIQUE.JS COMPLET AVEC PARRAINAGE CODE + LIEN ===
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sélecteurs DOM principaux
   const boutiqueContainer = document.getElementById("boutique-container");
@@ -80,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---- Popup Unlock Infos ----
   function showUnlockPopup(nom, message) {
-    // Supprime une éventuelle popup précédente
     const oldPopup = document.getElementById("popup-unlock-info");
     if (oldPopup) document.body.removeChild(oldPopup);
 
@@ -104,11 +105,24 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup();
   };
 
-  window.inviteFriend = function () {
-    addPoints(300);
-    updatePointsDisplay();
-    showFeedback("+300 💰");
-    closePopup();
+  // === NOUVEAU PARRAINAGE CODE + LIEN ===
+  window.inviteFriend = async function () {
+    // On récupère l’UID Firebase de l’utilisateur connecté
+    let uid = null;
+    if (window.firebase && firebase.auth().currentUser) {
+      uid = firebase.auth().currentUser.uid;
+    } else if (window.localStorage) {
+      const data = JSON.parse(localStorage.getItem("vfindUserData"));
+      if (data && data.uid) uid = data.uid;
+    }
+    if (!uid) {
+      alert("Impossible de récupérer ton code de parrainage.");
+      return;
+    }
+    const lien = window.location.origin + "/profil.html?parrain=" + uid;
+    prompt(
+      "Partage ce code OU ce lien à ton ami pour qu’il s’inscrive :\n\nCODE : " + uid + "\n\nOU LIEN : " + lien + "\n\n(Ton ami devra saisir ce code, ou utiliser ce lien à l'ouverture de l'appli)"
+    );
   };
 
   window.ouvrirPopupJetonBoutique = function () {
@@ -180,21 +194,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Fonction pour vérifier les 10 jours complets SOLO ou DUEL ===
   function hasCompleted10FullDaysStrict() {
-    // Historique solo et duel
     const historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
     const historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
 
     const joursModes = {};
-    // SOLO
     historiqueSolo.forEach(e => {
       const d = e.date?.slice(0,10);
       if (!d) return;
       if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
       joursModes[d].solo += e.defi ? (Array.isArray(e.defi) ? e.defi.length : 1) : 0;
     });
-    // DUEL
     historiqueDuel.forEach(e => {
-      // Date format JJ/MM/YYYY, HH:MM:SS → AAAA-MM-JJ
       const parts = e.date.split(',')[0].split('/');
       if (parts.length === 3) {
         const d = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
@@ -202,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
         joursModes[d].duel += e.defis_duel ? e.defis_duel.length : 0;
       }
     });
-    // Compte les jours où SOLO **ou** DUEL a 3 défis (pas la somme !)
     let joursComplet = 0;
     Object.values(joursModes).forEach(obj => {
       if (obj.solo >= 3 || obj.duel >= 3) joursComplet++;
@@ -214,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = 'classique'; // Par défaut
 
   function renderBoutique(categoryKey) {
-    // Barre des catégories
     catBarContainer.innerHTML = "";
     const bar = document.createElement("div");
     bar.className = "categories-bar";
@@ -230,14 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     catBarContainer.appendChild(bar);
 
-    // Vider entièrement le container avant de créer la nouvelle grid (sinon bug !)
     boutiqueContainer.innerHTML = "";
 
-    // Créer la nouvelle grid SEULEMENT
     const grid = document.createElement("div");
     grid.className = "grid-cadres";
 
-    // Affiche les cadres de la catégorie sélectionnée
     const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
     if (!cadresCat.length) {
       const empty = document.createElement("p");
@@ -290,12 +295,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const button = document.createElement("button");
 
-        // Catégorie spéciale BLOQUE
         if (categoryKey === "bloque") {
-          // Déblocage spécial pour cadre 901
           if (cadre.id === "polaroid_901") {
             if (hasCompleted10FullDaysStrict()) {
-              // Si pas déjà débloqué, on l'ajoute à la collection (pour persistance)
               if (!ownedFrames.includes(cadre.id)) {
                 acheterCadre(cadre.id);
               }
@@ -310,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showUnlockPopup(cadre.nom, cadre.unlock || "Valide 10 jours de défi pour débloquer ce cadre.");
             }
           } else {
-            // Pour tous les autres cadres bloqués
             button.textContent = "Infos";
             button.disabled = false;
             button.classList.add("btn-info");
@@ -337,11 +338,9 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.appendChild(item);
       });
     }
-    // Ajoute la NOUVELLE grid dans le container vidé
     boutiqueContainer.appendChild(grid);
   }
 
-  // Chargement des cadres
   fetch("data/cadres.json")
     .then(res => res.json())
     .then(data => {

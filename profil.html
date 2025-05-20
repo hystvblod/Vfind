@@ -65,6 +65,13 @@
   </div>
 </section>
 
+<!-- === BLOCPARRAINAGE CODE/LINK À RAJOUTER ICI -->
+<div id="parrainage-bloc" style="margin:2rem auto;max-width:400px;text-align:center;">
+  <input type="text" id="codeParrain" placeholder="Code parrain (optionnel)" style="padding:8px;width:70%;max-width:220px;border-radius:8px;border:none;margin-bottom:8px;">
+  <button id="btn-activate-parrain" style="padding:8px 18px;border-radius:8px;border:none;background:#41d675;color:#fff;font-weight:bold;cursor:pointer;">Valider code</button>
+  <p id="parrain-feedback" style="color:#fa4a4a;margin-top:7px;"></p>
+</div>
+
 <main class="profil-container">
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
@@ -92,7 +99,7 @@
   </div>
 </div>
 
-<!-- ✅ FIREBASE -->
+<!-- ✅ FIREBASE + PARRAINAGE CODE/LINK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
@@ -169,6 +176,66 @@
         }
       };
     }
+
+    // === AUTO-REMPLISSAGE CODE PARRAIN SI VIA LIEN
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('parrain')) {
+      document.getElementById('codeParrain').value = params.get('parrain');
+    }
+
+    // === VALIDATION CODE/LINK PARRAINAGE ===
+    document.getElementById("btn-activate-parrain").onclick = async function() {
+      const codeParrain = document.getElementById('codeParrain').value.trim();
+      const feedback = document.getElementById('parrain-feedback');
+      if (!codeParrain) {
+        feedback.textContent = "Entre un code parrain !";
+        feedback.style.color = "#fa4a4a";
+        return;
+      }
+      if (codeParrain === user.uid) {
+        feedback.textContent = "Tu ne peux pas te parrainer toi-même 😅";
+        feedback.style.color = "#fa4a4a";
+        return;
+      }
+      try {
+        const parrainRef = doc(db, "users", codeParrain);
+        const parrainSnap = await getDoc(parrainRef);
+        if (!parrainSnap.exists()) {
+          feedback.textContent = "Ce code parrain n'existe pas.";
+          feedback.style.color = "#fa4a4a";
+          return;
+        }
+        // Empêcher de re-parrainer plusieurs fois avec le même compte
+        const snap = await getDoc(ref);
+        if (snap.exists() && snap.data().parrain) {
+          feedback.textContent = "Tu as déjà utilisé un code parrain.";
+          feedback.style.color = "#fa4a4a";
+          return;
+        }
+        // Donne la récompense au parrain
+        const parrainData = parrainSnap.data();
+        let nbFilleuls = parrainData.filleuls || 0;
+        nbFilleuls++;
+        let newPoints = (parrainData.points || 0) + 300;
+        let cadres = parrainData.cadres || [];
+        if (nbFilleuls === 3 && !cadres.includes('polaroid_302')) {
+          cadres.push('polaroid_302');
+        }
+        await updateDoc(parrainRef, {
+          points: newPoints,
+          filleuls: nbFilleuls,
+          cadres: cadres
+        });
+        // Note dans ton propre profil que tu as été parrainé (pour bloquer les abus)
+        await updateDoc(ref, { parrain: codeParrain });
+        feedback.style.color = "#41d675";
+        feedback.textContent = "Code accepté ! Merci 🎉";
+        setTimeout(() => { feedback.textContent = ""; }, 4000);
+      } catch (e) {
+        feedback.textContent = "Erreur technique, réessaie plus tard.";
+        feedback.style.color = "#fa4a4a";
+      }
+    };
   });
 </script>
 </body>
