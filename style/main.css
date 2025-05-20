@@ -1531,6 +1531,17 @@ header,
   color: white;
   padding: 0;
 }
+.id-user {
+  color: #fff;           /* Blanc */
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 0.5rem;    /* Moins d'espace */
+  margin-bottom: 1.5rem; /* Décale les boutons en dessous */
+  font-size: 1.08rem;    /* Un peu plus discret */
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
 
 
 
