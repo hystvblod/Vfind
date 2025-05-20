@@ -74,7 +74,28 @@ document.addEventListener("DOMContentLoaded", () => {
       popupGain.classList.remove("show");
       popupGain.classList.add("hidden");
     }
+    const oldUnlock = document.getElementById("popup-unlock-info");
+    if (oldUnlock) document.body.removeChild(oldUnlock);
   };
+
+  // ---- Popup Unlock Infos ----
+  function showUnlockPopup(nom, message) {
+    // Supprime une éventuelle popup précédente
+    const oldPopup = document.getElementById("popup-unlock-info");
+    if (oldPopup) document.body.removeChild(oldPopup);
+
+    const popup = document.createElement("div");
+    popup.id = "popup-unlock-info";
+    popup.className = "popup show";
+    popup.innerHTML = `
+      <div class="popup-inner">
+        <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+        <h2 style="font-size:1.4em;">${nom}</h2>
+        <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
+      </div>
+    `;
+    document.body.appendChild(popup);
+  }
 
   window.watchAd = function () {
     addPoints(100);
@@ -157,6 +178,38 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'autre';
   }
 
+  // === Fonction pour vérifier les 10 jours complets SOLO ou DUEL ===
+  function hasCompleted10FullDaysStrict() {
+    // Historique solo et duel
+    const historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
+    const historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
+
+    const joursModes = {};
+    // SOLO
+    historiqueSolo.forEach(e => {
+      const d = e.date?.slice(0,10);
+      if (!d) return;
+      if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
+      joursModes[d].solo += e.defi ? (Array.isArray(e.defi) ? e.defi.length : 1) : 0;
+    });
+    // DUEL
+    historiqueDuel.forEach(e => {
+      // Date format JJ/MM/YYYY, HH:MM:SS → AAAA-MM-JJ
+      const parts = e.date.split(',')[0].split('/');
+      if (parts.length === 3) {
+        const d = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
+        joursModes[d].duel += e.defis_duel ? e.defis_duel.length : 0;
+      }
+    });
+    // Compte les jours où SOLO **ou** DUEL a 3 défis (pas la somme !)
+    let joursComplet = 0;
+    Object.values(joursModes).forEach(obj => {
+      if (obj.solo >= 3 || obj.duel >= 3) joursComplet++;
+    });
+    return joursComplet >= 10;
+  }
+
   let CADRES_DATA = [];
   let currentCategory = 'classique'; // Par défaut
 
@@ -236,10 +289,34 @@ document.addEventListener("DOMContentLoaded", () => {
         price.textContent = `${cadre.prix} pièces`;
 
         const button = document.createElement("button");
+
+        // Catégorie spéciale BLOQUE
         if (categoryKey === "bloque") {
-          button.textContent = "Réservé";
-          button.disabled = true;
-          button.classList.add("disabled-premium");
+          // Déblocage spécial pour cadre 901
+          if (cadre.id === "polaroid_901") {
+            if (hasCompleted10FullDaysStrict()) {
+              // Si pas déjà débloqué, on l'ajoute à la collection (pour persistance)
+              if (!ownedFrames.includes(cadre.id)) {
+                acheterCadre(cadre.id);
+              }
+              button.textContent = "Débloqué !";
+              button.disabled = true;
+              button.classList.add("btn-success");
+            } else {
+              button.textContent = "Infos";
+              button.disabled = false;
+              button.classList.add("btn-info");
+              button.onclick = () =>
+                showUnlockPopup(cadre.nom, cadre.unlock || "Valide 10 jours de défi pour débloquer ce cadre.");
+            }
+          } else {
+            // Pour tous les autres cadres bloqués
+            button.textContent = "Infos";
+            button.disabled = false;
+            button.classList.add("btn-info");
+            button.onclick = () =>
+              showUnlockPopup(cadre.nom, cadre.unlock || "Aucune information pour ce cadre.");
+          }
         } else if (categoryKey === "premium" && !isPremium()) {
           button.textContent = "Premium requis";
           button.disabled = true;
