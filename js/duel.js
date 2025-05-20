@@ -24,22 +24,30 @@ document.addEventListener("DOMContentLoaded", () => {
       defis.forEach((defi, index) => {
         const id = defi.id;
         const texte = defi.intitule;
-        const photoA = localStorage.getItem(`photo_defi_${id}`) || null;
+        const photoA = localStorage.getItem("photo_defi_" + id) || null;
         const photoB = mode === "ami"
-          ? localStorage.getItem(`photo_ami_${id}`) || "photos/photo_joueurB.jpg"
-          : "photos/photo_joueurB.jpg";
-        const jetonValide = localStorage.getItem(`defi_jeton_${id}`) === "1";
-        const photoJeton = "assets/img/jetonpp.webp"; // Ton vrai fichier .webp jeton !
+          ? localStorage.getItem("photo_ami_" + id) || "photos/photo_joueurB.jpg"
+          : localStorage.getItem("photo_adversaire_" + id) || "photos/photo_joueurB.jpg";
+        const jetonValide = localStorage.getItem("defi_jeton_" + id) === "1";
+        const photoJeton = "assets/img/jetonpp.webp";
 
         const hasPhoto = !!photoA;
+
+        // Affiche Signaler si l'adversaire a mis une vraie photo (pas le placeholder)
+        // (cherche juste "photo_joueurB" dans le chemin)
+        const advHasPhoto = photoB && !photoB.includes("photo_joueurB");
         const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+
+        const boutonSignaler = advHasPhoto
+          ? `<button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>`
+          : "";
+
         const boutonPhoto = `<button onclick="ouvrirCameraPour(${id})">${boutonTexte}</button>`;
+        const jetonHTML = (!hasPhoto && !jetonValide)
+          ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`
+          : "";
 
-        const li = document.createElement("li");
-        li.className = "defi-item";
-        li.setAttribute("data-defi-id", id);
-
-        li.innerHTML = `
+        const html = `
           <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
           <div class="defi-content split">
             <div class="joueur-col">
@@ -50,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
                      ${jetonValide ? '' : 'onclick="toggleFit(this)"'}>
                 <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
               </div>
+              ${boutonPhoto}
+              ${jetonHTML}
             </div>
             <div class="adversaire-col">
               <span class="col-title">${adversaire}</span>
@@ -57,113 +67,111 @@ document.addEventListener("DOMContentLoaded", () => {
                 <img src="${photoB}" class="photo-user cover" onclick="toggleFit(this)">
                 <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
               </div>
+              ${boutonSignaler}
             </div>
-          </div>
-          <div class="btn-row">
-            ${boutonPhoto}
-            ${(!hasPhoto && !jetonValide) ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ""}
-            <button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>
           </div>
         `;
 
+        const li = document.createElement("li");
+        li.className = "defi-item";
+        li.setAttribute("data-defi-id", id);
+        li.innerHTML = html;
         defiList.appendChild(li);
       });
-    })
-    .catch(err => {
-      console.error("Erreur chargement défis duel :", err);
     });
-});
 
-// ============ Utilitaires ============
+  // ============ Utilitaires ============
 
-function updateJetonsDisplay() {
-  const jetonsSpan = document.getElementById("jetons");
-  if (jetonsSpan && typeof getJetons === "function") {
-    jetonsSpan.textContent = getJetons();
-  }
-}
-
-function toggleFit(img) {
-  img.classList.toggle("cover");
-  img.classList.toggle("contain");
-}
-
-// ✅ POPUP JETON
-let defiIndexActuel = null;
-
-window.ouvrirPopupJeton = function (index) {
-  const jetons = getJetons();
-  document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-  document.getElementById("popup-jeton").classList.remove("hidden");
-  document.getElementById("popup-jeton").classList.add("show");
-  defiIndexActuel = index;
-
-  document.getElementById("valider-jeton-btn").onclick = () => {
-    const jetons = getJetons();
-    if (jetons > 0) {
-      const success = removeJeton();
-      if (success) {
-        updateJetonsDisplay();
-        if (typeof validerDefi === "function") {
-          validerDefi(defiIndexActuel, true); // ✅ précise la validation par jeton !
-        }
-        fermerPopupJeton();
-      } else {
-        alert("❌ Erreur lors du retrait du jeton.");
-      }
-    } else {
-      alert("❌ Pas de jeton disponible. Rendez-vous dans la boutique !");
+  function updateJetonsDisplay() {
+    const jetonsSpan = document.getElementById("jetons");
+    if (jetonsSpan && typeof getJetons === "function") {
+      jetonsSpan.textContent = getJetons();
     }
+  }
+
+  window.toggleFit = function(img) {
+    img.classList.toggle("cover");
+    img.classList.toggle("contain");
   };
-};
 
-window.fermerPopupJeton = function () {
-  document.getElementById("popup-jeton").classList.remove("show");
-  document.getElementById("popup-jeton").classList.add("hidden");
-};
+  // ✅ POPUP JETON
+  let defiIndexActuel = null;
 
-// ============ HISTORIQUE DUEL ============
+  window.ouvrirPopupJeton = function (index) {
+    const jetons = getJetons();
+    document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+    document.getElementById("popup-jeton").classList.remove("hidden");
+    document.getElementById("popup-jeton").classList.add("show");
+    defiIndexActuel = index;
 
-const HISTORY_KEY = "vfindHistorique";
-let defisDuelValides = [null, null, null];
+    document.getElementById("valider-jeton-btn").onclick = () => {
+      const jetons = getJetons();
+      if (jetons > 0) {
+        const success = removeJeton();
+        if (success) {
+          updateJetonsDisplay();
+          if (typeof validerDefi === "function") {
+            validerDefi(defiIndexActuel, true); // ✅ précise la validation par jeton !
+          }
+          fermerPopupJeton();
+        } else {
+          alert("❌ Erreur lors du retrait du jeton.");
+        }
+      } else {
+        alert("❌ Pas de jeton disponible. Rendez-vous dans la boutique !");
+      }
+    };
+  };
 
-// Validation d'un défi, gère aussi l'affichage du jeton dans le cadre !
-window.validerDefi = function(index, viaJeton = false) {
-  const defis = document.querySelectorAll("#duel-defi-list li");
-  const li = defis[index];
-  const id = li.getAttribute("data-defi-id");
-  const url = localStorage.getItem(`photo_defi_${id}`);
+  window.fermerPopupJeton = function () {
+    document.getElementById("popup-jeton").classList.remove("show");
+    document.getElementById("popup-jeton").classList.add("hidden");
+  };
 
-  // Accepte la validation SANS photo SI viaJeton === true
-  if (!url && !viaJeton) return;
+  // ============ HISTORIQUE DUEL ============
 
-  li.classList.add("done");
-  if (viaJeton) {
-    localStorage.setItem(`defi_jeton_${id}`, "1");
-  }
-  const texteDefi = li.querySelector("p").textContent.trim();
-  defisDuelValides[index] = texteDefi;
+  const HISTORY_KEY = "vfindHistorique";
+  let defisDuelValides = [null, null, null];
 
-  setTimeout(() => {
-    alert("✅ Merci d’avoir regardé la pub !");
-    if (defisDuelValides.every(Boolean)) {
-      enregistrerDuelHistorique(defisDuelValides);
-      defisDuelValides = [null, null, null];
+  // Validation d'un défi, gère aussi l'affichage du jeton dans le cadre !
+  window.validerDefi = function(index, viaJeton = false) {
+    const defis = document.querySelectorAll("#duel-defi-list li");
+    const li = defis[index];
+    const id = li.getAttribute("data-defi-id");
+    const url = localStorage.getItem("photo_defi_" + id);
+
+    // Accepte la validation SANS photo SI viaJeton === true
+    if (!url && !viaJeton) return;
+
+    li.classList.add("done");
+    if (viaJeton) {
+      localStorage.setItem("defi_jeton_" + id, "1");
     }
-    // Recharge la page pour afficher le jeton dans le cadre
-    window.location.reload();
-  }, 2000);
-};
+    const texteDefi = li.querySelector("p").textContent.trim();
+    defisDuelValides[index] = texteDefi;
 
-function enregistrerDuelHistorique(defisValides) {
-  const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-  const now = new Date();
-  const date = now.toLocaleDateString("fr-FR");
-  const time = now.toLocaleTimeString("fr-FR");
-  const dateStr = `${date}, ${time}`;
-  historique.unshift({
-    date: dateStr,
-    defis_duel: defisValides,
-  });
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
-}
+    setTimeout(() => {
+      alert("✅ Merci d’avoir regardé la pub !");
+      if (defisDuelValides.every(Boolean)) {
+        enregistrerDuelHistorique(defisDuelValides);
+        defisDuelValides = [null, null, null];
+      }
+      // Recharge la page pour afficher le jeton dans le cadre
+      window.location.reload();
+    }, 2000);
+  };
+
+  function enregistrerDuelHistorique(defisValides) {
+    const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    const now = new Date();
+    const date = now.toLocaleDateString("fr-FR");
+    const time = now.toLocaleTimeString("fr-FR");
+    const dateStr = `${date}, ${time}`;
+    historique.unshift({
+      date: dateStr,
+      defis_duel: defisValides,
+    });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
+  }
+
+});
