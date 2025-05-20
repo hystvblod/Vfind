@@ -556,7 +556,7 @@ header nav a:hover {
 
 /* ✅ SECTION INFOS */
 .profil-top {
-  margin-top: 20px;  /* 🔼 Avant : 10px */
+  margin-top: 60px;  /* 🔼 Avant : 10px */
   margin-bottom: 40px;
   text-align: center;
   color: white;
@@ -1530,17 +1530,6 @@ header,
   box-shadow: 0 6px 25px rgba(0,0,0,0.34);
   color: white;
   padding: 0;
-}
-.id-user {
-  color: #fff;           /* Blanc */
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
-  margin-top: 0.5rem;    /* Moins d'espace */
-  margin-bottom: 1.5rem; /* Décale les boutons en dessous */
-  font-size: 1.08rem;    /* Un peu plus discret */
-  letter-spacing: 0.5px;
-  transition: color 0.2s;
 }
 
 
