@@ -229,11 +229,20 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.appendChild(popup);
         });
 
-        const title = document.createElement("h3");
-        title.textContent = cadre.nom;
+       const title = document.createElement("h3");
+title.textContent = cadre.nom;
 
-        const price = document.createElement("p");
-        price.textContent = `${cadre.prix} pièces`;
+// Si c'est un cadre spécial et qu'il y a un message "unlock", affiche-le :
+if (categoryKey === "bloque" && cadre.unlock) {
+  const unlockMsg = document.createElement("p");
+  unlockMsg.className = "unlock-msg";
+  unlockMsg.textContent = cadre.unlock;
+  item.appendChild(unlockMsg);
+}
+
+const price = document.createElement("p");
+price.textContent = `${cadre.prix} pièces`;
+
 
         const button = document.createElement("button");
         if (categoryKey === "bloque") {

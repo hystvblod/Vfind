@@ -1508,6 +1508,14 @@ header,
 .btn-icon img {
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
 }
+.unlock-msg {
+  color: #FFD700;   /* jaune doré par exemple */
+  font-size: 0.95em;
+  font-style: italic;
+  margin: 0.2em 0 0.8em 0;
+  text-align: center;
+  line-height: 1.3;
+}
 
 
 

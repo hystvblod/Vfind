@@ -256,11 +256,13 @@
                  {
     "id": "polaroid_900",
     "nom": "Vzone",
-    "prix":0
+    "prix":0,
+    "unlock": "Télécharge le jeu VZone et connecte-toi pour débloquer ce cadre."
   },
                  {
     "id": "polaroid_901",
     "nom": "Marine",
-    "prix":0
+    "prix":0,
+    "unlock": "Valide 10 jours de défi pour débloquer ce cadre."
   }
 ]
