@@ -5,30 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Duel (Partie)</title>
   <link rel="stylesheet" href="style/main.css" />
+  <style>
+    .timer-box {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+      color: #ccc;
+    }
+
+    .timer-box .icon-svg {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
+      margin-right: 6px;
+      filter: brightness(0) invert(0.7);
+    }
+  </style>
 </head>
 <body class="duel-container">
 
   <!-- ====== HEADER UNIFIÉ ====== -->
   <header class="header-boutique">
- <a href="index.html" class="back-btn" title="Retour">
-  <img src="assets/icons/arrow_back.svg" alt="Retour" />
-</a>
+    <a href="index.html" class="back-btn" title="Retour">
+      <img src="assets/icons/arrow_back.svg" alt="Retour" />
+    </a>
     <h1 class="titre-centre">Mode Duel</h1>
     <div class="top-buttons">
-     <a href="profil.html" class="btn-icon">
-  <img src="assets/icons/user.svg" alt="Profil" />
-</a>
-
-     <a href="parametres.html" class="btn-icon">
-  <img src="assets/icons/settings.svg" alt="Paramètres" />
-</a>
-
+      <a href="profil.html" class="btn-icon">
+        <img src="assets/icons/user.svg" alt="Profil" />
+      </a>
+      <a href="parametres.html" class="btn-icon">
+        <img src="assets/icons/settings.svg" alt="Paramètres" />
+      </a>
     </div>
   </header>
 
   <!-- NOM ADVERSAIRE -->
   <div style="text-align:center; margin-top: 1rem; font-size: 1.2rem;">
     ⚔️ Contre <strong id="nom-adversaire">...</strong>
+  </div>
+
+  <!-- ✅ TIMER 24H -->
+  <div class="timer-box">
+    <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
+    Temps restant : <span id="timer">--:--:--</span>
   </div>
 
   <!-- ====== MAIN ====== -->
