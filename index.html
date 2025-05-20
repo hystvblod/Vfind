@@ -77,7 +77,7 @@
     }
 
     .logo-img {
-  width: 300px; /* 🟢 plus grand */
+  width: 180px; /* 🟢 plus grand */
   opacity: 0;
   transform: translateY(20px) scale(0.9);
   animation: appear 1.2s ease-out forwards;
@@ -135,12 +135,19 @@
 
 <script>
   window.addEventListener("load", () => {
-    setTimeout(() => {
-      const intro = document.getElementById("intro-logo");
-      if (intro) intro.remove();
-    }, 3800);
+    const intro = document.getElementById("intro-logo");
+
+    // ✅ Empêche l'intro de se rejouer à chaque retour
+    if (!sessionStorage.getItem("introShown")) {
+      sessionStorage.setItem("introShown", "true");
+
+      setTimeout(() => {
+        if (intro) intro.remove();
+      }, 3800); // 1.2s (animation) + 1s (pause) + 1s (fade out)
+    } else {
+      if (intro) intro.remove(); // déjà vu = on le retire immédiatement
+    }
   });
 </script>
-
 </body>
 </html>
