@@ -45,13 +45,37 @@ document.addEventListener("DOMContentLoaded", () => {
   let moisAffiche = dateCourante.getMonth();
   let anneeAffichee = dateCourante.getFullYear();
 
-  // Récupère tout l'historique
-  let historique = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
+  // Utilise l'historique global utilisateur (solo + duel)
+  let historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
+  let historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
+
+  // On fusionne les deux historiques
+  let historique = [];
+  // Solo
+  historiqueSolo.forEach(e => {
+    historique.push({
+      date: e.date, // ISO
+      defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : []
+    });
+  });
+  // Duel
+  historiqueDuel.forEach(e => {
+    if (e.defis_duel && Array.isArray(e.defis_duel)) {
+      // Attention au format de date (souvent "JJ/MM/YYYY, HH:MM:SS")
+      // On convertit en ISO pour uniformiser
+      let parts = e.date.split(',')[0].split('/');
+      let dateISO = parts.length === 3 ? 
+        `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}` : e.date;
+      historique.push({
+        date: dateISO,
+        defis: e.defis_duel
+      });
+    }
+  });
 
   // Mois en français
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
-  // Remplissage du calendrier
   function afficherCalendrier() {
     document.getElementById('titre-mois').textContent = moisFr[moisAffiche] + ' ' + anneeAffichee;
 
@@ -59,20 +83,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
-    // On vérifie s'il y a au moins une entrée dans l'historique (pour savoir si on affiche du rouge ou que du blanc)
-    const utilisateurACommence = historique.length > 0;
-
-    // Regroupe les entrées par date
+    // Regroupe les entrées par date (toutes années confondues)
     const parJour = {};
     historique.forEach(entree => {
-      // Format yyyy-mm-dd
-      const dateStr = entree.date.split(',')[0].split('/').reverse().join('-');
-      if (!parJour[dateStr]) parJour[dateStr] = [];
-      parJour[dateStr].push(entree);
+      let dateISO = entree.date.length === 10 ? entree.date : entree.date.slice(0,10);
+      if (!parJour[dateISO]) parJour[dateISO] = [];
+      parJour[dateISO] = parJour[dateISO].concat(entree.defis || []);
     });
-
-    // Pour les stats globales (sur le mois affiché)
-    let totalDefis = 0;
 
     // Construction de la grille
     let html = '<div class="calendrier">';
@@ -80,23 +97,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const decal = (premierJour.getDay() + 6) % 7;
     for (let i = 0; i < decal; i++) html += '<div class="jour vide"></div>';
 
+    let totalDefisMois = 0;
+    let totalDefisTous = 0;
+    // Calcule le total toutes années confondues
+    Object.values(parJour).forEach(list => totalDefisTous += list.length);
+
     for (let j = 1; j <= nbJours; j++) {
       const d = new Date(anneeAffichee, moisAffiche, j);
       const dstr = d.toISOString().slice(0, 10);
-      const sessions = parJour[dstr] || [];
+      const defisJour = parJour[dstr] || [];
       let color = "#fff"; // Par défaut blanc
 
-      if (utilisateurACommence && d < new Date()) {
-        let vertFonce = false;
-        let totalJour = 0;
-        sessions.forEach(s => {
-          if ((s.defis && s.defis.length === 3) || (s.defis_duel && s.defis_duel.length === 3)) vertFonce = true;
-          totalJour += (s.defis ? s.defis.length : 0) + (s.defis_duel ? s.defis_duel.length : 0);
-        });
-        if (vertFonce) color = "#089e29";
-        else if (totalJour > 0) color = "#baffc7";
-        else color = "#ff2c2c";
-        totalDefis += totalJour;
+      if (d < new Date()) {
+        if (defisJour.length >= 3) color = "#089e29"; // vert foncé si 3 défis
+        else if (defisJour.length > 0) color = "#baffc7"; // vert clair
+        else color = "#ff2c2c"; // rouge si rien fait ce jour
+
+        totalDefisMois += defisJour.length;
       }
       html += `<div class="jour" style="background:${color}">${j}</div>`;
     }
@@ -104,8 +121,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('calendrier-container').innerHTML = html;
 
-    // Stat globale du mois affiché
-    document.getElementById('stats-calendrier').innerHTML = "Nombre de défis réalisés : <b>" + totalDefis + "</b>";
+    // Stats : total du mois et total depuis le début
+    document.getElementById('stats-calendrier').innerHTML = 
+      "Nombre de défis réalisés ce mois : <b>" + totalDefisMois + "</b><br>" +
+      "Nombre de défis réalisés depuis le début : <b>" + totalDefisTous + "</b>";
   }
 
   // Navigation mois précédent / suivant
@@ -126,10 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
     afficherCalendrier();
   };
 
-  // Premier affichage
   afficherCalendrier();
 
-  // Style du calendrier (inline, tu peux aussi le déplacer)
+  // Style du calendrier (inline)
   const style = document.createElement('style');
   style.textContent = `
     .calendrier {
@@ -161,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 });
+
 </script>
 </body>
 </html>
