@@ -74,28 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       popupGain.classList.remove("show");
       popupGain.classList.add("hidden");
     }
-    const oldUnlock = document.getElementById("popup-unlock-info");
-    if (oldUnlock) document.body.removeChild(oldUnlock);
   };
-
-  // ---- Popup Unlock Infos ----
-  function showUnlockPopup(nom, message) {
-    // Supprime une éventuelle popup précédente
-    const oldPopup = document.getElementById("popup-unlock-info");
-    if (oldPopup) document.body.removeChild(oldPopup);
-
-    const popup = document.createElement("div");
-    popup.id = "popup-unlock-info";
-    popup.className = "popup show";
-    popup.innerHTML = `
-      <div class="popup-inner">
-        <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-        <h2 style="font-size:1.4em;">${nom}</h2>
-        <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
-      </div>
-    `;
-    document.body.appendChild(popup);
-  }
 
   window.watchAd = function () {
     addPoints(100);
@@ -291,6 +270,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const title = document.createElement("h3");
         title.textContent = cadre.nom;
 
+        // Message "unlock" sous le nom du cadre si défini
+        if (categoryKey === "bloque" && cadre.unlock) {
+          const unlockMsg = document.createElement("p");
+          unlockMsg.className = "unlock-msg";
+          unlockMsg.textContent = cadre.unlock;
+          item.appendChild(unlockMsg);
+        }
+
         const price = document.createElement("p");
         price.textContent = `${cadre.prix} pièces`;
 
@@ -308,20 +295,14 @@ document.addEventListener("DOMContentLoaded", () => {
               button.disabled = true;
               button.classList.add("btn-success");
             } else {
-              button.textContent = "Infos";
-              button.disabled = false;
-              button.classList.add("btn-info");
-              button.onclick = () => {
-                showUnlockPopup(cadre.nom, cadre.unlock);
-              };
+              button.textContent = "Gagne 10 jours de défis complets";
+              button.disabled = true;
+              button.classList.add("disabled-premium");
             }
           } else {
-            button.textContent = "Infos";
-            button.disabled = false;
-            button.classList.add("btn-info");
-            button.onclick = () => {
-              showUnlockPopup(cadre.nom, cadre.unlock);
-            };
+            button.textContent = "Réservé";
+            button.disabled = true;
+            button.classList.add("disabled-premium");
           }
         } else if (categoryKey === "premium" && !isPremium()) {
           button.textContent = "Premium requis";
@@ -336,11 +317,19 @@ document.addEventListener("DOMContentLoaded", () => {
           button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
         }
 
-        item.appendChild(wrapper);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-        grid.appendChild(item);
+item.appendChild(wrapper);
+item.appendChild(title);
+
+if (categoryKey === "bloque" && cadre.unlock) {
+  const unlockMsg = document.createElement("p");
+  unlockMsg.className = "unlock-msg";
+  unlockMsg.textContent = cadre.unlock;
+  item.appendChild(unlockMsg);
+}
+
+item.appendChild(price);
+item.appendChild(button);
+
       });
     }
     // Ajoute la NOUVELLE grid dans le container vidé
