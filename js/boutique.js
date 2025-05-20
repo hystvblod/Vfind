@@ -157,6 +157,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'autre';
   }
 
+  // === Ajout: vérification 10 jours de défis ===
+  function hasCompleted10Days() {
+    const historique = getUserData().historique || [];
+    const joursUniques = new Set(
+      historique.map(item => item.date?.slice(0, 10))
+    );
+    return joursUniques.size >= 10;
+  }
+
   let CADRES_DATA = [];
   let currentCategory = 'classique'; // Par défaut
 
@@ -229,26 +238,43 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.appendChild(popup);
         });
 
-       const title = document.createElement("h3");
-title.textContent = cadre.nom;
+        const title = document.createElement("h3");
+        title.textContent = cadre.nom;
 
-// Si c'est un cadre spécial et qu'il y a un message "unlock", affiche-le :
-if (categoryKey === "bloque" && cadre.unlock) {
-  const unlockMsg = document.createElement("p");
-  unlockMsg.className = "unlock-msg";
-  unlockMsg.textContent = cadre.unlock;
-  item.appendChild(unlockMsg);
-}
+        // Message "unlock" sous le nom du cadre si défini
+        if (categoryKey === "bloque" && cadre.unlock) {
+          const unlockMsg = document.createElement("p");
+          unlockMsg.className = "unlock-msg";
+          unlockMsg.textContent = cadre.unlock;
+          item.appendChild(unlockMsg);
+        }
 
-const price = document.createElement("p");
-price.textContent = `${cadre.prix} pièces`;
-
+        const price = document.createElement("p");
+        price.textContent = `${cadre.prix} pièces`;
 
         const button = document.createElement("button");
+
+        // Gestion spéciale du déblocage 10 jours de défis pour polaroid_902
         if (categoryKey === "bloque") {
-          button.textContent = "Réservé";
-          button.disabled = true;
-          button.classList.add("disabled-premium");
+          if (cadre.id === "polaroid_902") {
+            if (hasCompleted10Days()) {
+              if (!ownedFrames.includes(cadre.id)) {
+                acheterCadre(cadre.id);
+                ownedFrames.push(cadre.id);
+              }
+              button.textContent = "Débloqué !";
+              button.disabled = true;
+              button.classList.add("btn-success");
+            } else {
+              button.textContent = "Gagne 10 jours de défis";
+              button.disabled = true;
+              button.classList.add("disabled-premium");
+            }
+          } else {
+            button.textContent = "Réservé";
+            button.disabled = true;
+            button.classList.add("disabled-premium");
+          }
         } else if (categoryKey === "premium" && !isPremium()) {
           button.textContent = "Premium requis";
           button.disabled = true;
