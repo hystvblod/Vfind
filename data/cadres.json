@@ -163,6 +163,11 @@
     "nom": "Rose poudré",
     "prix": 1200
   },
+                 {
+    "id": "polaroid_35",
+    "nom": "Seigaiha",
+    "prix": 1200
+  },
   {
     "id": "polaroid_40",
     "nom": "Or paillettes",
