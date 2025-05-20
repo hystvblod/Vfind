@@ -1,5 +1,3 @@
-// ✅ DUEL.JS FINAL (JETONPP.WEBP AFFICHÉ DANS LE CADRE SI VALIDÉ AVEC JETON)
-
 document.addEventListener("DOMContentLoaded", () => {
   // Récupère le mode et l'adversaire depuis l'URL
   const params = new URLSearchParams(window.location.search);
@@ -17,56 +15,48 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("data/defis.json")
     .then(res => res.json())
     .then(data => {
-      // Tu peux améliorer ici : randomise les défis, ou choisis selon ton mode
       const defis = data.defis.slice(0, 3); // à custom selon ton besoin
       defiList.innerHTML = "";
 
       defis.forEach((defi, index) => {
         const id = defi.id;
         const texte = defi.intitule;
+
+        // Les deux clés pour les photos (dépend du mode)
         const photoA = localStorage.getItem("photo_defi_" + id) || null;
         const photoB = mode === "ami"
-          ? localStorage.getItem("photo_ami_" + id) || "photos/photo_joueurB.jpg"
-          : localStorage.getItem("photo_adversaire_" + id) || "photos/photo_joueurB.jpg";
+          ? localStorage.getItem("photo_ami_" + id) || null
+          : localStorage.getItem("photo_adversaire_" + id) || null;
+
         const jetonValide = localStorage.getItem("defi_jeton_" + id) === "1";
         const photoJeton = "assets/img/jetonpp.webp";
 
-        const hasPhoto = !!photoA;
+        // Pour afficher "Signaler" seulement si l'adversaire a vraiment mis une photo
+        const advHasPhoto = !!photoB;
 
-        // Affiche Signaler si l'adversaire a mis une vraie photo (pas le placeholder)
-        // (cherche juste "photo_joueurB" dans le chemin)
-        const advHasPhoto = photoB && !photoB.includes("photo_joueurB");
-        const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-
+        const boutonTexte = photoA ? "📸 Reprendre une photo" : "📸 Prendre une photo";
         const boutonSignaler = advHasPhoto
           ? `<button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>`
           : "";
 
         const boutonPhoto = `<button onclick="ouvrirCameraPour(${id})">${boutonTexte}</button>`;
-        const jetonHTML = (!hasPhoto && !jetonValide)
+        const jetonHTML = (!photoA && !jetonValide)
           ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`
           : "";
 
+        // Structure HTML de base SANS images ni cadres directement injectés
         const html = `
           <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
           <div class="defi-content split">
             <div class="joueur-col">
               <span class="col-title">Toi</span>
-              <div class="cadre-preview">
-                <img src="${jetonValide ? photoJeton : (photoA || "photos/photo_joueurA.jpg")}"
-                     class="photo-user cover${jetonValide ? ' jeton-inside' : ''}"
-                     ${jetonValide ? '' : 'onclick="toggleFit(this)"'}>
-                <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
-              </div>
+              <div class="defi-photo-container" data-photo-joueur="${id}"></div>
               ${boutonPhoto}
               ${jetonHTML}
             </div>
             <div class="adversaire-col">
               <span class="col-title">${adversaire}</span>
-              <div class="cadre-preview">
-                <img src="${photoB}" class="photo-user cover" onclick="toggleFit(this)">
-                <img src="assets/cadres/${cadre}.webp" class="photo-cadre">
-              </div>
+              <div class="defi-photo-container" data-photo-adversaire="${id}"></div>
               ${boutonSignaler}
             </div>
           </div>
@@ -78,7 +68,46 @@ document.addEventListener("DOMContentLoaded", () => {
         li.innerHTML = html;
         defiList.appendChild(li);
       });
+
+      afficherPhotosCadresDuel(cadre, mode);
     });
+
+  // Injecte dynamiquement les cadres + photos, seulement si présente (comme solo)
+  function afficherPhotosCadresDuel(cadre, mode) {
+    document.querySelectorAll(".defi-item").forEach(defiEl => {
+      const id = defiEl.getAttribute("data-defi-id");
+      const photoA = localStorage.getItem("photo_defi_" + id);
+      const photoB = mode === "ami"
+        ? localStorage.getItem("photo_ami_" + id)
+        : localStorage.getItem("photo_adversaire_" + id);
+
+      // JOUEUR (gauche)
+      if (photoA) {
+        const container = defiEl.querySelector(`[data-photo-joueur="${id}"]`);
+        if (container) {
+          container.innerHTML = `
+            <div class="cadre-preview">
+              <img src="assets/cadres/${cadre}.webp" class="photo-cadre" />
+              <img src="${photoA}" class="photo-user" onclick="toggleFit(this)">
+            </div>
+          `;
+        }
+      }
+
+      // ADVERSAIRE (droite)
+      if (photoB) {
+        const container = defiEl.querySelector(`[data-photo-adversaire="${id}"]`);
+        if (container) {
+          container.innerHTML = `
+            <div class="cadre-preview">
+              <img src="assets/cadres/${cadre}.webp" class="photo-cadre" />
+              <img src="${photoB}" class="photo-user" onclick="toggleFit(this)">
+            </div>
+          `;
+        }
+      }
+    });
+  }
 
   // ============ Utilitaires ============
 
@@ -94,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     img.classList.toggle("contain");
   };
 
-  // ✅ POPUP JETON
+  // ✅ POPUP JETON (idem que solo)
   let defiIndexActuel = null;
 
   window.ouvrirPopupJeton = function (index) {
@@ -111,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (success) {
           updateJetonsDisplay();
           if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel, true); // ✅ précise la validation par jeton !
+            validerDefi(defiIndexActuel, true);
           }
           fermerPopupJeton();
         } else {
