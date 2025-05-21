@@ -1,22 +1,22 @@
-// === userData.js (Firebase PRO) ===
 import { db, auth, initFirebaseUser } from './firebase.js';
 import {
   doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-// Utils : accès au doc utilisateur courant
+// Attendre auth prête avant de retourner le ref user
 async function getUserRef() {
   await initFirebaseUser();
-  const user = auth.currentUser;
-  if (!user) throw new Error("Utilisateur non connecté");
-  return doc(db, "users", user.uid);
-}
-
-// Utilitaire ID cadre (inchangé)
-export function formatCadreId(id) {
-  const num = id.replace(/[^\d]/g, "");
-  const padded = num.padStart(2, "0");
-  return "polaroid_" + padded;
+  // Attend que l'auth soit prête et user loggé
+  return new Promise((resolve, reject) => {
+    const unsub = auth.onAuthStateChanged(async user => {
+      unsub();
+      if (!user) {
+        reject("Utilisateur non connecté");
+      } else {
+        resolve(doc(db, "users", user.uid));
+      }
+    });
+  });
 }
 
 // ======================
@@ -73,6 +73,11 @@ export async function removeJeton() {
 }
 
 // Cadres possédés
+export function formatCadreId(id) {
+  const num = id.replace(/[^\d]/g, "");
+  const padded = num.padStart(2, "0");
+  return "polaroid_" + padded;
+}
 export async function getCadresPossedes() {
   const ref = await getUserRef();
   const snap = await getDoc(ref);
@@ -171,9 +176,42 @@ export async function updateUserData(update) {
   const ref = await getUserRef();
   await updateDoc(ref, update);
 }
-// Permet d'accéder à toutes les infos Firestore de l'utilisateur courant
+
+// Accès à toutes les infos Firestore de l'utilisateur courant
 export async function getUserDataCloud() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? snap.data() : {};
+  try {
+    const ref = await getUserRef();
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      return snap.data();
+    } else {
+      // Création automatique du doc si absent
+      const baseData = {
+        pseudo: "Toi",
+        points: 100,
+        jetons: 3,
+        cadres: ["polaroid_01", "polaroid_02"],
+        cadreActif: "polaroid_01",
+        historique: [],
+        likedPhotos: [],
+        signaledPhotos: [],
+        premium: false
+      };
+      await setDoc(ref, baseData);
+      return baseData;
+    }
+  } catch (e) {
+    console.error("Erreur getUserDataCloud:", e);
+    return {
+      pseudo: "Toi",
+      points: 0,
+      jetons: 0,
+      cadres: ["polaroid_01"],
+      cadreActif: "polaroid_01",
+      historique: [],
+      likedPhotos: [],
+      signaledPhotos: [],
+      premium: false
+    };
+  }
 }
