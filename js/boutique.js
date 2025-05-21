@@ -69,73 +69,67 @@ async function updateUserDataCloud(update) {
   await window.firebaseFirestore.updateDoc(ref, update);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  // Sélecteurs DOM principaux
-  const boutiqueContainer = document.getElementById("boutique-container");
-  const catBarContainer = document.getElementById("boutique-categories");
+// Helpers cloud (uniquement Firestore)
+async function getPoints() { return (await getUserDataCloud()).points || 0; }
+async function addPoints(n) {
+  const data = await getUserDataCloud();
+  await updateUserDataCloud({ points: (data.points || 0) + n });
+}
+async function removePoints(n) {
+  const data = await getUserDataCloud();
+  if ((data.points || 0) >= n) {
+    await updateUserDataCloud({ points: data.points - n });
+    return true;
+  }
+  return false;
+}
+async function getJetons() { return (await getUserDataCloud()).jetons || 0; }
+async function addJetons(n) {
+  const data = await getUserDataCloud();
+  await updateUserDataCloud({ jetons: (data.jetons || 0) + n });
+}
+async function possedeCadre(id) {
+  const data = await getUserDataCloud();
+  return (data.cadres || []).includes(id);
+}
+async function acheterCadre(id) {
+  const data = await getUserDataCloud();
+  if (!(data.cadres || []).includes(id)) {
+    await updateUserDataCloud({ cadres: [...(data.cadres || []), id] });
+  }
+}
+async function getOwnedFrames() {
+  const data = await getUserDataCloud();
+  return data.cadres || [];
+}
+async function isPremium() {
+  const data = await getUserDataCloud();
+  return !!data.premium;
+}
+
+async function updatePointsDisplay() {
   const pointsDisplay = document.getElementById("points");
+  if (pointsDisplay) pointsDisplay.textContent = await getPoints();
+}
+async function updateJetonsDisplay() {
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) jetonsSpan.textContent = await getJetons();
+}
+
+// --- Feedback popups ---
+function showFeedback(text) {
   const feedback = document.getElementById("gain-feedback");
-  const popupGain = document.getElementById("popup-gain");
+  if (!feedback) return;
+  feedback.textContent = text;
+  feedback.classList.remove("hidden");
+  feedback.classList.add("show");
+  setTimeout(() => {
+    feedback.classList.remove("show");
+    feedback.classList.add("hidden");
+  }, 1500);
+}
 
-  // Helpers cloud
-  async function getPoints() { return (await getUserDataCloud()).points || 0; }
-  async function addPoints(n) {
-    const data = await getUserDataCloud();
-    await updateUserDataCloud({ points: (data.points || 0) + n });
-  }
-  async function removePoints(n) {
-    const data = await getUserDataCloud();
-    if ((data.points || 0) >= n) {
-      await updateUserDataCloud({ points: data.points - n });
-      return true;
-    }
-    return false;
-  }
-  async function getJetons() { return (await getUserDataCloud()).jetons || 0; }
-  async function addJetons(n) {
-    const data = await getUserDataCloud();
-    await updateUserDataCloud({ jetons: (data.jetons || 0) + n });
-  }
-  async function possedeCadre(id) {
-    const data = await getUserDataCloud();
-    return (data.cadres || []).includes(id);
-  }
-  async function acheterCadre(id) {
-    const data = await getUserDataCloud();
-    if (!(data.cadres || []).includes(id)) {
-      await updateUserDataCloud({ cadres: [...(data.cadres || []), id] });
-    }
-  }
-  async function getOwnedFrames() {
-    const data = await getUserDataCloud();
-    return data.cadres || [];
-  }
-  async function isPremium() {
-    const data = await getUserDataCloud();
-    return !!data.premium;
-  }
-
-  async function updatePointsDisplay() {
-    if (pointsDisplay) pointsDisplay.textContent = await getPoints();
-  }
-  async function updateJetonsDisplay() {
-    const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan) jetonsSpan.textContent = await getJetons();
-  }
-
-  // --- Feedback popups ---
-  function showFeedback(text) {
-    if (!feedback) return;
-    feedback.textContent = text;
-    feedback.classList.remove("hidden");
-    feedback.classList.add("show");
-    setTimeout(() => {
-      feedback.classList.remove("show");
-      feedback.classList.add("hidden");
-    }, 1500);
-  }
-
-  // --- Acheter cadre depuis boutique (cloud) ---
+// --- Acheter cadre depuis boutique (cloud) ---
 async function acheterCadreBoutique(id, prix) {
   if (!(await removePoints(prix))) {
     alert("❌ Pas assez de pièces !");
@@ -147,263 +141,252 @@ async function acheterCadreBoutique(id, prix) {
   await renderBoutique(currentCategory); // ✅ recharge uniquement la catégorie actuelle
 }
 
-
-  // --- Popups et pub ---
-  const gainBtn = document.getElementById("gain-btn");
-  if (gainBtn) {
-    gainBtn.addEventListener("click", () => {
-      const popupJeton = document.getElementById("popup-achat-jeton");
-      if (popupJeton && popupJeton.classList.contains("show")) {
-        popupJeton.classList.remove("show");
-        popupJeton.classList.add("hidden");
-      }
-      if (popupGain) {
-        popupGain.classList.remove("hidden");
-        popupGain.classList.add("show");
-      }
-    });
+// --- Popups et pub ---
+window.closePopup = function () {
+  const popupGain = document.getElementById("popup-gain");
+  if (popupGain) {
+    popupGain.classList.remove("show");
+    popupGain.classList.add("hidden");
   }
+  const oldUnlock = document.getElementById("popup-unlock-info");
+  if (oldUnlock) document.body.removeChild(oldUnlock);
+};
 
-  window.closePopup = function () {
-    if (popupGain) {
-      popupGain.classList.remove("show");
-      popupGain.classList.add("hidden");
-    }
-    const oldUnlock = document.getElementById("popup-unlock-info");
-    if (oldUnlock) document.body.removeChild(oldUnlock);
-  };
+function showUnlockPopup(nom, message) {
+  const oldPopup = document.getElementById("popup-unlock-info");
+  if (oldPopup) document.body.removeChild(oldPopup);
+  const popup = document.createElement("div");
+  popup.id = "popup-unlock-info";
+  popup.className = "popup show";
+  popup.innerHTML = `
+    <div class="popup-inner">
+      <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+      <h2 style="font-size:1.4em;">${nom}</h2>
+      <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+}
 
-  // ---- Popup Unlock Infos ----
-  function showUnlockPopup(nom, message) {
-    const oldPopup = document.getElementById("popup-unlock-info");
-    if (oldPopup) document.body.removeChild(oldPopup);
-    const popup = document.createElement("div");
-    popup.id = "popup-unlock-info";
-    popup.className = "popup show";
-    popup.innerHTML = `
-      <div class="popup-inner">
-        <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-        <h2 style="font-size:1.4em;">${nom}</h2>
-        <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
-      </div>
-    `;
-    document.body.appendChild(popup);
+// Gagne des pièces via pub simulée
+window.watchAd = async function () {
+  await addPoints(100);
+  await updatePointsDisplay();
+  showFeedback("+100 💰");
+  closePopup();
+};
+
+// === Parrainage code Firebase (UID) ===
+window.inviteFriend = async function () {
+  await waitForFirebaseAuthReady();
+  const uid = window.firebaseAuth.currentUser.uid;
+  const lien = window.location.origin + "/profil.html?parrain=" + uid;
+  prompt("Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)");
+};
+
+// --- Popup achat jetons ---
+window.ouvrirPopupJetonBoutique = function () {
+  const popup = document.getElementById("popup-achat-jeton");
+  if (popup) {
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
   }
+}
+window.fermerPopupJetonBoutique = function () {
+  const popup = document.getElementById("popup-achat-jeton");
+  if (popup) {
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+  }
+}
 
-  // Gagne des pièces via pub simulée
-  window.watchAd = async function () {
-    await addPoints(100);
+window.acheterJetonsAvecPieces = async function () {
+  if (await removePoints(100)) {
+    await addJetons(3);
+    alert("✅ 3 jetons ajoutés !");
     await updatePointsDisplay();
-    showFeedback("+100 💰");
+    await updateJetonsDisplay();
+    fermerPopupJetonBoutique();
+  } else {
+    alert("❌ Pas assez de pièces.");
+  }
+}
+
+window.acheterJetonsAvecPub = async function () {
+  alert("📺 Simulation de pub regardée !");
+  setTimeout(async () => {
+    await addJetons(3);
+    alert("✅ 3 jetons ajoutés !");
+    await updateJetonsDisplay();
+    fermerPopupJetonBoutique();
+  }, 3000);
+}
+
+setTimeout(() => {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  document.body.style.overflowX = "hidden";
+}, 100);
+
+document.addEventListener("click", function (e) {
+  const popupGain = document.getElementById("popup-gain");
+  if (popupGain && popupGain.classList.contains("show") && e.target === popupGain) {
     closePopup();
-  };
-
-  // === Parrainage code Firebase (UID) ===
-  window.inviteFriend = async function () {
-    await waitForFirebaseAuthReady();
-    const uid = window.firebaseAuth.currentUser.uid;
-    const lien = window.location.origin + "/profil.html?parrain=" + uid;
-    prompt("Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)");
-  };
-
-  // --- Popup achat jetons ---
-  window.ouvrirPopupJetonBoutique = function () {
-    const popup = document.getElementById("popup-achat-jeton");
-    if (popup) {
-      popup.classList.remove("hidden");
-      popup.classList.add("show");
-    }
   }
-  window.fermerPopupJetonBoutique = function () {
-    const popup = document.getElementById("popup-achat-jeton");
-    if (popup) {
-      popup.classList.remove("show");
-      popup.classList.add("hidden");
-    }
-  }
+});
 
-  window.acheterJetonsAvecPieces = async function () {
-    if (await removePoints(100)) {
-      await addJetons(3);
-      alert("✅ 3 jetons ajoutés !");
-      await updatePointsDisplay();
-      await updateJetonsDisplay();
-      fermerPopupJetonBoutique();
-    } else {
-      alert("❌ Pas assez de pièces.");
-    }
-  }
+// ----- Gestion catégories -----
+const CATEGORIES = [
+  { key: 'classique', nom: 'Classique' },
+  { key: 'deluxe', nom: 'Deluxe' },
+  { key: 'premium', nom: 'Premium' },
+  { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
+];
 
-  window.acheterJetonsAvecPub = async function () {
-    alert("📺 Simulation de pub regardée !");
-    setTimeout(async () => {
-      await addJetons(3);
-      alert("✅ 3 jetons ajoutés !");
-      await updateJetonsDisplay();
-      fermerPopupJetonBoutique();
-    }, 3000);
-  }
+function getCategorie(id) {
+  const num = parseInt(id.replace('polaroid_', ''));
+  if (num >= 1 && num <= 10) return 'classique';
+  if (num >= 11 && num <= 100) return 'deluxe';
+  if (num >= 101 && num <= 200) return 'premium';
+  if (num >= 900 && num <= 1000) return 'bloque';
+  return 'autre';
+}
 
-  setTimeout(() => {
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-    document.body.style.overflowX = "hidden";
-  }, 100);
+// --- 10 jours complet pour débloquer polaroid_901 ---
+function hasCompleted10FullDaysStrict() {
+  // À adapter si historique dans Firestore
+  return false;
+}
 
-  document.addEventListener("click", function (e) {
-    if (popupGain && popupGain.classList.contains("show") && e.target === popupGain) {
-      closePopup();
-    }
+let CADRES_DATA = [];
+let currentCategory = 'classique';
+
+async function renderBoutique(categoryKey) {
+  const catBarContainer = document.getElementById("boutique-categories");
+  const boutiqueContainer = document.getElementById("boutique-container");
+
+  catBarContainer.innerHTML = "";
+  const bar = document.createElement("div");
+  bar.className = "categories-bar";
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.textContent = cat.nom;
+    btn.className = "btn-categorie" + (cat.key === categoryKey ? " active" : "");
+    btn.onclick = () => {
+      currentCategory = cat.key;
+      renderBoutique(cat.key);
+    };
+    bar.appendChild(btn);
   });
+  catBarContainer.appendChild(bar);
 
-  // ----- Gestion catégories -----
-  const CATEGORIES = [
-    { key: 'classique', nom: 'Classique' },
-    { key: 'deluxe', nom: 'Deluxe' },
-    { key: 'premium', nom: 'Premium' },
-    { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
-  ];
+  boutiqueContainer.innerHTML = "";
 
-  function getCategorie(id) {
-    const num = parseInt(id.replace('polaroid_', ''));
-    if (num >= 1 && num <= 10) return 'classique';
-    if (num >= 11 && num <= 100) return 'deluxe';
-    if (num >= 101 && num <= 200) return 'premium';
-    if (num >= 900 && num <= 1000) return 'bloque';
-    return 'autre';
-  }
+  const grid = document.createElement("div");
+  grid.className = "grid-cadres";
 
-  // --- 10 jours complet pour débloquer polaroid_901 ---
-  function hasCompleted10FullDaysStrict() {
-    // Cette version ne fonctionne QUE si l’historique est dans Firestore. Adapter si besoin.
-    return false; // à connecter avec le cloud !
-  }
+  const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
+  let ownedFrames = await getOwnedFrames();
 
-  let CADRES_DATA = [];
-  let currentCategory = 'classique';
+  if (!cadresCat.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Aucun cadre dans cette catégorie.";
+    grid.appendChild(empty);
+  } else {
+    for (let cadre of cadresCat) {
+      const item = document.createElement("div");
+      item.classList.add("cadre-item");
 
-  async function renderBoutique(categoryKey) {
-    catBarContainer.innerHTML = "";
-    const bar = document.createElement("div");
-    bar.className = "categories-bar";
-    CATEGORIES.forEach(cat => {
-      const btn = document.createElement("button");
-      btn.textContent = cat.nom;
-      btn.className = "btn-categorie" + (cat.key === categoryKey ? " active" : "");
-      btn.onclick = () => {
-        currentCategory = cat.key;
-        renderBoutique(cat.key);
-      };
-      bar.appendChild(btn);
-    });
-    catBarContainer.appendChild(bar);
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("cadre-preview");
+      wrapper.style.width = "80px";
+      wrapper.style.height = "100px";
+      wrapper.style.position = "relative";
+      wrapper.style.margin = "0 auto 10px";
 
-    boutiqueContainer.innerHTML = "";
+      const cadreImg = document.createElement("img");
+      cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+      cadreImg.className = "photo-cadre";
 
-    const grid = document.createElement("div");
-    grid.className = "grid-cadres";
+      const photo = document.createElement("img");
+      photo.src = "assets/img/exemple.jpg";
+      photo.className = "photo-user";
 
-    const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
-    let ownedFrames = await getOwnedFrames();
+      wrapper.appendChild(cadreImg);
+      wrapper.appendChild(photo);
 
-    if (!cadresCat.length) {
-      const empty = document.createElement("p");
-      empty.textContent = "Aucun cadre dans cette catégorie.";
-      grid.appendChild(empty);
-    } else {
-      for (let cadre of cadresCat) {
-        const item = document.createElement("div");
-        item.classList.add("cadre-item");
-
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("cadre-preview");
-        wrapper.style.width = "80px";
-        wrapper.style.height = "100px";
-        wrapper.style.position = "relative";
-        wrapper.style.margin = "0 auto 10px";
-
-        const cadreImg = document.createElement("img");
-        cadreImg.src = `assets/cadres/${cadre.id}.webp`;
-        cadreImg.className = "photo-cadre";
-
-        const photo = document.createElement("img");
-        photo.src = "assets/img/exemple.jpg";
-        photo.className = "photo-user";
-
-        wrapper.appendChild(cadreImg);
-        wrapper.appendChild(photo);
-
-        wrapper.addEventListener("click", () => {
-          const popup = document.createElement("div");
-          popup.className = "popup show";
-          popup.innerHTML = `
-            <div class="popup-inner">
-              <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
-              <div class="cadre-preview cadre-popup">
-                <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
-                <img class="photo-user" src="assets/img/exemple.jpg" />
-              </div>
+      wrapper.addEventListener("click", () => {
+        const popup = document.createElement("div");
+        popup.className = "popup show";
+        popup.innerHTML = `
+          <div class="popup-inner">
+            <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
+            <div class="cadre-preview cadre-popup">
+              <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+              <img class="photo-user" src="assets/img/exemple.jpg" />
             </div>
-          `;
-          document.body.appendChild(popup);
-        });
+          </div>
+        `;
+        document.body.appendChild(popup);
+      });
 
-        const title = document.createElement("h3");
-        title.textContent = cadre.nom;
+      const title = document.createElement("h3");
+      title.textContent = cadre.nom;
 
-        const price = document.createElement("p");
-        price.textContent = `${cadre.prix} pièces`;
+      const price = document.createElement("p");
+      price.textContent = `${cadre.prix} pièces`;
 
-        const button = document.createElement("button");
+      const button = document.createElement("button");
 
-        if (categoryKey === "bloque") {
-          if (cadre.id === "polaroid_901") {
-            if (hasCompleted10FullDaysStrict()) {
-              if (!ownedFrames.includes(cadre.id)) {
-                await acheterCadre(cadre.id);
-                ownedFrames = await getOwnedFrames();
-              }
-              button.textContent = "Débloqué !";
-              button.disabled = true;
-              button.classList.add("btn-success");
-            } else {
-              button.textContent = "Infos";
-              button.disabled = false;
-              button.classList.add("btn-info");
-              button.onclick = () =>
-                showUnlockPopup(cadre.nom, cadre.unlock || "Valide 10 jours de défi pour débloquer ce cadre.");
+      if (categoryKey === "bloque") {
+        if (cadre.id === "polaroid_901") {
+          if (hasCompleted10FullDaysStrict()) {
+            if (!ownedFrames.includes(cadre.id)) {
+              await acheterCadre(cadre.id);
+              ownedFrames = await getOwnedFrames();
             }
+            button.textContent = "Débloqué !";
+            button.disabled = true;
+            button.classList.add("btn-success");
           } else {
             button.textContent = "Infos";
             button.disabled = false;
             button.classList.add("btn-info");
             button.onclick = () =>
-              showUnlockPopup(cadre.nom, cadre.unlock || "Aucune information pour ce cadre.");
+              showUnlockPopup(cadre.nom, cadre.unlock || "Valide 10 jours de défi pour débloquer ce cadre.");
           }
-        } else if (categoryKey === "premium" && !(await isPremium())) {
-          button.textContent = "Premium requis";
-          button.disabled = true;
-          button.classList.add("disabled-premium");
-          button.title = "Ce cadre nécessite un compte premium";
-        } else if (ownedFrames.includes(cadre.id)) {
-          button.textContent = "Acheté";
-          button.disabled = true;
         } else {
-          button.textContent = "Acheter";
-          button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+          button.textContent = "Infos";
+          button.disabled = false;
+          button.classList.add("btn-info");
+          button.onclick = () =>
+            showUnlockPopup(cadre.nom, cadre.unlock || "Aucune information pour ce cadre.");
         }
-
-        item.appendChild(wrapper);
-        item.appendChild(title);
-        item.appendChild(price);
-        item.appendChild(button);
-        grid.appendChild(item);
+      } else if (categoryKey === "premium" && !(await isPremium())) {
+        button.textContent = "Premium requis";
+        button.disabled = true;
+        button.classList.add("disabled-premium");
+        button.title = "Ce cadre nécessite un compte premium";
+      } else if (ownedFrames.includes(cadre.id)) {
+        button.textContent = "Acheté";
+        button.disabled = true;
+      } else {
+        button.textContent = "Acheter";
+        button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
       }
-    }
-    boutiqueContainer.appendChild(grid);
-  }
 
-  // --- Initialisation
+      item.appendChild(wrapper);
+      item.appendChild(title);
+      item.appendChild(price);
+      item.appendChild(button);
+      grid.appendChild(item);
+    }
+  }
+  boutiqueContainer.appendChild(grid);
+}
+
+// --- Initialisation principale ---
+document.addEventListener("DOMContentLoaded", async () => {
   await waitForFirebaseAuthReady();
   fetch("data/cadres.json")
     .then(res => res.json())
@@ -413,4 +396,10 @@ async function acheterCadreBoutique(id, prix) {
       await updatePointsDisplay();
       await updateJetonsDisplay();
     });
+
+  // Met à jour le solde aussi au focus (pour éviter la désynchro si retour sur page)
+  window.addEventListener("focus", async () => {
+    await updatePointsDisplay();
+    await updateJetonsDisplay();
+  });
 });

@@ -3,6 +3,13 @@ import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
+// Mise à jour du solde dès le chargement
+document.addEventListener("DOMContentLoaded", async () => {
+  const data = await getUserDataCloud();
+  if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
+  if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("startBtn");
   const replayBtn = document.getElementById("replayBtn");
@@ -23,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
 
-  // Expose la fonction caméra pour le HTML dynamique
   window.ouvrirCameraPour = cameraOuvrirCameraPour;
 
   getDocs(collection(db, "defis"))
