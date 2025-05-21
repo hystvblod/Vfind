@@ -66,7 +66,7 @@
 </section>
 <div class="popup-bg" id="popupID" style="display:none;">
   <div class="popup">
-    <p>Modifier mon identifiant public :</p>
+    <p id="popupText">Modifier mon identifiant public :</p>
     <input type="text" id="newIdInput" placeholder="Nouveau pseudo unique" />
     <br />
     <button id="validateId">Valider</button>
@@ -81,7 +81,6 @@
     <button onclick="location.href='calendrier.html'">📅 Mon calendrier</button>
     <button onclick="location.href='historique.html'">📜 Historique</button>
     <button onclick="location.href='photos_aimees.html'">❤️ Photos aimées</button>
-    <button onclick="location.href='photos_signalees.html'">🚩 Photos signalées</button>
   </section>
 </main>
 
@@ -95,6 +94,11 @@ import { db, auth, initFirebaseUser } from './js/firebase.js';
 import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
+function randomTempID() {
+  const rand = Math.random().toString(36).substring(2, 7);
+  return "user_" + rand;
+}
+
 initFirebaseUser().then(() => {
   onAuthStateChanged(auth, async (user) => {
     if (!user) return await signInAnonymously(auth);
@@ -103,13 +107,12 @@ initFirebaseUser().then(() => {
     const ref = doc(db, "users", uid);
     let snap = await getDoc(ref);
 
-    // 1ère connexion : création profil (avec gestion du parrainage par LIEN uniquement)
+    // 1ère connexion : création profil avec ID temporaire unique
     if (!snap.exists()) {
       const params = new URLSearchParams(window.location.search);
       let parrain = null;
       if (params.has('parrain') && params.get('parrain') !== uid) {
         parrain = params.get('parrain');
-        // On crédite le parrain direct si il existe
         const parrainRef = doc(db, "users", parrain);
         const parrainSnap = await getDoc(parrainRef);
         if (parrainSnap.exists()) {
@@ -128,11 +131,21 @@ initFirebaseUser().then(() => {
           });
         }
       }
-      // Crée le profil de l'utilisateur
+      // ID temporaire unique
+      let tempID = randomTempID();
+      // Vérifie unicité (évite collision)
+      let taken = true;
+      while (taken) {
+        const q = query(collection(db, "users"), where("pseudoPublic", "==", tempID));
+        const res = await getDocs(q);
+        if (res.empty) taken = false;
+        else tempID = randomTempID();
+      }
+      // Crée le profil
       await setDoc(ref, {
         points: 100,
         jetons: 3,
-        pseudoPublic: "",
+        pseudoPublic: tempID,
         idFixe: false,
         cadres: [],
         filleuls: 0,
@@ -145,50 +158,63 @@ initFirebaseUser().then(() => {
       snap = await getDoc(ref);
     }
 
-    // Affichage/modification unique de l'ID public
+    // Affichage + gestion du changement d’ID
     const profil = snap.data();
     const idDisplay = document.getElementById("idUserDisplay");
-    if (profil.pseudoPublic) {
-      idDisplay.textContent = "ID : " + profil.pseudoPublic;
-      idDisplay.style.textDecoration = "none";
-      idDisplay.style.color = "#fff";
-      idDisplay.onclick = null;
-    } else {
-      idDisplay.textContent = "🔴 Cliquez pour choisir votre ID";
-      idDisplay.style.textDecoration = "underline";
-      idDisplay.style.color = "#fa4a4a";
-      idDisplay.onclick = () => {
-        document.getElementById("popupID").style.display = "flex";
-        document.getElementById("newIdInput").value = "";
-        document.getElementById("idError").textContent = "";
-      };
+    idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
 
-      document.getElementById("validateId").onclick = async () => {
-        const newId = document.getElementById("newIdInput").value.trim();
-        const err = document.getElementById("idError");
-        if (newId.length < 3) {
-          err.textContent = "ID trop court (min 3 caractères)";
+    // --------- Choix ou changement d’ID public ---------
+    idDisplay.style.textDecoration = "underline";
+    idDisplay.style.color = profil.idFixe ? "#ffe04a" : "#fa4a4a";
+    idDisplay.style.cursor = "pointer";
+    idDisplay.onclick = () => {
+      document.getElementById("popupID").style.display = "flex";
+      document.getElementById("newIdInput").value = "";
+      document.getElementById("idError").textContent = "";
+      if (profil.idFixe) {
+        document.getElementById("popupText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
+      } else {
+        document.getElementById("popupText").textContent = "Modifier mon identifiant public :";
+      }
+    };
+
+    // Validation du nouvel ID
+    document.getElementById("validateId").onclick = async () => {
+      const newId = document.getElementById("newIdInput").value.trim();
+      const err = document.getElementById("idError");
+      if (newId.length < 3) {
+        err.textContent = "ID trop court (min 3 caractères)";
+        return;
+      }
+      // Vérifie si déjà pris
+      const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
+      const res = await getDocs(q);
+      if (!res.empty) {
+        err.textContent = "ID déjà pris 😕";
+        return;
+      }
+      // Si c’est un changement (après le 1er choix), on vérifie les points
+      if (profil.idFixe) {
+        if ((profil.points || 0) < 200) {
+          err.textContent = "Il te faut 200 pièces pour changer d’ID !";
           return;
         }
-        // Vérifie si déjà pris
-        const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
-        const res = await getDocs(q);
-        if (!res.empty) {
-          err.textContent = "ID déjà pris 😕";
-        } else {
-          await updateDoc(ref, {
-            pseudoPublic: newId,
-            idFixe: true
-          });
-          idDisplay.textContent = "ID : " + newId;
-          idDisplay.style.textDecoration = "none";
-          idDisplay.style.color = "#fff";
-          document.getElementById("popupID").style.display = "none";
-          idDisplay.onclick = null;
-        }
-      };
-    }
+        await updateDoc(ref, {
+          pseudoPublic: newId,
+          idFixe: true,
+          points: (profil.points || 0) - 200
+        });
+      } else {
+        await updateDoc(ref, {
+          pseudoPublic: newId,
+          idFixe: true
+        });
+      }
+      document.getElementById("popupID").style.display = "none";
+      location.reload(); // ou juste rafraîchir la zone d’ID
+    };
 
+    // Affichage du solde
     document.getElementById("vcoins").textContent = profil.points || 0;
     document.getElementById("jetons").textContent = profil.jetons || 0;
   });

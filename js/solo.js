@@ -1,20 +1,8 @@
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { db } from "./firebase.js";
-import { getJetons, removeJeton, getCadreSelectionne } from "./userData.js";
+import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  function getUserData() {
-    return {
-      premium: localStorage.getItem("premium") === "true"
-    };
-  }
-
-  const DEFI_STORAGE_KEY = "vfind_defis";
-  const TIMER_STORAGE_KEY = "vfind_timer";
-  const SCORE_STORAGE_KEY = "vfind_score";
-  const PUB_USED_KEY = "vfind_pub_used";
-  const HISTORY_KEY = "vfind_historique";
-
   const startBtn = document.getElementById("startBtn");
   const replayBtn = document.getElementById("replayBtn");
   const preGame = document.getElementById("pre-game");
@@ -22,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const endSection = document.getElementById("end-section");
   const timerDisplay = document.getElementById("timer");
   const defiList = document.getElementById("defi-list");
-  const finalMessage = document.getElementById("final-message");
 
   let allDefis = [];
   let defisActuels = [];
@@ -31,11 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let userLang = navigator.language || navigator.userLanguage;
   userLang = userLang.split("-")[0];
   const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
-  let currentLang = supportedLangs.includes(userLang) ? userLang : "fr";
   const savedLang = localStorage.getItem("langue");
-  if (savedLang && supportedLangs.includes(savedLang)) {
-    currentLang = savedLang;
-  }
+  if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
+  if (!supportedLangs.includes(userLang)) userLang = "fr";
 
   getDocs(collection(db, "defis"))
     .then(snapshot => {
@@ -43,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const d = doc.data();
         return {
           id: doc.id,
-          texte: currentLang === "fr" ? d.intitule : d[currentLang],
+          texte: userLang === "fr" ? d.intitule : d[userLang],
           done: false
         };
       });
@@ -53,25 +38,24 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("❌ Erreur Firestore :", err);
     });
 
-  function init() {
+  async function init() {
     startBtn?.addEventListener("click", startGame);
     replayBtn?.addEventListener("click", showStart);
 
-    const existingTimer = localStorage.getItem(TIMER_STORAGE_KEY);
-    if (existingTimer && Date.now() < parseInt(existingTimer)) {
+    const data = await getUserDataCloud();
+    if (data.defiTimer && Date.now() < data.defiTimer && data.defiActifs) {
+      defisActuels = data.defiActifs;
       showGame();
     } else {
       showStart();
     }
   }
 
-  function startGame() {
+  async function startGame() {
     const newDefis = getRandomDefis(3);
     const endTime = Date.now() + 24 * 60 * 60 * 1000;
-    localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(newDefis));
-    localStorage.setItem(TIMER_STORAGE_KEY, endTime.toString());
-    localStorage.setItem(SCORE_STORAGE_KEY, "0");
-    localStorage.setItem(PUB_USED_KEY, "false");
+    defisActuels = newDefis;
+    await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
     showGame();
   }
 
@@ -89,11 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTimer() {
-    const interval = setInterval(() => {
-      const endTimeRaw = localStorage.getItem(TIMER_STORAGE_KEY);
-      if (!endTimeRaw) return;
-
-      const endTime = parseInt(endTimeRaw);
+    const interval = setInterval(async () => {
+      const data = await getUserDataCloud();
+      const endTime = data.defiTimer;
+      if (!endTime) return;
       const now = Date.now();
       const diff = endTime - now;
 
@@ -103,41 +86,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      if (timerDisplay) {
-        timerDisplay.textContent = `${hours}h ${minutes}m ${seconds}s`;
-      }
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      timerDisplay.textContent = `${h}h ${m}m ${s}s`;
     }, 1000);
   }
 
   async function loadDefis() {
-    let defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
-    if (!defis || !Array.isArray(defis) || defis.length === 0) {
-      defis = getRandomDefis(3);
-      localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
-    }
-
-    defisActuels = defis;
     defiList.innerHTML = '';
-    for (const [index, defi] of defis.entries()) {
+    for (const [index, defi] of defisActuels.entries()) {
       const li = document.createElement("li");
       li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      const isPremium = getUserData().premium === true;
       const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
 
-      let boutonPhoto = "";
-
-      if (hasPhoto && !isPremium) {
-        boutonPhoto = `<button class="disabled-premium" onclick="alert('❌ Fonction réservée aux membres premium.')">🔒 ${boutonTexte}</button>`;
-      } else {
-        boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
-      }
+      const boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
 
       li.innerHTML = `
         <div class="defi-content">
@@ -164,9 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const dataUrl = localStorage.getItem(`photo_defi_${id}`);
 
       if (dataUrl) {
-        const containerCadre = document.createElement("div");
-        containerCadre.className = "cadre-item";
-
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
 
@@ -181,12 +145,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         preview.appendChild(fond);
         preview.appendChild(photo);
-        containerCadre.appendChild(preview);
 
         const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
         if (container) {
           container.innerHTML = '';
-          container.appendChild(containerCadre);
+          container.appendChild(preview);
           defiEl.classList.add("done");
         }
       }
@@ -203,26 +166,10 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.classList.add("show");
   }
 
-  const popup = document.getElementById("popup-photo");
-  const closeBtn = document.getElementById("close-popup");
-  if (popup && closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      popup.classList.remove("show");
-      popup.classList.add("hidden");
-    });
-    popup.addEventListener("click", (e) => {
-      if (e.target === popup) {
-        popup.classList.remove("show");
-        popup.classList.add("hidden");
-      }
-    });
-  }
-
-  window.validerDefi = function(index) {
-    const defis = JSON.parse(localStorage.getItem(DEFI_STORAGE_KEY));
-    if (!defis[index].done) {
-      defis[index].done = true;
-      localStorage.setItem(DEFI_STORAGE_KEY, JSON.stringify(defis));
+  window.validerDefi = async function(index) {
+    if (!defisActuels[index].done) {
+      defisActuels[index].done = true;
+      await updateUserData({ defiActifs: defisActuels });
       document.querySelectorAll("#defi-list li")[index]?.classList.add("done");
       loadDefis();
     }
@@ -248,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("❌ Erreur lors de la soustraction du jeton.");
         }
       } else {
-        alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+        alert("❌ Pas de jeton disponible.");
       }
     };
   };

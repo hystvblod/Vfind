@@ -131,7 +131,10 @@
     document.addEventListener("DOMContentLoaded", () => {
       const jetonsEl = document.getElementById("jetons");
       const pointsEl = document.getElementById("points");
-      if (typeof getJetons === "function") jetonsEl.textContent = getJetons();
+      if (typeof getJetons === "function") {
+  getJetons().then(j => jetonsEl.textContent = j);
+}
+
       if (typeof getPoints === "function") pointsEl.textContent = getPoints();
     });
   </script>
