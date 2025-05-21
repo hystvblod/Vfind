@@ -127,16 +127,6 @@
       document.getElementById("popup-jeton").classList.add("hidden");
     };
 
-    // ✅ Mise à jour dynamique des jetons
-    document.addEventListener("DOMContentLoaded", () => {
-      const jetonsEl = document.getElementById("jetons");
-      const pointsEl = document.getElementById("points");
-      if (typeof getJetons === "function") {
-  getJetons().then(j => jetonsEl.textContent = j);
-}
-
-      if (typeof getPoints === "function") pointsEl.textContent = getPoints();
-    });
   </script>
 </body>
 </html>
