@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
 
-  window.ouvrirCameraPour = cameraOuvrirCameraPour;
+  // === Correctif : toujours appeler caméra en "solo" ===
+  window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
 
   getDocs(collection(db, "defis"))
     .then(snapshot => {
@@ -117,9 +118,24 @@ document.addEventListener("DOMContentLoaded", () => {
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
-      const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+      // === Ajout fallback cloud : on vérifie local, sinon on tente de charger depuis Firebase ===
+      let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+      if (!dataUrl) {
+        // fallback Cloud (optionnel, non bloquant si erreur)
+        try {
+          const data = await getUserDataCloud();
+          if (data.defisSolo && data.defisSolo[defi.id]) {
+            dataUrl = data.defisSolo[defi.id];
+            // On peut le remettre en localStorage pour accélérer plus tard :
+            localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
+          }
+        } catch (e) {
+          // Pas d'action, on reste sur rien
+        }
+      }
 
+      const hasPhoto = !!dataUrl;
+      const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
       const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonTexte}</button>`;
 
       li.innerHTML = `
