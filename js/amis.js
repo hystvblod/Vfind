@@ -1,49 +1,36 @@
-// amis.js — gestion cloud Firestore des amis et invitations duel
+// === amis.js (version PRO tout Firebase) ===
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
-// === Helpers Firebase ===
-async function waitForFirebaseReady() {
-  return new Promise(resolve => {
-    function check() {
-      if (
-        window.firebaseAuth &&
-        window.firebaseDB &&
-        window.firebaseFirestore &&
-        window.firebaseAuth.currentUser
-      ) {
-        resolve();
-      } else setTimeout(check, 100);
-    }
-    check();
+// Initialisation Firebase
+const db = getFirestore();
+const auth = getAuth();
+let currentUser = null;
+
+// On récupère l'utilisateur connecté
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    listenUserData(); // Listen les updates temps réel de ses amis/demandes
+  } else {
+    // Redirige si pas connecté
+    window.location.href = "login.html";
+  }
+});
+
+// Ecoute en temps réel des données utilisateur
+function listenUserData() {
+  const userRef = doc(db, "users", currentUser.uid);
+  onSnapshot(userRef, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    afficherListesAmis(data);
   });
 }
 
-async function getUserDocRef() {
-  await waitForFirebaseReady();
-  const user = window.firebaseAuth.currentUser;
-  return window.firebaseFirestore.doc(window.firebaseDB, "users", user.uid);
-}
-
-async function getUserDataCloud() {
-  await waitForFirebaseReady();
-  const ref = await getUserDocRef();
-  const snap = await window.firebaseFirestore.getDoc(ref);
-  return snap.exists() ? snap.data() : {
-    pseudo: "Toi",
-    amis: [],
-    demandesRecues: [],
-    demandesEnvoyees: []
-  };
-}
-
-async function updateUserDataCloud(update) {
-  const ref = await getUserDocRef();
-  await window.firebaseFirestore.updateDoc(ref, update);
-}
-
-// =============== AFFICHAGE LISTES ===============
-async function afficherListesAmis() {
-  const data = await getUserDataCloud();
-
+// Affiche la liste des amis et demandes
+function afficherListesAmis(data) {
+  // Amis
   const ulAmis = document.getElementById("liste-amis");
   if (ulAmis) {
     ulAmis.innerHTML = "";
@@ -51,24 +38,36 @@ async function afficherListesAmis() {
       ulAmis.innerHTML = "<li>Pas d'ami pour le moment.</li>";
     } else {
       data.amis.forEach(pseudo => {
-        ulAmis.innerHTML += `<li>${pseudo} <button onclick="defierAmi('${pseudo}')">Défier</button> <button onclick="supprimerAmi('${pseudo}')">❌</button></li>`;
+        ulAmis.innerHTML += `
+          <li>
+            ${pseudo} 
+            <button onclick="defierAmi('${pseudo}')">Défier</button> 
+            <button onclick="supprimerAmi('${pseudo}')">❌</button>
+          </li>`;
       });
     }
   }
 
-  const ulRecues = document.getElementById("demandes-recue");
+  // Demandes reçues
+  const ulRecues = document.getElementById("liste-demandes-recues");
   if (ulRecues) {
     ulRecues.innerHTML = "";
     if (!data.demandesRecues || data.demandesRecues.length === 0) {
       ulRecues.innerHTML = "<li>Aucune demande reçue.</li>";
     } else {
-      data.demandesRecues.forEach((pseudo, i) => {
-        ulRecues.innerHTML += `<li>${pseudo} <button onclick="accepterDemande('${pseudo}',${i})">Accepter</button> <button onclick="refuserDemande('${pseudo}',${i})">Refuser</button></li>`;
+      data.demandesRecues.forEach(pseudo => {
+        ulRecues.innerHTML += `
+          <li>
+            ${pseudo} 
+            <button onclick="accepterDemande('${pseudo}')">Accepter</button> 
+            <button onclick="refuserDemande('${pseudo}')">Refuser</button>
+          </li>`;
       });
     }
   }
 
-  const ulEnvoyees = document.getElementById("demandes-envoyees");
+  // Demandes envoyées
+  const ulEnvoyees = document.getElementById("liste-demandes-envoyees");
   if (ulEnvoyees) {
     ulEnvoyees.innerHTML = "";
     if (!data.demandesEnvoyees || data.demandesEnvoyees.length === 0) {
@@ -81,112 +80,88 @@ async function afficherListesAmis() {
   }
 }
 
-// =============== ACTIONS ===============
-window.ajouterAmi = async function () {
-  const input = document.getElementById("pseudo-ami");
-  if (!input) {
-    alert("Champ introuvable !");
+// Envoie une demande d'ami
+window.envoyerDemandeAmi = async function(pseudoAmi) {
+  if (!currentUser) return;
+  // On cherche le user par pseudo
+  const querySnapshot = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
+  if (!querySnapshot.exists()) {
+    alert("Aucun utilisateur trouvé avec ce pseudo.");
     return;
   }
-  const pseudo = (input.value || "").trim();
-  if (!pseudo) {
-    alert("Entre le pseudo de ton ami !");
-    return;
-  }
+  const amiUid = querySnapshot.data().uid;
 
-  let data = await getUserDataCloud();
-  if ((data.amis || []).includes(pseudo) || (data.demandesEnvoyees || []).includes(pseudo)) {
-    alert("Déjà ami ou demande en attente !");
-    return;
-  }
-
-  // Enregistre la demande dans TON profil (demandesEnvoyees)
-  data.demandesEnvoyees = data.demandesEnvoyees || [];
-  data.demandesEnvoyees.push(pseudo);
-  await updateUserDataCloud({ demandesEnvoyees: data.demandesEnvoyees });
-
-  // Enregistre la demande dans le profil de l’ami (demandesRecues)
-  // Il faut chercher l'utilisateur correspondant au pseudo
-  // ATTENTION : ici on suppose que "pseudo" est unique
-  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
-  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
-  const res = await window.firebaseFirestore.getDocs(q);
-  if (!res.empty) {
-    const amiDoc = res.docs[0];
-    const amiData = amiDoc.data();
-    const recues = amiData.demandesRecues || [];
-    if (!recues.includes(data.pseudo)) {
-      recues.push(data.pseudo);
-      await window.firebaseFirestore.updateDoc(amiDoc.ref, { demandesRecues: recues });
-    }
-  }
-  input.value = "";
-  await afficherListesAmis();
-  alert("Demande envoyée !");
-};
-
-window.accepterDemande = async function (pseudo, index) {
-  let data = await getUserDataCloud();
-  // Ajoute l’ami à la liste
-  data.amis = data.amis || [];
-  if (!data.amis.includes(pseudo)) data.amis.push(pseudo);
-
-  // Retire la demande reçue
-  data.demandesRecues.splice(index, 1);
-
-  // Retire aussi la demande envoyée côté ami
-  // Cherche le doc ami
-  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
-  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
-  const res = await window.firebaseFirestore.getDocs(q);
-  if (!res.empty) {
-    const amiDoc = res.docs[0];
-    let amiData = amiDoc.data();
-    amiData.amis = amiData.amis || [];
-    if (!amiData.amis.includes(data.pseudo)) amiData.amis.push(data.pseudo);
-    // Retire demande envoyée côté ami
-    amiData.demandesEnvoyees = (amiData.demandesEnvoyees || []).filter(p => p !== data.pseudo);
-    await window.firebaseFirestore.updateDoc(amiDoc.ref, {
-      amis: amiData.amis,
-      demandesEnvoyees: amiData.demandesEnvoyees
-    });
-  }
-
-  await updateUserDataCloud({
-    amis: data.amis,
-    demandesRecues: data.demandesRecues
+  // Ajoute la demande envoyée à l'utilisateur courant
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    demandesEnvoyees: arrayUnion(pseudoAmi)
   });
-  await afficherListesAmis();
+  // Ajoute la demande reçue à l'autre utilisateur
+  await updateDoc(doc(db, "users", amiUid), {
+    demandesRecues: arrayUnion(currentUser.displayName)
+  });
+}
+
+// Accepte une demande d'ami
+window.accepterDemande = async function(pseudoAmi) {
+  if (!currentUser) return;
+  // Chercher l'uid du pseudo
+  const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
+  if (!amiRef.exists()) return;
+  const amiUid = amiRef.data().uid;
+
+  // Ajoute chacun dans la liste d'amis de l'autre
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    amis: arrayUnion(pseudoAmi),
+    demandesRecues: arrayRemove(pseudoAmi)
+  });
+  await updateDoc(doc(db, "users", amiUid), {
+    amis: arrayUnion(currentUser.displayName),
+    demandesEnvoyees: arrayRemove(currentUser.displayName)
+  });
+}
+
+// Refuse une demande d'ami
+window.refuserDemande = async function(pseudoAmi) {
+  if (!currentUser) return;
+  // Chercher l'uid du pseudo
+  const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
+  if (!amiRef.exists()) return;
+  const amiUid = amiRef.data().uid;
+
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    demandesRecues: arrayRemove(pseudoAmi)
+  });
+  await updateDoc(doc(db, "users", amiUid), {
+    demandesEnvoyees: arrayRemove(currentUser.displayName)
+  });
+}
+
+// Supprimer un ami
+window.supprimerAmi = async function(pseudoAmi) {
+  if (!currentUser) return;
+  // Chercher l'uid du pseudo
+  const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
+  if (!amiRef.exists()) return;
+  const amiUid = amiRef.data().uid;
+
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    amis: arrayRemove(pseudoAmi)
+  });
+  await updateDoc(doc(db, "users", amiUid), {
+    amis: arrayRemove(currentUser.displayName)
+  });
+}
+
+// Défi (à compléter selon la logique duel de ton app)
+window.defierAmi = function(pseudoAmi) {
+  // Redirige ou initie un duel
+  window.location.href = `duel.html?ami=${pseudoAmi}`;
 };
 
-window.refuserDemande = async function (pseudo, index) {
-  let data = await getUserDataCloud();
-  data.demandesRecues.splice(index, 1);
-  await updateUserDataCloud({ demandesRecues: data.demandesRecues });
-  await afficherListesAmis();
-};
+// Recherche d’ami (formulaire)
+document.getElementById("btn-chercher-ami")?.addEventListener("click", () => {
+  const pseudo = document.getElementById("input-pseudo-ami").value.trim();
+  if (pseudo) envoyerDemandeAmi(pseudo);
+});
 
-window.supprimerAmi = async function (pseudo) {
-  let data = await getUserDataCloud();
-  data.amis = (data.amis || []).filter(p => p !== pseudo);
-  await updateUserDataCloud({ amis: data.amis });
-
-  // Retire aussi côté ami
-  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
-  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
-  const res = await window.firebaseFirestore.getDocs(q);
-  if (!res.empty) {
-    const amiDoc = res.docs[0];
-    let amiData = amiDoc.data();
-    amiData.amis = (amiData.amis || []).filter(p => p !== data.pseudo);
-    await window.firebaseFirestore.updateDoc(amiDoc.ref, { amis: amiData.amis });
-  }
-
-  await afficherListesAmis();
-};
-
-window.defierAmi = function (pseudo) {
-  window.location.href = `duel_game.html?mode=ami&adversaire=${encodeURIComponent(pseudo)}`;
-};
-
-document.addEventListener("DOMContentLoaded", afficherListesAmis);
+// --- Fin amis.js ---
