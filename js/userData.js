@@ -171,3 +171,9 @@ export async function updateUserData(update) {
   const ref = await getUserRef();
   await updateDoc(ref, update);
 }
+// Permet d'accéder à toutes les infos Firestore de l'utilisateur courant
+export async function getUserDataCloud() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : {};
+}
