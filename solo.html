@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -51,14 +51,14 @@
       <div class="solde-item">
         <div class="solde-ligne">
           <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
-          <span id="points">1234</span>
+          <span id="points"></span>
         </div>
       </div>
       <!-- Jetons -->
       <div class="solde-item">
         <div class="solde-ligne">
           <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
-          <span id="jetons">6</span>
+          <span id="jetons"></span>
         </div>
       </div>
     </div>
@@ -85,10 +85,7 @@
     </section>
   </main>
 
-  <!-- SCRIPTS -->
-<!-- ... (tout ton code HTML au-dessus reste inchangé) ... -->
-
-  <!-- SCRIPTS -->
+  <!-- SCRIPTS FIREBASE + SOLO -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/solo.js"></script>
@@ -102,22 +99,26 @@
     let defiIndexActuel = null;
 
     window.ouvrirPopupJeton = function(index) {
-      const jetons = getJetons();
-      document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+      if (typeof getJetons === "function") {
+        getJetons().then(jetons => {
+          document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
+        });
+      }
       document.getElementById("popup-jeton").classList.remove("hidden");
       document.getElementById("popup-jeton").classList.add("show");
       defiIndexActuel = index;
 
       document.getElementById("valider-jeton-btn").onclick = () => {
-        const jetons = getJetons();
-        if (jetons > 0) {
-          removeJeton();
-          if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel);
-          }
-          fermerPopupJeton();
-        } else {
-          alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+        if (typeof getJetons === "function") {
+          getJetons().then(jetons => {
+            if (jetons > 0) {
+              if (typeof removeJeton === "function") removeJeton();
+              if (typeof validerDefi === "function") validerDefi(defiIndexActuel);
+              fermerPopupJeton();
+            } else {
+              alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
+            }
+          });
         }
       };
     };
@@ -126,8 +127,6 @@
       document.getElementById("popup-jeton").classList.remove("show");
       document.getElementById("popup-jeton").classList.add("hidden");
     };
-
   </script>
 </body>
 </html>
-

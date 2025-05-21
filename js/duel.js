@@ -1,4 +1,4 @@
-// === duel.js (version PRO full Firebase, matchmaking + bot, plus de localStorage) ===
+// === duel.js (PRO Firebase, matchmaking pur, animation UI, échec après 1h, PAS de bot) ===
 import {
   getFirestore, collection, doc, setDoc, getDoc, updateDoc,
   onSnapshot, query, where, getDocs
@@ -9,24 +9,35 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth
 const db = getFirestore();
 const auth = getAuth();
 let currentUser = null;
-
-// Nom de la room actuel (stocké en mémoire session)
 let currentRoomId = null;
 
-// Récupère l'utilisateur actuel
+// Timer pour échec attente adversaire (1h)
+let waitingTimeout = null;
+function startWaitingTimeout(durationMs = 3600000) { // 1h par défaut
+  clearWaitingTimeout();
+  waitingTimeout = setTimeout(() => {
+    const searchingDiv = document.getElementById("searching-adversary");
+    const failedDiv = document.getElementById("searching-failed");
+    if (searchingDiv) searchingDiv.style.display = "none";
+    if (failedDiv) failedDiv.style.display = "flex";
+  }, durationMs);
+}
+function clearWaitingTimeout() {
+  if (waitingTimeout) clearTimeout(waitingTimeout);
+  waitingTimeout = null;
+}
+
+// Authentification utilisateur
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user;
-    // Charger ou créer une room
     checkOrCreateDuelRoom();
   } else {
-    // Rediriger vers login si besoin
     window.location.href = "login.html";
   }
 });
 
-// ====== MATCHMAKING + MODE BOT ======
-
+// ====== MATCHMAKING UNIQUEMENT (PAS DE BOT) ======
 async function checkOrCreateDuelRoom() {
   const params = new URLSearchParams(window.location.search);
   const roomId = params.get("room");
@@ -34,26 +45,20 @@ async function checkOrCreateDuelRoom() {
     currentRoomId = roomId;
     await joinDuelRoom(roomId);
   } else {
-    // 1. CHERCHER UNE ROOM "WAITING" qui n'est PAS soi-même
     const duelsCol = collection(db, "duels");
     const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", currentUser.uid));
     const qsnap = await getDocs(q);
     let joined = false;
     if (!qsnap.empty) {
-      // Prendre la première dispo
       const first = qsnap.docs[0];
       const foundRoomId = first.id;
       currentRoomId = foundRoomId;
       await joinDuelRoom(foundRoomId);
-      // Rediriger pour avoir l’URL propre
       window.location.href = `duel.html?room=${foundRoomId}`;
       joined = true;
     }
     if (!joined) {
-      // Si aucune room "waiting", en créer une nouvelle
       const newRoomId = await createDuelRoom();
-      // Lancer le mode bot si personne ne rejoint en 10s
-      autoJoinAsBotIfAlone(newRoomId);
       window.location.href = `duel.html?room=${newRoomId}`;
     }
   }
@@ -68,27 +73,10 @@ async function createDuelRoom() {
     player2: null,
     score1: 0,
     score2: 0,
-    status: "waiting", // waiting, playing, finished
+    status: "waiting",
     createdAt: Date.now()
   });
   return roomId;
-}
-
-// BOT: Si après 10s il n'y a toujours pas de player2, remplir avec "BOT" (pour test/démo solo)
-async function autoJoinAsBotIfAlone(roomId) {
-  setTimeout(async () => {
-    const duelRef = doc(db, "duels", roomId);
-    const snap = await getDoc(duelRef);
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data.status === "waiting" && !data.player2) {
-        await updateDoc(duelRef, {
-          player2: "BOT",
-          status: "playing"
-        });
-      }
-    }
-  }, 10000); // 10 secondes
 }
 
 // Rejoint une room de duel existante (Firestore)
@@ -101,14 +89,12 @@ async function joinDuelRoom(roomId) {
     return;
   }
   const data = snap.data();
-  // Si la room attend un joueur 2
   if (!data.player2 && data.player1 !== currentUser.uid) {
     await updateDoc(duelRef, {
       player2: currentUser.uid,
       status: "playing"
     });
   }
-  // Démarre la synchro temps réel sur cette room
   startDuelListener(roomId);
 }
 
@@ -118,8 +104,13 @@ function startDuelListener(roomId) {
   onSnapshot(duelRef, (snap) => {
     if (!snap.exists()) return;
     const data = snap.data();
-    // MAJ l’affichage (score, statut, tour, etc.)
     updateDuelUI(data);
+    // Timer échec/animation attente
+    if (data.status === "waiting") {
+      startWaitingTimeout();
+    } else {
+      clearWaitingTimeout();
+    }
   });
 }
 
@@ -144,7 +135,17 @@ async function updateScore(points) {
 
 // Met à jour l'affichage du duel (fonction à compléter selon ton UI)
 function updateDuelUI(data) {
-  // Exemple d’affichage (à adapter selon ton HTML réel)
+  // Animation recherche/adversaire + échec
+  const searchingDiv = document.getElementById("searching-adversary");
+  const failedDiv = document.getElementById("searching-failed");
+  if (data.status === "waiting") {
+    if (searchingDiv) searchingDiv.style.display = "flex";
+    if (failedDiv) failedDiv.style.display = "none";
+  } else {
+    if (searchingDiv) searchingDiv.style.display = "none";
+    if (failedDiv) failedDiv.style.display = "none";
+  }
+
   if(document.getElementById("score1")) document.getElementById("score1").textContent = data.score1 || 0;
   if(document.getElementById("score2")) document.getElementById("score2").textContent = data.score2 || 0;
   if(document.getElementById("statut-duel")) document.getElementById("statut-duel").textContent = {
@@ -152,7 +153,6 @@ function updateDuelUI(data) {
     playing: "En cours",
     finished: "Terminé"
   }[data.status] || "En attente";
-  // À adapter selon les autres champs de ta room
 }
 
 // Action : envoyer son score (ex: bouton "Valider score")
@@ -163,14 +163,13 @@ document.getElementById("btn-valider-score")?.addEventListener("click", async ()
   }
 });
 
-// Si tu veux finir le duel :
+// Finir le duel
 async function finishDuel() {
   if (!currentRoomId) return;
   const duelRef = doc(db, "duels", currentRoomId);
   await updateDoc(duelRef, { status: "finished" });
 }
 
-// Action : bouton "Finir le duel"
 document.getElementById("btn-finir-duel")?.addEventListener("click", async () => {
   await finishDuel();
 });
