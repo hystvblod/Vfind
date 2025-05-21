@@ -136,16 +136,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // --- Acheter cadre depuis boutique (cloud) ---
-  async function acheterCadreBoutique(id, prix) {
-    if (!(await removePoints(prix))) {
-      alert("❌ Pas assez de pièces !");
-      return;
-    }
-    await acheterCadre(id);
-    await updatePointsDisplay();
-    alert("✅ Cadre acheté !");
-    location.reload();
+async function acheterCadreBoutique(id, prix) {
+  if (!(await removePoints(prix))) {
+    alert("❌ Pas assez de pièces !");
+    return;
   }
+  await acheterCadre(id);
+  await updatePointsDisplay();
+  alert("✅ Cadre acheté !");
+  await renderBoutique(currentCategory); // ✅ recharge uniquement la catégorie actuelle
+}
+
 
   // --- Popups et pub ---
   const gainBtn = document.getElementById("gain-btn");
