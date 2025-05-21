@@ -63,25 +63,25 @@
 
     /* === ANIMATION INTRO LOGO === */
     #intro-logo {
-    position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #1e1e2f;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeOut 1.2s ease-out 2.2s forwards; /* 🟢 plus rapide */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #1e1e2f;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 1.2s ease-out 2.2s forwards; /* 🟢 plus rapide */
     }
 
     .logo-img {
-  width: 180px; /* 🟢 plus grand */
-  opacity: 0;
-  transform: translateY(20px) scale(0.9);
-  animation: appear 1.2s ease-out forwards;
-}
+      width: 180px; /* 🟢 plus grand */
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      animation: appear 1.2s ease-out forwards;
+    }
 
     @keyframes appear {
       0% {
@@ -112,16 +112,13 @@
 
   <div class="page-container">
 
-   <div class="top-buttons top-buttons-home">
-
-     <a href="profil.html" class="btn-icon">
-  <img src="assets/icons/user.svg" alt="Profil" />
-</a>
-
-<a href="parametres.html" class="btn-icon">
-  <img src="assets/icons/settings.svg" alt="Paramètres" />
-</a>
-
+    <div class="top-buttons top-buttons-home">
+      <a href="profil.html" class="btn-icon">
+        <img src="assets/icons/user.svg" alt="Profil" />
+      </a>
+      <a href="parametres.html" class="btn-icon">
+        <img src="assets/icons/settings.svg" alt="Paramètres" />
+      </a>
     </div>
 
     <div class="logo">
@@ -139,76 +136,25 @@
     </footer>
   </div>
 
-<script>
-  window.addEventListener("load", () => {
-    const intro = document.getElementById("intro-logo");
+  <script>
+    window.addEventListener("load", () => {
+      const intro = document.getElementById("intro-logo");
 
-    // ✅ Empêche l'intro de se rejouer à chaque retour
-    if (!sessionStorage.getItem("introShown")) {
-      sessionStorage.setItem("introShown", "true");
+      // ✅ Empêche l'intro de se rejouer à chaque retour
+      if (!sessionStorage.getItem("introShown")) {
+        sessionStorage.setItem("introShown", "true");
 
-      setTimeout(() => {
-        if (intro) intro.remove();
-      }, 3800); // 1.2s (animation) + 1s (pause) + 1s (fade out)
-    } else {
-      if (intro) intro.remove(); // déjà vu = on le retire immédiatement
-    }
-  });
-</script>
-
-<!-- === COLLE ICI LA BALISE FIREBASE === -->
-<script type="module">
-  // Imports Firebase
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-
-  // Config Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
-    authDomain: "vfind-12866.firebaseapp.com",
-    projectId: "vfind-12866",
-    storageBucket: "vfind-12866.appspot.com",
-    messagingSenderId: "953801570333",
-    appId: "1:953801570333:web:92ed5e604d0df316046ef4",
-    measurementId: "G-WTSN5KCBDJ"
-  };
-
-  // Initialisation Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // Connexion automatique anonyme + création profil
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const uid = user.uid;
-      const profilRef = doc(db, "users", uid);
-      const snap = await getDoc(profilRef);
-
-      if (!snap.exists()) {
-        // ✅ Création du profil avec données par défaut
-        await setDoc(profilRef, {
-          pseudo: "Joueur",
-          points: 100,
-          jetons: 3,
-          amis: [],
-          demandesRecues: [],
-          demandesEnvoyees: [],
-          photoProfil: ""
-        });
-        console.log("✔️ Nouveau profil créé :", uid);
+        setTimeout(() => {
+          if (intro) intro.remove();
+        }, 3800); // 1.2s (animation) + 1s (pause) + 1s (fade out)
       } else {
-        console.log("🔁 Profil déjà existant :", uid);
+        if (intro) intro.remove(); // déjà vu = on le retire immédiatement
       }
+    });
+  </script>
 
-    } else {
-      await signInAnonymously(auth);
-    }
-  });
-</script>
-
-<!-- === FIN BALISE FIREBASE === -->
+  <!-- === Connexion Firebase CENTRALISÉE === -->
+  <script type="module" src="js/firebase.js"></script>
 
 </body>
 </html>

@@ -26,23 +26,11 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <script src="js/userData.js"></script>
+  <!-- Connexion Firebase centralisée -->
+  <script type="module" src="js/firebase.js"></script>
+  <!-- JS dédié à l'historique -->
+  <script type="module" src="js/historique.js"></script>
+  <!-- Polaroid uniquement si besoin d’effets visuels (optionnel) -->
   <script src="js/polaroid.js"></script>
-  <script>
-    const container = document.getElementById("historique-gallery");
-    const photos = getHistoriquePhotos(); // supposée fonction dans userData.js
-
-    if (photos.length === 0) {
-      container.innerHTML = "<p>Aucun défi encore réalisé.</p>";
-    } else {
-      photos.forEach(entry => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 320;
-        canvas.height = 400;
-        drawPolaroid(entry.photo, entry.cadre, canvas);
-        container.appendChild(canvas);
-      });
-    }
-  </script>
 </body>
 </html>

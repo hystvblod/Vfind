@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -10,18 +10,17 @@
 
   <header class="header-solo">
     <div class="header-row">
- <a href="index.html" class="back-btn" title="Retour">
-  <img src="assets/icons/arrow_back.svg" alt="Retour" />
-</a>
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
+      </a>
       <h1>Boutique</h1>
       <div class="top-buttons">
         <a href="profil.html" class="btn-icon">
-  <img src="assets/icons/user.svg" alt="Profil" />
-</a>
-       <a href="parametres.html" class="btn-icon">
-  <img src="assets/icons/settings.svg" alt="Paramètres" />
-</a>
-
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
+        <a href="parametres.html" class="btn-icon">
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
       </div>
     </div>
   </header>
@@ -53,9 +52,8 @@
   <!-- SECTION BOUTIQUE -->
   <section class="cadres-list">
     <div id="boutique-categories"></div>
-<div id="boutique-container"></div>
-      <!-- Les cadres seront chargés ici par JS -->
-    </div>
+    <div id="boutique-container"></div>
+    <!-- Les cadres seront chargés ici par JS -->
   </section>
 
   <footer>
@@ -89,5 +87,8 @@
       if (typeof updateJetonsDisplay === "function") updateJetonsDisplay();
     });
   </script>
+
+  <!-- Connexion Firebase -->
+  <script type="module" src="js/firebase.js"></script>
 </body>
 </html>

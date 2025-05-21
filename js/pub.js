@@ -1,10 +1,13 @@
+// js/pub.js (version Firebase PRO)
+import { isPremium, addPoints, getPoints } from './userData.js'; // adapte si besoin !
 
-function showAd(type) {
-  const user = JSON.parse(localStorage.getItem("vfindUserData"));
-  if (user?.premium) {
+export async function showAd(type) {
+  // Statut premium Firestore
+  if (await isPremium()) {
     if (type === "rewarded") {
-      ajouterPieces(10);
+      await addPoints(10);
       alert("🎁 Bonus Premium : 10 pièces sans pub !");
+      await updatePointsDisplay();
     } else if (type === "interstitial") {
       alert("✨ Premium actif : aucune pub !");
     } else if (type === "premium") {
@@ -15,7 +18,8 @@ function showAd(type) {
 
   if (type === "rewarded") {
     alert("🎁 Pub vue ! Tu gagnes 100 pièces.");
-    ajouterPieces(100);
+    await addPoints(100);
+    await updatePointsDisplay();
   } else if (type === "interstitial") {
     alert("📺 Merci d'avoir vu la pub ! Le duel va commencer.");
   } else if (type === "premium") {
@@ -25,17 +29,8 @@ function showAd(type) {
   }
 }
 
-function ajouterPieces(montant) {
-  const userData = JSON.parse(localStorage.getItem("vfindUserData")) || {
-    pseudo: "Toi",
-    Vcoins: 0,
-    cadres: ["polaroid_01"],
-    premium: false
-  };
-
-  userData.Vcoins += montant;
-  localStorage.setItem("vfindUserData", JSON.stringify(userData));
-
+// Fonction utilitaire pour MAJ affichage points si besoin
+export async function updatePointsDisplay() {
   const pointsSpan = document.getElementById("points");
-  if (pointsSpan) pointsSpan.textContent = userData.Vcoins;
+  if (pointsSpan) pointsSpan.textContent = await getPoints();
 }

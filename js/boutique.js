@@ -1,4 +1,24 @@
-// === BOUTIQUE.JS COMPLET AVEC PARRAINAGE CODE + LIEN ===
+// === INITIALISATION FIREBASE SI PAS DÉJÀ FAIT (version pro, compatible multi-pages) ===
+if (!window.firebaseAppInit) {
+  window.firebaseAppInit = true;
+  import("https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js").then(({ initializeApp }) => {
+    window.firebaseApp = initializeApp({
+      apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
+      authDomain: "vfind-12866.firebaseapp.com",
+      projectId: "vfind-12866",
+      storageBucket: "vfind-12866.appspot.com",
+      messagingSenderId: "953801570333",
+      appId: "1:953801570333:web:92ed5e604d0df316046ef4",
+      measurementId: "G-WTSN5KCBDJ"
+    });
+    import("https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js").then(({ getAuth, onAuthStateChanged, signInAnonymously }) => {
+      window.firebaseAuth = getAuth(window.firebaseApp);
+      onAuthStateChanged(window.firebaseAuth, (user) => {
+        if (!user) signInAnonymously(window.firebaseAuth);
+      });
+    });
+  });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sélecteurs DOM principaux
@@ -106,23 +126,24 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // === NOUVEAU PARRAINAGE CODE + LIEN ===
-  window.inviteFriend = async function () {
-    // On récupère l’UID Firebase de l’utilisateur connecté
-    let uid = null;
-    if (window.firebase && firebase.auth().currentUser) {
-      uid = firebase.auth().currentUser.uid;
-    } else if (window.localStorage) {
-      const data = JSON.parse(localStorage.getItem("vfindUserData"));
-      if (data && data.uid) uid = data.uid;
+  window.inviteFriend = function () {
+    // Attend que Firebase soit bien initialisé
+    let tryCount = 0;
+    function getUidAndShow() {
+      tryCount++;
+      if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+        const uid = window.firebaseAuth.currentUser.uid;
+        const lien = window.location.origin + "/profil.html?parrain=" + uid;
+        prompt(
+          "Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)"
+        );
+      } else if (tryCount < 10) {
+        setTimeout(getUidAndShow, 200);
+      } else {
+        alert("Impossible de récupérer ton code de parrainage (Firebase non connecté).");
+      }
     }
-    if (!uid) {
-      alert("Impossible de récupérer ton code de parrainage.");
-      return;
-    }
-    const lien = window.location.origin + "/profil.html?parrain=" + uid;
-    prompt(
-      "Partage ce code OU ce lien à ton ami pour qu’il s’inscrive :\n\nCODE : " + uid + "\n\nOU LIEN : " + lien + "\n\n(Ton ami devra saisir ce code, ou utiliser ce lien à l'ouverture de l'appli)"
-    );
+    getUidAndShow();
   };
 
   window.ouvrirPopupJetonBoutique = function () {

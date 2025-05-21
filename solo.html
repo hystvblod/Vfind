@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -33,18 +33,15 @@
   <header class="header-solo" style="border-bottom: 5px solid #888;">
     <!-- LIGNE 1 -->
     <div class="header-row">
- <a href="index.html" class="back-btn" title="Retour">
-  <img src="assets/icons/arrow_back.svg" alt="Retour" />
-</a>
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
+      </a>
       <h1>Mode Solo</h1>
       <div class="top-buttons">
-          <img src="assets/icons/user.svg" alt="Profil" />
-</a>
-
+        <img src="assets/icons/user.svg" alt="Profil" />
         <a href="parametres.html" class="btn-icon">
-  <img src="assets/icons/settings.svg" alt="Paramètres" />
-</a>
-
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
       </div>
     </div>
 
@@ -74,10 +71,10 @@
     </section>
 
     <section id="game-section" class="hidden">
-     <div class="timer-box">
-  <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
-  Temps restant : <span id="timer">--:--:--</span>
-</div>
+      <div class="timer-box">
+        <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
+        Temps restant : <span id="timer">--:--:--</span>
+      </div>
       <ul id="defi-list" class="defi-list"></ul>
     </section>
 
@@ -89,6 +86,7 @@
   </main>
 
   <!-- SCRIPTS -->
+  <script type="module" src="js/firebase.js"></script>
   <script src="js/userData.js"></script>
   <script src="js/solo.js"></script>
   <script src="js/camera.js"></script>

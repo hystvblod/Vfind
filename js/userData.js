@@ -1,156 +1,173 @@
+// === userData.js (Firebase PRO) ===
+import { db, auth, initFirebaseUser } from './firebase.js';
+import {
+  doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove
+} from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-function formatCadreId(id) {
-  const num = id.replace(/[^\d]/g, ""); // extrait le numéro
-  const padded = num.padStart(2, "0"); // force 2 chiffres
+// Utils : accès au doc utilisateur courant
+async function getUserRef() {
+  await initFirebaseUser();
+  const user = auth.currentUser;
+  if (!user) throw new Error("Utilisateur non connecté");
+  return doc(db, "users", user.uid);
+}
+
+// Utilitaire ID cadre (inchangé)
+export function formatCadreId(id) {
+  const num = id.replace(/[^\d]/g, "");
+  const padded = num.padStart(2, "0");
   return "polaroid_" + padded;
 }
 
-/// Chargement et sauvegarde des données utilisateur
-function getUserData() {
-  return JSON.parse(localStorage.getItem("vfindUserData")) || {
+// ======================
+// Données utilisateur
+// ======================
+
+// Pseudo
+export async function getPseudo() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data().pseudo || "Toi" : "Toi";
+}
+export async function setPseudo(pseudo) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { pseudo });
+}
+
+// Points (Vcoins)
+export async function getPoints() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().points || 0) : 0;
+}
+export async function addPoints(n) {
+  const ref = await getUserRef();
+  const points = await getPoints();
+  await updateDoc(ref, { points: points + n });
+}
+export async function removePoints(n) {
+  const points = await getPoints();
+  if (points < n) return false;
+  const ref = await getUserRef();
+  await updateDoc(ref, { points: points - n });
+  return true;
+}
+
+// Jetons
+export async function getJetons() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().jetons || 0) : 0;
+}
+export async function addJetons(n) {
+  const ref = await getUserRef();
+  const jetons = await getJetons();
+  await updateDoc(ref, { jetons: jetons + n });
+}
+export async function removeJeton() {
+  const jetons = await getJetons();
+  if (jetons <= 0) return false;
+  const ref = await getUserRef();
+  await updateDoc(ref, { jetons: jetons - 1 });
+  return true;
+}
+
+// Cadres possédés
+export async function getCadresPossedes() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().cadres || []) : [];
+}
+export async function possedeCadre(id) {
+  const idClean = formatCadreId(id);
+  const cadres = await getCadresPossedes();
+  return cadres.includes(idClean);
+}
+export async function acheterCadre(id) {
+  const ref = await getUserRef();
+  const idClean = formatCadreId(id);
+  await updateDoc(ref, { cadres: arrayUnion(idClean) });
+}
+export async function getCadreSelectionne() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().cadreActif || "polaroid_01") : "polaroid_01";
+}
+export async function setCadreSelectionne(id) {
+  const ref = await getUserRef();
+  const idClean = formatCadreId(id);
+  await updateDoc(ref, { cadreActif: idClean });
+}
+
+// Historique
+export async function sauvegarderPhoto(base64, defi) {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  const historique = snap.exists() ? (snap.data().historique || []) : [];
+  historique.push({ base64, defi, date: new Date().toISOString() });
+  await updateDoc(ref, { historique });
+}
+export async function getHistoriquePhotos() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().historique || []) : [];
+}
+
+// Likes photos
+export async function likePhoto(photoId) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { likedPhotos: arrayUnion(photoId) });
+}
+export async function unlikePhoto(photoId) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { likedPhotos: arrayRemove(photoId) });
+}
+export async function getLikedPhotos() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().likedPhotos || []) : [];
+}
+
+// Signalements photos
+export async function signalerPhoto(photoId) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { signaledPhotos: arrayUnion(photoId) });
+}
+export async function getSignaledPhotos() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().signaledPhotos || []) : [];
+}
+
+// Premium
+export async function isPremium() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().premium === true) : false;
+}
+export async function setPremium(status) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { premium: !!status });
+}
+
+// Réinitialisation complète (ATTENTION : efface tout le doc Firestore !)
+export async function resetUserData() {
+  const ref = await getUserRef();
+  await setDoc(ref, {
     pseudo: "Toi",
-    Vcoins: 0,
-    cadres: ["polaroid_01", "polaroid_02"], // correspond aux vrais fichiers
-    cadreActif: "polaroid_01",                  // idem
+    points: 0,
+    jetons: 0,
+    cadres: [],
+    cadreActif: "polaroid_01",
     historique: [],
     likedPhotos: [],
     signaledPhotos: [],
     premium: false
-  };
+  });
 }
 
-function saveUserData(data) {
-  localStorage.setItem("vfindUserData", JSON.stringify(data));
-}
-
-// Pseudo
-function getPseudo() {
-  return getUserData().pseudo;
-}
-function setPseudo(pseudo) {
-  const data = getUserData();
-  data.pseudo = pseudo;
-  saveUserData(data);
-}
-
-// Points
-function getPoints() {
-  return getUserData().Vcoins;
-}
-function addPoints(n) {
-  const data = getUserData();
-  data.Vcoins += n;
-  saveUserData(data);
-}
-function removePoints(n) {
-  const data = getUserData();
-  if (data.Vcoins >= n) {
-    data.Vcoins -= n;
-    saveUserData(data);
-    return true;
-  }
-  return false;
-}
-// Jetons
-function getJetons() {
-  return getUserData().jetons || 0;
-}
-function addJetons(n) {
-  const data = getUserData();
-  data.jetons = (data.jetons || 0) + n;
-  saveUserData(data);
-}
-function removeJeton() {
-  const data = getUserData();
-  if (data.jetons > 0) {
-    data.jetons -= 1;
-    saveUserData(data);
-    return true;
-  }
-  return false;
-}
-
-// Cadres
-function getCadresPossedes() {
-  return getUserData().cadres;
-}
-function possedeCadre(id) {
-  return getUserData().cadres.includes(formatCadreId(id));
-
-}
-function acheterCadre(id) {
-  const data = getUserData();
-  const idClean = formatCadreId(id);
-  if (!data.cadres.includes(idClean)) {
-    data.cadres.push(idClean);
-    saveUserData(data);
- }
-}
-function getCadreSelectionne() {
-  return getUserData().cadreActif || "polaroid_01";
-}
-function setCadreSelectionne(id) {
-  const data = getUserData();
-  data.cadreActif = formatCadreId(id);
-  saveUserData(data);
-
-}
-
-// Historique
-function sauvegarderPhoto(base64, defi) {
-  const data = getUserData();
-  data.historique.push({ base64, defi, date: new Date().toISOString() });
-  saveUserData(data);
-}
-function getHistoriquePhotos() {
-  return getUserData().historique;
-}
-
-// Likes
-function likePhoto(photoId) {
-  const data = getUserData();
-  if (!data.likedPhotos.includes(photoId)) {
-    data.likedPhotos.push(photoId);
-    saveUserData(data);
-  }
-}
-function unlikePhoto(photoId) {
-  const data = getUserData();
-  data.likedPhotos = data.likedPhotos.filter(id => id !== photoId);
-  saveUserData(data);
-}
-function getLikedPhotos() {
-  return getUserData().likedPhotos;
-}
-
-// Signalements
-function signalerPhoto(photoId) {
-  const data = getUserData();
-  if (!data.signaledPhotos.includes(photoId)) {
-    data.signaledPhotos.push(photoId);
-    saveUserData(data);
-  }
-}
-function getSignaledPhotos() {
-  return getUserData().signaledPhotos;
-}
-
-// Premium
-function isPremium() {
-  return getUserData().premium === true;
-}
-function setPremium(status) {
-  const data = getUserData();
-  data.premium = status;
-  saveUserData(data);
-}
-
-// Réinitialisation
-function resetUserData() {
-  localStorage.removeItem("vfindUserData");
-}
-function updateUserData(update) {
-  const data = getUserData();
-  Object.assign(data, update);
-  saveUserData(data);
+// Mise à jour partielle (patch)
+export async function updateUserData(update) {
+  const ref = await getUserRef();
+  await updateDoc(ref, update);
 }

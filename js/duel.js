@@ -1,33 +1,44 @@
-document.addEventListener("DOMContentLoaded", () => {
+import {
+  getCadreSelectionne,
+  getJetons,
+  removeJeton,
+  // ... (toutes les fonctions userData.js dont tu as besoin)
+} from './userData.js';
+
+document.addEventListener("DOMContentLoaded", async () => {
   // Récupère le mode et l'adversaire depuis l'URL
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") || "random";
   const adversaire = params.get("adversaire") || (mode === "random" ? "Adversaire mystère" : "Ton ami");
 
   const defiList = document.getElementById("duel-defi-list");
-  const cadre = (typeof getCadreSelectionne === "function" ? getCadreSelectionne() : "polaroid_01");
-  updateJetonsDisplay();
+  const cadre = await getCadreSelectionne();
+  await updateJetonsDisplay();
 
   // Affiche le nom de l'adversaire sur la page si tu as un endroit prévu :
   const advName = document.getElementById("nom-adversaire");
   if (advName) advName.textContent = adversaire;
 
+  // ⚡️ A REMPLACER PAR DES APPELS FIRESTORE (ici, on suppose temporairement un objet global window.photosDuel)
+  window.photosDuel = window.photosDuel || {}; // idDefi -> { photoA, photoB, jetonValide }
+  // Tu pourras remplacer cette variable par de vrais appels cloud par la suite !
+
   fetch("data/defis.json")
     .then(res => res.json())
-    .then(data => {
+    .then(async data => {
       const defis = data.defis.slice(0, 3);
       defiList.innerHTML = "";
 
-      defis.forEach((defi, index) => {
+      for (let index = 0; index < defis.length; index++) {
+        const defi = defis[index];
         const id = defi.id;
         const texte = defi.intitule;
 
-        const photoA = localStorage.getItem("photo_defi_" + id) || null;
-        const photoB = mode === "ami"
-          ? localStorage.getItem("photo_ami_" + id) || null
-          : localStorage.getItem("photo_adversaire_" + id) || null;
-
-        const jetonValide = localStorage.getItem("defi_jeton_" + id) === "1";
+        // À terme, récupère ces valeurs depuis Firestore :
+        const entry = window.photosDuel[id] || {};
+        const photoA = entry.photoA || null;
+        const photoB = entry.photoB || null;
+        const jetonValide = !!entry.jetonValide;
         const advHasPhoto = !!photoB;
 
         const boutonTexte = photoA ? "📸 Reprendre une photo" : "📸 Prendre une photo";
@@ -62,18 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
         li.setAttribute("data-defi-id", id);
         li.innerHTML = html;
         defiList.appendChild(li);
-      });
+      }
 
-      afficherPhotosCadresDuel(cadre, mode);
+      await afficherPhotosCadresDuel(cadre, mode);
     });
 
-  function afficherPhotosCadresDuel(cadre, mode) {
+  async function afficherPhotosCadresDuel(cadre, mode) {
     document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
-      const photoA = localStorage.getItem("photo_defi_" + id);
-      const photoB = mode === "ami"
-        ? localStorage.getItem("photo_ami_" + id)
-        : localStorage.getItem("photo_adversaire_" + id);
+      const entry = window.photosDuel[id] || {};
+      const photoA = entry.photoA;
+      const photoB = entry.photoB;
 
       if (photoA) {
         const container = defiEl.querySelector(`[data-photo-joueur="${id}"]`);
@@ -101,10 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function updateJetonsDisplay() {
+  async function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan && typeof getJetons === "function") {
-      jetonsSpan.textContent = getJetons();
+    if (jetonsSpan) {
+      jetonsSpan.textContent = await getJetons();
     }
   }
 
@@ -115,19 +125,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let defiIndexActuel = null;
 
-  window.ouvrirPopupJeton = function (index) {
-    const jetons = getJetons();
+  window.ouvrirPopupJeton = async function (index) {
+    const jetons = await getJetons();
     document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
     document.getElementById("popup-jeton").classList.remove("hidden");
     document.getElementById("popup-jeton").classList.add("show");
     defiIndexActuel = index;
 
-    document.getElementById("valider-jeton-btn").onclick = () => {
-      const jetons = getJetons();
+    document.getElementById("valider-jeton-btn").onclick = async () => {
+      const jetons = await getJetons();
       if (jetons > 0) {
-        const success = removeJeton();
+        const success = await removeJeton();
         if (success) {
-          updateJetonsDisplay();
+          await updateJetonsDisplay();
           if (typeof validerDefi === "function") {
             validerDefi(defiIndexActuel, true);
           }
@@ -146,19 +156,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("popup-jeton").classList.add("hidden");
   };
 
-  const HISTORY_KEY = "vfindHistorique";
   let defisDuelValides = [null, null, null];
 
-  window.validerDefi = function(index, viaJeton = false) {
+  window.validerDefi = async function(index, viaJeton = false) {
     const defis = document.querySelectorAll("#duel-defi-list li");
     const li = defis[index];
     const id = li.getAttribute("data-defi-id");
-    const url = localStorage.getItem("photo_defi_" + id);
-    if (!url && !viaJeton) return;
+    const photoA = window.photosDuel[id]?.photoA; // Récupère photo cloud ou JS RAM ici
+    if (!photoA && !viaJeton) return;
 
     li.classList.add("done");
     if (viaJeton) {
-      localStorage.setItem("defi_jeton_" + id, "1");
+      // ⚡️ Mets à jour cloud ici l'info de jeton utilisé pour ce défi si tu veux la synchro (Firestore)
+      window.photosDuel[id] = window.photosDuel[id] || {};
+      window.photosDuel[id].jetonValide = true;
     }
     const texteDefi = li.querySelector("p").textContent.trim();
     defisDuelValides[index] = texteDefi;
@@ -173,30 +184,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
   };
 
+  // ⚡️ Ici aussi, tu devrais migrer sur Firestore la sauvegarde des duels
   function enregistrerDuelHistorique(defisValides) {
-    const historique = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-    const now = new Date();
-    const date = now.toLocaleDateString("fr-FR");
-    const time = now.toLocaleTimeString("fr-FR");
-    const dateStr = `${date}, ${time}`;
-    historique.unshift({
-      date: dateStr,
-      defis_duel: defisValides,
-    });
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(historique));
+    // TODO: Créer/mettre à jour dans Firestore, pas localStorage !
+    // Par exemple, ajoute une entrée dans "users/{uid}/historiqueDuels"
+    console.log("Historique du duel (à stocker Firestore):", defisValides);
   }
 
-  // ===================== TIMER DUEL 24H =====================
-  const DUEL_TIMER_KEY = "vfind_duel_timer";
+  // ============ TIMER DUEL 24H =============
   const duelTimerEl = document.getElementById("timer");
 
   function initDuelTimer() {
-    let endTime = localStorage.getItem(DUEL_TIMER_KEY);
+    // Pour la version cloud, stocke l'info de dernier duel en Firestore !
+    let endTime = window.duelEndTime || null; // À brancher cloud
     const now = Date.now();
 
     if (!endTime || now > parseInt(endTime)) {
       endTime = now + 24 * 60 * 60 * 1000;
-      localStorage.setItem(DUEL_TIMER_KEY, endTime.toString());
+      window.duelEndTime = endTime; // Stocke cloud plus tard !
     }
 
     const interval = setInterval(() => {
