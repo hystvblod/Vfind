@@ -1,26 +1,53 @@
-// amis.js — gestion locale des amis et invitations duel
+// amis.js — gestion cloud Firestore des amis et invitations duel
 
-// =============== STOCKAGE UTILISATEUR ===============
-function getUserData() {
-  return JSON.parse(localStorage.getItem("vfindUserData")) || {
+// === Helpers Firebase ===
+async function waitForFirebaseReady() {
+  return new Promise(resolve => {
+    function check() {
+      if (
+        window.firebaseAuth &&
+        window.firebaseDB &&
+        window.firebaseFirestore &&
+        window.firebaseAuth.currentUser
+      ) {
+        resolve();
+      } else setTimeout(check, 100);
+    }
+    check();
+  });
+}
+
+async function getUserDocRef() {
+  await waitForFirebaseReady();
+  const user = window.firebaseAuth.currentUser;
+  return window.firebaseFirestore.doc(window.firebaseDB, "users", user.uid);
+}
+
+async function getUserDataCloud() {
+  await waitForFirebaseReady();
+  const ref = await getUserDocRef();
+  const snap = await window.firebaseFirestore.getDoc(ref);
+  return snap.exists() ? snap.data() : {
     pseudo: "Toi",
     amis: [],
     demandesRecues: [],
     demandesEnvoyees: []
   };
 }
-function saveUserData(data) {
-  localStorage.setItem("vfindUserData", JSON.stringify(data));
+
+async function updateUserDataCloud(update) {
+  const ref = await getUserDocRef();
+  await window.firebaseFirestore.updateDoc(ref, update);
 }
 
 // =============== AFFICHAGE LISTES ===============
-function afficherListesAmis() {
-  const data = getUserData();
+async function afficherListesAmis() {
+  const data = await getUserDataCloud();
 
   const ulAmis = document.getElementById("liste-amis");
   if (ulAmis) {
     ulAmis.innerHTML = "";
-    if (data.amis.length === 0) {
+    if (!data.amis || data.amis.length === 0) {
       ulAmis.innerHTML = "<li>Pas d'ami pour le moment.</li>";
     } else {
       data.amis.forEach(pseudo => {
@@ -32,7 +59,7 @@ function afficherListesAmis() {
   const ulRecues = document.getElementById("demandes-recue");
   if (ulRecues) {
     ulRecues.innerHTML = "";
-    if (data.demandesRecues.length === 0) {
+    if (!data.demandesRecues || data.demandesRecues.length === 0) {
       ulRecues.innerHTML = "<li>Aucune demande reçue.</li>";
     } else {
       data.demandesRecues.forEach((pseudo, i) => {
@@ -44,7 +71,7 @@ function afficherListesAmis() {
   const ulEnvoyees = document.getElementById("demandes-envoyees");
   if (ulEnvoyees) {
     ulEnvoyees.innerHTML = "";
-    if (data.demandesEnvoyees.length === 0) {
+    if (!data.demandesEnvoyees || data.demandesEnvoyees.length === 0) {
       ulEnvoyees.innerHTML = "<li>Aucune demande envoyée.</li>";
     } else {
       data.demandesEnvoyees.forEach(pseudo => {
@@ -55,7 +82,7 @@ function afficherListesAmis() {
 }
 
 // =============== ACTIONS ===============
-window.ajouterAmi = function () {
+window.ajouterAmi = async function () {
   const input = document.getElementById("pseudo-ami");
   if (!input) {
     alert("Champ introuvable !");
@@ -67,43 +94,99 @@ window.ajouterAmi = function () {
     return;
   }
 
-  let data = getUserData();
-  if (data.amis.includes(pseudo) || data.demandesEnvoyees.includes(pseudo)) {
+  let data = await getUserDataCloud();
+  if ((data.amis || []).includes(pseudo) || (data.demandesEnvoyees || []).includes(pseudo)) {
     alert("Déjà ami ou demande en attente !");
     return;
   }
 
+  // Enregistre la demande dans TON profil (demandesEnvoyees)
+  data.demandesEnvoyees = data.demandesEnvoyees || [];
   data.demandesEnvoyees.push(pseudo);
-  saveUserData(data);
+  await updateUserDataCloud({ demandesEnvoyees: data.demandesEnvoyees });
+
+  // Enregistre la demande dans le profil de l’ami (demandesRecues)
+  // Il faut chercher l'utilisateur correspondant au pseudo
+  // ATTENTION : ici on suppose que "pseudo" est unique
+  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
+  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
+  const res = await window.firebaseFirestore.getDocs(q);
+  if (!res.empty) {
+    const amiDoc = res.docs[0];
+    const amiData = amiDoc.data();
+    const recues = amiData.demandesRecues || [];
+    if (!recues.includes(data.pseudo)) {
+      recues.push(data.pseudo);
+      await window.firebaseFirestore.updateDoc(amiDoc.ref, { demandesRecues: recues });
+    }
+  }
   input.value = "";
-  afficherListesAmis();
-  alert("Demande envoyée (démo locale, non vraiment envoyée à quelqu'un) !");
+  await afficherListesAmis();
+  alert("Demande envoyée !");
 };
 
-// Pour la démo locale, accepter la demande l'ajoute à la liste
-window.accepterDemande = function (pseudo, index) {
-  let data = getUserData();
+window.accepterDemande = async function (pseudo, index) {
+  let data = await getUserDataCloud();
+  // Ajoute l’ami à la liste
+  data.amis = data.amis || [];
   if (!data.amis.includes(pseudo)) data.amis.push(pseudo);
+
+  // Retire la demande reçue
   data.demandesRecues.splice(index, 1);
-  saveUserData(data);
-  afficherListesAmis();
+
+  // Retire aussi la demande envoyée côté ami
+  // Cherche le doc ami
+  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
+  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
+  const res = await window.firebaseFirestore.getDocs(q);
+  if (!res.empty) {
+    const amiDoc = res.docs[0];
+    let amiData = amiDoc.data();
+    amiData.amis = amiData.amis || [];
+    if (!amiData.amis.includes(data.pseudo)) amiData.amis.push(data.pseudo);
+    // Retire demande envoyée côté ami
+    amiData.demandesEnvoyees = (amiData.demandesEnvoyees || []).filter(p => p !== data.pseudo);
+    await window.firebaseFirestore.updateDoc(amiDoc.ref, {
+      amis: amiData.amis,
+      demandesEnvoyees: amiData.demandesEnvoyees
+    });
+  }
+
+  await updateUserDataCloud({
+    amis: data.amis,
+    demandesRecues: data.demandesRecues
+  });
+  await afficherListesAmis();
 };
-window.refuserDemande = function (pseudo, index) {
-  let data = getUserData();
+
+window.refuserDemande = async function (pseudo, index) {
+  let data = await getUserDataCloud();
   data.demandesRecues.splice(index, 1);
-  saveUserData(data);
-  afficherListesAmis();
+  await updateUserDataCloud({ demandesRecues: data.demandesRecues });
+  await afficherListesAmis();
 };
-window.supprimerAmi = function (pseudo) {
-  let data = getUserData();
-  data.amis = data.amis.filter(p => p !== pseudo);
-  saveUserData(data);
-  afficherListesAmis();
+
+window.supprimerAmi = async function (pseudo) {
+  let data = await getUserDataCloud();
+  data.amis = (data.amis || []).filter(p => p !== pseudo);
+  await updateUserDataCloud({ amis: data.amis });
+
+  // Retire aussi côté ami
+  const usersColl = window.firebaseFirestore.collection(window.firebaseDB, "users");
+  const q = window.firebaseFirestore.query(usersColl, window.firebaseFirestore.where("pseudo", "==", pseudo));
+  const res = await window.firebaseFirestore.getDocs(q);
+  if (!res.empty) {
+    const amiDoc = res.docs[0];
+    let amiData = amiDoc.data();
+    amiData.amis = (amiData.amis || []).filter(p => p !== data.pseudo);
+    await window.firebaseFirestore.updateDoc(amiDoc.ref, { amis: amiData.amis });
+  }
+
+  await afficherListesAmis();
 };
+
 window.defierAmi = function (pseudo) {
-  // ✅ Corrigé : redirige vers duel_game.html
   window.location.href = `duel_game.html?mode=ami&adversaire=${encodeURIComponent(pseudo)}`;
 };
 
-// À l'ouverture de la page
 document.addEventListener("DOMContentLoaded", afficherListesAmis);
