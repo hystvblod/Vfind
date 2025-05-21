@@ -108,7 +108,8 @@ async function refreshProfilDisplay() {
   const idDisplay = document.getElementById("idUserDisplay");
   idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
   idDisplay.style.textDecoration = "underline";
-  idDisplay.style.color = profil.idFixe ? "#ffe04a" : "#fa4a4a";
+  idDisplay.style.color = "#fff";
+
   // Solde
   document.getElementById("vcoins").textContent = profil.points || 0;
   document.getElementById("jetons").textContent = profil.jetons || 0;
