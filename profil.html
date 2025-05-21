@@ -6,32 +6,55 @@
   <title>VFind - Profil</title>
   <link rel="stylesheet" href="style/main.css"/>
   <style>
-    .popup-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .popup {
-      background: #fff;
-      color: black;
-      padding: 2rem;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 90vw;
-    }
-    .popup input {
-      padding: 0.5rem;
-      margin-top: 1rem;
-      width: 80%;
-    }
-    .popup button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
+    .id-user {
+      color: #fff;
       font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.09rem;
+      letter-spacing: 0.5px;
+      text-decoration: underline;
+      transition: color 0.15s;
+    }
+    .id-user:hover {
+      color: #ffe04a;
+    }
+    .change-id-zone {
+      text-align: center;
+      margin: 1.7em 0 2.3em 0;
+    }
+    #idChangeForm {
+      display: none;
+      margin-top: 1em;
+    }
+    #idChangeForm input {
+      padding: 0.5em;
+      border-radius: 7px;
+      border: 1px solid #ccc;
+      font-size: 1.07em;
+      margin-right: 0.7em;
+    }
+    #idChangeForm button {
+      background:#ffe04a;
+      padding:7px 16px;
+      border-radius:7px;
+      border:none;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:1.07em;
+      margin-left: 0.3em;
+    }
+    #idError {
+      color:#ff4444;
+      font-size:0.99em;
+      display:block;
+      margin-top:0.6em;
+      min-height:1.3em;
+    }
+    #idError.valid {
+      color: #14b214;
     }
   </style>
 </head>
@@ -49,8 +72,17 @@
       </a>
     </div>
   </div>
-  <div class="id-user" id="idUserDisplay" style="cursor:pointer">(ID...)</div>
+  <div class="id-user" id="idUserDisplay">(ID...)</div>
 </header>
+
+<div class="change-id-zone">
+  <button id="showChangeIdBtn">Changer mon pseudo public</button>
+  <div id="idChangeForm">
+    <input id="newIdInput" type="text" maxlength="18" placeholder="Nouveau pseudo unique">
+    <button id="validateIdBtn">Valider</button>
+    <span id="idError"></span>
+  </div>
+</div>
 
 <section class="profil-top">
   <div class="profil-solde-bar">
@@ -64,16 +96,7 @@
     </div>
   </div>
 </section>
-<div class="popup-bg" id="popupID">
-  <div class="popup">
-    <p id="popupText">Modifier mon identifiant public :</p>
-    <input type="text" id="newIdInput" placeholder="Nouveau pseudo unique" maxlength="18" autocomplete="off" />
-    <br />
-    <button id="validateId">Valider</button>
-    <button id="cancelPopup">Annuler</button>
-    <p id="idError" style="color:red;margin-top:1rem;"></p>
-  </div>
-</div>
+
 <main class="profil-container">
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">🎨 Mes cadres</button>
@@ -99,18 +122,14 @@ function randomTempID() {
   return "user_" + rand;
 }
 
-let profil, ref, uid; // portée globale pour accès lors du changement d'ID
+let profil, ref, uid; // portée globale
 
 async function refreshProfilDisplay() {
   const snap = await getDoc(ref);
   profil = snap.data();
-  // Affichage ID
   const idDisplay = document.getElementById("idUserDisplay");
   idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
-  idDisplay.style.textDecoration = "underline";
   idDisplay.style.color = "#fff";
-
-  // Solde
   document.getElementById("vcoins").textContent = profil.points || 0;
   document.getElementById("jetons").textContent = profil.jetons || 0;
 }
@@ -152,27 +171,19 @@ async function setupProfile() {
     profil = snap.data();
     await refreshProfilDisplay();
 
-    // --- Popup modif ID ---
-    const idDisplay = document.getElementById("idUserDisplay");
-    idDisplay.onclick = () => {
-      document.getElementById("popupID").style.display = "flex";
-      document.getElementById("newIdInput").value = "";
-      document.getElementById("idError").textContent = "";
-      if (profil.idFixe) {
-        document.getElementById("popupText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
-      } else {
-        document.getElementById("popupText").textContent = "Modifier mon identifiant public :";
-      }
+    // Mini formulaire inline pour changer d'ID
+    document.getElementById("showChangeIdBtn").onclick = () => {
+      document.getElementById("idChangeForm").style.display = "inline-block";
       document.getElementById("newIdInput").focus();
-    };
-    document.getElementById("cancelPopup").onclick = () => {
-      document.getElementById("popupID").style.display = "none";
+      document.getElementById("idError").textContent = "";
+      document.getElementById("idError").classList.remove("valid");
     };
 
-    // Validation nouvel ID
-    document.getElementById("validateId").onclick = async () => {
+    document.getElementById("validateIdBtn").onclick = async () => {
       const newId = document.getElementById("newIdInput").value.trim();
       const err = document.getElementById("idError");
+      err.textContent = "";
+      err.classList.remove("valid");
       if (newId.length < 3) {
         err.textContent = "ID trop court (min 3 caractères)";
         return;
@@ -185,7 +196,7 @@ async function setupProfile() {
         err.textContent = "ID : caractères autorisés A-Z 0-9 . _ -";
         return;
       }
-      // Unicité
+      // Vérifie unicité
       const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
       const res = await getDocs(q);
       if (!res.empty) {
@@ -195,7 +206,7 @@ async function setupProfile() {
       // Changement avec coût si déjà fixé
       if (profil.idFixe) {
         if ((profil.points || 0) < 200) {
-          err.textContent = "Il te faut 200 pièces pour changer d’ID !";
+          err.textContent = "Il te faut 200 pièces pour changer d’ID !";
           return;
         }
         await updateDoc(ref, {
@@ -203,14 +214,20 @@ async function setupProfile() {
           idFixe: true,
           points: (profil.points || 0) - 200
         });
+        profil.points -= 200;
       } else {
         await updateDoc(ref, {
           pseudoPublic: newId,
           idFixe: true
         });
       }
-      document.getElementById("popupID").style.display = "none";
-      await refreshProfilDisplay();
+      profil.pseudoPublic = newId;
+      profil.idFixe = true;
+      document.getElementById("idUserDisplay").textContent = "ID : " + newId;
+      err.classList.add("valid");
+      err.textContent = "✅ Ton ID public a été changé !";
+      document.getElementById("idChangeForm").style.display = "none";
+      refreshProfilDisplay();
     };
   });
 }
