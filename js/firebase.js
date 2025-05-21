@@ -3,9 +3,9 @@
 // Firebase 11.x en module (CDN)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-// Configuration de ton projet Firebase
+// Configuration du projet Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
   authDomain: "vfind-12866.firebaseapp.com",
@@ -16,36 +16,65 @@ const firebaseConfig = {
   measurementId: "G-WTSN5KCBDJ"
 };
 
-// Initialisation Firebase (à faire UNE SEULE FOIS !)
+// Initialisation Firebase (à faire UNE fois)
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Connexion anonyme automatique + création profil (si besoin)
+// Connexion + création profil avec parrainage
 export async function initFirebaseUser() {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const uid = user.uid;
-        const profilRef = doc(db, "users", uid);
-        const snap = await getDoc(profilRef);
+        const ref = doc(db, "users", uid);
+        let snap = await getDoc(ref);
 
+        // Si pas encore de compte => on le crée
         if (!snap.exists()) {
-          // Création du profil avec données par défaut
-          await setDoc(profilRef, {
+          const params = new URLSearchParams(window.location.search);
+          let parrain = null;
+
+          if (params.has("parrain") && params.get("parrain") !== uid) {
+            parrain = params.get("parrain");
+            const refParrain = doc(db, "users", parrain);
+            const snapParrain = await getDoc(refParrain);
+            if (snapParrain.exists()) {
+              const dataParrain = snapParrain.data();
+              const nbFilleuls = (dataParrain.filleuls || 0) + 1;
+              const newPoints = (dataParrain.points || 0) + 300;
+              const cadres = dataParrain.cadres || [];
+
+              if (nbFilleuls === 3 && !cadres.includes("polaroid_302")) {
+                cadres.push("polaroid_302");
+              }
+
+              await updateDoc(refParrain, {
+                filleuls: nbFilleuls,
+                points: newPoints,
+                cadres: cadres
+              });
+            }
+          }
+
+          await setDoc(ref, {
             pseudo: "Joueur",
             points: 100,
             jetons: 3,
+            cadres: [],
+            cadreActif: null,
+            filleuls: 0,
             amis: [],
             demandesRecues: [],
             demandesEnvoyees: [],
-            photoProfil: ""
+            photoProfil: "",
+            pseudoPublic: "",
+            idFixe: false,
+            ...(parrain ? { parrain: parrain } : {})
           });
-          console.log("✔️ Nouveau profil créé :", uid);
-        } else {
-          console.log("🔁 Profil déjà existant :", uid);
         }
-        resolve(user); // Callback si besoin
+
+        resolve(user);
       } else {
         await signInAnonymously(auth);
       }
@@ -53,5 +82,5 @@ export async function initFirebaseUser() {
   });
 }
 
-// Exporte tout ce dont tu as besoin
+// Export global
 export { app, auth, db };

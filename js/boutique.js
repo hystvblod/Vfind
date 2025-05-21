@@ -17,10 +17,59 @@ if (!window.firebaseAppInit) {
         if (!user) signInAnonymously(window.firebaseAuth);
       });
     });
+    import("https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js").then((fb) => {
+      window.firebaseFirestore = fb;
+      window.firebaseDB = fb.getFirestore(window.firebaseApp);
+    });
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// === Attendre que Firebase soit prêt ===
+function waitForFirebaseAuthReady() {
+  return new Promise(resolve => {
+    function check() {
+      if (window.firebaseAuth && window.firebaseDB && window.firebaseFirestore && window.firebaseAuth.currentUser) {
+        resolve();
+      } else {
+        setTimeout(check, 100);
+      }
+    }
+    check();
+  });
+}
+
+async function getUserDocRef() {
+  await waitForFirebaseAuthReady();
+  const user = window.firebaseAuth.currentUser;
+  return window.firebaseFirestore.doc(window.firebaseDB, "users", user.uid);
+}
+
+async function getUserDataCloud() {
+  await waitForFirebaseAuthReady();
+  const ref = await getUserDocRef();
+  const snap = await window.firebaseFirestore.getDoc(ref);
+  if (snap.exists()) return snap.data();
+  // Création si jamais le doc n’existe pas
+  await window.firebaseFirestore.setDoc(ref, {
+    pseudo: "Joueur",
+    points: 100,
+    jetons: 3,
+    cadres: ["polaroid_01", "polaroid_02"],
+    demandesRecues: [],
+    demandesEnvoyees: [],
+    amis: [],
+    photoProfil: "",
+    premium: false
+  });
+  return (await window.firebaseFirestore.getDoc(ref)).data();
+}
+
+async function updateUserDataCloud(update) {
+  const ref = await getUserDocRef();
+  await window.firebaseFirestore.updateDoc(ref, update);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
   // Sélecteurs DOM principaux
   const boutiqueContainer = document.getElementById("boutique-container");
   const catBarContainer = document.getElementById("boutique-categories");
@@ -28,19 +77,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const feedback = document.getElementById("gain-feedback");
   const popupGain = document.getElementById("popup-gain");
 
-  // --- Points et jetons ---
-  updatePointsDisplay();
-  updateJetonsDisplay();
-
-  function updatePointsDisplay() {
-    if (pointsDisplay) pointsDisplay.textContent = getPoints();
+  // Helpers cloud
+  async function getPoints() { return (await getUserDataCloud()).points || 0; }
+  async function addPoints(n) {
+    const data = await getUserDataCloud();
+    await updateUserDataCloud({ points: (data.points || 0) + n });
+  }
+  async function removePoints(n) {
+    const data = await getUserDataCloud();
+    if ((data.points || 0) >= n) {
+      await updateUserDataCloud({ points: data.points - n });
+      return true;
+    }
+    return false;
+  }
+  async function getJetons() { return (await getUserDataCloud()).jetons || 0; }
+  async function addJetons(n) {
+    const data = await getUserDataCloud();
+    await updateUserDataCloud({ jetons: (data.jetons || 0) + n });
+  }
+  async function possedeCadre(id) {
+    const data = await getUserDataCloud();
+    return (data.cadres || []).includes(id);
+  }
+  async function acheterCadre(id) {
+    const data = await getUserDataCloud();
+    if (!(data.cadres || []).includes(id)) {
+      await updateUserDataCloud({ cadres: [...(data.cadres || []), id] });
+    }
+  }
+  async function getOwnedFrames() {
+    const data = await getUserDataCloud();
+    return data.cadres || [];
+  }
+  async function isPremium() {
+    const data = await getUserDataCloud();
+    return !!data.premium;
   }
 
-  function updateJetonsDisplay() {
+  async function updatePointsDisplay() {
+    if (pointsDisplay) pointsDisplay.textContent = await getPoints();
+  }
+  async function updateJetonsDisplay() {
     const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan && typeof getJetons === "function") {
-      jetonsSpan.textContent = getJetons();
-    }
+    if (jetonsSpan) jetonsSpan.textContent = await getJetons();
   }
 
   // --- Feedback popups ---
@@ -55,23 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   }
 
-  function acheterCadre(id) {
-    const data = getUserData();
-    if (!data.cadres.includes(id)) {
-      data.cadres.push(id);
-      saveUserData(data);
-    }
-  }
-
-  function acheterCadreBoutique(id, prix) {
-    if (getPoints() < prix) {
+  // --- Acheter cadre depuis boutique (cloud) ---
+  async function acheterCadreBoutique(id, prix) {
+    if (!(await removePoints(prix))) {
       alert("❌ Pas assez de pièces !");
       return;
     }
-    removePoints(prix);
-    updatePointsDisplay();
-    acheterCadre(id);
-    localStorage.setItem("vfind_selected_frame", id);
+    await acheterCadre(id);
+    await updatePointsDisplay();
+    alert("✅ Cadre acheté !");
     location.reload();
   }
 
@@ -104,7 +176,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function showUnlockPopup(nom, message) {
     const oldPopup = document.getElementById("popup-unlock-info");
     if (oldPopup) document.body.removeChild(oldPopup);
-
     const popup = document.createElement("div");
     popup.id = "popup-unlock-info";
     popup.className = "popup show";
@@ -118,34 +189,23 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(popup);
   }
 
-  window.watchAd = function () {
-    addPoints(100);
-    updatePointsDisplay();
+  // Gagne des pièces via pub simulée
+  window.watchAd = async function () {
+    await addPoints(100);
+    await updatePointsDisplay();
     showFeedback("+100 💰");
     closePopup();
   };
 
-  // === NOUVEAU PARRAINAGE CODE + LIEN ===
-  window.inviteFriend = function () {
-    // Attend que Firebase soit bien initialisé
-    let tryCount = 0;
-    function getUidAndShow() {
-      tryCount++;
-      if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-        const uid = window.firebaseAuth.currentUser.uid;
-        const lien = window.location.origin + "/profil.html?parrain=" + uid;
-        prompt(
-          "Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)"
-        );
-      } else if (tryCount < 10) {
-        setTimeout(getUidAndShow, 200);
-      } else {
-        alert("Impossible de récupérer ton code de parrainage (Firebase non connecté).");
-      }
-    }
-    getUidAndShow();
+  // === Parrainage code Firebase (UID) ===
+  window.inviteFriend = async function () {
+    await waitForFirebaseAuthReady();
+    const uid = window.firebaseAuth.currentUser.uid;
+    const lien = window.location.origin + "/profil.html?parrain=" + uid;
+    prompt("Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)");
   };
 
+  // --- Popup achat jetons ---
   window.ouvrirPopupJetonBoutique = function () {
     const popup = document.getElementById("popup-achat-jeton");
     if (popup) {
@@ -153,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
       popup.classList.add("show");
     }
   }
-
   window.fermerPopupJetonBoutique = function () {
     const popup = document.getElementById("popup-achat-jeton");
     if (popup) {
@@ -162,24 +221,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  window.acheterJetonsAvecPieces = function () {
-    if (removePoints(100)) {
-      addJetons(3);
+  window.acheterJetonsAvecPieces = async function () {
+    if (await removePoints(100)) {
+      await addJetons(3);
       alert("✅ 3 jetons ajoutés !");
-      updatePointsDisplay();
-      updateJetonsDisplay();
+      await updatePointsDisplay();
+      await updateJetonsDisplay();
       fermerPopupJetonBoutique();
     } else {
       alert("❌ Pas assez de pièces.");
     }
   }
 
-  window.acheterJetonsAvecPub = function () {
+  window.acheterJetonsAvecPub = async function () {
     alert("📺 Simulation de pub regardée !");
-    setTimeout(() => {
-      addJetons(3);
+    setTimeout(async () => {
+      await addJetons(3);
       alert("✅ 3 jetons ajoutés !");
-      updateJetonsDisplay();
+      await updateJetonsDisplay();
       fermerPopupJetonBoutique();
     }, 3000);
   }
@@ -213,37 +272,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'autre';
   }
 
-  // === Fonction pour vérifier les 10 jours complets SOLO ou DUEL ===
+  // --- 10 jours complet pour débloquer polaroid_901 ---
   function hasCompleted10FullDaysStrict() {
-    const historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
-    const historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
-
-    const joursModes = {};
-    historiqueSolo.forEach(e => {
-      const d = e.date?.slice(0,10);
-      if (!d) return;
-      if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
-      joursModes[d].solo += e.defi ? (Array.isArray(e.defi) ? e.defi.length : 1) : 0;
-    });
-    historiqueDuel.forEach(e => {
-      const parts = e.date.split(',')[0].split('/');
-      if (parts.length === 3) {
-        const d = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-        if (!joursModes[d]) joursModes[d] = { solo: 0, duel: 0 };
-        joursModes[d].duel += e.defis_duel ? e.defis_duel.length : 0;
-      }
-    });
-    let joursComplet = 0;
-    Object.values(joursModes).forEach(obj => {
-      if (obj.solo >= 3 || obj.duel >= 3) joursComplet++;
-    });
-    return joursComplet >= 10;
+    // Cette version ne fonctionne QUE si l’historique est dans Firestore. Adapter si besoin.
+    return false; // à connecter avec le cloud !
   }
 
   let CADRES_DATA = [];
-  let currentCategory = 'classique'; // Par défaut
+  let currentCategory = 'classique';
 
-  function renderBoutique(categoryKey) {
+  async function renderBoutique(categoryKey) {
     catBarContainer.innerHTML = "";
     const bar = document.createElement("div");
     bar.className = "categories-bar";
@@ -265,13 +303,14 @@ document.addEventListener("DOMContentLoaded", () => {
     grid.className = "grid-cadres";
 
     const cadresCat = CADRES_DATA.filter(cadre => getCategorie(cadre.id) === categoryKey);
+    let ownedFrames = await getOwnedFrames();
+
     if (!cadresCat.length) {
       const empty = document.createElement("p");
       empty.textContent = "Aucun cadre dans cette catégorie.";
       grid.appendChild(empty);
     } else {
-      const ownedFrames = getUserData().cadres;
-      cadresCat.forEach(cadre => {
+      for (let cadre of cadresCat) {
         const item = document.createElement("div");
         item.classList.add("cadre-item");
 
@@ -320,7 +359,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (cadre.id === "polaroid_901") {
             if (hasCompleted10FullDaysStrict()) {
               if (!ownedFrames.includes(cadre.id)) {
-                acheterCadre(cadre.id);
+                await acheterCadre(cadre.id);
+                ownedFrames = await getOwnedFrames();
               }
               button.textContent = "Débloqué !";
               button.disabled = true;
@@ -339,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.onclick = () =>
               showUnlockPopup(cadre.nom, cadre.unlock || "Aucune information pour ce cadre.");
           }
-        } else if (categoryKey === "premium" && !isPremium()) {
+        } else if (categoryKey === "premium" && !(await isPremium())) {
           button.textContent = "Premium requis";
           button.disabled = true;
           button.classList.add("disabled-premium");
@@ -357,15 +397,19 @@ document.addEventListener("DOMContentLoaded", () => {
         item.appendChild(price);
         item.appendChild(button);
         grid.appendChild(item);
-      });
+      }
     }
     boutiqueContainer.appendChild(grid);
   }
 
+  // --- Initialisation
+  await waitForFirebaseAuthReady();
   fetch("data/cadres.json")
     .then(res => res.json())
-    .then(data => {
+    .then(async data => {
       CADRES_DATA = data;
-      renderBoutique(currentCategory);
+      await renderBoutique(currentCategory);
+      await updatePointsDisplay();
+      await updateJetonsDisplay();
     });
 });
