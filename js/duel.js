@@ -38,6 +38,25 @@ auth.onAuthStateChanged(user => {
 });
 
 // ====== MATCHMAKING UNIQUEMENT (PAS DE BOT) ======
+async function tryMatchmaking(timeoutMs = 15000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const duelsCol = collection(db, "duels");
+    const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", currentUser.uid));
+    const qsnap = await getDocs(q);
+    if (!qsnap.empty) {
+      const first = qsnap.docs[0];
+      const foundRoomId = first.id;
+      currentRoomId = foundRoomId;
+      await joinDuelRoom(foundRoomId);
+      window.location.href = `duel.html?room=${foundRoomId}`;
+      return true;
+    }
+    await new Promise(r => setTimeout(r, 2000)); // Attends 2s avant de réessayer
+  }
+  return false;
+}
+
 async function checkOrCreateDuelRoom() {
   const params = new URLSearchParams(window.location.search);
   const roomId = params.get("room");
@@ -45,19 +64,9 @@ async function checkOrCreateDuelRoom() {
     currentRoomId = roomId;
     await joinDuelRoom(roomId);
   } else {
-    const duelsCol = collection(db, "duels");
-    const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", currentUser.uid));
-    const qsnap = await getDocs(q);
-    let joined = false;
-    if (!qsnap.empty) {
-      const first = qsnap.docs[0];
-      const foundRoomId = first.id;
-      currentRoomId = foundRoomId;
-      await joinDuelRoom(foundRoomId);
-      window.location.href = `duel.html?room=${foundRoomId}`;
-      joined = true;
-    }
-    if (!joined) {
+    // Nouveau : essaye matchmaking pendant 15s avant de créer une room
+    const matched = await tryMatchmaking(15000); // Essaye pendant 15 secondes
+    if (!matched) {
       const newRoomId = await createDuelRoom();
       window.location.href = `duel.html?room=${newRoomId}`;
     }
