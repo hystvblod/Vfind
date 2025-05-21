@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
 
-  // === Correctif : toujours appeler caméra en "solo" ===
+  // Toujours caméra en "solo"
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
 
   getDocs(collection(db, "defis"))
@@ -110,9 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-    async function loadDefis() {
+  // ===== FONCTION ASYNCHRONE AVEC MAP DES PHOTOS SYNCHRO =====
+  async function loadDefis() {
     defiList.innerHTML = '';
-    // UTILISE FOR...OF pour bien await chaque async !
+    let photosMap = {};
     for (let index = 0; index < defisActuels.length; index++) {
       const defi = defisActuels[index];
       const li = document.createElement("li");
@@ -120,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      // Récupère la photo EN AWAIT
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
       if (!dataUrl) {
         try {
@@ -129,10 +129,10 @@ document.addEventListener("DOMContentLoaded", () => {
             dataUrl = data.defisSolo[defi.id];
             localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
           }
-        } catch (e) {
-          // Ne rien faire
-        }
+        } catch (e) {}
       }
+
+      photosMap[defi.id] = dataUrl || null;
 
       const hasPhoto = !!dataUrl;
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
@@ -151,17 +151,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       defiList.appendChild(li);
     }
-
-    await afficherPhotosSauvegardees();
-  
+    await afficherPhotosSauvegardees(photosMap);
   }
 
-  async function afficherPhotosSauvegardees() {
+  // ===== FONCTION AFFICHAGE AVEC PHOTOS EN PARAM =====
+  async function afficherPhotosSauvegardees(photosMap) {
     const cadreActuel = await getCadreSelectionne();
 
     document.querySelectorAll(".defi-item").forEach(defiEl => {
       const id = defiEl.getAttribute("data-defi-id");
-      const dataUrl = localStorage.getItem(`photo_defi_${id}`);
+      const dataUrl = photosMap[id];
 
       if (dataUrl) {
         const preview = document.createElement("div");
