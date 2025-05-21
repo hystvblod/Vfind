@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Duel Aléatoire - VFind</title>
   <link rel="stylesheet" href="style/main.css" />
+  <style>
+    .searching-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 2.5rem 0;
+    }
+    .spin-logo {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 1rem;
+      animation: spin 2s linear infinite;
+      filter: drop-shadow(0 2px 6px #cbe0ff);
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .searching-text {
+      font-size: 1.2rem;
+      color: #3682e3;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
 </head>
 <body class="duel-container">
   <header class="header-boutique">
@@ -23,6 +48,18 @@
   </header>
 
   <main>
+    <!-- Animation Recherche d'adversaire -->
+    <div id="searching-adversary" class="searching-box">
+      <img src="assets/img/logo.png" alt="Logo VFind" class="spin-logo"/>
+      <div class="searching-text">Recherche d’adversaire…</div>
+    </div>
+    <div id="searching-failed" class="searching-box" style="display:none;">
+      <div class="searching-text">
+        ⏳ Aucun adversaire trouvé pour l’instant.<br>Réessaie plus tard !
+      </div>
+    </div>
+
+    <!-- Bouton qui peut être masqué si recherche directe -->
     <div class="main-buttons" style="margin-top:2.5rem;">
       <a href="duel_game.html?mode=random" class="main-button">Commencer le duel !</a>
     </div>
@@ -32,6 +69,13 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
+  <script>
+    // Affiche l'animation "échec" après 1h d'attente
+    let waitingTimeout = setTimeout(() => {
+      document.getElementById("searching-adversary").style.display = "none";
+      document.getElementById("searching-failed").style.display = "flex";
+    }, 3600000); // 1 heure (en ms)
+  </script>
   <!-- Prêt pour Firebase si besoin plus tard -->
   <script type="module" src="js/firebase.js"></script>
 </body>

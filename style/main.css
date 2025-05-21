@@ -1543,3 +1543,27 @@ header,
   transition: color 0.2s;
 }
 
+.searching-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2.5rem 0;
+}
+.spin-logo {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 1rem;
+  animation: spin 2s linear infinite;
+  filter: drop-shadow(0 2px 6px #cbe0ff);
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+.searching-text {
+  font-size: 1.2rem;
+  color: #3682e3;
+  font-weight: bold;
+  text-align: center;
+}
+

@@ -1,11 +1,17 @@
-// === duel.js (version PRO full Firebase, plus de localStorage) ===
-import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+// === duel.js (version PRO full Firebase, matchmaking + bot, plus de localStorage) ===
+import {
+  getFirestore, collection, doc, setDoc, getDoc, updateDoc,
+  onSnapshot, query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
 // Initialisation Firebase
 const db = getFirestore();
 const auth = getAuth();
 let currentUser = null;
+
+// Nom de la room actuel (stocké en mémoire session)
+let currentRoomId = null;
 
 // Récupère l'utilisateur actuel
 auth.onAuthStateChanged(user => {
@@ -19,21 +25,37 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Nom de la room actuel (stocké en mémoire session, pas localStorage)
-let currentRoomId = null;
+// ====== MATCHMAKING + MODE BOT ======
 
-// Fonction pour créer/rejoindre une room de duel
 async function checkOrCreateDuelRoom() {
-  // Ex : on prend l’id dans l’URL : duel.html?room=XXXX
   const params = new URLSearchParams(window.location.search);
   const roomId = params.get("room");
   if (roomId) {
     currentRoomId = roomId;
     await joinDuelRoom(roomId);
   } else {
-    // Si pas de room, on en crée une nouvelle et on redirige
-    const newRoomId = await createDuelRoom();
-    window.location.href = `duel.html?room=${newRoomId}`;
+    // 1. CHERCHER UNE ROOM "WAITING" qui n'est PAS soi-même
+    const duelsCol = collection(db, "duels");
+    const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", currentUser.uid));
+    const qsnap = await getDocs(q);
+    let joined = false;
+    if (!qsnap.empty) {
+      // Prendre la première dispo
+      const first = qsnap.docs[0];
+      const foundRoomId = first.id;
+      currentRoomId = foundRoomId;
+      await joinDuelRoom(foundRoomId);
+      // Rediriger pour avoir l’URL propre
+      window.location.href = `duel.html?room=${foundRoomId}`;
+      joined = true;
+    }
+    if (!joined) {
+      // Si aucune room "waiting", en créer une nouvelle
+      const newRoomId = await createDuelRoom();
+      // Lancer le mode bot si personne ne rejoint en 10s
+      autoJoinAsBotIfAlone(newRoomId);
+      window.location.href = `duel.html?room=${newRoomId}`;
+    }
   }
 }
 
@@ -50,6 +72,23 @@ async function createDuelRoom() {
     createdAt: Date.now()
   });
   return roomId;
+}
+
+// BOT: Si après 10s il n'y a toujours pas de player2, remplir avec "BOT" (pour test/démo solo)
+async function autoJoinAsBotIfAlone(roomId) {
+  setTimeout(async () => {
+    const duelRef = doc(db, "duels", roomId);
+    const snap = await getDoc(duelRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.status === "waiting" && !data.player2) {
+        await updateDoc(duelRef, {
+          player2: "BOT",
+          status: "playing"
+        });
+      }
+    }
+  }, 10000); // 10 secondes
 }
 
 // Rejoint une room de duel existante (Firestore)
@@ -105,10 +144,10 @@ async function updateScore(points) {
 
 // Met à jour l'affichage du duel (fonction à compléter selon ton UI)
 function updateDuelUI(data) {
-  // Exemple d’affichage :
-  document.getElementById("score1").textContent = data.score1 || 0;
-  document.getElementById("score2").textContent = data.score2 || 0;
-  document.getElementById("statut-duel").textContent = {
+  // Exemple d’affichage (à adapter selon ton HTML réel)
+  if(document.getElementById("score1")) document.getElementById("score1").textContent = data.score1 || 0;
+  if(document.getElementById("score2")) document.getElementById("score2").textContent = data.score2 || 0;
+  if(document.getElementById("statut-duel")) document.getElementById("statut-duel").textContent = {
     waiting: "En attente d'un joueur...",
     playing: "En cours",
     finished: "Terminé"
@@ -137,4 +176,3 @@ document.getElementById("btn-finir-duel")?.addEventListener("click", async () =>
 });
 
 // --- Fin de duel.js ---
-
