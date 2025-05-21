@@ -57,22 +57,22 @@ export async function initFirebaseUser() {
             }
           }
 
-          await setDoc(ref, {
-            pseudo: "Joueur",
-            points: 100,
-            jetons: 3,
-            cadres: [],
-            cadreActif: null,
-            filleuls: 0,
-            amis: [],
-            demandesRecues: [],
-            demandesEnvoyees: [],
-            photoProfil: "",
-            pseudoPublic: "",
-            idFixe: false,
-             premium: false,
-            ...(parrain ? { parrain: parrain } : {})
-          });
+    await setDoc(ref, {
+  pseudo: "Joueur",
+  points: 100,
+  jetons: 3,
+  cadres: ["polaroid_01", "polaroid_02"],   // ✅ 2 cadres débloqués
+  cadreActif: "polaroid_01",                // ✅ cadre sélectionné par défaut
+  premium: false,                           // ✅ premium bien présent
+  filleuls: 0,
+  amis: [],
+  demandesRecues: [],
+  demandesEnvoyees: [],
+  photoProfil: "",
+  pseudoPublic: "",
+  idFixe: false,
+  ...(parrain ? { parrain: parrain } : {})
+     });
         }
 
         resolve(user);
