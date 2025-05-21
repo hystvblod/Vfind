@@ -70,6 +70,7 @@ export async function initFirebaseUser() {
             photoProfil: "",
             pseudoPublic: "",
             idFixe: false,
+             premium: false,
             ...(parrain ? { parrain: parrain } : {})
           });
         }
