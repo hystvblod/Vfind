@@ -1,6 +1,7 @@
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
+import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js"; // import module caméra
 
 document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("startBtn");
@@ -21,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("langue");
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
+
+  // Fix ouverture caméra (expose sur window, via module)
+  window.ouvrirCameraPour = cameraOuvrirCameraPour;
 
   getDocs(collection(db, "defis"))
     .then(snapshot => {
@@ -72,6 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDefis();
   }
 
+  // Ajoute showStart pour corriger l'erreur
+  function showStart() {
+    preGame.classList.remove("hidden");
+    gameSection.classList.add("hidden");
+    endSection.classList.add("hidden");
+  }
+
   function updateTimer() {
     const interval = setInterval(async () => {
       const data = await getUserDataCloud();
@@ -104,7 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const hasPhoto = !!localStorage.getItem(`photo_defi_${defi.id}`);
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
 
-      const boutonPhoto = `<button onclick="ouvrirCameraPour(${defi.id})">${boutonTexte}</button>`;
+      // C'est la fonction fixée plus haut : window.ouvrirCameraPour
+      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonTexte}</button>`;
 
       li.innerHTML = `
         <div class="defi-content">
