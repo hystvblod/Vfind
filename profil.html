@@ -49,7 +49,7 @@
       </a>
     </div>
   </div>
-  <div class="id-user" id="idUserDisplay">(ID...)</div>
+  <div class="id-user" id="idUserDisplay" style="cursor:pointer">(ID...)</div>
 </header>
 
 <section class="profil-top">
@@ -64,13 +64,13 @@
     </div>
   </div>
 </section>
-<div class="popup-bg" id="popupID" style="display:none;">
+<div class="popup-bg" id="popupID">
   <div class="popup">
     <p id="popupText">Modifier mon identifiant public :</p>
-    <input type="text" id="newIdInput" placeholder="Nouveau pseudo unique" />
+    <input type="text" id="newIdInput" placeholder="Nouveau pseudo unique" maxlength="18" autocomplete="off" />
     <br />
     <button id="validateId">Valider</button>
-    <button onclick="document.getElementById('popupID').style.display='none'">Annuler</button>
+    <button id="cancelPopup">Annuler</button>
     <p id="idError" style="color:red;margin-top:1rem;"></p>
   </div>
 </div>
@@ -88,7 +88,7 @@
   <p>© 2025 VFind</p>
 </footer>
 
-<!-- ==== FIREBASE CENTRALISÉ PRO === -->
+<!-- ==== FIREBASE CENTRALISÉ PRO ==== -->
 <script type="module">
 import { db, auth, initFirebaseUser } from './js/firebase.js';
 import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
@@ -99,41 +99,33 @@ function randomTempID() {
   return "user_" + rand;
 }
 
-initFirebaseUser().then(() => {
+let profil, ref, uid; // portée globale pour accès lors du changement d'ID
+
+async function refreshProfilDisplay() {
+  const snap = await getDoc(ref);
+  profil = snap.data();
+  // Affichage ID
+  const idDisplay = document.getElementById("idUserDisplay");
+  idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
+  idDisplay.style.textDecoration = "underline";
+  idDisplay.style.color = profil.idFixe ? "#ffe04a" : "#fa4a4a";
+  // Solde
+  document.getElementById("vcoins").textContent = profil.points || 0;
+  document.getElementById("jetons").textContent = profil.jetons || 0;
+}
+
+async function setupProfile() {
+  await initFirebaseUser();
   onAuthStateChanged(auth, async (user) => {
     if (!user) return await signInAnonymously(auth);
 
-    const uid = user.uid;
-    const ref = doc(db, "users", uid);
+    uid = user.uid;
+    ref = doc(db, "users", uid);
     let snap = await getDoc(ref);
 
-    // 1ère connexion : création profil avec ID temporaire unique
+    // Création auto si profil inexistant
     if (!snap.exists()) {
-      const params = new URLSearchParams(window.location.search);
-      let parrain = null;
-      if (params.has('parrain') && params.get('parrain') !== uid) {
-        parrain = params.get('parrain');
-        const parrainRef = doc(db, "users", parrain);
-        const parrainSnap = await getDoc(parrainRef);
-        if (parrainSnap.exists()) {
-          const parrainData = parrainSnap.data();
-          let nbFilleuls = parrainData.filleuls || 0;
-          nbFilleuls++;
-          let newPoints = (parrainData.points || 0) + 300;
-          let cadres = parrainData.cadres || [];
-          if (nbFilleuls === 3 && !cadres.includes('polaroid_302')) {
-            cadres.push('polaroid_302');
-          }
-          await updateDoc(parrainRef, {
-            points: newPoints,
-            filleuls: nbFilleuls,
-            cadres: cadres
-          });
-        }
-      }
-      // ID temporaire unique
       let tempID = randomTempID();
-      // Vérifie unicité (évite collision)
       let taken = true;
       while (taken) {
         const q = query(collection(db, "users"), where("pseudoPublic", "==", tempID));
@@ -141,7 +133,6 @@ initFirebaseUser().then(() => {
         if (res.empty) taken = false;
         else tempID = randomTempID();
       }
-      // Crée le profil
       await setDoc(ref, {
         points: 100,
         jetons: 3,
@@ -152,21 +143,16 @@ initFirebaseUser().then(() => {
         amis: [],
         demandesRecues: [],
         demandesEnvoyees: [],
-        photoProfil: "",
-        ...(parrain ? { parrain: parrain } : {})
+        photoProfil: ""
       });
       snap = await getDoc(ref);
     }
 
-    // Affichage + gestion du changement d’ID
-    const profil = snap.data();
-    const idDisplay = document.getElementById("idUserDisplay");
-    idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
+    profil = snap.data();
+    await refreshProfilDisplay();
 
-    // --------- Choix ou changement d’ID public ---------
-    idDisplay.style.textDecoration = "underline";
-    idDisplay.style.color = profil.idFixe ? "#ffe04a" : "#fa4a4a";
-    idDisplay.style.cursor = "pointer";
+    // --- Popup modif ID ---
+    const idDisplay = document.getElementById("idUserDisplay");
     idDisplay.onclick = () => {
       document.getElementById("popupID").style.display = "flex";
       document.getElementById("newIdInput").value = "";
@@ -176,9 +162,13 @@ initFirebaseUser().then(() => {
       } else {
         document.getElementById("popupText").textContent = "Modifier mon identifiant public :";
       }
+      document.getElementById("newIdInput").focus();
+    };
+    document.getElementById("cancelPopup").onclick = () => {
+      document.getElementById("popupID").style.display = "none";
     };
 
-    // Validation du nouvel ID
+    // Validation nouvel ID
     document.getElementById("validateId").onclick = async () => {
       const newId = document.getElementById("newIdInput").value.trim();
       const err = document.getElementById("idError");
@@ -186,14 +176,22 @@ initFirebaseUser().then(() => {
         err.textContent = "ID trop court (min 3 caractères)";
         return;
       }
-      // Vérifie si déjà pris
+      if (newId.length > 18) {
+        err.textContent = "ID trop long (max 18 caractères)";
+        return;
+      }
+      if (!/^[a-zA-Z0-9_.-]+$/.test(newId)) {
+        err.textContent = "ID : caractères autorisés A-Z 0-9 . _ -";
+        return;
+      }
+      // Unicité
       const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
       const res = await getDocs(q);
       if (!res.empty) {
         err.textContent = "ID déjà pris 😕";
         return;
       }
-      // Si c’est un changement (après le 1er choix), on vérifie les points
+      // Changement avec coût si déjà fixé
       if (profil.idFixe) {
         if ((profil.points || 0) < 200) {
           err.textContent = "Il te faut 200 pièces pour changer d’ID !";
@@ -211,14 +209,11 @@ initFirebaseUser().then(() => {
         });
       }
       document.getElementById("popupID").style.display = "none";
-      location.reload(); // ou juste rafraîchir la zone d’ID
+      await refreshProfilDisplay();
     };
-
-    // Affichage du solde
-    document.getElementById("vcoins").textContent = profil.points || 0;
-    document.getElementById("jetons").textContent = profil.jetons || 0;
   });
-});
+}
+setupProfile();
 </script>
 </body>
 </html>
