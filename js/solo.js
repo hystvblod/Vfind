@@ -35,19 +35,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const cadreActuel = getCadreSelectionne(); // ✅ Utilise la bonne fonction
 
 
-  fetch("./data/defis.json")
-    .then((res) => res.json())
-    .then((data) => {
-      allDefis = data.defis.map(d => ({
-        id: d.id,
+ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { db } from "./firebase.js"; // assure-toi que firebase.js est bien configuré
+
+getDocs(collection(db, "defis"))
+  .then(snapshot => {
+    allDefis = snapshot.docs.map(doc => {
+      const d = doc.data();
+      return {
+        id: doc.id,
         texte: currentLang === "fr" ? d.intitule : d[currentLang],
         done: false
-      }));
-      init();
-    })
-    .catch(err => {
-      console.error("❌ Erreur de chargement du fichier defis.json :", err);
+      };
     });
+    init();
+  })
+  .catch(err => {
+    console.error("❌ Erreur Firestore :", err);
+  });
 
   function init() {
     startBtn?.addEventListener("click", startGame);

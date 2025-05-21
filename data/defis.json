@@ -1,7 +1,7 @@
 {
   "defis": [
     {
-  "id": 1,
+  "id": "01",
  "intitule": "Un objet qui fait du bruit",
    "en": "An object that makes noise",
    "es": "Un objeto que hace ruido",
@@ -14,7 +14,7 @@
    "ko": "소리를 내는 물건"
   },
  {
-   "id": 2,
+   "id": "02",
 "intitule": "Un animal en mouvement",
    "en": "An animal in motion",
    "es": "Un animal en movimiento",
@@ -27,7 +27,7 @@
    "ko": "움직이는 동물"
  },
  {
-   "id": 3,
+   "id": "03",
 "intitule": "Un jeu de lumière",
    "en": "A play of light",
    "es": "Un juego de luces",
@@ -40,7 +40,7 @@
    "ko": "빛의 연출"
  },
  {
-   "id": 4,
+   "id": "04",
  "intitule": "Un oiseau à l’extérieur",
    "en": "A bird outside",
    "es": "Un pájaro en el exterior",
@@ -53,7 +53,7 @@
    "ko": "밖에 있는 새"
  },
  {
-   "id": 5,
+   "id": "05",
 "intitule": "Deux mêmes objets",
    "en": "Two identical objects",
    "es": "Dos objetos iguales",
@@ -66,7 +66,7 @@
    "ko": "같은 물건 두 개"
  },
  {
-   "id": 6,
+   "id": "06",
 "intitule": "Un animal mignon",
    "en": "A cute animal",
    "es": "Un animal lindo",
@@ -79,7 +79,7 @@
    "ko": "귀여운 동물"
  },
  {
-   "id": 7,
+   "id": "07",
   "intitule":"Un graffiti",
    "en": "Graffiti",
    "es": "Un grafiti",
@@ -92,7 +92,7 @@
    "ko": "그래피티"
  },
  {
-   "id": 8,
+   "id": "08",
   "intitule":"Un panneau dans ta ville",
    "en": "A sign in your city",
    "es": "Un cartel en tu ciudad",
@@ -105,7 +105,7 @@
    "ko": "당신의 도시의 표지판"
  },
  {
-   "id": 9,
+   "id": "09",
   "intitule": "Une forme géométrique",
    "en": "A geometric shape",
    "es": "Una forma geométrica",
