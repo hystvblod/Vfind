@@ -110,27 +110,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-  async function loadDefis() {
+    async function loadDefis() {
     defiList.innerHTML = '';
-    for (const [index, defi] of defisActuels.entries()) {
+    // UTILISE FOR...OF pour bien await chaque async !
+    for (let index = 0; index < defisActuels.length; index++) {
+      const defi = defisActuels[index];
       const li = document.createElement("li");
       li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      // === Ajout fallback cloud : on vérifie local, sinon on tente de charger depuis Firebase ===
+      // Récupère la photo EN AWAIT
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
       if (!dataUrl) {
-        // fallback Cloud (optionnel, non bloquant si erreur)
         try {
           const data = await getUserDataCloud();
           if (data.defisSolo && data.defisSolo[defi.id]) {
             dataUrl = data.defisSolo[defi.id];
-            // On peut le remettre en localStorage pour accélérer plus tard :
             localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
           }
         } catch (e) {
-          // Pas d'action, on reste sur rien
+          // Ne rien faire
         }
       }
 
@@ -153,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     await afficherPhotosSauvegardees();
+  
   }
 
   async function afficherPhotosSauvegardees() {
