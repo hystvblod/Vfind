@@ -1,228 +1,140 @@
-import {
-  getCadreSelectionne,
-  getJetons,
-  removeJeton,
-  // ... (toutes les fonctions userData.js dont tu as besoin)
-} from './userData.js';
+// === duel.js (version PRO full Firebase, plus de localStorage) ===
+import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-  // Récupère le mode et l'adversaire depuis l'URL
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get("mode") || "random";
-  const adversaire = params.get("adversaire") || (mode === "random" ? "Adversaire mystère" : "Ton ami");
+// Initialisation Firebase
+const db = getFirestore();
+const auth = getAuth();
+let currentUser = null;
 
-  const defiList = document.getElementById("duel-defi-list");
-  const cadre = await getCadreSelectionne();
-  await updateJetonsDisplay();
-
-  // Affiche le nom de l'adversaire sur la page si tu as un endroit prévu :
-  const advName = document.getElementById("nom-adversaire");
-  if (advName) advName.textContent = adversaire;
-
-  // ⚡️ A REMPLACER PAR DES APPELS FIRESTORE (ici, on suppose temporairement un objet global window.photosDuel)
-  window.photosDuel = window.photosDuel || {}; // idDefi -> { photoA, photoB, jetonValide }
-  // Tu pourras remplacer cette variable par de vrais appels cloud par la suite !
-
-  fetch("data/defis.json")
-    .then(res => res.json())
-    .then(async data => {
-      const defis = data.defis.slice(0, 3);
-      defiList.innerHTML = "";
-
-      for (let index = 0; index < defis.length; index++) {
-        const defi = defis[index];
-        const id = defi.id;
-        const texte = defi.intitule;
-
-        // À terme, récupère ces valeurs depuis Firestore :
-        const entry = window.photosDuel[id] || {};
-        const photoA = entry.photoA || null;
-        const photoB = entry.photoB || null;
-        const jetonValide = !!entry.jetonValide;
-        const advHasPhoto = !!photoB;
-
-        const boutonTexte = photoA ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-        const boutonSignaler = advHasPhoto
-          ? `<button class="btn-flag" onclick="alert('Photo signalée. Merci pour ton retour.')">🚩 Signaler</button>`
-          : "";
-
-        const boutonPhoto = `<button onclick="ouvrirCameraPour(${id})">${boutonTexte}</button>`;
-        const jetonHTML = (!photoA && !jetonValide)
-          ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`
-          : "";
-
-        const html = `
-          <p style="text-align:center; font-weight:bold; font-size:1.3rem;">${texte}</p>
-          <div class="defi-content split">
-            <div class="joueur-col">
-              <span class="col-title">Toi</span>
-              <div class="defi-photo-container" data-photo-joueur="${id}"></div>
-              ${boutonPhoto}
-              ${jetonHTML}
-            </div>
-            <div class="adversaire-col">
-              <span class="col-title">${adversaire}</span>
-              <div class="defi-photo-container" data-photo-adversaire="${id}"></div>
-              ${boutonSignaler}
-            </div>
-          </div>
-        `;
-
-        const li = document.createElement("li");
-        li.className = "defi-item";
-        li.setAttribute("data-defi-id", id);
-        li.innerHTML = html;
-        defiList.appendChild(li);
-      }
-
-      await afficherPhotosCadresDuel(cadre, mode);
-    });
-
-  async function afficherPhotosCadresDuel(cadre, mode) {
-    document.querySelectorAll(".defi-item").forEach(defiEl => {
-      const id = defiEl.getAttribute("data-defi-id");
-      const entry = window.photosDuel[id] || {};
-      const photoA = entry.photoA;
-      const photoB = entry.photoB;
-
-      if (photoA) {
-        const container = defiEl.querySelector(`[data-photo-joueur="${id}"]`);
-        if (container) {
-          container.innerHTML = `
-            <div class="cadre-preview">
-              <img src="assets/cadres/${cadre}.webp" class="photo-cadre" />
-              <img src="${photoA}" class="photo-user" onclick="toggleFit(this)">
-            </div>
-          `;
-        }
-      }
-
-      if (photoB) {
-        const container = defiEl.querySelector(`[data-photo-adversaire="${id}"]`);
-        if (container) {
-          container.innerHTML = `
-            <div class="cadre-preview">
-              <img src="assets/cadres/${cadre}.webp" class="photo-cadre" />
-              <img src="${photoB}" class="photo-user" onclick="toggleFit(this)">
-            </div>
-          `;
-        }
-      }
-    });
+// Récupère l'utilisateur actuel
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    // Charger ou créer une room
+    checkOrCreateDuelRoom();
+  } else {
+    // Rediriger vers login si besoin
+    window.location.href = "login.html";
   }
-
-  async function updateJetonsDisplay() {
-    const jetonsSpan = document.getElementById("jetons");
-    if (jetonsSpan) {
-      jetonsSpan.textContent = await getJetons();
-    }
-  }
-
-  window.toggleFit = function(img) {
-    img.classList.toggle("cover");
-    img.classList.toggle("contain");
-  };
-
-  let defiIndexActuel = null;
-
-  window.ouvrirPopupJeton = async function (index) {
-    const jetons = await getJetons();
-    document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-    document.getElementById("popup-jeton").classList.remove("hidden");
-    document.getElementById("popup-jeton").classList.add("show");
-    defiIndexActuel = index;
-
-    document.getElementById("valider-jeton-btn").onclick = async () => {
-      const jetons = await getJetons();
-      if (jetons > 0) {
-        const success = await removeJeton();
-        if (success) {
-          await updateJetonsDisplay();
-          if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel, true);
-          }
-          fermerPopupJeton();
-        } else {
-          alert("❌ Erreur lors du retrait du jeton.");
-        }
-      } else {
-        alert("❌ Pas de jeton disponible. Rendez-vous dans la boutique !");
-      }
-    };
-  };
-
-  window.fermerPopupJeton = function () {
-    document.getElementById("popup-jeton").classList.remove("show");
-    document.getElementById("popup-jeton").classList.add("hidden");
-  };
-
-  let defisDuelValides = [null, null, null];
-
-  window.validerDefi = async function(index, viaJeton = false) {
-    const defis = document.querySelectorAll("#duel-defi-list li");
-    const li = defis[index];
-    const id = li.getAttribute("data-defi-id");
-    const photoA = window.photosDuel[id]?.photoA; // Récupère photo cloud ou JS RAM ici
-    if (!photoA && !viaJeton) return;
-
-    li.classList.add("done");
-    if (viaJeton) {
-      // ⚡️ Mets à jour cloud ici l'info de jeton utilisé pour ce défi si tu veux la synchro (Firestore)
-      window.photosDuel[id] = window.photosDuel[id] || {};
-      window.photosDuel[id].jetonValide = true;
-    }
-    const texteDefi = li.querySelector("p").textContent.trim();
-    defisDuelValides[index] = texteDefi;
-
-    setTimeout(() => {
-      alert("✅ Merci d’avoir regardé la pub !");
-      if (defisDuelValides.every(Boolean)) {
-        enregistrerDuelHistorique(defisDuelValides);
-        defisDuelValides = [null, null, null];
-      }
-      window.location.reload();
-    }, 2000);
-  };
-
-  // ⚡️ Ici aussi, tu devrais migrer sur Firestore la sauvegarde des duels
-  function enregistrerDuelHistorique(defisValides) {
-    // TODO: Créer/mettre à jour dans Firestore, pas localStorage !
-    // Par exemple, ajoute une entrée dans "users/{uid}/historiqueDuels"
-    console.log("Historique du duel (à stocker Firestore):", defisValides);
-  }
-
-  // ============ TIMER DUEL 24H =============
-  const duelTimerEl = document.getElementById("timer");
-
-  function initDuelTimer() {
-    // Pour la version cloud, stocke l'info de dernier duel en Firestore !
-    let endTime = window.duelEndTime || null; // À brancher cloud
-    const now = Date.now();
-
-    if (!endTime || now > parseInt(endTime)) {
-      endTime = now + 24 * 60 * 60 * 1000;
-      window.duelEndTime = endTime; // Stocke cloud plus tard !
-    }
-
-    const interval = setInterval(() => {
-      const now = Date.now();
-      const remaining = parseInt(endTime) - now;
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        if (duelTimerEl) duelTimerEl.textContent = "00:00:00";
-        return;
-      }
-
-      const hours = Math.floor(remaining / (1000 * 60 * 60));
-      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-
-      if (duelTimerEl) {
-        duelTimerEl.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-      }
-    }, 1000);
-  }
-
-  initDuelTimer();
 });
+
+// Nom de la room actuel (stocké en mémoire session, pas localStorage)
+let currentRoomId = null;
+
+// Fonction pour créer/rejoindre une room de duel
+async function checkOrCreateDuelRoom() {
+  // Ex : on prend l’id dans l’URL : duel.html?room=XXXX
+  const params = new URLSearchParams(window.location.search);
+  const roomId = params.get("room");
+  if (roomId) {
+    currentRoomId = roomId;
+    await joinDuelRoom(roomId);
+  } else {
+    // Si pas de room, on en crée une nouvelle et on redirige
+    const newRoomId = await createDuelRoom();
+    window.location.href = `duel.html?room=${newRoomId}`;
+  }
+}
+
+// Crée une nouvelle room de duel dans Firestore
+async function createDuelRoom() {
+  const roomId = generateRoomId();
+  const duelRef = doc(collection(db, "duels"), roomId);
+  await setDoc(duelRef, {
+    player1: currentUser.uid,
+    player2: null,
+    score1: 0,
+    score2: 0,
+    status: "waiting", // waiting, playing, finished
+    createdAt: Date.now()
+  });
+  return roomId;
+}
+
+// Rejoint une room de duel existante (Firestore)
+async function joinDuelRoom(roomId) {
+  const duelRef = doc(db, "duels", roomId);
+  const snap = await getDoc(duelRef);
+  if (!snap.exists()) {
+    alert("Room introuvable !");
+    window.location.href = "duel.html";
+    return;
+  }
+  const data = snap.data();
+  // Si la room attend un joueur 2
+  if (!data.player2 && data.player1 !== currentUser.uid) {
+    await updateDoc(duelRef, {
+      player2: currentUser.uid,
+      status: "playing"
+    });
+  }
+  // Démarre la synchro temps réel sur cette room
+  startDuelListener(roomId);
+}
+
+// Ecouteur temps réel sur la room de duel
+function startDuelListener(roomId) {
+  const duelRef = doc(db, "duels", roomId);
+  onSnapshot(duelRef, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    // MAJ l’affichage (score, statut, tour, etc.)
+    updateDuelUI(data);
+  });
+}
+
+// Génère un ID de room aléatoire
+function generateRoomId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+// Met à jour le score du joueur actuel
+async function updateScore(points) {
+  if (!currentRoomId || !currentUser) return;
+  const duelRef = doc(db, "duels", currentRoomId);
+  const snap = await getDoc(duelRef);
+  if (!snap.exists()) return;
+  const data = snap.data();
+  if (data.player1 === currentUser.uid) {
+    await updateDoc(duelRef, { score1: points });
+  } else if (data.player2 === currentUser.uid) {
+    await updateDoc(duelRef, { score2: points });
+  }
+}
+
+// Met à jour l'affichage du duel (fonction à compléter selon ton UI)
+function updateDuelUI(data) {
+  // Exemple d’affichage :
+  document.getElementById("score1").textContent = data.score1 || 0;
+  document.getElementById("score2").textContent = data.score2 || 0;
+  document.getElementById("statut-duel").textContent = {
+    waiting: "En attente d'un joueur...",
+    playing: "En cours",
+    finished: "Terminé"
+  }[data.status] || "En attente";
+  // À adapter selon les autres champs de ta room
+}
+
+// Action : envoyer son score (ex: bouton "Valider score")
+document.getElementById("btn-valider-score")?.addEventListener("click", async () => {
+  const points = parseInt(document.getElementById("input-score").value, 10);
+  if (!isNaN(points)) {
+    await updateScore(points);
+  }
+});
+
+// Si tu veux finir le duel :
+async function finishDuel() {
+  if (!currentRoomId) return;
+  const duelRef = doc(db, "duels", currentRoomId);
+  await updateDoc(duelRef, { status: "finished" });
+}
+
+// Action : bouton "Finir le duel"
+document.getElementById("btn-finir-duel")?.addEventListener("click", async () => {
+  await finishDuel();
+});
+
+// --- Fin de duel.js ---
+
