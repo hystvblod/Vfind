@@ -330,7 +330,7 @@ nav.nav-icons {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.95);
-  background: white;
+  background: rgba(34, 40, 58, 0.95);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
