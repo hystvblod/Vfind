@@ -110,11 +110,16 @@
   </footer>
 
   <!-- ✅ Popup : gagner des pièces -->
-  <div id="popup-gain" class="popup hidden">
-    <h3>Gagner pièces</h3>
-    <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
+<!-- ✅ Popup : gagner des pièces -->
+<div id="popup-gain" class="popup hidden">
+  <div class="popup-inner">
+    <h3>Gagner des pièces</h3>
+    <button onclick="payerAvecPieces()">💰 Payer 100 pièces</button>
     <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
+    <button onclick="fermerPopupGain()">❌ Annuler</button>
   </div>
+</div>
+
 
   <!-- ✅ Popup : acheter des jetons (nouveau CSS indépendant) -->
   <div id="popup-achat-jeton" class="hidden">
