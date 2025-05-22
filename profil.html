@@ -21,37 +21,69 @@
     .id-user:hover {
       color: #ffe04a;
     }
-    .change-id-zone {
-      text-align: center;
-      margin: 1.7em 0 2.3em 0;
-    }
-    #idChangeForm {
+    /* POPUP ultra simple, réutilisable partout */
+    .popup-bg {
       display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .popup-bg.active {
+      display: flex !important;
+    }
+    .popup {
+      background: #fff;
+      color: #212121;
+      padding: 2rem 1.3rem 1.2rem 1.3rem;
+      border-radius: 13px;
+      text-align: center;
+      min-width: 250px;
+      max-width: 92vw;
+      box-shadow: 0 8px 40px #0008;
+      z-index: 2200;
+      animation: popupfade .21s;
+    }
+    @keyframes popupfade {
+      from { transform: translateY(22px) scale(.97); opacity:0;}
+      to   { transform: none; opacity:1;}
+    }
+    .popup input {
       margin-top: 1em;
-    }
-    #idChangeForm input {
-      padding: 0.5em;
+      width: 80%;
+      padding: 0.65em;
       border-radius: 7px;
-      border: 1px solid #ccc;
-      font-size: 1.07em;
-      margin-right: 0.7em;
+      border: 1px solid #bbb;
+      font-size: 1.06em;
     }
-    #idChangeForm button {
-      background:#ffe04a;
-      padding:7px 16px;
-      border-radius:7px;
-      border:none;
-      font-weight:bold;
-      cursor:pointer;
-      font-size:1.07em;
-      margin-left: 0.3em;
+    .popup button {
+      margin-top: 1.1em;
+      margin-right: 0.5em;
+      padding: 0.53em 1.1em;
+      font-weight: bold;
+      border-radius: 8px;
+      background: #ffe04a;
+      color: #333;
+      border: none;
+      font-size: 1.08em;
+      cursor: pointer;
+      transition: background .13s;
+    }
+    .popup button:last-child {
+      background: #e1e1e1;
+      color: #222;
+    }
+    .popup button:hover {
+      background: #ffd000;
     }
     #idError {
       color:#ff4444;
       font-size:0.99em;
-      display:block;
       margin-top:0.6em;
       min-height:1.3em;
+      display: block;
     }
     #idError.valid {
       color: #14b214;
@@ -75,11 +107,19 @@
   <div class="id-user" id="idUserDisplay">(ID...)</div>
 </header>
 
-<div class="change-id-zone">
-  <button id="showChangeIdBtn">Changer mon pseudo public</button>
-  <div id="idChangeForm">
-    <input id="newIdInput" type="text" maxlength="18" placeholder="Nouveau pseudo unique">
-    <button id="validateIdBtn">Valider</button>
+<div style="text-align:center;margin-bottom:2em;">
+  <button id="showChangeIdBtn" style="background:#ffe04a;padding:7px 16px;border-radius:7px;border:none;font-weight:bold;cursor:pointer;">Changer mon pseudo public</button>
+</div>
+
+<!-- Popup ID (rien d'autre à modifier/repliquer) -->
+<div class="popup-bg" id="popupID">
+  <div class="popup">
+    <div id="popupText" style="font-size:1.13em;margin-bottom:0.2em;">Modifier mon identifiant public :</div>
+    <input type="text" id="newIdInput" placeholder="Nouveau pseudo unique" maxlength="18" autocomplete="off" />
+    <div>
+      <button id="validateId">Valider</button>
+      <button id="cancelPopup" type="button">Annuler</button>
+    </div>
     <span id="idError"></span>
   </div>
 </div>
@@ -122,14 +162,13 @@ function randomTempID() {
   return "user_" + rand;
 }
 
-let profil, ref, uid; // portée globale
+let profil, ref, uid;
 
 async function refreshProfilDisplay() {
   const snap = await getDoc(ref);
   profil = snap.data();
-  const idDisplay = document.getElementById("idUserDisplay");
-  idDisplay.textContent = "ID : " + (profil.pseudoPublic || "???");
-  idDisplay.style.color = "#fff";
+  document.getElementById("idUserDisplay").textContent = "ID : " + (profil.pseudoPublic || "???");
+  document.getElementById("idUserDisplay").style.color = "#fff";
   document.getElementById("vcoins").textContent = profil.points || 0;
   document.getElementById("jetons").textContent = profil.jetons || 0;
 }
@@ -171,15 +210,25 @@ async function setupProfile() {
     profil = snap.data();
     await refreshProfilDisplay();
 
-    // Mini formulaire inline pour changer d'ID
+    // Popup ouverture
     document.getElementById("showChangeIdBtn").onclick = () => {
-      document.getElementById("idChangeForm").style.display = "inline-block";
-      document.getElementById("newIdInput").focus();
+      document.getElementById("popupID").classList.add("active");
+      document.getElementById("newIdInput").value = "";
       document.getElementById("idError").textContent = "";
       document.getElementById("idError").classList.remove("valid");
+      if (profil.idFixe) {
+        document.getElementById("popupText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
+      } else {
+        document.getElementById("popupText").textContent = "Modifier mon identifiant public :";
+      }
+      setTimeout(()=>document.getElementById("newIdInput").focus(),100);
+    };
+    document.getElementById("cancelPopup").onclick = () => {
+      document.getElementById("popupID").classList.remove("active");
     };
 
-    document.getElementById("validateIdBtn").onclick = async () => {
+    // Validation nouvel ID
+    document.getElementById("validateId").onclick = async () => {
       const newId = document.getElementById("newIdInput").value.trim();
       const err = document.getElementById("idError");
       err.textContent = "";
@@ -226,8 +275,10 @@ async function setupProfile() {
       document.getElementById("idUserDisplay").textContent = "ID : " + newId;
       err.classList.add("valid");
       err.textContent = "✅ Ton ID public a été changé !";
-      document.getElementById("idChangeForm").style.display = "none";
-      refreshProfilDisplay();
+      setTimeout(()=>{
+        document.getElementById("popupID").classList.remove("active");
+        refreshProfilDisplay();
+      }, 900);
     };
   });
 }
