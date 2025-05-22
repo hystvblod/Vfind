@@ -1,6 +1,7 @@
 import { db, auth, initFirebaseUser } from './firebase.js';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
+// Patch anti-bug : aucune reload en solo
 export async function ouvrirCameraPour(defiId, mode = "solo") {
   await initFirebaseUser();
   const user = auth.currentUser;
@@ -59,7 +60,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
     const confirmSave = confirm("Souhaites-tu valider cette photo ?");
     if (confirmSave) {
       if (mode === "duel") {
-        // === Sauvegarde Duel : Firebase ===
+        // Sauvegarde Duel : Firebase
         try {
           const ref = doc(db, "users", user.uid);
           const snap = await getDoc(ref);
@@ -77,11 +78,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
         } catch (e) {
           alert("Erreur lors de l’enregistrement Firebase : " + e);
         }
+        setTimeout(() => window.location.reload(), 100); // duel = reload OK
       } else {
-        // === SOLO ===
-        // 1. LocalStorage
+        // SOLO
         localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-        // 2. Firestore
         try {
           const ref = doc(db, "users", user.uid);
           const snap = await getDoc(ref);
@@ -92,25 +92,15 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
           defisSolo[defiId] = dataUrl;
           await updateDoc(ref, { defisSolo });
         } catch (e) {
-          alert("Erreur lors de l’enregistrement sur Firebase : " + e);
+          // Erreur firebase = pas grave pour affichage instantané
         }
-      }
-      // Ferme la caméra
-      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-          container.remove();
-      if (mode === "solo") {
-        // Appelle la fonction d’affichage sans reload
+        // Appel affichage instantané, PAS DE RELOAD
         if (window.afficherPhotoDansCadreSolo) {
           window.afficherPhotoDansCadreSolo(defiId, dataUrl);
-        } else {
-          // fallback ultime
-          setTimeout(() => window.location.reload(), 100);
         }
-      } else {
-        // En duel, on peut recharger si besoin (sinon même principe)
-        setTimeout(() => window.location.reload(), 100);
       }
-
+      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+      container.remove();
     }
   };
 
