@@ -124,19 +124,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-   let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+      let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
 
-if (!dataUrl) {
-  try {
-    const userData = await getUserDataCloud();
-    const defisSolo = userData.defisSolo || {};
-    if (defisSolo[defi.id]) {
-      dataUrl = defisSolo[defi.id];
-      localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
-    }
-  } catch (e) {
-    console.warn("⚠️ Impossible de charger la photo depuis Firebase", e);
-  }
+      if (!dataUrl) {
+        try {
+          const userData = await getUserDataCloud();
+          const defisSolo = userData.defisSolo || {};
+          if (defisSolo[defi.id]) {
+            dataUrl = defisSolo[defi.id];
+            localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
+          }
+        } catch (e) {
+          console.warn("⚠️ Impossible de charger la photo depuis Firebase", e);
+        }
       }
       photosMap[defi.id] = dataUrl || null;
 
@@ -160,6 +160,7 @@ if (!dataUrl) {
     await afficherPhotosSauvegardees(photosMap);
   }
 
+  // ✅✅✅ PATCH STRUCTURE MINIATURE CORRECTE
   async function afficherPhotosSauvegardees(photosMap) {
     const cadreActuel = await getCadreSelectionne();
 
@@ -168,7 +169,9 @@ if (!dataUrl) {
       const dataUrl = photosMap[id];
 
       if (dataUrl) {
-        console.log("[DEBUG] Affichage photo - defiId:", id, "| cadreActuel:", cadreActuel, "| dataUrl:", dataUrl ? dataUrl.slice(0,100) + "..." : "ABSENT");
+        // Structure CORRECTE comme avant :
+        const containerCadre = document.createElement("div");
+        containerCadre.className = "cadre-item";
 
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
@@ -184,11 +187,12 @@ if (!dataUrl) {
 
         preview.appendChild(fond);
         preview.appendChild(photo);
+        containerCadre.appendChild(preview);
 
         const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
         if (container) {
           container.innerHTML = '';
-          container.appendChild(preview);
+          container.appendChild(containerCadre); // ✅ le parent .cadre-item est bien là
           defiEl.classList.add("done");
         }
       }
