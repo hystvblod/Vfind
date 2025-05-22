@@ -142,7 +142,6 @@ async function acheterCadreBoutique(id, prix) {
 }
 
 // --- Popups et pub ---
-// -- Fermeture de popup d'infos génériques
 window.closePopup = function () {
   const popupGain = document.getElementById("popup-gain");
   if (popupGain) {
@@ -159,13 +158,13 @@ function showUnlockPopup(nom, message) {
   const popup = document.createElement("div");
   popup.id = "popup-unlock-info";
   popup.className = "popup show";
-  popup.innerHTML = `
+  popup.innerHTML = 
     <div class="popup-inner">
       <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
       <h2 style="font-size:1.4em;">${nom}</h2>
       <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
     </div>
-  `;
+  ;
   document.body.appendChild(popup);
 }
 
@@ -200,6 +199,7 @@ window.fermerPopupJetonBoutique = function () {
     popup.classList.add("hidden");
   }
 }
+
 window.acheterJetonsAvecPieces = async function () {
   if (await removePoints(100)) {
     await addJetons(3);
@@ -211,6 +211,7 @@ window.acheterJetonsAvecPieces = async function () {
     alert("❌ Pas assez de pièces.");
   }
 }
+
 window.acheterJetonsAvecPub = async function () {
   alert("📺 Simulation de pub regardée !");
   setTimeout(async () => {
@@ -219,32 +220,6 @@ window.acheterJetonsAvecPub = async function () {
     await updateJetonsDisplay();
     fermerPopupJetonBoutique();
   }, 3000);
-}
-
-// --- Popup gagner pièces ---
-window.ouvrirPopupGainPieces = function () {
-  const popup = document.getElementById("popup-gain-pieces");
-  if (popup) {
-    popup.classList.remove("hidden");
-    popup.classList.add("show");
-  }
-}
-window.fermerPopupGainPieces = function () {
-  const popup = document.getElementById("popup-gain-pieces");
-  if (popup) {
-    popup.classList.remove("show");
-    popup.classList.add("hidden");
-  }
-}
-window.payerAvecPieces = async function () {
-  if (await removePoints(100)) {
-    alert("✅ 100 pièces dépensées !");
-    // Ici, ajoute ta logique si tu veux donner une vraie récompense
-    fermerPopupGainPieces();
-    await updatePointsDisplay();
-  } else {
-    alert("❌ Pas assez de pièces.");
-  }
 }
 
 // Gestion scroll / overflow
@@ -331,7 +306,7 @@ async function renderBoutique(categoryKey) {
       wrapper.style.margin = "0 auto 10px";
 
       const cadreImg = document.createElement("img");
-      cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+      cadreImg.src = assets/cadres/${cadre.id}.webp;
       cadreImg.className = "photo-cadre";
 
       const photo = document.createElement("img");
@@ -344,7 +319,7 @@ async function renderBoutique(categoryKey) {
       wrapper.addEventListener("click", () => {
         const popup = document.createElement("div");
         popup.className = "popup show";
-        popup.innerHTML = `
+        popup.innerHTML = 
           <div class="popup-inner">
             <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
             <div class="cadre-preview cadre-popup">
@@ -352,7 +327,7 @@ async function renderBoutique(categoryKey) {
               <img class="photo-user" src="assets/img/exemple.jpg" />
             </div>
           </div>
-        `;
+        ;
         document.body.appendChild(popup);
       });
 
@@ -360,7 +335,7 @@ async function renderBoutique(categoryKey) {
       title.textContent = cadre.nom;
 
       const price = document.createElement("p");
-      price.textContent = `${cadre.prix} pièces`;
+      price.textContent = ${cadre.prix} pièces;
 
       // =========================
       // BOUTON ACHETER
