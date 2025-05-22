@@ -97,7 +97,8 @@ async function checkOrCreateDuelRoom() {
     const matched = await tryMatchmaking(15000);
     if (!matched) {
       const newRoomId = await createDuelRoom();
-      window.location.href = `duel.html?room=${newRoomId}`;
+      window.location.href = `duel_game.html?room=${newRoomId}`;
+
     }
   }
 }
