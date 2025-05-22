@@ -31,7 +31,6 @@
 
   <!-- HEADER -->
   <header class="header-solo" style="border-bottom: 5px solid #888;">
-    <!-- LIGNE 1 -->
     <div class="header-row">
       <a href="index.html" class="back-btn" title="Retour">
         <img src="assets/icons/arrow_back.svg" alt="Retour" />
@@ -45,16 +44,13 @@
       </div>
     </div>
 
-    <!-- LIGNE 2 : SOLDE -->
     <div class="solde-container solde-solo">
-      <!-- Pièces -->
       <div class="solde-item">
         <div class="solde-ligne">
           <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
           <span id="points"></span>
         </div>
       </div>
-      <!-- Jetons -->
       <div class="solde-item">
         <div class="solde-ligne">
           <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
@@ -64,7 +60,6 @@
     </div>
   </header>
 
-  <!-- MAIN GAME STRUCTURE -->
   <main class="solo-container">
     <section id="pre-game" class="centered">
       <button id="startBtn" class="main-button">🎮 Lancer une partie</button>
@@ -85,48 +80,10 @@
     </section>
   </main>
 
-  <!-- SCRIPTS FIREBASE + SOLO -->
+  <!-- SCRIPTS -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
-  <script type="module" src="js/solo.js"></script>
   <script type="module" src="js/camera.js"></script>
-  <script>
-    function toggleFit(img) {
-      img.classList.toggle('cover');
-      img.classList.toggle('contain');
-    }
-
-    let defiIndexActuel = null;
-
-    window.ouvrirPopupJeton = function(index) {
-      if (typeof getJetons === "function") {
-        getJetons().then(jetons => {
-          document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-        });
-      }
-      document.getElementById("popup-jeton").classList.remove("hidden");
-      document.getElementById("popup-jeton").classList.add("show");
-      defiIndexActuel = index;
-
-      document.getElementById("valider-jeton-btn").onclick = () => {
-        if (typeof getJetons === "function") {
-          getJetons().then(jetons => {
-            if (jetons > 0) {
-              if (typeof removeJeton === "function") removeJeton();
-              if (typeof validerDefi === "function") validerDefi(defiIndexActuel);
-              fermerPopupJeton();
-            } else {
-              alert("❌ Pas de jeton disponible. Achetez-en dans la boutique.");
-            }
-          });
-        }
-      };
-    };
-
-    window.fermerPopupJeton = function () {
-      document.getElementById("popup-jeton").classList.remove("show");
-      document.getElementById("popup-jeton").classList.add("hidden");
-    };
-  </script>
+  <script type="module" src="js/solo.js"></script>
 </body>
 </html>
