@@ -3,7 +3,7 @@ import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
-// Mise à jour du solde dès le chargement
+// MAJ solde points et jetons dès chargement
 document.addEventListener("DOMContentLoaded", async () => {
   const data = await getUserDataCloud();
   if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const defiList = document.getElementById("defi-list");
 
   let allDefis = [];
-  let defisActuels = [];
   let defiIndexActuel = null;
 
   let userLang = navigator.language || navigator.userLanguage;
@@ -30,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
 
-  // Toujours caméra en "solo"
+  // Camera = toujours "solo"
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
 
   getDocs(collection(db, "defis"))
@@ -55,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data = await getUserDataCloud();
     if (data.defiTimer && Date.now() < data.defiTimer && data.defiActifs) {
-      defisActuels = data.defiActifs;
       showGame();
     } else {
       showStart();
@@ -65,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function startGame() {
     const newDefis = getRandomDefis(3);
     const endTime = Date.now() + 24 * 60 * 60 * 1000;
-    defisActuels = newDefis;
     await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
     showGame();
   }
@@ -110,35 +107,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-  // ===== FONCTION ASYNCHRONE AVEC MAP DES PHOTOS SYNCHRO =====
+  // ===== AFFICHAGE SYNCHRO FIRESTORE =====
   async function loadDefis() {
+    const data = await getUserDataCloud();
+    let defis = data.defiActifs || [];
     defiList.innerHTML = '';
     let photosMap = {};
-    for (let index = 0; index < defisActuels.length; index++) {
-      const defi = defisActuels[index];
+    for (let index = 0; index < defis.length; index++) {
+      const defi = defis[index];
       const li = document.createElement("li");
       li.className = "defi-item";
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      // Essaye d'abord localStorage
+      // 1. Cherche photo localStorage (instantané)
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-      // Sinon, tente cloud
-      if (!dataUrl) {
-        try {
-          const data = await getUserDataCloud();
-          if (data.defisSolo && data.defisSolo[defi.id]) {
-            dataUrl = data.defisSolo[defi.id];
-            localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
-          }
-        } catch (e) {}
+      // 2. Sinon Firestore (synchro cloud)
+      if (!dataUrl && data.defisSolo && data.defisSolo[defi.id]) {
+        dataUrl = data.defisSolo[defi.id];
+        localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
       }
-
       photosMap[defi.id] = dataUrl || null;
 
       const hasPhoto = !!dataUrl;
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonTexte}</button>`;
+      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonPhoto}</button>`;
 
       li.innerHTML = `
         <div class="defi-content">
@@ -156,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await afficherPhotosSauvegardees(photosMap);
   }
 
-  // ===== FONCTION AFFICHAGE AVEC PHOTOS EN PARAM =====
+  // ===== AFFICHAGE DES PHOTOS =====
   async function afficherPhotosSauvegardees(photosMap) {
     const cadreActuel = await getCadreSelectionne();
 
@@ -190,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== AGRANDIR PHOTO (popup) =====
+  // ===== POPUP PHOTO =====
   async function agrandirPhoto(dataUrl, id) {
     const cadreActuel = await getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
@@ -201,15 +194,18 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.classList.add("show");
   }
 
+  // ===== VALIDATION DEFI : CLOUD ONLY =====
   window.validerDefi = async function(index) {
-    if (!defisActuels[index].done) {
-      defisActuels[index].done = true;
-      await updateUserData({ defiActifs: defisActuels });
-      document.querySelectorAll("#defi-list li")[index]?.classList.add("done");
-      loadDefis();
+    const data = await getUserDataCloud();
+    let defis = data.defiActifs || [];
+    if (!defis[index].done) {
+      defis[index].done = true;
+      await updateUserData({ defiActifs: defis });
+      await loadDefis();
     }
   };
 
+  // ===== JETON POPUP =====
   window.ouvrirPopupJeton = async function(index) {
     const jetons = await getJetons();
     document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
@@ -239,30 +235,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("popup-jeton").classList.remove("show");
     document.getElementById("popup-jeton").classList.add("hidden");
   };
-});
 
-// ===== Correction clé : affichage direct de la photo prise dans le cadre =====
-// Cette fonction doit être appelée APRES la prise de photo via cameraOuvrirCameraPour (dans camera.js)
-window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
-  if (!defiId || !dataUrl) return;
-  // Stocke la photo pour réaffichage immédiat
-  localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-
-  // Recharge les défis pour réafficher la photo
-  const defiList = document.getElementById("defi-list");
-  if (defiList) {
-    // Recharge les défis sans recharger la page
-    // C'est mieux d'appeler loadDefis (redéfini ci-dessus)
-    // On l'appelle via un event CustomEvent pour que ce soit propre
-    document.dispatchEvent(new CustomEvent("photoAjouteeSolo"));
-  }
-};
-// Permet de relancer loadDefis sans refresh complet
-document.addEventListener("photoAjouteeSolo", async () => {
-  // Recharge la liste (si loadDefis est en scope, sinon refresh la page)
-  if (typeof loadDefis === "function") {
+  // ===== AFFICHAGE DIRECT PHOTO SOLO (APRES CAMERA) =====
+  window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
+    if (!defiId || !dataUrl) return;
+    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
     await loadDefis();
-  } else {
-    window.location.reload();
-  }
+  };
+
+  // ===== SI PRISE PHOTO SOLO, CHARGE DEFI DIRECT =====
+  document.addEventListener("photoAjouteeSolo", async () => {
+    if (typeof loadDefis === "function") {
+      await loadDefis();
+    } else {
+      window.location.reload();
+    }
+  });
 });
