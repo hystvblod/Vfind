@@ -97,8 +97,20 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
       }
       // Ferme la caméra
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-      container.remove();
-      location.reload();
+          container.remove();
+      if (mode === "solo") {
+        // Appelle la fonction d’affichage sans reload
+        if (window.afficherPhotoDansCadreSolo) {
+          window.afficherPhotoDansCadreSolo(defiId, dataUrl);
+        } else {
+          // fallback ultime
+          setTimeout(() => window.location.reload(), 100);
+        }
+      } else {
+        // En duel, on peut recharger si besoin (sinon même principe)
+        setTimeout(() => window.location.reload(), 100);
+      }
+
     }
   };
 
