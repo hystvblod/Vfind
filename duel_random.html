@@ -58,8 +58,6 @@
         ⏳ Aucun adversaire trouvé pour l’instant.<br>Réessaie plus tard !
       </div>
     </div>
-
-    <!-- Bouton qui peut être masqué si recherche directe -->
     <div class="main-buttons" style="margin-top:2.5rem;">
     </div>
     <p style="text-align:center;color:#ccc;">Un adversaire va être sélectionné automatiquement.</p>
@@ -69,13 +67,13 @@
   </footer>
 
   <script>
-    // Affiche l'animation "échec" après 1h d'attente
+    // Affiche l'animation "échec" après 1h d'attente (sécurité supplémentaire)
     let waitingTimeout = setTimeout(() => {
       document.getElementById("searching-adversary").style.display = "none";
       document.getElementById("searching-failed").style.display = "flex";
     }, 3600000); // 1 heure (en ms)
   </script>
-  <!-- Prêt pour Firebase si besoin plus tard -->
   <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/duel.js"></script>
 </body>
 </html>

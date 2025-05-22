@@ -222,6 +222,7 @@ window.acheterJetonsAvecPub = async function () {
   }, 3000);
 }
 
+// Gestion scroll / overflow
 setTimeout(() => {
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
@@ -336,7 +337,11 @@ async function renderBoutique(categoryKey) {
       const price = document.createElement("p");
       price.textContent = `${cadre.prix} pièces`;
 
+      // =========================
+      // BOUTON ACHETER
+      // =========================
       const button = document.createElement("button");
+      button.className = "btn-action-boutique"; // même classe que les boutons jeton
 
       if (categoryKey === "bloque") {
         if (cadre.id === "polaroid_901") {

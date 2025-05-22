@@ -214,3 +214,29 @@ document.getElementById("btn-finir-duel")?.addEventListener("click", async () =>
   const duelRef = doc(db, "duels", currentRoomId);
   await updateDoc(duelRef, { status: "finished" });
 });
+
+// ================== MINIATURES PHOTOS POUR CHAQUE DÉFI ==================
+// À intégrer dans la page duel_game.html (ou là où tu affiches les photos des joueurs)
+
+export function afficherPhotoCadreDuel(container, photoUrl, cadre = "polaroid_01") {
+  if (!container || !photoUrl) return;
+  container.innerHTML = `
+    <div class="cadre-item">
+      <div class="cadre-preview">
+        <img src="assets/cadres/${cadre}.webp" class="photo-cadre" />
+        <img src="${photoUrl}" class="photo-user" onclick="toggleFit(this)" />
+      </div>
+    </div>
+  `;
+}
+
+// Utilisation (exemple) : 
+//   const container = document.querySelector('[data-photo-joueur="..."]');
+//   afficherPhotoCadreDuel(container, urlPhotoJoueur, cadreActuel);
+
+// Pour adversaire idem :
+//   const container = document.querySelector('[data-photo-adversaire="..."]');
+//   afficherPhotoCadreDuel(container, urlPhotoAdversaire, cadreActuel);
+
+// Le CSS miniature sera toujours appliqué comme attendu.
+// ========================================================================

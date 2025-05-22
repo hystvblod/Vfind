@@ -109,26 +109,26 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <!-- ✅ Popup : gagner des pièces -->
-<!-- ✅ Popup : gagner des pièces -->
-  <div id="popup-achat-jeton" class="hidden">
+
+<!-- Popup : gagner des pièces -->
+<div id="popup-achat-piece" class="popup hidden">
   <div class="popup-inner">
     <h3>Gagner des pièces</h3>
     <button onclick="payerAvecPieces()">💰 Payer 100 pièces</button>
     <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
-    <button onclick="fermerPopupGain()">❌ Annuler</button>
+    <button onclick="fermerPopupPiece()">❌ Annuler</button>
   </div>
 </div>
 
-
-  <!-- ✅ Popup : acheter des jetons (nouveau CSS indépendant) -->
-  <div id="popup-achat-jeton" class="hidden">
-    <div class="popup-inner">
-      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
-      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
-      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
-    </div>
+<!-- Popup : acheter des jetons -->
+<div id="popup-achat-jeton" class="popup hidden">
+  <div class="popup-inner">
+    <h3>Acheter des jetons</h3>
+    <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+    <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+    <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
   </div>
+</div>
 
   <!-- Scripts -->
   <script type="module" src="js/firebase.js"></script>
