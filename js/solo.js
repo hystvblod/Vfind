@@ -48,12 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("❌ Erreur Firestore :", err);
     });
 
+  // SECURITE : affiche bouton "Lancer une partie" si pas de défi
   async function init() {
     startBtn?.addEventListener("click", startGame);
     replayBtn?.addEventListener("click", showStart);
 
     const data = await getUserDataCloud();
-    if (data.defiTimer && Date.now() < data.defiTimer && data.defiActifs) {
+    if (!data.defiActifs || !Array.isArray(data.defiActifs) || data.defiActifs.length === 0) {
+      showStart();
+    } else if (data.defiTimer && Date.now() < data.defiTimer) {
       showGame();
     } else {
       showStart();
@@ -107,10 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-  // ===== AFFICHAGE SYNCHRO FIRESTORE =====
+  // AFFICHAGE SYNCHRO FIRESTORE
   async function loadDefis() {
     const data = await getUserDataCloud();
     let defis = data.defiActifs || [];
+    if (!defis || !Array.isArray(defis) || defis.length === 0) {
+      defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
+      return;
+    }
     defiList.innerHTML = '';
     let photosMap = {};
     for (let index = 0; index < defis.length; index++) {
@@ -131,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const hasPhoto = !!dataUrl;
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonPhoto}</button>`;
+      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonTexte}</button>`;
 
       li.innerHTML = `
         <div class="defi-content">
@@ -149,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await afficherPhotosSauvegardees(photosMap);
   }
 
-  // ===== AFFICHAGE DES PHOTOS =====
+  // AFFICHAGE DES PHOTOS
   async function afficherPhotosSauvegardees(photosMap) {
     const cadreActuel = await getCadreSelectionne();
 
@@ -183,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== POPUP PHOTO =====
+  // POPUP PHOTO
   async function agrandirPhoto(dataUrl, id) {
     const cadreActuel = await getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
@@ -194,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.classList.add("show");
   }
 
-  // ===== VALIDATION DEFI : CLOUD ONLY =====
+  // VALIDATION DEFI : CLOUD ONLY
   window.validerDefi = async function(index) {
     const data = await getUserDataCloud();
     let defis = data.defiActifs || [];
@@ -205,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // ===== JETON POPUP =====
+  // JETON POPUP
   window.ouvrirPopupJeton = async function(index) {
     const jetons = await getJetons();
     document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
@@ -236,14 +243,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("popup-jeton").classList.add("hidden");
   };
 
-  // ===== AFFICHAGE DIRECT PHOTO SOLO (APRES CAMERA) =====
+  // AFFICHAGE DIRECT PHOTO SOLO (APRES CAMERA)
   window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
     if (!defiId || !dataUrl) return;
     localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
     await loadDefis();
   };
 
-  // ===== SI PRISE PHOTO SOLO, CHARGE DEFI DIRECT =====
+  // SI PRISE PHOTO SOLO, CHARGE DEFI DIRECT
   document.addEventListener("photoAjouteeSolo", async () => {
     if (typeof loadDefis === "function") {
       await loadDefis();
