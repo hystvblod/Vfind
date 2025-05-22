@@ -12,7 +12,6 @@
       font-size: 1.1rem;
       color: #ccc;
     }
-
     .timer-box .icon-svg {
       width: 20px;
       height: 20px;
@@ -24,7 +23,6 @@
 </head>
 <body class="duel-container">
 
-  <!-- ====== HEADER UNIFIÉ ====== -->
   <header class="header-boutique">
     <a href="index.html" class="back-btn" title="Retour">
       <img src="assets/icons/arrow_back.svg" alt="Retour" />
@@ -40,18 +38,15 @@
     </div>
   </header>
 
-  <!-- NOM ADVERSAIRE -->
   <div style="text-align:center; margin-top: 1rem; font-size: 1.2rem;">
     ⚔️ Contre <strong id="nom-adversaire">...</strong>
   </div>
 
-  <!-- ✅ TIMER 24H -->
   <div class="timer-box">
     <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
     Temps restant : <span id="timer">--:--:--</span>
   </div>
 
-  <!-- ====== MAIN ====== -->
   <main>
     <section id="duel-list-section">
       <h2 id="duel-challenge">Défis du jour</h2>
@@ -59,12 +54,10 @@
     </section>
   </main>
 
-  <!-- ====== FOOTER ====== -->
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <!-- ✅ POPUP VALIDATION PAR JETON -->
   <div id="popup-jeton" class="popup hidden">
     <div class="popup-inner">
       <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
@@ -74,7 +67,6 @@
     </div>
   </div>
 
-  <!-- ====== SCRIPTS ====== -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/duel.js"></script>

@@ -216,8 +216,6 @@ document.getElementById("btn-finir-duel")?.addEventListener("click", async () =>
 });
 
 // ================== MINIATURES PHOTOS POUR CHAQUE DÉFI ==================
-// À intégrer dans la page duel_game.html (ou là où tu affiches les photos des joueurs)
-
 export function afficherPhotoCadreDuel(container, photoUrl, cadre = "polaroid_01") {
   if (!container || !photoUrl) return;
   container.innerHTML = `
@@ -230,13 +228,41 @@ export function afficherPhotoCadreDuel(container, photoUrl, cadre = "polaroid_01
   `;
 }
 
-// Utilisation (exemple) : 
-//   const container = document.querySelector('[data-photo-joueur="..."]');
-//   afficherPhotoCadreDuel(container, urlPhotoJoueur, cadreActuel);
+// ==================== AFFICHAGE DYNAMIQUE SUR duel_game.html ====================
+(function afficherInfosDuelGame() {
+  // Exécute seulement si on est sur la page duel_game.html
+  if (!window.location.pathname.endsWith("duel_game.html")) return;
 
-// Pour adversaire idem :
-//   const container = document.querySelector('[data-photo-adversaire="..."]');
-//   afficherPhotoCadreDuel(container, urlPhotoAdversaire, cadreActuel);
+  const params = new URLSearchParams(window.location.search);
+  const roomId = params.get("room");
+  if (!roomId) return;
+  const duelRef = doc(db, "duels", roomId);
 
-// Le CSS miniature sera toujours appliqué comme attendu.
-// ========================================================================
+  onSnapshot(duelRef, async (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+
+    // Affiche le nom de l’adversaire
+    let advPseudo = "Adversaire";
+    const currentUid = auth.currentUser?.uid;
+    if (currentUid && (data.player1 || data.player2)) {
+      const advUid = currentUid === data.player1 ? data.player2 : data.player1;
+      if (advUid) {
+        const userRef = doc(db, "users", advUid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) advPseudo = userSnap.data().pseudo || advPseudo;
+      }
+    }
+    if (document.getElementById("nom-adversaire"))
+      document.getElementById("nom-adversaire").textContent = advPseudo || "Adversaire";
+    // Scores/statut (si tu ajoutes les balises)
+    if (document.getElementById("score1")) document.getElementById("score1").textContent = data.score1 || 0;
+    if (document.getElementById("score2")) document.getElementById("score2").textContent = data.score2 || 0;
+    if (document.getElementById("statut-duel")) document.getElementById("statut-duel").textContent = {
+      waiting: "En attente d'un joueur...",
+      playing: "En cours",
+      finished: "Terminé"
+    }[data.status] || "En attente";
+    // Ajoute ici l'affichage de la liste des défis si tu veux
+  });
+})();

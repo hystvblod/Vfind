@@ -1,14 +1,13 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Boutique</title>
   <link rel="stylesheet" href="style/main.css" />
-  <!-- Ajoute le MINI CSS juste pour la popup achat jetons ici ou dans main.css -->
   <style>
-    /* MINI CSS Popup Acheter Jetons (seulement pour cette popup) */
-    #popup-achat-jeton {
+    /* MINI CSS Popup Acheter Jetons (identique pour les deux popups) */
+    .popup {
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
@@ -19,7 +18,7 @@
       z-index: 9999;
       background: rgba(20, 20, 40, 0.33);
     }
-    #popup-achat-jeton .popup-inner {
+    .popup-inner {
       background: linear-gradient(to bottom, #2e2e50, #3f3f70);
       border-radius: 20px;
       box-shadow: 0 6px 25px rgba(0,0,0,0.44);
@@ -34,7 +33,7 @@
       flex-direction: column;
       align-items: center;
     }
-    #popup-achat-jeton button {
+    .popup button {
       width: 100%;
       margin: 12px 0;
       font-size: 1.07rem;
@@ -47,10 +46,10 @@
       cursor: pointer;
       transition: background 0.25s;
     }
-    #popup-achat-jeton button:hover {
+    .popup button:hover {
       background: #ffe375;
     }
-    #popup-achat-jeton.hidden {
+    .popup.hidden {
       display: none !important;
     }
   </style>
@@ -88,7 +87,7 @@
 
   <!-- LIGNE 2 : BOUTONS -->
   <div class="btn-inline">
-    <button class="btn-action-boutique" id="gain-btn">
+    <button class="btn-action-boutique" onclick="ouvrirPopupGainPieces()">
       Gagner pièces
       <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
     </button>
@@ -109,31 +108,57 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-
-<!-- Popup : gagner des pièces -->
-<div id="popup-achat-piece" class="popup hidden">
-  <div class="popup-inner">
-    <h3>Gagner des pièces</h3>
-    <button onclick="payerAvecPieces()">💰 Payer 100 pièces</button>
-    <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
-    <button onclick="fermerPopupPiece()">❌ Annuler</button>
+  <!-- Popup : gagner des pièces -->
+  <div id="popup-gain-pieces" class="popup hidden">
+    <div class="popup-inner">
+      <h3>Gagner des pièces</h3>
+      <button onclick="payerAvecPieces()">💰 Payer 100 pièces</button>
+      <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
+      <button onclick="fermerPopupGainPieces()">❌ Annuler</button>
+    </div>
   </div>
-</div>
 
-<!-- Popup : acheter des jetons -->
-<div id="popup-achat-jeton" class="popup hidden">
-  <div class="popup-inner">
-    <h3>Acheter des jetons</h3>
-    <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
-    <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
-    <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
+  <!-- Popup : acheter des jetons -->
+  <div id="popup-achat-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <h3>Acheter des jetons</h3>
+      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
+    </div>
   </div>
-</div>
 
   <!-- Scripts -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/pub.js"></script>
   <script type="module" src="js/boutique.js"></script>
+  <!-- Fonctions popup pièces -->
+  <script>
+    window.ouvrirPopupGainPieces = function () {
+      const popup = document.getElementById("popup-gain-pieces");
+      if (popup) {
+        popup.classList.remove("hidden");
+        popup.classList.add("show");
+      }
+    }
+    window.fermerPopupGainPieces = function () {
+      const popup = document.getElementById("popup-gain-pieces");
+      if (popup) {
+        popup.classList.remove("show");
+        popup.classList.add("hidden");
+      }
+    }
+    window.payerAvecPieces = async function () {
+      if (typeof removePoints === "function" && await removePoints(100)) {
+        alert("✅ 100 pièces dépensées !");
+        // Ici, ajoute ta logique si tu veux une vraie récompense
+        fermerPopupGainPieces();
+        if (typeof updatePointsDisplay === "function") await updatePointsDisplay();
+      } else {
+        alert("❌ Pas assez de pièces.");
+      }
+    }
+  </script>
 </body>
 </html>

@@ -142,6 +142,7 @@ async function acheterCadreBoutique(id, prix) {
 }
 
 // --- Popups et pub ---
+// -- Fermeture de popup d'infos génériques
 window.closePopup = function () {
   const popupGain = document.getElementById("popup-gain");
   if (popupGain) {
@@ -199,7 +200,6 @@ window.fermerPopupJetonBoutique = function () {
     popup.classList.add("hidden");
   }
 }
-
 window.acheterJetonsAvecPieces = async function () {
   if (await removePoints(100)) {
     await addJetons(3);
@@ -211,7 +211,6 @@ window.acheterJetonsAvecPieces = async function () {
     alert("❌ Pas assez de pièces.");
   }
 }
-
 window.acheterJetonsAvecPub = async function () {
   alert("📺 Simulation de pub regardée !");
   setTimeout(async () => {
@@ -220,6 +219,32 @@ window.acheterJetonsAvecPub = async function () {
     await updateJetonsDisplay();
     fermerPopupJetonBoutique();
   }, 3000);
+}
+
+// --- Popup gagner pièces ---
+window.ouvrirPopupGainPieces = function () {
+  const popup = document.getElementById("popup-gain-pieces");
+  if (popup) {
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
+  }
+}
+window.fermerPopupGainPieces = function () {
+  const popup = document.getElementById("popup-gain-pieces");
+  if (popup) {
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+  }
+}
+window.payerAvecPieces = async function () {
+  if (await removePoints(100)) {
+    alert("✅ 100 pièces dépensées !");
+    // Ici, ajoute ta logique si tu veux donner une vraie récompense
+    fermerPopupGainPieces();
+    await updatePointsDisplay();
+  } else {
+    alert("❌ Pas assez de pièces.");
+  }
 }
 
 // Gestion scroll / overflow

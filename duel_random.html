@@ -46,9 +46,7 @@
       </a>
     </div>
   </header>
-
   <main>
-    <!-- Animation Recherche d'adversaire -->
     <div id="searching-adversary" class="searching-box">
       <img src="assets/img/logo.png" alt="Logo VFind" class="spin-logo"/>
       <div class="searching-text">Recherche d’adversaire…</div>
@@ -58,21 +56,12 @@
         ⏳ Aucun adversaire trouvé pour l’instant.<br>Réessaie plus tard !
       </div>
     </div>
-    <div class="main-buttons" style="margin-top:2.5rem;">
-    </div>
+    <div class="main-buttons" style="margin-top:2.5rem;"></div>
     <p style="text-align:center;color:#ccc;">Un adversaire va être sélectionné automatiquement.</p>
   </main>
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
-
-  <script>
-    // Affiche l'animation "échec" après 1h d'attente (sécurité supplémentaire)
-    let waitingTimeout = setTimeout(() => {
-      document.getElementById("searching-adversary").style.display = "none";
-      document.getElementById("searching-failed").style.display = "flex";
-    }, 3600000); // 1 heure (en ms)
-  </script>
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/duel.js"></script>
 </body>
