@@ -121,7 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
+      // Essaye d'abord localStorage
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+      // Sinon, tente cloud
       if (!dataUrl) {
         try {
           const data = await getUserDataCloud();
@@ -188,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ===== AGRANDIR PHOTO (popup) =====
   async function agrandirPhoto(dataUrl, id) {
     const cadreActuel = await getCadreSelectionne();
     document.getElementById("photo-affichee").src = dataUrl;
@@ -236,4 +239,30 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("popup-jeton").classList.remove("show");
     document.getElementById("popup-jeton").classList.add("hidden");
   };
+});
+
+// ===== Correction clé : affichage direct de la photo prise dans le cadre =====
+// Cette fonction doit être appelée APRES la prise de photo via cameraOuvrirCameraPour (dans camera.js)
+window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
+  if (!defiId || !dataUrl) return;
+  // Stocke la photo pour réaffichage immédiat
+  localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+
+  // Recharge les défis pour réafficher la photo
+  const defiList = document.getElementById("defi-list");
+  if (defiList) {
+    // Recharge les défis sans recharger la page
+    // C'est mieux d'appeler loadDefis (redéfini ci-dessus)
+    // On l'appelle via un event CustomEvent pour que ce soit propre
+    document.dispatchEvent(new CustomEvent("photoAjouteeSolo"));
+  }
+};
+// Permet de relancer loadDefis sans refresh complet
+document.addEventListener("photoAjouteeSolo", async () => {
+  // Recharge la liste (si loadDefis est en scope, sinon refresh la page)
+  if (typeof loadDefis === "function") {
+    await loadDefis();
+  } else {
+    window.location.reload();
+  }
 });

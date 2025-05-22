@@ -138,7 +138,7 @@ async function acheterCadreBoutique(id, prix) {
   await acheterCadre(id);
   await updatePointsDisplay();
   alert("✅ Cadre acheté !");
-  await renderBoutique(currentCategory); // ✅ recharge uniquement la catégorie actuelle
+  await renderBoutique(currentCategory); // recharge uniquement la catégorie actuelle
 }
 
 // --- Popups et pub ---
@@ -151,6 +151,23 @@ window.closePopup = function () {
   const oldUnlock = document.getElementById("popup-unlock-info");
   if (oldUnlock) document.body.removeChild(oldUnlock);
 };
+
+// Ouvre la popup "gagner pièces"
+window.ouvrirPopupGain = function () {
+  const popup = document.getElementById("popup-gain");
+  if (popup) {
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
+  }
+};
+// Ferme la popup "gagner pièces"
+window.fermerPopupGain = function () {
+  const popup = document.getElementById("popup-gain");
+  if (popup) {
+    popup.classList.remove("show");
+    popup.classList.add("hidden");
+  }
+}
 
 function showUnlockPopup(nom, message) {
   const oldPopup = document.getElementById("popup-unlock-info");
@@ -402,4 +419,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     await updatePointsDisplay();
     await updateJetonsDisplay();
   });
+
+  // Ajoute ouverture popup gagner pièces sur bouton (sécurité, si jamais le HTML ne l’a pas en onclick)
+  const gainBtn = document.getElementById("gain-btn");
+  if (gainBtn) gainBtn.onclick = window.ouvrirPopupGain;
+
+  const jetonBtn = document.getElementById("jeton-btn");
+  if (jetonBtn) jetonBtn.onclick = window.ouvrirPopupJetonBoutique;
 });
