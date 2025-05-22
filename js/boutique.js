@@ -158,13 +158,13 @@ function showUnlockPopup(nom, message) {
   const popup = document.createElement("div");
   popup.id = "popup-unlock-info";
   popup.className = "popup show";
-  popup.innerHTML = 
+  popup.innerHTML = `
     <div class="popup-inner">
       <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
       <h2 style="font-size:1.4em;">${nom}</h2>
       <div style="margin:1em 0 0.5em 0;font-size:1.1em;text-align:center;">${message || "Aucune information."}</div>
     </div>
-  ;
+  `;
   document.body.appendChild(popup);
 }
 
@@ -306,7 +306,7 @@ async function renderBoutique(categoryKey) {
       wrapper.style.margin = "0 auto 10px";
 
       const cadreImg = document.createElement("img");
-      cadreImg.src = assets/cadres/${cadre.id}.webp;
+      cadreImg.src = `assets/cadres/${cadre.id}.webp`;
       cadreImg.className = "photo-cadre";
 
       const photo = document.createElement("img");
@@ -319,7 +319,7 @@ async function renderBoutique(categoryKey) {
       wrapper.addEventListener("click", () => {
         const popup = document.createElement("div");
         popup.className = "popup show";
-        popup.innerHTML = 
+        popup.innerHTML = `
           <div class="popup-inner">
             <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
             <div class="cadre-preview cadre-popup">
@@ -327,7 +327,7 @@ async function renderBoutique(categoryKey) {
               <img class="photo-user" src="assets/img/exemple.jpg" />
             </div>
           </div>
-        ;
+        `;
         document.body.appendChild(popup);
       });
 
@@ -335,7 +335,7 @@ async function renderBoutique(categoryKey) {
       title.textContent = cadre.nom;
 
       const price = document.createElement("p");
-      price.textContent = ${cadre.prix} pièces;
+      price.textContent = `${cadre.prix} pièces`;
 
       // =========================
       // BOUTON ACHETER
