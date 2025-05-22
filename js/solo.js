@@ -137,7 +137,6 @@ if (!dataUrl) {
   } catch (e) {
     console.warn("⚠️ Impossible de charger la photo depuis Firebase", e);
   }
-}
       }
       photosMap[defi.id] = dataUrl || null;
 
