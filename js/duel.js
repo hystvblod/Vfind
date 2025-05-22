@@ -1,4 +1,4 @@
-// === duel.js (MATCHMAKING PRO & REDIRECTION AUTO, PATCH UID PRO) ===
+// === duel.js (MATCHMAKING PRO, REDIRECTION AUTO, GARDE-FOU ANTI-ROOM FANTÔME) ===
 import {
   getFirestore, collection, doc, setDoc, getDoc, updateDoc,
   onSnapshot, query, where, getDocs
@@ -30,7 +30,7 @@ function clearWaitingTimeout() {
 // Authentification utilisateur
 auth.onAuthStateChanged(user => {
   if (user) {
-    currentUser = user; // on garde pour UI, mais on n'utilise plus jamais pour les requêtes !
+    currentUser = user; // On garde pour UI, mais on N'UTILISE PLUS JAMAIS pour les requêtes critiques !
     checkOrCreateDuelRoom();
   } else {
     window.location.href = "login.html";
@@ -41,6 +41,10 @@ auth.onAuthStateChanged(user => {
 async function tryMatchmaking(timeoutMs = 15000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
+    if (!auth.currentUser || !auth.currentUser.uid) {
+      await new Promise(r => setTimeout(r, 200)); // attend 200ms si user pas prêt
+      continue;
+    }
     const duelsCol = collection(db, "duels");
     const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", auth.currentUser.uid));
     const qsnap = await getDocs(q);
@@ -73,10 +77,18 @@ async function checkOrCreateDuelRoom() {
 
 // Crée une nouvelle room de duel dans Firestore
 async function createDuelRoom() {
+  // GARDE-FOU ANTI-ROOM FANTÔME !
+  if (!auth.currentUser || !auth.currentUser.uid) {
+    alert("⛔️ Utilisateur Firebase non connecté : la room NE PEUT PAS être créée !");
+    throw new Error("Firebase Auth non prêt. Retente dans 2 secondes.");
+  }
+  // LOG UID pour debug
+  console.log("✅ Room créée avec UID :", auth.currentUser.uid);
+
   const roomId = generateRoomId();
   const duelRef = doc(collection(db, "duels"), roomId);
   await setDoc(duelRef, {
-    player1: auth.currentUser.uid, // PATCH ICI !
+    player1: auth.currentUser.uid, // UID PRO
     player2: null,
     score1: 0,
     score2: 0,
@@ -88,6 +100,10 @@ async function createDuelRoom() {
 
 // Rejoint une room de duel existante (Firestore)
 async function joinDuelRoom(roomId) {
+  if (!auth.currentUser || !auth.currentUser.uid) {
+    alert("⛔️ Utilisateur Firebase non connecté pour rejoindre la room !");
+    throw new Error("Firebase Auth non prêt. Retente dans 2 secondes.");
+  }
   const duelRef = doc(db, "duels", roomId);
   const snap = await getDoc(duelRef);
   if (!snap.exists()) {
@@ -96,9 +112,9 @@ async function joinDuelRoom(roomId) {
     return;
   }
   const data = snap.data();
-  if (!data.player2 && data.player1 !== auth.currentUser.uid) { // PATCH ICI !
+  if (!data.player2 && data.player1 !== auth.currentUser.uid) {
     await updateDoc(duelRef, {
-      player2: auth.currentUser.uid, // PATCH ICI !
+      player2: auth.currentUser.uid,
       status: "playing"
     });
   }
@@ -137,14 +153,14 @@ function generateRoomId() {
 
 // Met à jour le score du joueur actuel
 async function updateScore(points) {
-  if (!currentRoomId || !auth.currentUser) return;
+  if (!currentRoomId || !auth.currentUser || !auth.currentUser.uid) return;
   const duelRef = doc(db, "duels", currentRoomId);
   const snap = await getDoc(duelRef);
   if (!snap.exists()) return;
   const data = snap.data();
-  if (data.player1 === auth.currentUser.uid) { // PATCH ICI !
+  if (data.player1 === auth.currentUser.uid) {
     await updateDoc(duelRef, { score1: points });
-  } else if (data.player2 === auth.currentUser.uid) { // PATCH ICI !
+  } else if (data.player2 === auth.currentUser.uid) {
     await updateDoc(duelRef, { score2: points });
   }
 }
