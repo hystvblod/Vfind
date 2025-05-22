@@ -124,10 +124,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (defi.done) li.classList.add("done");
       li.setAttribute("data-defi-id", defi.id);
 
-      let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-      if (!dataUrl && data.defisSolo && data.defisSolo[defi.id]) {
-        dataUrl = data.defisSolo[defi.id];
-        localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
+   let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+
+if (!dataUrl) {
+  try {
+    const userData = await getUserDataCloud();
+    const defisSolo = userData.defisSolo || {};
+    if (defisSolo[defi.id]) {
+      dataUrl = defisSolo[defi.id];
+      localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
+    }
+  } catch (e) {
+    console.warn("⚠️ Impossible de charger la photo depuis Firebase", e);
+  }
+}
       }
       photosMap[defi.id] = dataUrl || null;
 
