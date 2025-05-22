@@ -1,6 +1,7 @@
 import { db, auth, initFirebaseUser } from './firebase.js';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
+// Fonction principale exportée (modale photo solo ou duel)
 export async function ouvrirCameraPour(defiId, mode = "solo") {
   await initFirebaseUser();
   const user = auth.currentUser;
@@ -77,6 +78,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
       }
       setTimeout(() => window.location.reload(), 100);
     } else {
+      // SOLO : enregistre dans localStorage + Firestore
       localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
       try {
         const ref = doc(db, "users", user.uid);
@@ -84,8 +86,11 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
         let defisSolo = snap.exists() && snap.data().defisSolo || {};
         defisSolo[defiId] = dataUrl;
         await updateDoc(ref, { defisSolo });
-      } catch (e) {}
+      } catch (e) {
+        // Échec d'enregistrement cloud = pas bloquant
+      }
 
+      // Affichage immédiat dans le cadre
       if (window.afficherPhotoDansCadreSolo) {
         window.afficherPhotoDansCadreSolo(defiId, dataUrl);
       }
