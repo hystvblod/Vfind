@@ -8,11 +8,10 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth
 // Initialisation Firebase
 const db = getFirestore();
 const auth = getAuth();
-let currentUser = null;
 let currentRoomId = null;
 let firebaseReady = false;
 
-// Timer pour échec attente adversaire (1h)
+// Timer pour échec
 let waitingTimeout = null;
 function startWaitingTimeout(durationMs = 3600000) {
   clearWaitingTimeout();
@@ -28,12 +27,11 @@ function clearWaitingTimeout() {
   waitingTimeout = null;
 }
 
-// Authentification utilisateur
+// Authentification
 auth.onAuthStateChanged(user => {
   if (user) {
     firebaseReady = true;
-    currentUser = user;
-    console.log("✅ Utilisateur Firebase connecté :", user.uid);
+    console.log("✅ Utilisateur Firebase :", user.uid);
     checkOrCreateDuelRoom();
   } else {
     firebaseReady = false;
@@ -42,6 +40,7 @@ auth.onAuthStateChanged(user => {
   }
 });
 
+// Vérifie si prêt
 async function waitUntilReady(callback) {
   if (firebaseReady && auth.currentUser && auth.currentUser.uid) {
     callback();
@@ -50,33 +49,40 @@ async function waitUntilReady(callback) {
   }
 }
 
-// MATCHMAKING UNIQUEMENT
+// Matchmaking pur
 async function tryMatchmaking(timeoutMs = 15000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
-    if (!auth.currentUser || !auth.currentUser.uid) {
+    if (!auth.currentUser?.uid) {
       await new Promise(r => setTimeout(r, 200));
       continue;
     }
+
     const duelsCol = collection(db, "duels");
-    const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", auth.currentUser.uid));
+    const q = query(duelsCol,
+      where("status", "==", "waiting"),
+      where("player1", "!=", auth.currentUser.uid)
+    );
+
     const qsnap = await getDocs(q);
     if (!qsnap.empty) {
       const first = qsnap.docs[0];
       const foundRoomId = first.id;
       currentRoomId = foundRoomId;
+      console.log("🤝 Room rejointe :", foundRoomId);
       await joinDuelRoom(foundRoomId);
       return true;
     }
+
     await new Promise(r => setTimeout(r, 2000));
   }
   return false;
 }
 
-// Start Duel Flow
+// Crée ou rejoint une room
 async function checkOrCreateDuelRoom() {
-  if (!firebaseReady || !auth.currentUser || !auth.currentUser.uid) {
-    console.warn("⛔️ Firebase pas prêt. Attente...");
+  if (!firebaseReady || !auth.currentUser?.uid) {
+    console.warn("⏳ Firebase non prêt...");
     setTimeout(checkOrCreateDuelRoom, 300);
     return;
   }
@@ -98,13 +104,8 @@ async function checkOrCreateDuelRoom() {
 
 // Crée une room
 async function createDuelRoom() {
-  if (!auth.currentUser || !auth.currentUser.uid) {
-    alert("⛔️ Utilisateur non connecté – room bloquée.");
-    throw new Error("Firebase Auth non prêt");
-  }
-
   const uid = auth.currentUser.uid;
-  console.log("🎯 Création room avec UID :", uid);
+  console.log("📦 Création room avec :", uid);
 
   const roomId = generateRoomId();
   const duelRef = doc(collection(db, "duels"), roomId);
@@ -119,67 +120,75 @@ async function createDuelRoom() {
   return roomId;
 }
 
+// Rejoint une room existante
 async function joinDuelRoom(roomId) {
-  if (!auth.currentUser || !auth.currentUser.uid) {
-    alert("⛔️ UID manquant pour rejoindre.");
-    return;
-  }
   const duelRef = doc(db, "duels", roomId);
   const snap = await getDoc(duelRef);
+
   if (!snap.exists()) {
     alert("Room introuvable !");
     window.location.href = "duel.html";
     return;
   }
+
   const data = snap.data();
   if (!data.player2 && data.player1 !== auth.currentUser.uid) {
+    console.log("🙋‍♂️ Je deviens player2 dans :", roomId);
     await updateDoc(duelRef, {
       player2: auth.currentUser.uid,
       status: "playing"
     });
   }
+
   startDuelListener(roomId);
 }
 
-// Listener temps réel
+// Écouteur temps réel
 function startDuelListener(roomId) {
   const duelRef = doc(db, "duels", roomId);
   onSnapshot(duelRef, (snap) => {
     if (!snap.exists()) return;
     const data = snap.data();
+
     if (data.status === "playing") {
+      console.log("🎮 Duel prêt, redirection...");
       window.location.href = `duel_game.html?room=${roomId}`;
     }
 
     const searchingDiv = document.getElementById("searching-adversary");
     const failedDiv = document.getElementById("searching-failed");
+
     if (data.status === "waiting") {
       if (searchingDiv) searchingDiv.style.display = "flex";
       if (failedDiv) failedDiv.style.display = "none";
       startWaitingTimeout();
     } else {
       if (searchingDiv) searchingDiv.style.display = "none";
-      if (failedDiv) searchingDiv.style.display = "none";
+      if (failedDiv) failedDiv.style.display = "none";
       clearWaitingTimeout();
     }
   });
 }
 
-// Génère un ID aléatoire
+// Génère un ID
 function generateRoomId() {
-  return Math.random().toString(36).substr(2, 9);
+  return Math.random().toString(36).substring(2, 9);
 }
 
 // Score
 async function updateScore(points) {
-  if (!currentRoomId || !auth.currentUser || !auth.currentUser.uid) return;
+  if (!currentRoomId || !auth.currentUser?.uid) return;
+
   const duelRef = doc(db, "duels", currentRoomId);
   const snap = await getDoc(duelRef);
   if (!snap.exists()) return;
+
   const data = snap.data();
-  if (data.player1 === auth.currentUser.uid) {
+  const uid = auth.currentUser.uid;
+
+  if (data.player1 === uid) {
     await updateDoc(duelRef, { score1: points });
-  } else if (data.player2 === auth.currentUser.uid) {
+  } else if (data.player2 === uid) {
     await updateDoc(duelRef, { score2: points });
   }
 }
