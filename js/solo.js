@@ -168,6 +168,8 @@ if (!dataUrl) {
       const dataUrl = photosMap[id];
 
       if (dataUrl) {
+        console.log("[DEBUG] Affichage photo - defiId:", id, "| cadreActuel:", cadreActuel, "| dataUrl:", dataUrl ? dataUrl.slice(0,100) + "..." : "ABSENT");
+
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
 
