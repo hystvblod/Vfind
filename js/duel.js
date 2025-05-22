@@ -1,4 +1,4 @@
-// === duel.js (PRO Firebase, matchmaking pur, animation UI, échec après 1h, PAS de bot) ===
+// === duel.js (MATCHMAKING PRO & REDIRECTION AUTO) ===
 import {
   getFirestore, collection, doc, setDoc, getDoc, updateDoc,
   onSnapshot, query, where, getDocs
@@ -49,7 +49,7 @@ async function tryMatchmaking(timeoutMs = 15000) {
       const foundRoomId = first.id;
       currentRoomId = foundRoomId;
       await joinDuelRoom(foundRoomId);
-      window.location.href = `duel.html?room=${foundRoomId}`;
+      // --- REDIRECTION ENLEVÉE ICI ---
       return true;
     }
     await new Promise(r => setTimeout(r, 2000)); // Attends 2s avant de réessayer
@@ -113,11 +113,23 @@ function startDuelListener(roomId) {
   onSnapshot(duelRef, (snap) => {
     if (!snap.exists()) return;
     const data = snap.data();
-    updateDuelUI(data);
-    // Timer échec/animation attente
+
+    // --- REDIRECTION AUTO VERS LE JEU ---
+    if (data.status === "playing") {
+      // Quand un adversaire rejoint, lance la partie
+      window.location.href = `duel_game.html?room=${roomId}`;
+    }
+
+    // Animation recherche/adversaire + échec
+    const searchingDiv = document.getElementById("searching-adversary");
+    const failedDiv = document.getElementById("searching-failed");
     if (data.status === "waiting") {
+      if (searchingDiv) searchingDiv.style.display = "flex";
+      if (failedDiv) failedDiv.style.display = "none";
       startWaitingTimeout();
     } else {
+      if (searchingDiv) searchingDiv.style.display = "none";
+      if (failedDiv) failedDiv.style.display = "none";
       clearWaitingTimeout();
     }
   });
@@ -144,17 +156,6 @@ async function updateScore(points) {
 
 // Met à jour l'affichage du duel (fonction à compléter selon ton UI)
 function updateDuelUI(data) {
-  // Animation recherche/adversaire + échec
-  const searchingDiv = document.getElementById("searching-adversary");
-  const failedDiv = document.getElementById("searching-failed");
-  if (data.status === "waiting") {
-    if (searchingDiv) searchingDiv.style.display = "flex";
-    if (failedDiv) failedDiv.style.display = "none";
-  } else {
-    if (searchingDiv) searchingDiv.style.display = "none";
-    if (failedDiv) failedDiv.style.display = "none";
-  }
-
   if(document.getElementById("score1")) document.getElementById("score1").textContent = data.score1 || 0;
   if(document.getElementById("score2")) document.getElementById("score2").textContent = data.score2 || 0;
   if(document.getElementById("statut-duel")) document.getElementById("statut-duel").textContent = {

@@ -1,82 +1,90 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Boutique</title>
-  <link rel="stylesheet" href="style/main.css"/>
+  <link rel="stylesheet" href="style/main.css" />
 </head>
-<body class="boutique-bg">
+<body class="boutique-container">
 
-<header class="header-boutique">
-  <a href="index.html" class="back-btn" title="Retour">
-    <img src="assets/icons/arrow_back.svg" alt="Retour" />
-  </a>
-  <h1 class="titre-centre">Boutique</h1>
-  <div class="top-buttons">
-    <a href="profil.html" class="btn-icon">
-      <img src="assets/icons/user.svg" alt="Profil" />
-    </a>
-    <a href="parametres.html" class="btn-icon">
-      <img src="assets/icons/settings.svg" alt="Paramètres" />
-    </a>
-  </div>
-</header>
+  <header class="header-solo">
+    <div class="header-row">
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
+      </a>
+      <h1>Boutique</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
+        <a href="parametres.html" class="btn-icon">
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
+      </div>
+    </div>
+  </header>
 
-<main>
-  <section class="solde-boutique">
-    <div class="solde-piece">
-      <img src="assets/img/vcoin.webp" alt="VCoins" class="vcoin-boutique" />
+  <!-- LIGNE 1 : SOLDE GLOBAL -->
+  <div class="solde-ligne-boutique">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
       <span id="points">100</span>
-      <button class="btn-action-boutique" id="gain-btn" onclick="ouvrirPopupGain()">Gagner pièces
-        <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
-      </button>
     </div>
-    <div class="solde-jeton">
-      <img src="assets/img/jeton_p.webp" alt="Jetons" class="jeton-boutique" />
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
       <span id="jetons">6</span>
-      <button class="btn-action-boutique" id="jeton-btn" onclick="ouvrirPopupJetonBoutique()">Acheter des jetons
-        <img src="assets/img/jeton_p.webp" class="icon-bouton-piece" />
-      </button>
     </div>
-  </section>
-  <div id="gain-feedback" class="feedback-popup hidden"></div>
+  </div>
 
-  <section class="boutique-cadres">
+  <!-- LIGNE 2 : BOUTONS -->
+  <div class="btn-inline">
+    <button class="btn-action-boutique" id="gain-btn">
+      Gagner pièces
+      <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
+    </button>
+    <button class="btn-action-boutique" onclick="ouvrirPopupJetonBoutique()">
+      Acheter jetons
+      <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
+    </button>
+  </div>
+
+  <!-- SECTION BOUTIQUE -->
+  <section class="cadres-list">
     <div id="boutique-categories"></div>
     <div id="boutique-container"></div>
+    <!-- Les cadres seront chargés ici par JS -->
   </section>
-</main>
 
-<!-- Popup "Gagner des pièces" -->
-<div id="popup-gain" class="popup-boutique hidden">
-  <div class="popup-inner-boutique">
-    <button class="close-popup-boutique" onclick="fermerPopupGain()">❌</button>
-    <h2>Gagner des pièces</h2>
-    <p style="margin-bottom:0.7em;">Regarde une pub pour gagner 100 pièces.</p>
-    <button onclick="watchAd()">Regarder une pub et gagner 100 pièces</button>
-    <br><br>
-    <button onclick="fermerPopupGain()">Fermer</button>
+  <footer>
+    <p>&copy; 2025 VFind</p>
+  </footer>
+
+  <!-- ✅ Popup : gagner des pièces -->
+  <div id="popup-gain" class="popup hidden">
+    <h3>Gagner pièces</h3>
+    <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
+    <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
   </div>
-</div>
 
-<!-- Popup "Acheter des jetons" -->
-<div id="popup-achat-jeton" class="popup-boutique hidden">
-  <div class="popup-inner-boutique">
-    <button class="close-popup-boutique" onclick="fermerPopupJetonBoutique()">❌</button>
-    <h2>Acheter des jetons</h2>
-    <p>3 jetons = 100 pièces ou 1 pub vidéo</p>
-    <button onclick="acheterJetonsAvecPieces()">Acheter 3 jetons pour 100 pièces</button>
-    <button onclick="acheterJetonsAvecPub()">Obtenir 3 jetons en regardant une pub</button>
-    <br><br>
-    <button onclick="fermerPopupJetonBoutique()">Fermer</button>
+  <!-- ✅ Popup : acheter des jetons -->
+  <div id="popup-achat-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
+    </div>
   </div>
-</div>
 
-<footer>
-  <p>© 2025 VFind</p>
-</footer>
-
+  <!-- Scripts -->
+<script type="module" src="js/firebase.js"></script>
+<script type="module" src="js/userData.js"></script>
+<script type="module" src="js/pub.js"></script>
 <script type="module" src="js/boutique.js"></script>
+
+  </script>
+
+  <!-- Connexion Firebase -->
+  <script type="module" src="js/firebase.js"></script>
 </body>
 </html>
