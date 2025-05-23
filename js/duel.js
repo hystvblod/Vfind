@@ -117,44 +117,50 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   async function updateDuelUI() {
-    let advPseudo = "Adversaire";
-    let advID = "";
-    let myID = "";
-    isPlayer1 = false;
+  let advPseudo = "Adversaire";
+  let advID = "";
+  let myID = "";
+  isPlayer1 = false;
 
-  if (advID) {
-  const userRef = doc(db, "users", advID);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    advPseudo = data.pseudo || advID; // ✅ fallback sur ID si pas de pseudo
-  } else {
-    advPseudo = advID; // ✅ même si user introuvable
-  }
+  if (currentUserId && roomData) {
+    isPlayer1 = (currentUserId === roomData.player1);
+    myID = isPlayer1 ? roomData.player1 : roomData.player2;
+    advID = isPlayer1 ? roomData.player2 : roomData.player1;
+
+    if (advID) {
+      const userRef = doc(db, "users", advID);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        advPseudo = data.pseudo || advID; // ✅ utilise pseudo si présent, sinon ID
+      } else {
+        advPseudo = advID; // ✅ même si le doc utilisateur n’existe pas
+      }
     }
-
-    if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
-    if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
-    else if ($("timer")) $("timer").textContent = "--:--:--";
-
-    // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
-    let cadreActifMoi = "polaroid_01";
-    let cadreActifAdv = "polaroid_01";
-    try {
-      if (myID) {
-        const userRef = doc(db, "users", myID);
-        const snap = await getDoc(userRef);
-        if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
-      }
-      if (advID) {
-        const advRef = doc(db, "users", advID);
-        const snap = await getDoc(advRef);
-        if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
-      }
-    } catch(e) { /* ignore */ }
-
-    renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv});
   }
+
+  if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
+  if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
+  else if ($("timer")) $("timer").textContent = "--:--:--";
+
+  // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
+  let cadreActifMoi = "polaroid_01";
+  let cadreActifAdv = "polaroid_01";
+  try {
+    if (myID) {
+      const userRef = doc(db, "users", myID);
+      const snap = await getDoc(userRef);
+      if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
+    }
+    if (advID) {
+      const advRef = doc(db, "users", advID);
+      const snap = await getDoc(advRef);
+      if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
+    }
+  } catch(e) { /* ignore */ }
+
+  renderDefis({ myID, advID, advPseudo, cadreActifMoi, cadreActifAdv });
+}
 
   function startGlobalTimer(startTime) {
     clearInterval(timerInterval);
