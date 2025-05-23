@@ -231,20 +231,11 @@ async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv
       boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
       colJoueur.appendChild(boutonPhoto);
     } else {
-      // Pas de photo = boutons en bas, pas de cadre
-      const btnRow = document.createElement('div');
-      btnRow.style.display = "flex";
-      btnRow.style.gap = "12px";
-      // Bouton prendre photo
+      // Pas de photo = bouton sous le titre, pas de cadre
       const boutonPhoto = document.createElement('button');
       boutonPhoto.textContent = "📸 Prendre une photo";
       boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
-      btnRow.appendChild(boutonPhoto);
-      // (Optionnel) bouton "P" ou autre action
-      // const boutonP = document.createElement('button');
-      // boutonP.textContent = "🅿️"; // exemple d’icône
-      // btnRow.appendChild(boutonP);
-      colJoueur.appendChild(btnRow);
+      colJoueur.appendChild(boutonPhoto);
     }
 
     // ==== COLONNE DROITE (adversaire) ====
@@ -284,9 +275,9 @@ async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv
     // Ajoute la row dans le li
     li.appendChild(row);
     ul.appendChild(li);
+  
   }
 }
-
 
   // ==== Camera ====
   window.ouvrirCameraPourDuel = function(idx) {
