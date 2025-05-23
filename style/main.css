@@ -1627,4 +1627,12 @@ header,
   }
 }
 
+/* ✅ Patch responsive pour le cadre zoomé dans popup uniquement */
+.popup .cadre-preview {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  aspect-ratio: 4 / 5; /* ✅ conserve ratio correct */
+  margin: 0 auto;
+}
 
