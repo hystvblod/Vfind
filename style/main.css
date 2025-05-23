@@ -1626,12 +1626,5 @@ header,
     gap: 12px;
   }
 }
-/* Version compacte du cadre pour les défis UNIQUEMENT */
-.defi-item .cadre-preview {
-  height: 62px !important;   /* Teste entre 58px et 65px pour voir ce qui coupe parfaitement la base transparente */
-  width: 80px !important;    /* Idem miniature normale */
-  overflow: hidden !important;
-  margin-bottom: 6px !important; /* ou 4px pour rapprocher le bouton */
-}
 
 
