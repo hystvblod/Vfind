@@ -839,7 +839,7 @@ main {
 /* ✅ MINIATURE = version réduite exacte du zoom */
 .cadre-item .cadre-preview {
   width: 80px;
-  height: 65px;
+  height: 100px;
   position: relative;
   margin: 0 auto 10px;
   overflow: hidden;
