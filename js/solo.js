@@ -171,7 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dataUrl) {
         // Structure CORRECTE comme avant :
         const containerCadre = document.createElement("div");
-        containerCadre.className = "cadre-item";
+        containerCadre.className = "cadre-item cadre-duel-mini";
+
 
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
