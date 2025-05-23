@@ -1626,5 +1626,15 @@ header,
     gap: 12px;
   }
 }
+/* Réduit la hauteur de la carte UNIQUEMENT dans les défis */
+.defi-item .cadre-item {
+  min-height: 0 !important;
+  height: auto !important;
+  padding-bottom: 6px !important;   /* ou 4px, voire 0px pour coller */
+  padding-top: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
 
 
