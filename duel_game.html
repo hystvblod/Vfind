@@ -5,21 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Duel (Partie)</title>
   <link rel="stylesheet" href="style/main.css" />
-  <style>
-    .timer-box {
-      text-align: center;
-      margin-top: 0.5rem;
-      font-size: 1.1rem;
-      color: #ccc;
-    }
-    .timer-box .icon-svg {
-      width: 20px;
-      height: 20px;
-      vertical-align: middle;
-      margin-right: 6px;
-      filter: brightness(0) invert(0.7);
-    }
-  </style>
+  <link rel="stylesheet" href="style/cd3ec4b5-2dde-4c94-b1db-42eebe55a141.css" />
 </head>
 <body class="duel-container">
 
@@ -49,7 +35,7 @@
 
   <main>
     <section id="duel-list-section">
-      <h2 id="duel-challenge">Défis du jour</h2>
+      <h2 id="duel-challenge">Défis du duel</h2>
       <ul id="duel-defi-list" class="defi-list"></ul>
     </section>
   </main>
@@ -58,17 +44,20 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <div id="popup-jeton" class="popup hidden">
+  <!-- Popup photo -->
+  <div id="popup-photo" class="popup hidden">
     <div class="popup-inner">
-      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
-      <p id="solde-jeton">Jetons disponibles : --</p>
-      <button id="valider-jeton-btn">✅ Valider</button>
-      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+      <button id="close-popup" class="close-btn">❌</button>
+      <div class="cadre-preview cadre-popup boutique-style">
+        <img id="cadre-affiche" class="photo-cadre" src="" />
+        <img id="photo-affichee" class="photo-user" src="" />
+      </div>
     </div>
   </div>
 
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
+  <script type="module" src="js/camera.js"></script>
   <script type="module" src="js/duel.js"></script>
 </body>
 </html>
