@@ -1604,7 +1604,7 @@ header,
   flex-direction: column;
   align-items: center;
   min-width: 130px;
-
+}
 .col-title {
   margin-bottom: 7px;
   font-weight: 700;
