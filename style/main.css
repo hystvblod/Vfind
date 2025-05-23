@@ -1626,5 +1626,18 @@ header,
     gap: 12px;
   }
 }
+@media (max-width: 700px) {
+  .duel-defi-row {
+    flex-direction: row !important;  /* 🔥 Forcé même en petit écran */
+    flex-wrap: wrap;                 /* ✅ S’adapte si jamais c’est trop petit */
+    gap: 20px;
+  }
+
+  .joueur-col, .adversaire-col {
+    flex: 1;
+    min-width: 130px;
+    max-width: 50%;                 /* ✅ Limite à la moitié de la ligne */
+  }
+}
 
 
