@@ -218,7 +218,7 @@ if (path.includes("duel_game.html") && roomId) {
       // Si photo, structure SOLO (miniature/cadre)
       if (myPhotos[idxStr]) {
         const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item";
+       cadreDiv.className = "cadre-item cadre-duel-mini";
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
         const cadreImg = document.createElement("img");
@@ -269,7 +269,7 @@ if (path.includes("duel_game.html") && roomId) {
       // Miniature ADVERSAIRE si dispo
       if (advPhotos[idxStr]) {
         const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item";
+        cadreDiv.className = "cadre-item cadre-duel-mini";
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
         const cadreImg = document.createElement("img");
