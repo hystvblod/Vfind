@@ -1626,14 +1626,5 @@ header,
     gap: 12px;
   }
 }
-.defi-item .cadre-item {
-  min-height: unset !important;
-  height: auto !important;
-  padding-bottom: 8px !important;   /* pas 0, garde un peu de "souffle" */
-  padding-top: 8px !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
 
 
