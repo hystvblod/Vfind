@@ -122,15 +122,15 @@ if (path.includes("duel_game.html") && roomId) {
     let myID = "";
     isPlayer1 = false;
 
-    if (currentUserId && roomData) {
-      isPlayer1 = (currentUserId === roomData.player1);
-      myID = isPlayer1 ? roomData.player1 : roomData.player2;
-      advID = isPlayer1 ? roomData.player2 : roomData.player1;
-      if (advID) {
-        const userRef = doc(db, "users", advID);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) advPseudo = userSnap.data().pseudo || advPseudo;
-      }
+  if (advID) {
+  const userRef = doc(db, "users", advID);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    advPseudo = data.pseudo || advID; // ✅ fallback sur ID si pas de pseudo
+  } else {
+    advPseudo = advID; // ✅ même si user introuvable
+  }
     }
 
     if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
