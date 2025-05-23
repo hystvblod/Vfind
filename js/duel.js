@@ -1,3 +1,4 @@
+// === duel.js (VERSION FINALE 100% PRO, DUEL MIRROIR SOLO) ===
 import {
   getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
@@ -183,138 +184,82 @@ if (path.includes("duel_game.html") && roomId) {
     for (let idx = 0; idx < roomData.defis.length; idx++) {
       const defi = roomData.defis[idx];
 
+      // Li
       const li = document.createElement('li');
-      li.className = 'defi-item defi-row';
-      li.style.display = "flex";
-      li.style.alignItems = "stretch";
-      li.style.justifyContent = "center";
-      li.style.marginBottom = "2rem";
+      li.className = 'defi-item';
 
-      // COLONNE GAUCHE (TOI)
+      // Wrapper 3 colonnes
+      const content = document.createElement('div');
+      content.className = 'defi-content split';
+
+      // COLONNE JOUEUR (gauche)
       const colJoueur = document.createElement('div');
       colJoueur.className = 'joueur-col';
-      colJoueur.style.display = "flex";
-      colJoueur.style.flexDirection = "column";
-      colJoueur.style.alignItems = "center";
-      colJoueur.style.flex = "1 1 33%";
-
-      // Affiche cadre SEULEMENT si photo existante
+      // Titre
+      const titreJoueur = document.createElement('div');
+      titreJoueur.className = 'col-title';
+      titreJoueur.textContent = "Toi";
+      colJoueur.appendChild(titreJoueur);
+      // Cadre/photo
+      const cadreJoueur = document.createElement('div');
+      cadreJoueur.className = 'cadre-item';
+      const previewJoueur = document.createElement('div');
+      previewJoueur.className = 'cadre-preview';
+      const cadreImgJoueur = document.createElement('img');
+      cadreImgJoueur.className = 'photo-cadre';
+      cadreImgJoueur.src = 'assets/cadres/' + cadreActifMoi + '.webp';
+      previewJoueur.appendChild(cadreImgJoueur);
       if (myPhotos[idx]) {
-        const cadreJoueur = document.createElement('div');
-        cadreJoueur.className = 'cadre-item';
-        cadreJoueur.style.margin = "0 auto";
-
-        const cadrePreviewJoueur = document.createElement('div');
-        cadrePreviewJoueur.className = 'cadre-preview';
-
-        const cadreImgJoueur = document.createElement('img');
-        cadreImgJoueur.className = 'photo-cadre';
-        cadreImgJoueur.src = 'assets/cadres/' + cadreActifMoi + '.webp';
-
-        cadrePreviewJoueur.appendChild(cadreImgJoueur);
-
         const photoJoueur = document.createElement('img');
         photoJoueur.className = 'photo-user';
         photoJoueur.src = myPhotos[idx];
         photoJoueur.onclick = () => agrandirPhoto(myPhotos[idx], cadreActifMoi);
-        cadrePreviewJoueur.appendChild(photoJoueur);
-        cadreJoueur.appendChild(cadrePreviewJoueur);
-        colJoueur.appendChild(cadreJoueur);
+        previewJoueur.appendChild(photoJoueur);
       }
-
-      // Bouton photo TOUJOURS visible pour toi
+      cadreJoueur.appendChild(previewJoueur);
+      colJoueur.appendChild(cadreJoueur);
+      // Bouton photo
       const boutonPhoto = document.createElement('button');
       boutonPhoto.textContent = myPhotos[idx] ? "📸 Reprendre une photo" : "📸 Prendre une photo";
       boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
-      boutonPhoto.style.marginTop = "0.7em";
       colJoueur.appendChild(boutonPhoto);
 
-      // Ton ID publique (ou "Moi")
-      const labelID = document.createElement('div');
-      labelID.className = "id-publique";
-      labelID.style.fontSize = "0.95em";
-      labelID.style.marginTop = "0.2em";
-      labelID.textContent = "Moi";
-      colJoueur.appendChild(labelID);
-
-      // Valider par jeton uniquement si tu as pris une photo
-      if (myPhotos[idx]) {
-        const boutonJeton = document.createElement('button');
-        boutonJeton.className = "valider-jeton-btn";
-        boutonJeton.innerHTML = `<img src="assets/img/jeton_p.webp" alt="Jeton" style="width:26px;vertical-align:middle;margin-right:2px;" /> Valider avec un jeton`;
-        boutonJeton.onclick = () => validerDefiAvecJeton(idx);
-        boutonJeton.style.marginTop = "0.5em";
-        colJoueur.appendChild(boutonJeton);
-      }
-
-      // COLONNE CENTRALE (DÉFI)
-      const colTexte = document.createElement('div');
-      colTexte.className = 'defi-texte-center';
-      colTexte.style.display = "flex";
-      colTexte.style.flexDirection = "column";
-      colTexte.style.justifyContent = "center";
-      colTexte.style.alignItems = "center";
-      colTexte.style.flex = "1 1 34%";
-      // Cartouche défi centrée
+      // COLONNE DEFI (centre)
+      const colDefi = document.createElement('div');
+      colDefi.className = 'defi-texte-center';
       const cartouche = document.createElement('div');
-      cartouche.className = "defi-cartouche";
-      cartouche.style.background = "#f2f7fb";
-      cartouche.style.borderRadius = "18px";
-      cartouche.style.padding = "18px 20px";
-      cartouche.style.margin = "0 12px";
-      cartouche.style.fontWeight = "bold";
-      cartouche.style.fontSize = "1.16em";
-      cartouche.style.textAlign = "center";
+      cartouche.className = 'defi-cartouche';
       cartouche.textContent = defi;
-      colTexte.appendChild(cartouche);
+      colDefi.appendChild(cartouche);
 
-      // COLONNE DROITE (ADVERSAIRE)
+      // COLONNE ADVERSAIRE (droite)
       const colAdv = document.createElement('div');
       colAdv.className = 'adversaire-col';
-      colAdv.style.display = "flex";
-      colAdv.style.flexDirection = "column";
-      colAdv.style.alignItems = "center";
-      colAdv.style.flex = "1 1 33%";
-
-      // Affiche cadre ADV seulement si photo existante
+      const titreAdv = document.createElement('div');
+      titreAdv.className = 'col-title';
+      titreAdv.textContent = advPseudo;
+      colAdv.appendChild(titreAdv);
+      const cadreAdv = document.createElement('div');
+      cadreAdv.className = 'cadre-item';
+      const previewAdv = document.createElement('div');
+      previewAdv.className = 'cadre-preview';
+      const cadreImgAdv = document.createElement('img');
+      cadreImgAdv.className = 'photo-cadre';
+      cadreImgAdv.src = 'assets/cadres/' + cadreActifAdv + '.webp';
+      previewAdv.appendChild(cadreImgAdv);
       if (advPhotos[idx]) {
-        const cadreAdv = document.createElement('div');
-        cadreAdv.className = 'cadre-item';
-        cadreAdv.style.margin = "0 auto";
-
-        const cadrePreviewAdv = document.createElement('div');
-        cadrePreviewAdv.className = 'cadre-preview';
-
-        const cadreImgAdv = document.createElement('img');
-        cadreImgAdv.className = 'photo-cadre';
-        cadreImgAdv.src = 'assets/cadres/' + cadreActifAdv + '.webp';
-
-        cadrePreviewAdv.appendChild(cadreImgAdv);
-
         const photoAdv = document.createElement('img');
         photoAdv.className = 'photo-user';
         photoAdv.src = advPhotos[idx];
         photoAdv.onclick = () => agrandirPhoto(advPhotos[idx], cadreActifAdv);
-        cadrePreviewAdv.appendChild(photoAdv);
-        cadreAdv.appendChild(cadrePreviewAdv);
-        colAdv.appendChild(cadreAdv);
+        previewAdv.appendChild(photoAdv);
       }
-      // ID publique adversaire (ou pseudo)
-      const labelAdvID = document.createElement('div');
-      labelAdvID.className = "id-publique";
-      labelAdvID.style.fontSize = "0.95em";
-      labelAdvID.style.marginTop = "0.2em";
-      labelAdvID.style.color = "#3682e3";
-      labelAdvID.textContent = advPseudo && advPseudo !== "Adversaire" ? advPseudo : (advID || "Adversaire");
-      colAdv.appendChild(labelAdvID);
+      cadreAdv.appendChild(previewAdv);
+      colAdv.appendChild(cadreAdv);
 
       // ASSEMBLAGE
-      const content = document.createElement('div');
-      content.className = 'defi-content split';
-      content.style.display = "flex";
-      content.style.width = "100%";
       content.appendChild(colJoueur);
-      content.appendChild(colTexte);
+      content.appendChild(colDefi);
       content.appendChild(colAdv);
       li.appendChild(content);
       ul.appendChild(li);
@@ -335,27 +280,17 @@ if (path.includes("duel_game.html") && roomId) {
     await updateDoc(duelRef, { [field]: photos });
   };
 
-  // ==== Validation par jeton ====
-  window.validerDefiAvecJeton = function(idx) {
-    if (typeof ouvrirPopupJeton === "function") {
-      ouvrirPopupJeton(idx, "duel");
-    } else {
-      alert("Fonction popup jeton non branchée !");
-    }
+  // Agrandir la photo
+  window.agrandirPhoto = function(dataUrl, cadre) {
+    document.getElementById("photo-affichee").src = dataUrl;
+    document.getElementById("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
+    const popup = document.getElementById("popup-photo");
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
   };
-
-  // ==== Popup zoom ====
-  window.agrandirPhoto = function(dataUrl, cadreName = "polaroid_01") {
-    $("photo-affichee").src = dataUrl;
-    $("cadre-affiche").src = 'assets/cadres/' + cadreName + '.webp';
-    $("popup-photo").classList.remove("hidden");
-    $("popup-photo").classList.add("show");
-  };
-  $("close-popup")?.addEventListener("click", () => {
-    $("popup-photo").classList.add("hidden");
-    $("popup-photo").classList.remove("show");
-  });
 }
 
-// ========== Outil DOM ==========
-function $(id) { return document.getElementById(id); }
+// ==== Utils ====
+function $(id) {
+  return document.getElementById(id);
+}
