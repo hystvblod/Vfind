@@ -172,121 +172,134 @@ if (path.includes("duel_game.html") && roomId) {
 
   // ========== AFFICHAGE DES DÉFIS, CADRES DYNAMIQUES, PHOTOS, etc. ==========
   async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv}) {
-    const ul = $("duel-defi-list");
-    if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
-      if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
-      return;
-    }
+  const ul = $("duel-defi-list");
+  if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
+    if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
+    return;
+  }
 
-    // Récupération correcte des photos (string !)
-    const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
-    const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
+  const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
+  const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
 
-    ul.innerHTML = '';
-    for (let idx = 0; idx < roomData.defis.length; idx++) {
-      const defi = roomData.defis[idx];
-      const idxStr = String(idx);
-      const li = document.createElement('li');
-      li.className = 'defi-item';
+  ul.innerHTML = '';
+  for (let idx = 0; idx < roomData.defis.length; idx++) {
+    const defi = roomData.defis[idx];
+    const idxStr = String(idx);
+    const li = document.createElement('li');
+    li.className = 'defi-item';
 
-      // Cartouche défi (en haut)
-      const cartouche = document.createElement('div');
-      cartouche.className = 'defi-cartouche-center';
-      cartouche.textContent = defi;
-      li.appendChild(cartouche);
+    // Cartouche défi (en haut)
+    const cartouche = document.createElement('div');
+    cartouche.className = 'defi-cartouche-center';
+    cartouche.textContent = defi;
+    li.appendChild(cartouche);
 
-      // Ligne deux colonnes
-      const row = document.createElement('div');
-      row.className = 'duel-defi-row';
+    // Ligne deux colonnes
+    const row = document.createElement('div');
+    row.className = 'duel-defi-row';
 
-      // ======== Colonne Joueur (gauche) ========
-      const colJoueur = document.createElement('div');
-      colJoueur.className = 'joueur-col';
+    // ======== Colonne Joueur (gauche) ========
+    const colJoueur = document.createElement('div');
+    colJoueur.className = 'joueur-col';
 
-      // Titre
-      const titreJoueur = document.createElement('div');
-      titreJoueur.className = 'col-title';
-      titreJoueur.textContent = "Toi";
-      colJoueur.appendChild(titreJoueur);
+    // Titre
+    const titreJoueur = document.createElement('div');
+    titreJoueur.className = 'col-title';
+    titreJoueur.textContent = "Toi";
+    colJoueur.appendChild(titreJoueur);
 
-      // Si photo, structure SOLO (miniature/cadre)
-      if (myPhotos[idxStr]) {
-        const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item";
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-        const cadreImg = document.createElement("img");
-        cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + cadreActifMoi + ".webp";
-        const photoImg = document.createElement("img");
-        photoImg.className = "photo-user";
-        photoImg.src = myPhotos[idxStr];
-        photoImg.onclick = () => agrandirPhoto(myPhotos[idxStr], cadreActifMoi);
+    // === SI PHOTO PRISE ===
+    if (myPhotos[idxStr]) {
+      // Bloc miniature + bouton "reprendre photo"
+      const combatDiv = document.createElement("div");
+      combatDiv.className = "item-combat";
 
-        preview.appendChild(cadreImg);
-        preview.appendChild(photoImg);
-        cadreDiv.appendChild(preview);
-        colJoueur.appendChild(cadreDiv);
-      }
+      // Miniature
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      const cadreImg = document.createElement("img");
+      cadreImg.className = "photo-cadre";
+      cadreImg.src = "./assets/cadres/" + cadreActifMoi + ".webp";
+      const photoImg = document.createElement("img");
+      photoImg.className = "photo-user";
+      photoImg.src = myPhotos[idxStr];
+      photoImg.onclick = () => agrandirPhoto(myPhotos[idxStr], cadreActifMoi);
+      preview.appendChild(cadreImg);
+      preview.appendChild(photoImg);
+      combatDiv.appendChild(preview);
 
-      // Boutons sous le cadre/miniature (ou seuls si pas de photo)
-      const btnRow = document.createElement('div');
-      btnRow.style.display = "flex";
-      btnRow.style.gap = "10px";
-      btnRow.style.justifyContent = "center";
-      btnRow.style.marginTop = "10px";
+      // Bouton "Reprendre la photo"
+      const btnReprendre = document.createElement("button");
+      btnReprendre.className = "btn-combat-photo";
+      btnReprendre.textContent = "📸 Reprendre la photo";
+      btnReprendre.onclick = () => ouvrirCameraPourDuel(idx);
+      combatDiv.appendChild(btnReprendre);
 
-      // Jeton P (toujours affiché)
-      const jetonBtn = document.createElement('button');
-      jetonBtn.className = 'btn-jeton-p';
+      colJoueur.appendChild(combatDiv);
+
+    } else {
+      // === PAS DE PHOTO : deux boutons côte à côte ===
+      const btnsRow = document.createElement("div");
+      btnsRow.style.display = "flex";
+      btnsRow.style.gap = "10px";
+      btnsRow.style.justifyContent = "center";
+      btnsRow.style.marginTop = "12px";
+
+      // Bouton photo
+      const photoBtn = document.createElement("button");
+      photoBtn.className = "btn-combat-photo";
+      photoBtn.textContent = "📸 Prendre une photo";
+      photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
+      btnsRow.appendChild(photoBtn);
+
+      // Jeton P
+      const jetonBtn = document.createElement("button");
+      jetonBtn.className = "btn-jeton-p";
       jetonBtn.textContent = "🅿️";
       jetonBtn.title = "Valider avec un jeton";
       jetonBtn.onclick = () => alert("Jeton P utilisé !");
-      btnRow.appendChild(jetonBtn);
+      btnsRow.appendChild(jetonBtn);
 
-      // Bouton photo
-      const photoBtn = document.createElement('button');
-      photoBtn.textContent = myPhotos[idxStr] ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-      photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
-      btnRow.appendChild(photoBtn);
+      colJoueur.appendChild(btnsRow);
+    }
 
-      colJoueur.appendChild(btnRow);
+    // ======== Colonne Adversaire (droite) ========
+    const colAdv = document.createElement('div');
+    colAdv.className = 'adversaire-col';
+    const titreAdv = document.createElement('div');
+    titreAdv.className = 'col-title';
+    titreAdv.textContent = advPseudo || "Joueur";
+    colAdv.appendChild(titreAdv);
 
-      // ======== Colonne Adversaire (droite) ========
-      const colAdv = document.createElement('div');
-      colAdv.className = 'adversaire-col';
-      const titreAdv = document.createElement('div');
-      titreAdv.className = 'col-title';
-      titreAdv.textContent = advPseudo || "Joueur";
-      colAdv.appendChild(titreAdv);
+    // Miniature ADVERSAIRE si dispo
+    if (advPhotos[idxStr]) {
+      const combatDiv = document.createElement("div");
+      combatDiv.className = "item-combat";
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      const cadreImg = document.createElement("img");
+      cadreImg.className = "photo-cadre";
+      cadreImg.src = "./assets/cadres/" + cadreActifAdv + ".webp";
+      const photoImg = document.createElement("img");
+      photoImg.className = "photo-user";
+      photoImg.src = advPhotos[idxStr];
+      photoImg.onclick = () => agrandirPhoto(advPhotos[idxStr], cadreActifAdv);
 
-      // Miniature ADVERSAIRE si dispo
-      if (advPhotos[idxStr]) {
-        const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item";
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-        const cadreImg = document.createElement("img");
-        cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + cadreActifAdv + ".webp";
-        const photoImg = document.createElement("img");
-        photoImg.className = "photo-user";
-        photoImg.src = advPhotos[idxStr];
-        photoImg.onclick = () => agrandirPhoto(advPhotos[idxStr], cadreActifAdv);
+      preview.appendChild(cadreImg);
+      preview.appendChild(photoImg);
+      combatDiv.appendChild(preview);
 
-        preview.appendChild(cadreImg);
-        preview.appendChild(photoImg);
-        cadreDiv.appendChild(preview);
-        colAdv.appendChild(cadreDiv);
-      }
+      // Si tu veux un bouton "reprendre" aussi côté adv (à afficher que pour debug ?), tu peux le mettre ici
+      colAdv.appendChild(combatDiv);
+    }
 
-      // Ajout des colonnes à la row
-      row.appendChild(colJoueur);
-      row.appendChild(colAdv);
+    // Ajout des colonnes à la row
+    row.appendChild(colJoueur);
+    row.appendChild(colAdv);
 
-      // Ajout row à l'item li
-      li.appendChild(row);
-      ul.appendChild(li);
+    // Ajout row à l'item li
+    li.appendChild(row);
+    ul.appendChild(li);
     }
   }
 
