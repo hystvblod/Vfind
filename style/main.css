@@ -1631,7 +1631,7 @@ header,
 
 .joueur-col, .adversaire-col {
   flex: 1 1 45%;       /* 🔥 autorise la réduction */
-  min-width: 100px;    /* 🔒 ne descend pas trop bas */
+  min-width: 70px;    /* 🔒 ne descend pas trop bas */
   max-width: 100%;
   box-sizing: border-box;
   display: flex;
