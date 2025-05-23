@@ -172,109 +172,117 @@ if (path.includes("duel_game.html") && roomId) {
 
   // ========== AFFICHAGE DES DÉFIS, CADRES DYNAMIQUES, PHOTOS, etc. ==========
   async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv}) {
-    const ul = $("duel-defi-list");
-    if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
-      if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
-      return;
+  const ul = $("duel-defi-list");
+  if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
+    if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
+    return;
+  }
+  const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
+  const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
+
+  ul.innerHTML = '';
+  for (let idx = 0; idx < roomData.defis.length; idx++) {
+    const defi = roomData.defis[idx];
+    const li = document.createElement('li');
+    li.className = 'defi-item';
+
+    // 1. Cartouche en haut
+    const cartouche = document.createElement('div');
+    cartouche.className = 'defi-cartouche-center';
+    cartouche.textContent = defi;
+    li.appendChild(cartouche);
+
+    // 2. Ligne deux colonnes (flex)
+    const row = document.createElement('div');
+    row.className = 'duel-defi-row';
+
+    // ==== COLONNE JOUEUR (à gauche) ====
+    const colJoueur = document.createElement('div');
+    colJoueur.className = 'joueur-col';
+
+    // Pseudo/label
+    const titreJoueur = document.createElement('div');
+    titreJoueur.className = 'col-title';
+    titreJoueur.textContent = "Toi";
+    colJoueur.appendChild(titreJoueur);
+
+    // Cadre miniature façon solo (si photo)
+    if (myPhotos[idx]) {
+      const cadre = document.createElement('div');
+      cadre.className = 'cadre-preview'; // même classe que solo
+      // Image du cadre
+      const cadreImg = document.createElement('img');
+      cadreImg.className = 'photo-cadre';
+      cadreImg.src = 'assets/cadres/' + cadreActifMoi + '.webp';
+      cadre.appendChild(cadreImg);
+      // Ta photo
+      const photoImg = document.createElement('img');
+      photoImg.className = 'photo-user';
+      photoImg.src = myPhotos[idx];
+      photoImg.onclick = () => agrandirPhoto(myPhotos[idx], cadreActifMoi);
+      cadre.appendChild(photoImg);
+      colJoueur.appendChild(cadre);
     }
-    const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
-    const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
 
-    ul.innerHTML = '';
-    for (let idx = 0; idx < roomData.defis.length; idx++) {
-      const defi = roomData.defis[idx];
-      const li = document.createElement('li');
-      li.className = 'defi-item';
+    // Ligne boutons en dessous (prise photo + jeton P)
+    const btnRow = document.createElement('div');
+    btnRow.style.display = "flex";
+    btnRow.style.gap = "14px";
+    btnRow.style.marginTop = "10px";
+    btnRow.style.justifyContent = "center";
 
-      // Cartouche du défi (en haut)
-      const cartouche = document.createElement('div');
-      cartouche.className = 'defi-cartouche-center';
-      cartouche.textContent = defi;
-      li.appendChild(cartouche);
+    // Jeton "P"
+    const jetonBtn = document.createElement('button');
+    jetonBtn.className = 'btn-jeton-p'; // à styliser si tu veux un rendu spécifique (icône, couleur)
+    jetonBtn.textContent = "🅿️"; // Ou une image/icone
+    jetonBtn.title = "Valider avec un jeton";
+    jetonBtn.onclick = () => {
+      // Ajoute ici la logique pour valider le défi avec un jeton si besoin
+      alert("Jeton P utilisé !");
+    };
+    btnRow.appendChild(jetonBtn);
 
-      // Row 2 colonnes : toi à gauche, adv à droite
-      const row = document.createElement('div');
-      row.className = 'duel-defi-row';
+    // Bouton Prendre/Reprendre photo
+    const photoBtn = document.createElement('button');
+    photoBtn.textContent = myPhotos[idx] ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+    photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
+    btnRow.appendChild(photoBtn);
 
-      // ==== COLONNE GAUCHE (toi) ====
-      const colJoueur = document.createElement('div');
-      colJoueur.className = 'joueur-col';
+    colJoueur.appendChild(btnRow);
 
-      // Pseudo/ID
-      const titreJoueur = document.createElement('div');
-      titreJoueur.className = 'col-title';
-      titreJoueur.textContent = "Toi";
-      colJoueur.appendChild(titreJoueur);
+    // ==== COLONNE ADVERSAIRE (à droite) ====
+    const colAdv = document.createElement('div');
+    colAdv.className = 'adversaire-col';
 
-      // Affichage photo SI photo existe, sinon boutons seulement
-      if (myPhotos[idx]) {
-        // Cadre + photo
-        const cadreJoueur = document.createElement('div');
-        cadreJoueur.className = 'cadre-item';
-        const previewJoueur = document.createElement('div');
-        previewJoueur.className = 'cadre-preview';
-        const cadreImgJoueur = document.createElement('img');
-        cadreImgJoueur.className = 'photo-cadre';
-        cadreImgJoueur.src = 'assets/cadres/' + cadreActifMoi + '.webp';
-        previewJoueur.appendChild(cadreImgJoueur);
-        const photoJoueur = document.createElement('img');
-        photoJoueur.className = 'photo-user';
-        photoJoueur.src = myPhotos[idx];
-        photoJoueur.onclick = () => agrandirPhoto(myPhotos[idx], cadreActifMoi);
-        previewJoueur.appendChild(photoJoueur);
-        cadreJoueur.appendChild(previewJoueur);
-        colJoueur.appendChild(cadreJoueur);
+    const titreAdv = document.createElement('div');
+    titreAdv.className = 'col-title';
+    titreAdv.textContent = advPseudo || "Joueur";
+    colAdv.appendChild(titreAdv);
 
-        // Bouton reprendre photo en dessous du cadre
-        const boutonPhoto = document.createElement('button');
-        boutonPhoto.textContent = "📸 Reprendre une photo";
-        boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
-        colJoueur.appendChild(boutonPhoto);
-      } else {
-        // Pas de photo = bouton sous le titre, pas de cadre
-        const boutonPhoto = document.createElement('button');
-        boutonPhoto.textContent = "📸 Prendre une photo";
-        boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
-        colJoueur.appendChild(boutonPhoto);
-      }
+    if (advPhotos[idx]) {
+      const cadre = document.createElement('div');
+      cadre.className = 'cadre-preview';
+      // Image du cadre
+      const cadreImg = document.createElement('img');
+      cadreImg.className = 'photo-cadre';
+      cadreImg.src = 'assets/cadres/' + cadreActifAdv + '.webp';
+      cadre.appendChild(cadreImg);
+      // Sa photo
+      const photoImg = document.createElement('img');
+      photoImg.className = 'photo-user';
+      photoImg.src = advPhotos[idx];
+      photoImg.onclick = () => agrandirPhoto(advPhotos[idx], cadreActifAdv);
+      cadre.appendChild(photoImg);
+      colAdv.appendChild(cadre);
+    }
 
-      // ==== COLONNE DROITE (adversaire) ====
-      const colAdv = document.createElement('div');
-      colAdv.className = 'adversaire-col';
+    // 3. Ajoute les deux colonnes à la row
+    row.appendChild(colJoueur);
+    row.appendChild(colAdv);
 
-      // Pseudo/ID adversaire
-      const titreAdv = document.createElement('div');
-      titreAdv.className = 'col-title';
-      titreAdv.textContent = advPseudo || "Joueur";
-      colAdv.appendChild(titreAdv);
-
-      // Affichage photo SI photo existe
-      if (advPhotos[idx]) {
-        const cadreAdv = document.createElement('div');
-        cadreAdv.className = 'cadre-item';
-        const previewAdv = document.createElement('div');
-        previewAdv.className = 'cadre-preview';
-        const cadreImgAdv = document.createElement('img');
-        cadreImgAdv.className = 'photo-cadre';
-        cadreImgAdv.src = 'assets/cadres/' + cadreActifAdv + '.webp';
-        previewAdv.appendChild(cadreImgAdv);
-        const photoAdv = document.createElement('img');
-        photoAdv.className = 'photo-user';
-        photoAdv.src = advPhotos[idx];
-        photoAdv.onclick = () => agrandirPhoto(advPhotos[idx], cadreActifAdv);
-        previewAdv.appendChild(photoAdv);
-        cadreAdv.appendChild(previewAdv);
-        colAdv.appendChild(cadreAdv);
-      }
-      // PAS de bouton sur la colonne adversaire, JAMAIS
-
-      // Ajoute les 2 colonnes dans la row
-      row.appendChild(colJoueur);
-      row.appendChild(colAdv);
-
-      // Ajoute la row dans le li
-      li.appendChild(row);
-      ul.appendChild(li);
+    // 4. Ajoute la row à l’item li
+    li.appendChild(row);
+    ul.appendChild(li);
     }
   }
 
