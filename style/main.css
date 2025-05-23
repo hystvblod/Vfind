@@ -1626,5 +1626,8 @@ header,
     gap: 12px;
   }
 }
+.defi-item .cadre-item {
+  padding-bottom: 4px !important;
+}
 
 
