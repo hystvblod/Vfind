@@ -60,24 +60,13 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
 
     if (mode === "duel") {
       // ==== Mode Duel ====
-      try {
-        const ref = doc(db, "users", user.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const duel = snap.data().duelEnCours;
-          if (duel && duel.defis) {
-            const defisMaj = duel.defis.map(d =>
-              d.id === defiId ? { ...d, photoA: dataUrl } : d
-            );
-            await updateDoc(ref, {
-              duelEnCours: { ...duel, defis: defisMaj }
-            });
-          }
-        }
-      } catch (e) {
-        alert("Erreur Firebase : " + e);
+      // Tu dois appeler la fonction globale attendue par duel.js
+      if (window.savePhotoDuel) {
+        window.savePhotoDuel(defiId, dataUrl);
+      } else {
+        alert("Erreur : fonction savePhotoDuel introuvable !");
       }
-      setTimeout(() => window.location.reload(), 100);
+      setTimeout(() => window.location.reload(), 200);
     } else {
       // ==== Mode Solo ====
       localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
@@ -108,3 +97,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
 
   startCamera();
 }
+
+// ==== FONCTIONS GLOBALES POUR LE MODE DUEL (compatibilité duel.js) ====
+window.ouvrirCameraPour = ouvrirCameraPour;
+window.cameraOuvrirCameraPourDuel = function(idx) {
+  ouvrirCameraPour(idx, "duel");
+};

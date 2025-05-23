@@ -16,27 +16,42 @@ const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
-// === LOGIQUE : Random (matchmaking), Game (affichage duel), Ami (rien ici, tout se passe dans amis.js ou via redirection) ===
+// === LOGIQUE : Random (matchmaking), Game (affichage duel), Ami (via amis.js/redirection) ===
 
-// ==== 1. MODE DUEL RANDOM (duel_random.html) ====
-// Matchmaking automatique puis redirection vers duel_game.html?room=xxx
+/* ============ 1. DUEL RANDOM (duel_random.html) ============ */
 if (path.includes("duel_random.html")) {
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
+
+    // 1. Vérifie si une room de duel random est déjà en cours
+    const oldRoomId = localStorage.getItem("duel_random_room");
+    if (oldRoomId) {
+      // Optionnel : vérifie si la room existe et qu’elle est toujours “en cours”
+      const ref = doc(db, "duels", oldRoomId);
+      const snap = await getDoc(ref);
+      if (snap.exists() && (snap.data().status === "waiting" || snap.data().status === "playing")) {
+        // Room valide, redirige direct !
+        window.location.href = `duel_game.html?room=${oldRoomId}`;
+        return;
+      } else {
+        // La room n’existe plus ou est terminée, on supprime la référence locale
+        localStorage.removeItem("duel_random_room");
+      }
+    }
+
+    // 2. Sinon, recherche d’un adversaire comme avant
     await startMatchmaking(user.uid);
   });
 
   async function startMatchmaking(uid) {
-    // Cherche une room "waiting" qui n'est pas la tienne
     const duelsCol = collection(db, "duels");
     const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", uid));
     const qsnap = await getDocs(q);
 
     if (!qsnap.empty) {
-      // Trouvé, rejoins en player2
       const first = qsnap.docs[0];
       const roomId = first.id;
       const duelRef = doc(db, "duels", roomId);
@@ -45,13 +60,13 @@ if (path.includes("duel_random.html")) {
         status: "playing",
         startTime: Date.now()
       });
+      // ===> SAUVEGARDE
+      localStorage.setItem("duel_random_room", roomId);
       window.location.href = `duel_game.html?room=${roomId}`;
     } else {
-      // Sinon crée une nouvelle room et attend
       const roomId = Math.random().toString(36).substring(2, 9);
       const duelRef = doc(collection(db, "duels"), roomId);
 
-      // Tire 3 défis random (adapte multi-langue si besoin)
       const defisCol = collection(db, "defis");
       const defisSnap = await getDocs(defisCol);
       let allDefis = defisSnap.docs.map(doc => doc.data().intitule);
@@ -71,7 +86,9 @@ if (path.includes("duel_random.html")) {
         photosB: {}
       });
 
-      // Attends qu'un adversaire arrive
+      // ===> SAUVEGARDE
+      localStorage.setItem("duel_random_room", roomId);
+
       onSnapshot(duelRef, (snap) => {
         const data = snap.data();
         if (data && data.status === "playing") {
@@ -82,8 +99,8 @@ if (path.includes("duel_random.html")) {
   }
 }
 
-// ==== 2. MODE AFFICHAGE DUEL (duel_game.html) ====
-// Gestion A/B des photos, défis, timer (commune aux 2 modes)
+
+/* ============ 2. DUEL GAME (duel_game.html) ============ */
 if (path.includes("duel_game.html") && roomId) {
   currentRoomId = roomId;
 
@@ -96,7 +113,6 @@ if (path.includes("duel_game.html") && roomId) {
     listenRoom(roomId);
   });
 
-  // ==== Écoute la room en temps réel (défis, photos, timer, adversaire, etc.) ====
   function listenRoom(roomId) {
     const duelRef = doc(db, "duels", roomId);
     onSnapshot(duelRef, async (snap) => {
@@ -110,13 +126,16 @@ if (path.includes("duel_game.html") && roomId) {
     });
   }
 
-  // ==== Met à jour tout l'affichage en fonction des données Firestore ====
   async function updateDuelUI() {
     // 1. Adversaire
     let advPseudo = "Adversaire";
+    let advID = "";
+    let myID = "";
     if (currentUserId && roomData) {
       isPlayer1 = (currentUserId === roomData.player1);
       const advUid = isPlayer1 ? roomData.player2 : roomData.player1;
+      myID = isPlayer1 ? roomData.player1 : roomData.player2;
+      advID = advUid || "";
       if (advUid) {
         const userRef = doc(db, "users", advUid);
         const userSnap = await getDoc(userRef);
@@ -125,19 +144,18 @@ if (path.includes("duel_game.html") && roomId) {
     }
     if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
 
-    // 2. Timer global (24h à partir du startTime, ou ce que tu veux)
+    // 2. Timer global
     if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
     // 3. Affichage défis et photos
-    renderDefis();
+    renderDefis({myID, advID, advPseudo});
   }
 
-  // ==== TIMER GLOBAL DUEL ====
   function startGlobalTimer(startTime) {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-      const duration = 24 * 60 * 60 * 1000; // 24h en ms
+      const duration = 24 * 60 * 60 * 1000;
       const now = Date.now();
       const diff = Math.max(0, (startTime + duration) - now);
       const h = Math.floor(diff / 3600000);
@@ -148,96 +166,148 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // ==== RENDU DES DÉFIS EN MODE DUEL A/B, CLASSES SOLO ====
-  async function renderDefis() {
+  // ========== AFFICHAGE DES DÉFIS, VERSION PRO (AUCUN CADRE SI PAS DE PHOTO, CARTOUCHE CENTRÉE, SÉPARATION G/D, BOUTON JETON) ==========
+
+  async function renderDefis({myID, advID, advPseudo}) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
       if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
       return;
     }
-    // Photos des deux joueurs
     const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
     const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
 
     ul.innerHTML = '';
     for (let idx = 0; idx < roomData.defis.length; idx++) {
       const defi = roomData.defis[idx];
-      // Bloc principal structure SOLO
+
+      // === Structure de la ligne de défi ===
       const li = document.createElement('li');
-      li.className = 'defi-item';
+      li.className = 'defi-item defi-row';
+      li.style.display = "flex";
+      li.style.alignItems = "stretch";
+      li.style.justifyContent = "center";
+      li.style.marginBottom = "2rem";
 
-      const content = document.createElement('div');
-      content.className = 'defi-content split'; // split pour deux colonnes
-
-      // COLONNE JOUEUR
+      // -- COLONNE GAUCHE (TOI)
       const colJoueur = document.createElement('div');
       colJoueur.className = 'joueur-col';
+      colJoueur.style.display = "flex";
+      colJoueur.style.flexDirection = "column";
+      colJoueur.style.alignItems = "center";
+      colJoueur.style.flex = "1 1 33%";
 
-      const cadreJoueur = document.createElement('div');
-      cadreJoueur.className = 'cadre-item';
-      const cadrePreviewJoueur = document.createElement('div');
-      cadrePreviewJoueur.className = 'cadre-preview';
-
-      // Affichage photo joueur (miniature SOLO)
-      const cadreImgJoueur = document.createElement('img');
-      cadreImgJoueur.className = 'photo-cadre';
-      cadreImgJoueur.src = 'assets/cadres/polaroid_01.webp'; // ou ton cadre dynamique
-
-      cadrePreviewJoueur.appendChild(cadreImgJoueur);
-
+      // Pas de cadre tant qu'il n'y a pas de photo
       if (myPhotos[idx]) {
+        const cadreJoueur = document.createElement('div');
+        cadreJoueur.className = 'cadre-item';
+        cadreJoueur.style.margin = "0 auto";
+
+        const cadrePreviewJoueur = document.createElement('div');
+        cadrePreviewJoueur.className = 'cadre-preview';
+
+        const cadreImgJoueur = document.createElement('img');
+        cadreImgJoueur.className = 'photo-cadre';
+        cadreImgJoueur.src = 'assets/cadres/polaroid_01.webp';
+
+        cadrePreviewJoueur.appendChild(cadreImgJoueur);
+
         const photoJoueur = document.createElement('img');
         photoJoueur.className = 'photo-user';
         photoJoueur.src = myPhotos[idx];
         photoJoueur.onclick = () => agrandirPhoto(myPhotos[idx]);
         cadrePreviewJoueur.appendChild(photoJoueur);
-        cadreJoueur.classList.add("done");
+        cadreJoueur.appendChild(cadrePreviewJoueur);
+        colJoueur.appendChild(cadreJoueur);
       }
 
-      cadreJoueur.appendChild(cadrePreviewJoueur);
-
-      // Bouton photo
+      // Bouton photo TOUJOURS visible pour toi
       const boutonPhoto = document.createElement('button');
       boutonPhoto.textContent = myPhotos[idx] ? "📸 Reprendre une photo" : "📸 Prendre une photo";
       boutonPhoto.onclick = () => ouvrirCameraPourDuel(idx);
-
-      colJoueur.appendChild(cadreJoueur);
+      boutonPhoto.style.marginTop = "0.7em";
       colJoueur.appendChild(boutonPhoto);
 
-      // COLONNE TEXTE
-      const colTexte = document.createElement('div');
-      colTexte.className = 'defi-texte';
-      const p = document.createElement('p');
-      p.textContent = defi;
-      colTexte.appendChild(p);
+      // Ton ID publique (ou "Moi")
+      const labelID = document.createElement('div');
+      labelID.className = "id-publique";
+      labelID.style.fontSize = "0.95em";
+      labelID.style.marginTop = "0.2em";
+      labelID.textContent = "Moi";
+      colJoueur.appendChild(labelID);
 
-      // COLONNE ADVERSAIRE
+      // Valider par jeton uniquement si tu as pris une photo
+      if (myPhotos[idx]) {
+        const boutonJeton = document.createElement('button');
+        boutonJeton.className = "valider-jeton-btn";
+        boutonJeton.innerHTML = `<img src="assets/img/jeton_p.webp" alt="Jeton" style="width:26px;vertical-align:middle;margin-right:2px;" /> Valider avec un jeton`;
+        boutonJeton.onclick = () => validerDefiAvecJeton(idx);
+        boutonJeton.style.marginTop = "0.5em";
+        colJoueur.appendChild(boutonJeton);
+      }
+
+      // -- COLONNE CENTRALE (DÉFI)
+      const colTexte = document.createElement('div');
+      colTexte.className = 'defi-texte-center';
+      colTexte.style.display = "flex";
+      colTexte.style.flexDirection = "column";
+      colTexte.style.justifyContent = "center";
+      colTexte.style.alignItems = "center";
+      colTexte.style.flex = "1 1 34%";
+      // Cartouche défi
+      const cartouche = document.createElement('div');
+      cartouche.className = "defi-cartouche";
+      cartouche.style.background = "#f2f7fb";
+      cartouche.style.borderRadius = "18px";
+      cartouche.style.padding = "18px 20px";
+      cartouche.style.margin = "0 12px";
+      cartouche.style.fontWeight = "bold";
+      cartouche.style.fontSize = "1.16em";
+      cartouche.style.textAlign = "center";
+      cartouche.textContent = defi;
+      colTexte.appendChild(cartouche);
+
+      // -- COLONNE DROITE (ADVERSAIRE)
       const colAdv = document.createElement('div');
       colAdv.className = 'adversaire-col';
+      colAdv.style.display = "flex";
+      colAdv.style.flexDirection = "column";
+      colAdv.style.alignItems = "center";
+      colAdv.style.flex = "1 1 33%";
 
-      const cadreAdv = document.createElement('div');
-      cadreAdv.className = 'cadre-item';
-      const cadrePreviewAdv = document.createElement('div');
-      cadrePreviewAdv.className = 'cadre-preview';
-
-      const cadreImgAdv = document.createElement('img');
-      cadreImgAdv.className = 'photo-cadre';
-      cadreImgAdv.src = 'assets/cadres/polaroid_01.webp'; // ou dynamique
-      cadrePreviewAdv.appendChild(cadreImgAdv);
-
+      // Pas de cadre adversaire si pas de photo
       if (advPhotos[idx]) {
+        const cadreAdv = document.createElement('div');
+        cadreAdv.className = 'cadre-item';
+        cadreAdv.style.margin = "0 auto";
+
+        const cadrePreviewAdv = document.createElement('div');
+        cadrePreviewAdv.className = 'cadre-preview';
+
+        const cadreImgAdv = document.createElement('img');
+        cadreImgAdv.className = 'photo-cadre';
+        cadreImgAdv.src = 'assets/cadres/polaroid_01.webp';
+
+        cadrePreviewAdv.appendChild(cadreImgAdv);
+
         const photoAdv = document.createElement('img');
         photoAdv.className = 'photo-user';
         photoAdv.src = advPhotos[idx];
         photoAdv.onclick = () => agrandirPhoto(advPhotos[idx]);
         cadrePreviewAdv.appendChild(photoAdv);
-        cadreAdv.classList.add("done");
+        cadreAdv.appendChild(cadrePreviewAdv);
+        colAdv.appendChild(cadreAdv);
       }
+      // ID publique adversaire (ou pseudo)
+      const labelAdvID = document.createElement('div');
+      labelAdvID.className = "id-publique";
+      labelAdvID.style.fontSize = "0.95em";
+      labelAdvID.style.marginTop = "0.2em";
+      labelAdvID.style.color = "#3682e3";
+      labelAdvID.textContent = advPseudo && advPseudo !== "Adversaire" ? advPseudo : (advID || "Adversaire");
+      colAdv.appendChild(labelAdvID);
 
-      cadreAdv.appendChild(cadrePreviewAdv);
-      colAdv.appendChild(cadreAdv);
-
-      // ASSEMBLAGE
+      // -- ASSEMBLAGE
       content.appendChild(colJoueur);
       content.appendChild(colTexte);
       content.appendChild(colAdv);
@@ -248,18 +318,27 @@ if (path.includes("duel_game.html") && roomId) {
 
   // ==== Camera ====
   window.ouvrirCameraPourDuel = function(idx) {
-    // Appelle ta logique caméra, puis save la photo en base
     window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx);
   };
 
   window.savePhotoDuel = async function(idx, dataUrl) {
-    // Stocke la photo dans photosA ou photosB de la room
     const duelRef = doc(db, "duels", currentRoomId);
     const data = (await getDoc(duelRef)).data();
     const field = isPlayer1 ? "photosA" : "photosB";
     const photos = data[field] || {};
     photos[idx] = dataUrl;
     await updateDoc(duelRef, { [field]: photos });
+  };
+
+  // ==== Validation par jeton ====
+  window.validerDefiAvecJeton = function(idx) {
+    // Ouvre ton popup de validation jeton, ou applique ta logique (à adapter selon ton système solo)
+    // Ici tu dois brancher la même popup/modal que solo
+    if (typeof ouvrirPopupJeton === "function") {
+      ouvrirPopupJeton(idx, "duel");
+    } else {
+      alert("Fonction popup jeton non branchée !");
+    }
   };
 
   // ==== Popup zoom ====
@@ -275,7 +354,5 @@ if (path.includes("duel_game.html") && roomId) {
   });
 }
 
-// ==== 3. MODE AMIS ====
-// Ici tu lances/acceptes le duel dans amis.js, pas besoin de code ici pour créer la room (juste la logique game commune comme au-dessus)
-
+// ========== Outil DOM ==========
 function $(id) { return document.getElementById(id); }
