@@ -1593,34 +1593,52 @@ header,
 }
 .duel-defi-row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: 40px;
-  margin-bottom: 12px;
+  gap: 30px;
+  margin: 14px 0 24px 0;
 }
 .joueur-col, .adversaire-col {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 160px;
+  min-width: 130px;
+}
+.cadre-item {
+  margin-bottom: 6px;
+}
+.cadre-preview {
+  position: relative;
+  width: 110px;
+  height: 110px;
+}
+.photo-cadre, .photo-user {
+  width: 100%; height: 100%; border-radius: 18px; object-fit: cover;
+  position: absolute; left: 0; top: 0;
+}
+.photo-cadre { z-index: 1; }
+.photo-user { z-index: 2; }
+.col-title {
+  margin-bottom: 7px;
+  font-weight: 700;
+  color: #FFD900;
 }
 .defi-cartouche-center {
   text-align: center;
-  font-size: 1.15em;
+  font-size: 1.12em;
   font-weight: 600;
   color: #fff;
   margin-bottom: 12px;
-  background: rgba(44,53,64,0.95);
+  background: rgba(44,53,64,0.98);
   border-radius: 18px;
   padding: 7px 24px;
 }
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .duel-defi-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 }
-
-
 
 
