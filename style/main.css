@@ -1638,13 +1638,32 @@ header,
   flex-direction: column;
   align-items: center;
 }
+.cadre-duel-mini {
+  max-width: 62px !important;   /* bloc encadré plus étroit */
+  min-width: 0 !important;
+  margin: 0 auto 3px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
 .cadre-duel-mini .cadre-preview {
-  width: 60px !important;
-  height: 75px !important;
+  width: 46px !important;      /* largeur très réduite */
+  height: 54px !important;     /* hauteur compacte */
   min-width: 0 !important;
   min-height: 0 !important;
-  max-width: 120px !important;
-  max-height: 120px !important;
-  margin: 0 auto 10px;
-  overflow: hidden;
+  max-width: 62px !important;
+  max-height: 70px !important;
+  margin: 0 auto 4px !important;
+  overflow: hidden !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
+
+.cadre-duel-mini .photo-cadre,
+.cadre-duel-mini .photo-user {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+}
+
