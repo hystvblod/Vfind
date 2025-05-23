@@ -16,17 +16,13 @@ const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
-// === LOGIQUE : Random (matchmaking), Game (affichage duel), Ami (via amis.js/redirection) ===
-
-/* ============ 1. DUEL RANDOM (duel_random.html) ============ */
+// ===== LOGIQUE MATCHMAKING RANDOM (duel_random.html) =====
 if (path.includes("duel_random.html")) {
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
-
-    // 1. Vérifie si une room de duel random est déjà en cours
     const oldRoomId = localStorage.getItem("duel_random_room");
     if (oldRoomId) {
       const ref = doc(db, "duels", oldRoomId);
@@ -38,8 +34,6 @@ if (path.includes("duel_random.html")) {
         localStorage.removeItem("duel_random_room");
       }
     }
-
-    // 2. Sinon, recherche d’un adversaire comme avant
     await startMatchmaking(user.uid);
   });
 
@@ -94,7 +88,7 @@ if (path.includes("duel_random.html")) {
   }
 }
 
-/* ============ 2. DUEL GAME (duel_game.html) ============ */
+// ===== DUEL GAME (duel_game.html) =====
 if (path.includes("duel_game.html") && roomId) {
   currentRoomId = roomId;
 
@@ -117,34 +111,48 @@ if (path.includes("duel_game.html") && roomId) {
         return;
       }
       roomData = snap.data();
-      updateDuelUI();
+      await updateDuelUI();
     });
   }
 
   async function updateDuelUI() {
-    // 1. Adversaire
     let advPseudo = "Adversaire";
     let advID = "";
     let myID = "";
+    isPlayer1 = false;
+
     if (currentUserId && roomData) {
       isPlayer1 = (currentUserId === roomData.player1);
-      const advUid = isPlayer1 ? roomData.player2 : roomData.player1;
       myID = isPlayer1 ? roomData.player1 : roomData.player2;
-      advID = advUid || "";
-      if (advUid) {
-        const userRef = doc(db, "users", advUid);
+      advID = isPlayer1 ? roomData.player2 : roomData.player1;
+      if (advID) {
+        const userRef = doc(db, "users", advID);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) advPseudo = userSnap.data().pseudo || advPseudo;
       }
     }
-    if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
 
-    // 2. Timer global
+    if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
     if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
-    // 3. Affichage défis et photos
-    renderDefis({myID, advID, advPseudo});
+    // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
+    let cadreActifMoi = "polaroid_01";
+    let cadreActifAdv = "polaroid_01";
+    try {
+      if (myID) {
+        const userRef = doc(db, "users", myID);
+        const snap = await getDoc(userRef);
+        if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
+      }
+      if (advID) {
+        const advRef = doc(db, "users", advID);
+        const snap = await getDoc(advRef);
+        if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
+      }
+    } catch(e) { /* ignore */ }
+
+    renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv});
   }
 
   function startGlobalTimer(startTime) {
@@ -161,8 +169,8 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // ========== AFFICHAGE DES DÉFIS, ULTRA PRO (AUCUN CADRE SANS PHOTO, SÉPARATION 3 COLONNES, CAMÉRA OK) ==========
-  async function renderDefis({myID, advID, advPseudo}) {
+  // ========== AFFICHAGE DES DÉFIS, CADRES DYNAMIQUES, PHOTOS, etc. ==========
+  async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv}) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
       if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
@@ -201,14 +209,14 @@ if (path.includes("duel_game.html") && roomId) {
 
         const cadreImgJoueur = document.createElement('img');
         cadreImgJoueur.className = 'photo-cadre';
-        cadreImgJoueur.src = 'assets/cadres/polaroid_01.webp';
+        cadreImgJoueur.src = 'assets/cadres/' + cadreActifMoi + '.webp';
 
         cadrePreviewJoueur.appendChild(cadreImgJoueur);
 
         const photoJoueur = document.createElement('img');
         photoJoueur.className = 'photo-user';
         photoJoueur.src = myPhotos[idx];
-        photoJoueur.onclick = () => agrandirPhoto(myPhotos[idx]);
+        photoJoueur.onclick = () => agrandirPhoto(myPhotos[idx], cadreActifMoi);
         cadrePreviewJoueur.appendChild(photoJoueur);
         cadreJoueur.appendChild(cadrePreviewJoueur);
         colJoueur.appendChild(cadreJoueur);
@@ -279,14 +287,14 @@ if (path.includes("duel_game.html") && roomId) {
 
         const cadreImgAdv = document.createElement('img');
         cadreImgAdv.className = 'photo-cadre';
-        cadreImgAdv.src = 'assets/cadres/polaroid_01.webp';
+        cadreImgAdv.src = 'assets/cadres/' + cadreActifAdv + '.webp';
 
         cadrePreviewAdv.appendChild(cadreImgAdv);
 
         const photoAdv = document.createElement('img');
         photoAdv.className = 'photo-user';
         photoAdv.src = advPhotos[idx];
-        photoAdv.onclick = () => agrandirPhoto(advPhotos[idx]);
+        photoAdv.onclick = () => agrandirPhoto(advPhotos[idx], cadreActifAdv);
         cadrePreviewAdv.appendChild(photoAdv);
         cadreAdv.appendChild(cadrePreviewAdv);
         colAdv.appendChild(cadreAdv);
@@ -337,9 +345,9 @@ if (path.includes("duel_game.html") && roomId) {
   };
 
   // ==== Popup zoom ====
-  window.agrandirPhoto = function(dataUrl) {
+  window.agrandirPhoto = function(dataUrl, cadreName = "polaroid_01") {
     $("photo-affichee").src = dataUrl;
-    $("cadre-affiche").src = 'assets/cadres/polaroid_01.webp';
+    $("cadre-affiche").src = 'assets/cadres/' + cadreName + '.webp';
     $("popup-photo").classList.remove("hidden");
     $("popup-photo").classList.add("show");
   };
