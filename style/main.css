@@ -1619,20 +1619,22 @@ header,
   background: rgba(44,53,64,0.98);
   border-radius: 18px;
   padding: 7px 24px;
+
+}
+.duel-defi-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-@media (max-width: 700px) {
-  .duel-defi-row {
-    flex-direction: row !important;  /* 🔥 Forcé même en petit écran */
-    flex-wrap: wrap;                 /* ✅ S’adapte si jamais c’est trop petit */
-    gap: 20px;
-  }
-
-  .joueur-col, .adversaire-col {
-    flex: 1;
-    min-width: 130px;
-    max-width: 50%;                 /* ✅ Limite à la moitié de la ligne */
-  }
+.joueur-col, .adversaire-col {
+  flex: 1 1 45%;       /* 🔥 autorise la réduction */
+  min-width: 160px;    /* 🔒 ne descend pas trop bas */
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-
