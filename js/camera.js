@@ -60,13 +60,12 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
 
     if (mode === "duel") {
       // ==== Mode Duel ====
-      // Tu dois appeler la fonction globale attendue par duel.js
       if (window.savePhotoDuel) {
-        window.savePhotoDuel(defiId, dataUrl);
+        await window.savePhotoDuel(defiId, dataUrl); // <-- AWAIT AJOUTÉ
       } else {
         alert("Erreur : fonction savePhotoDuel introuvable !");
       }
-      setTimeout(() => window.location.reload(), 200);
+      // PAS DE RELOAD ! Firestore va rafraîchir tout seul.
     } else {
       // ==== Mode Solo ====
       localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
@@ -79,7 +78,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
       } catch (e) {
         console.warn("⚠️ Erreur d'enregistrement Firebase (solo):", e);
       }
-
       // Affichage direct dans l'interface
       if (window.afficherPhotoDansCadreSolo) {
         window.afficherPhotoDansCadreSolo(defiId, dataUrl);
