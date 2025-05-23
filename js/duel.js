@@ -29,15 +29,12 @@ if (path.includes("duel_random.html")) {
     // 1. Vérifie si une room de duel random est déjà en cours
     const oldRoomId = localStorage.getItem("duel_random_room");
     if (oldRoomId) {
-      // Optionnel : vérifie si la room existe et qu’elle est toujours “en cours”
       const ref = doc(db, "duels", oldRoomId);
       const snap = await getDoc(ref);
       if (snap.exists() && (snap.data().status === "waiting" || snap.data().status === "playing")) {
-        // Room valide, redirige direct !
         window.location.href = `duel_game.html?room=${oldRoomId}`;
         return;
       } else {
-        // La room n’existe plus ou est terminée, on supprime la référence locale
         localStorage.removeItem("duel_random_room");
       }
     }
@@ -60,7 +57,6 @@ if (path.includes("duel_random.html")) {
         status: "playing",
         startTime: Date.now()
       });
-      // ===> SAUVEGARDE
       localStorage.setItem("duel_random_room", roomId);
       window.location.href = `duel_game.html?room=${roomId}`;
     } else {
@@ -86,7 +82,6 @@ if (path.includes("duel_random.html")) {
         photosB: {}
       });
 
-      // ===> SAUVEGARDE
       localStorage.setItem("duel_random_room", roomId);
 
       onSnapshot(duelRef, (snap) => {
@@ -98,7 +93,6 @@ if (path.includes("duel_random.html")) {
     }
   }
 }
-
 
 /* ============ 2. DUEL GAME (duel_game.html) ============ */
 if (path.includes("duel_game.html") && roomId) {
@@ -117,6 +111,7 @@ if (path.includes("duel_game.html") && roomId) {
     const duelRef = doc(db, "duels", roomId);
     onSnapshot(duelRef, async (snap) => {
       if (!snap.exists()) {
+        localStorage.removeItem("duel_random_room");
         alert("Room supprimée ou introuvable !");
         window.location.href = "duel.html";
         return;
@@ -166,8 +161,7 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // ========== AFFICHAGE DES DÉFIS, VERSION PRO (AUCUN CADRE SI PAS DE PHOTO, CARTOUCHE CENTRÉE, SÉPARATION G/D, BOUTON JETON) ==========
-
+  // ========== AFFICHAGE DES DÉFIS, ULTRA PRO (AUCUN CADRE SANS PHOTO, SÉPARATION 3 COLONNES, CAMÉRA OK) ==========
   async function renderDefis({myID, advID, advPseudo}) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
@@ -181,7 +175,6 @@ if (path.includes("duel_game.html") && roomId) {
     for (let idx = 0; idx < roomData.defis.length; idx++) {
       const defi = roomData.defis[idx];
 
-      // === Structure de la ligne de défi ===
       const li = document.createElement('li');
       li.className = 'defi-item defi-row';
       li.style.display = "flex";
@@ -189,7 +182,7 @@ if (path.includes("duel_game.html") && roomId) {
       li.style.justifyContent = "center";
       li.style.marginBottom = "2rem";
 
-      // -- COLONNE GAUCHE (TOI)
+      // COLONNE GAUCHE (TOI)
       const colJoueur = document.createElement('div');
       colJoueur.className = 'joueur-col';
       colJoueur.style.display = "flex";
@@ -197,7 +190,7 @@ if (path.includes("duel_game.html") && roomId) {
       colJoueur.style.alignItems = "center";
       colJoueur.style.flex = "1 1 33%";
 
-      // Pas de cadre tant qu'il n'y a pas de photo
+      // Affiche cadre SEULEMENT si photo existante
       if (myPhotos[idx]) {
         const cadreJoueur = document.createElement('div');
         cadreJoueur.className = 'cadre-item';
@@ -246,7 +239,7 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(boutonJeton);
       }
 
-      // -- COLONNE CENTRALE (DÉFI)
+      // COLONNE CENTRALE (DÉFI)
       const colTexte = document.createElement('div');
       colTexte.className = 'defi-texte-center';
       colTexte.style.display = "flex";
@@ -254,7 +247,7 @@ if (path.includes("duel_game.html") && roomId) {
       colTexte.style.justifyContent = "center";
       colTexte.style.alignItems = "center";
       colTexte.style.flex = "1 1 34%";
-      // Cartouche défi
+      // Cartouche défi centrée
       const cartouche = document.createElement('div');
       cartouche.className = "defi-cartouche";
       cartouche.style.background = "#f2f7fb";
@@ -267,7 +260,7 @@ if (path.includes("duel_game.html") && roomId) {
       cartouche.textContent = defi;
       colTexte.appendChild(cartouche);
 
-      // -- COLONNE DROITE (ADVERSAIRE)
+      // COLONNE DROITE (ADVERSAIRE)
       const colAdv = document.createElement('div');
       colAdv.className = 'adversaire-col';
       colAdv.style.display = "flex";
@@ -275,7 +268,7 @@ if (path.includes("duel_game.html") && roomId) {
       colAdv.style.alignItems = "center";
       colAdv.style.flex = "1 1 33%";
 
-      // Pas de cadre adversaire si pas de photo
+      // Affiche cadre ADV seulement si photo existante
       if (advPhotos[idx]) {
         const cadreAdv = document.createElement('div');
         cadreAdv.className = 'cadre-item';
@@ -307,7 +300,11 @@ if (path.includes("duel_game.html") && roomId) {
       labelAdvID.textContent = advPseudo && advPseudo !== "Adversaire" ? advPseudo : (advID || "Adversaire");
       colAdv.appendChild(labelAdvID);
 
-      // -- ASSEMBLAGE
+      // ASSEMBLAGE
+      const content = document.createElement('div');
+      content.className = 'defi-content split';
+      content.style.display = "flex";
+      content.style.width = "100%";
       content.appendChild(colJoueur);
       content.appendChild(colTexte);
       content.appendChild(colAdv);
@@ -332,8 +329,6 @@ if (path.includes("duel_game.html") && roomId) {
 
   // ==== Validation par jeton ====
   window.validerDefiAvecJeton = function(idx) {
-    // Ouvre ton popup de validation jeton, ou applique ta logique (à adapter selon ton système solo)
-    // Ici tu dois brancher la même popup/modal que solo
     if (typeof ouvrirPopupJeton === "function") {
       ouvrirPopupJeton(idx, "duel");
     } else {
