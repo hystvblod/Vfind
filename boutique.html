@@ -41,19 +41,23 @@
   <!-- BOUTON PREMIUM TOUTE LARGEUR -->
 <div class="premium-btn-row">
   <button class="btn-boutique-pill btn-boutique-fullwidth" onclick="activerPremium()">
-    <span class="btn-icon-emoji">⭐</span> Passer Premium
+    <span class="btn-icon-emoji"></span> Passer Premium
   </button>
 </div>
 
 <!-- Deux boutons côte à côte, icônes à DROITE -->
 <div class="btn-boutique-inline">
-  <button class="btn-boutique-pill">
+  <button class="btn-boutique-pill" onclick="window.location.href='achat.html'">
     Obtenir pièces
-    <img src="assets/img/vcoin.webp" class="icon-bouton-piece" alt="">
+    <span class="icon-btn-right">
+      <img src="assets/img/vcoin.webp" class="icon-bouton-piece" alt="">
+    </span>
   </button>
-  <button class="btn-boutique-pill">
+  <button class="btn-boutique-pill" onclick="ouvrirPopupJetonBoutique()">
     Acheter jetons
-    <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" alt="">
+    <span class="icon-btn-right">
+      <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" alt="">
+    </span>
   </button>
 </div>
 
