@@ -1806,7 +1806,7 @@ header,
   align-items: center;
   justify-content: space-between; /* <-- sépare texte et icône ! */
   gap: 0;
-  padding: 1em 2em 1em 2em;
+   padding: 0.7em 2em;     /* ↓ était ~1em → réduit l’épaisseur */
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   border: none;
   border-radius: 100px;
