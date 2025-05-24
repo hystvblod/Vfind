@@ -5,22 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Duel (Partie)</title>
   <link rel="stylesheet" href="style/main.css" />
-  <link rel="stylesheet" href="style/cd3ec4b5-2dde-4c94-b1db-42eebe55a141.css" />
 </head>
 <body class="duel-container">
 
-  <header class="header-boutique">
-    <a href="index.html" class="back-btn" title="Retour">
-      <img src="assets/icons/arrow_back.svg" alt="Retour" />
-    </a>
-    <h1 class="titre-centre">Mode Duel</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">
-        <img src="assets/icons/user.svg" alt="Profil" />
+  <!-- POPUP PHOTO -->
+  <div id="popup-photo" class="popup hidden">
+    <div class="popup-inner">
+      <button id="close-popup" class="close-btn">❌</button>
+      <div class="cadre-preview cadre-popup boutique-style">
+        <img id="cadre-affiche" class="photo-cadre" src="" />
+        <img id="photo-affichee" class="photo-user" src="" />
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP VALIDATION PAR JETON -->
+  <div id="popup-jeton" class="popup hidden">
+    <div class="popup-inner">
+      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
+      <p id="solde-jeton">Jetons disponibles : --</p>
+      <button id="valider-jeton-btn">✅ Valider</button>
+      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+    </div>
+  </div>
+
+  <!-- HEADER AVEC SOLDE PIÈCES/JETONS -->
+  <header class="header-solo" style="border-bottom: 5px solid #888;">
+    <div class="header-row">
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
       </a>
-      <a href="parametres.html" class="btn-icon">
-        <img src="assets/icons/settings.svg" alt="Paramètres" />
-      </a>
+      <h1>Mode Duel</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
+        <a href="parametres.html" class="btn-icon">
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
+      </div>
+    </div>
+    <div class="solde-container solde-solo">
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
+          <span id="points"></span>
+        </div>
+      </div>
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
+          <span id="jetons"></span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -44,17 +81,7 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <!-- Popup photo -->
-  <div id="popup-photo" class="popup hidden">
-    <div class="popup-inner">
-      <button id="close-popup" class="close-btn">❌</button>
-      <div class="cadre-preview cadre-popup boutique-style">
-        <img id="cadre-affiche" class="photo-cadre" src="" />
-        <img id="photo-affichee" class="photo-user" src="" />
-      </div>
-    </div>
-  </div>
-
+  <!-- SCRIPTS -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/camera.js"></script>
