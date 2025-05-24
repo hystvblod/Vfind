@@ -661,7 +661,7 @@ color: #000;
 }
 
 .cadre-item {
-.cadre-item {
+
   background: rgba(255, 255, 255, 0.07);      /* fond léger */
   border-radius: 16px;
   padding: 16px 10px 14px 10px;               /* padding équilibré */
@@ -676,8 +676,6 @@ color: #000;
   text-align: center;
   transition: transform 0.2s;
   position: relative;
-}
-
 }
 
 .cadre-item:hover {
