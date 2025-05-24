@@ -25,19 +25,26 @@
     </div>
   </header>
 
-  <!-- LIGNE 1 : SOLDE GLOBAL -->
-  <div class="solde-ligne-boutique">
-    <div class="solde-item">
-      <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
-      <span id="points">100</span>
-    </div>
-    <div class="solde-item">
-      <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
-      <span id="jetons">6</span>
-    </div>
+<!-- LIGNE 1 : SOLDE GLOBAL -->
+<div class="solde-ligne-boutique">
+  <div class="solde-item">
+    <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
+    <span id="points">100</span>
   </div>
+  <div class="solde-item">
+    <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
+    <span id="jetons">6</span>
+  </div>
+</div>
 
-  <!-- LIGNE 2 : BOUTONS -->
+<!-- GROS BOUTON PREMIUM UNIQUEMENT UNE FOIS -->
+<div class="premium-btn-row">
+  <button class="premium-btn" onclick="activerPremium()">
+    ⭐ Passer Premium
+  </button>
+</div>
+
+<!-- LIGNE 2 : BOUTONS ACHAT -->
 <div class="btn-inline">
   <button onclick="window.location.href='achat.html'" class="btn-action-boutique">
     Obtenir pièces
@@ -48,17 +55,6 @@
     <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
   </button>
 </div>
-<div class="premium-btn-row">
-  <button class="premium-btn" onclick="activerPremium()">
-    ⭐ Passer Premium
-  </button>
-</div>
-<div class="premium-btn-row">
-  <button class="premium-btn" onclick="activerPremium()">
-    ⭐ Passer Premium
-  </button>
-</div>
-
 
   <!-- SECTION BOUTIQUE -->
   <section class="cadres-list">
