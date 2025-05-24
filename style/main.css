@@ -1733,4 +1733,29 @@ header,
   opacity: .75;
   margin-top: 0.18em;
 }
+.premium-btn-row {
+  display: flex;
+  justify-content: center;
+  margin: 0.8rem 0 1.2rem 0;
+}
+.premium-btn {
+  background: linear-gradient(90deg, #ff3c57 0%, #ff5e62 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.18rem;
+  font-weight: bold;
+  padding: 1.05rem 2.8rem;
+  box-shadow: 0 2px 12px #ff3c5730;
+  transition: filter 0.18s, box-shadow 0.25s;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.premium-btn:hover {
+  filter: brightness(1.1) saturate(1.05);
+  box-shadow: 0 4px 18px #ff3c5750;
+}
 
