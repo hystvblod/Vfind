@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -39,10 +39,10 @@
 
   <!-- LIGNE 2 : BOUTONS -->
   <div class="btn-inline">
-    <button class="btn-action-boutique" id="gain-btn">
+    <a href="achat.html" class="btn-action-boutique">
       Gagner pièces
       <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
-    </button>
+    </a>
     <button class="btn-action-boutique" onclick="ouvrirPopupJetonBoutique()">
       Acheter jetons
       <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
@@ -60,13 +60,6 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-  <!-- ✅ Popup : gagner des pièces -->
-  <div id="popup-gain" class="popup hidden">
-    <h3>Gagner pièces</h3>
-    <button onclick="watchAd()">🎬 Regarder une pub (+100 pièces)</button>
-    <button onclick="inviteFriend()">👥 Inviter un ami (+300 pièces)</button>
-  </div>
-
   <!-- ✅ Popup : acheter des jetons -->
   <div id="popup-achat-jeton" class="popup hidden">
     <div class="popup-inner">
@@ -77,14 +70,10 @@
   </div>
 
   <!-- Scripts -->
-<script type="module" src="js/firebase.js"></script>
-<script type="module" src="js/userData.js"></script>
-<script type="module" src="js/pub.js"></script>
-<script type="module" src="js/boutique.js"></script>
-
-  </script>
-
-  <!-- Connexion Firebase -->
   <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/userData.js"></script>
+  <script type="module" src="js/pub.js"></script>
+  <script type="module" src="js/boutique.js"></script>
+
 </body>
 </html>

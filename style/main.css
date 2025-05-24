@@ -1638,20 +1638,37 @@ header,
   flex-direction: column;
   align-items: center;
 }
-.cadre-item.cadre-duel-mini {
-  width: 100px !important;
-  height: 120px !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-width: 100px !important;
-  max-height: 120px !important;
-  margin: 0 auto !important;
-  padding: 0 !important;
-  background: none !important;   /* Optionnel */
-  box-shadow: none !important;   /* Optionnel */
-  overflow: visible !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
+.achat-main-buttons {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 2.5rem 0 3rem 0;
+}
+.achat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.achat-btn {
+  background: #ffffff22;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 1.2rem 2.5rem;
+  transition: background 0.3s;
+  cursor: pointer;
+  box-shadow: 0 3px 12px #2222;
+  text-align: center;
+}
+.achat-btn:hover {
+  background: #ffffff44;
+}
+.achat-desc {
+  font-size: 1rem;
+  font-weight: normal;
+  display: block;
+  opacity: .75;
+  margin-top: 0.3em;
 }
