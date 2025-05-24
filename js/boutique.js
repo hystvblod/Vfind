@@ -397,3 +397,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     await updateJetonsDisplay();
   });
 });
+
+
+// === POPUP PREMIUM ===
+window.activerPremium = function () {
+  const popup = document.getElementById("popup-premium");
+  if (popup) popup.classList.remove("hidden");
+};
+
+window.fermerPopupPremium = function () {
+  const popup = document.getElementById("popup-premium");
+  if (popup) popup.classList.add("hidden");
+};
+
+// Achat Premium simulé (déduit 3500 pièces, marque le compte comme premium)
+window.acheterPremium = async function () {
+  if (await removePoints(3500)) {
+    await updateUserDataCloud({ premium: true });
+    alert("✨ Bravo, tu es maintenant Premium !");
+    window.location.reload(); // Recharge pour activer premium partout
+  } else {
+    alert("❌ Pas assez de pièces pour passer Premium (3500 nécessaires).");
+  }
+};
