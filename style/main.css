@@ -1781,29 +1781,43 @@ header,
 }
 
 /* Style type pilule pour tous les gros boutons monétaires */
-.btn-boutique-group {
+.premium-btn-row {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.15em;
   justify-content: center;
-  margin: 1.2em 0 0.8em 0;
+  margin: 1.2rem 0 1.1rem 0;
 }
+.btn-boutique-fullwidth {
+  width: 100%;
+  max-width: 99%;
+  justify-content: center;
+  text-align: center;
+}
+
+.btn-boutique-inline {
+  display: flex;
+  gap: 1.2em;
+  justify-content: center;
+  margin-bottom: 1.3em;
+}
+
 .btn-boutique-pill {
-  white-space: nowrap; 
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   color: #222;
   border: none;
   border-radius: 100px;
-  font-size: 1.06rem;
+  font-size: 1.12rem;
   font-weight: bold;
-  padding: 0.74em 1.7em;
+  padding: 1em 2.4em 1em 2em;
   box-shadow: 0 2px 8px #2222;
   transition: background 0.18s, box-shadow 0.16s;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 195px;
   min-height: 2.4em;
   cursor: pointer;
+  white-space: nowrap;
 }
 .btn-boutique-pill:hover {
   background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
@@ -1813,21 +1827,10 @@ header,
   font-size: 1.18em;
   vertical-align: middle;
 }
-.icon-bouton-piece {
-  width: 32px;      /* Mets 28px, 32px, voire plus selon ton goût */
-  height: 32px;     /* Garde carré pour éviter la déformation */
-  margin-right: 0.6em;  /* Garde un espace entre l’icône et le texte */
+.icon-bouton-piece, .icon-bouton-jeton {
+  width: 24px;
+  height: 24px;
+  margin-left: 0.6em;
+  margin-right: 0;
   vertical-align: middle;
-}
-.icon-bouton-jeton {
-  width: 32px;      /* Ajuste à la taille voulue, par ex 32px, 36px... */
-  height: 32px;
-  margin-right: 0.6em;  /* Comme la pièce */
-  vertical-align: middle;
-}
-.btn-boutique-inline {
-  display: flex;
-  gap: 1.15em;
-  justify-content: center;
-  margin-bottom: 1.3em;
 }
