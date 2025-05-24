@@ -1821,7 +1821,7 @@ header,
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffffff44 0%, #ffe066 100%);
+  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
   color: #222;
   border: none;
   border-radius: 100px;
