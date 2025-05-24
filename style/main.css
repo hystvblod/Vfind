@@ -666,15 +666,11 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
   gap: 20px;
   padding: 20px;
   justify-items: center;
-  width: 100%;
-  max-width: 100vw;
-  box-sizing: border-box;
 }
-
 
 .cadre-item {
   background: rgba(255, 255, 255, 0.07);
@@ -686,8 +682,7 @@ color: #000;
   justify-content: space-between;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   transition: transform 0.2s ease;
-  box-sizing: border-box;
-  /* ❌ PAS DE height fixe — laisse la grille s’adapter comme avant */
+  min-height: 160px;
 }
 
 .cadre-item:hover {
@@ -826,6 +821,13 @@ body, .page-container {
 main {
   flex-grow: 1;
   overflow-y: auto;
+}
+#boutique-container.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
 
 }
 
@@ -1262,7 +1264,7 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
-  background-color: #ffffff44;
+  background-color: #ffcc00;
   border: none;
   border-radius: 10px;
   padding: 12px 18px;
@@ -1735,17 +1737,17 @@ header,
   margin-top: 0.18em;
 }
 .premium-btn-row {
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 100%;
+  margin: 1.2rem 0 1.1rem 0;
 }
 
 .btn-premium-fullwidth {
   width: 100%;
   max-width: 98%; /* Pour un très léger espace */
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #ffcf40 0%, #ffd900 100%);
+  color: #222;
   border: none;
   border-radius: 14px;
   font-size: 1.13rem;
@@ -1756,11 +1758,11 @@ header,
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0px;
+  gap: 12px;
   margin-bottom: 0.4rem;
 }
 .btn-premium-fullwidth:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #ffeeb0 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #ffeeb0 100%);
   box-shadow: 0 4px 16px #ffd90050;
 }
 
@@ -1795,12 +1797,11 @@ header,
 .btn-boutique-fullwidth {
   width: 100%;
   max-width: 99%;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center;   /* Centre le texte dans le bouton */
   text-align: center;
+  display: flex;
 }
+
 .btn-boutique-inline {
   display: flex;
   gap: 1.2em;
@@ -1809,53 +1810,30 @@ header,
 }
 
 .btn-boutique-pill {
-  width: 100%;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  justify-content: center; /* <-- centre horizontalement le texte ! */
   gap: 0;
+  padding: 0.7em 2em;
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  border: none;
+  border-radius: 100px;
+  min-width: 195px;
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
-  border: none;
-  border-radius: 100px;
   box-shadow: 0 2px 8px #2222;
+  color: #222;
   cursor: pointer;
-  white-space: normal;         /* ✅ Passe à normal */
-  padding: 0.7em 0.3em;        /* ✅ Réduit le padding horizontal */
+  white-space: nowrap;
+  text-align: center; /* <-- bonus sécurité */
+  width: 100%;         /* si tu veux qu'il occupe la largeur dispo */
 }
 
+
 .btn-boutique-pill:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #fff2b2 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
   box-shadow: 0 4px 12px #ffd70030;
 }
 
-.btn-boutique-pill, .btn-boutique-fullwidth {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  gap: 0 !important;    /* Pas de décalage */
-  font-weight: bold;
-}
-.cadres-list {
-  width: 100vw;
-  max-width: 100vw;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
-  width: 100%;
-  max-width: 100vw;
-  box-sizing: border-box;
-}
