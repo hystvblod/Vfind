@@ -1784,3 +1784,39 @@ header,
   box-shadow: 0 4px 18px #ff3c5750;
 }
 
+/* Style type pilule pour tous les gros boutons monétaires */
+.btn-boutique-pill {
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  color: #222;
+  border: none;
+  border-radius: 100px;  /* <--- arrondi maximal, effet pilule */
+  font-size: 1.03rem;
+  font-weight: bold;
+  padding: 0.67em 1.6em;
+  box-shadow: 0 2px 8px #2222;
+  transition: background 0.18s, box-shadow 0.16s;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 0.7em;
+  margin-top: 0.2em;
+  min-height: 2.2em;
+}
+
+.btn-boutique-pill:hover {
+  background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
+  box-shadow: 0 4px 12px #ffd70030;
+}
+
+.btn-boutique-pill .btn-icon-emoji {
+  font-size: 1.18em;
+  vertical-align: middle;
+}
+
+.btn-boutique-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.15em;
+  justify-content: center;
+  margin-bottom: 0.4em;
+}
