@@ -143,7 +143,7 @@ async function acheterCadreBoutique(id, prix) {
 
 // --- Popups et pub ---
 function closePopup() {
-  const popupGain = document.getElementById("popup-gain");
+  const popupGain = document.getElementById("gain-feedback");
   if (popupGain) {
     popupGain.classList.remove("show");
     popupGain.classList.add("hidden");
@@ -223,7 +223,7 @@ setTimeout(() => {
 }, 100);
 
 document.addEventListener("click", function (e) {
-  const popupGain = document.getElementById("popup-gain");
+  const popupGain = document.getElementById("gain-feedback");
   if (popupGain && popupGain.classList.contains("show") && e.target === popupGain) {
     closePopup();
   }
@@ -419,6 +419,40 @@ async function acheterPremium() {
   }
 }
 
+// --- PATCH MINIATURES DEFI (fixes 100% le centrage et l'affichage)
+async function afficherPhotosSauvegardees(photosMap) {
+  const cadreActuel = await getCadreSelectionne();
+
+  document.querySelectorAll(".defi-item").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = photosMap[id];
+
+    const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+    container.innerHTML = '';
+    container.style.minWidth = "90px";
+    container.style.minHeight = "110px";
+
+    if (dataUrl) {
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
+
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      container.appendChild(preview);
+      defiEl.classList.add("done");
+    }
+  });
+}
+
 // === EXPOSE TO WINDOW POUR ACCÈS HTML INLINE ===
 window.activerPremium = activerPremium;
 window.fermerPopupPremium = fermerPopupPremium;
@@ -433,3 +467,6 @@ window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
 window.acheterJetonsAvecPub = acheterJetonsAvecPub;
 window.watchAd = watchAd;
 window.inviteFriend = inviteFriend;
+
+// Ajoute la fonction patchée au global si besoin pour debug
+window.afficherPhotosSauvegardees = afficherPhotosSauvegardees;
