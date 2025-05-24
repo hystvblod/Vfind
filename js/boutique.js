@@ -142,7 +142,7 @@ async function acheterCadreBoutique(id, prix) {
 }
 
 // --- Popups et pub ---
-window.closePopup = function () {
+function closePopup() {
   const popupGain = document.getElementById("popup-gain");
   if (popupGain) {
     popupGain.classList.remove("show");
@@ -150,7 +150,7 @@ window.closePopup = function () {
   }
   const oldUnlock = document.getElementById("popup-unlock-info");
   if (oldUnlock) document.body.removeChild(oldUnlock);
-};
+}
 
 function showUnlockPopup(nom, message) {
   const oldPopup = document.getElementById("popup-unlock-info");
@@ -169,32 +169,32 @@ function showUnlockPopup(nom, message) {
 }
 
 // Gagne des pièces via pub simulée
-window.watchAd = async function () {
+async function watchAd() {
   await addPoints(100);
   await updatePointsDisplay();
   showFeedback("+100 💰");
   closePopup();
-};
+}
 
 // === Parrainage code Firebase (UID) ===
-window.inviteFriend = async function () {
+async function inviteFriend() {
   await waitForFirebaseAuthReady();
   const uid = window.firebaseAuth.currentUser.uid;
   const lien = window.location.origin + "/profil.html?parrain=" + uid;
   prompt("Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)");
-};
+}
 
 // --- Popup achat jetons ---
-window.ouvrirPopupJetonBoutique = function () {
+function ouvrirPopupJetonBoutique() {
   const popup = document.getElementById("popup-achat-jeton");
   if (popup) popup.classList.remove("hidden");
-};
-window.fermerPopupJetonBoutique = function () {
+}
+function fermerPopupJetonBoutique() {
   const popup = document.getElementById("popup-achat-jeton");
   if (popup) popup.classList.add("hidden");
-};
+}
 
-window.acheterJetonsAvecPieces = async function () {
+async function acheterJetonsAvecPieces() {
   if (await removePoints(100)) {
     await addJetons(3);
     alert("✅ 3 jetons ajoutés !");
@@ -206,7 +206,7 @@ window.acheterJetonsAvecPieces = async function () {
   }
 }
 
-window.acheterJetonsAvecPub = async function () {
+async function acheterJetonsAvecPub() {
   alert("📺 Simulation de pub regardée !");
   setTimeout(async () => {
     await addJetons(3);
@@ -398,20 +398,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-
 // === POPUP PREMIUM ===
-window.activerPremium = function () {
+function activerPremium() {
   const popup = document.getElementById("popup-premium");
   if (popup) popup.classList.remove("hidden");
-};
+}
 
-window.fermerPopupPremium = function () {
+function fermerPopupPremium() {
   const popup = document.getElementById("popup-premium");
   if (popup) popup.classList.add("hidden");
-};
+}
 
-// Achat Premium simulé (déduit 3500 pièces, marque le compte comme premium)
-window.acheterPremium = async function () {
+async function acheterPremium() {
   if (await removePoints(3500)) {
     await updateUserDataCloud({ premium: true });
     alert("✨ Bravo, tu es maintenant Premium !");
@@ -419,4 +417,19 @@ window.acheterPremium = async function () {
   } else {
     alert("❌ Pas assez de pièces pour passer Premium (3500 nécessaires).");
   }
-};
+}
+
+// === EXPOSE TO WINDOW POUR ACCÈS HTML INLINE ===
+window.activerPremium = activerPremium;
+window.fermerPopupPremium = fermerPopupPremium;
+window.acheterPremium = acheterPremium;
+window.removePoints = removePoints;
+window.updateUserDataCloud = updateUserDataCloud;
+window.closePopup = closePopup;
+window.showUnlockPopup = showUnlockPopup;
+window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
+window.fermerPopupJetonBoutique = fermerPopupJetonBoutique;
+window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
+window.acheterJetonsAvecPub = acheterJetonsAvecPub;
+window.watchAd = watchAd;
+window.inviteFriend = inviteFriend;
