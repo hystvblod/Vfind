@@ -1727,7 +1727,7 @@ header,
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 1.1rem 0 1.1rem 0;
+  margin: 1.2rem 0 1.1rem 0;
 }
 
 .btn-premium-fullwidth {
@@ -1786,18 +1786,16 @@ header,
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   color: #222;
   border: none;
-  border-radius: 100px;  /* arrondi maximal */
-  font-size: 1.03rem;
+  border-radius: 100px;
+  font-size: 1.06rem;
   font-weight: bold;
-  padding: 0.67em 1.6em;
+  padding: 0.74em 1.7em;
   box-shadow: 0 2px 8px #2222;
   transition: background 0.18s, box-shadow 0.16s;
   display: flex;
   align-items: center;
-  gap: 9px;
-  margin-bottom: 0.7em;
-  margin-top: 0.2em;
-  min-height: 2.2em;
+  gap: 10px;
+  min-height: 2.4em;
   cursor: pointer;
 }
 .btn-boutique-pill:hover {
@@ -1819,4 +1817,10 @@ header,
   height: 32px;
   margin-right: 0.6em;  /* Comme la pièce */
   vertical-align: middle;
+}
+.btn-boutique-inline {
+  display: flex;
+  gap: 1.15em;
+  justify-content: center;
+  margin-bottom: 1.3em;
 }
