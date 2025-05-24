@@ -667,17 +667,19 @@ color: #000;
 
 .cadre-item {
 
-  background: rgba(255, 255, 255, 0.07);      /* fond léger */
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 16px;
-  padding: 16px 10px 14px 10px;               /* padding équilibré */
+  padding: 16px 10px 14px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;                /* on ne met space-between QUE si tu veux forcer le bouton en bas à tout prix, mais ça étire tout si peu de contenu */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);    /* ombre douce pro */
-  min-height: 260px;                          /* hauteur uniforme, ajuste selon visuel */
+  justify-content: flex-start;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  min-height: 260px;
   max-height: 270px;
-  width: 180px;                               /* largeur fixe */
+  /* width: 180px;   ⛔️ SUPPRIME cette ligne */
+  width: 100%;        /* ✅ Ajoute cette ligne */
+  max-width: 210px;   /* ✅ Optionnel pour éviter que les cartes soient trop larges sur grands écrans */
   text-align: center;
   transition: transform 0.2s;
   position: relative;
