@@ -1817,7 +1817,7 @@ header,
   align-items: center;
   text-align: center;
   gap: 0;
-  min-width: 195px;
+  /* min-width: 195px; */      /* ⛔️ À SUPPRIMER */
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
@@ -1827,8 +1827,10 @@ header,
   border-radius: 100px;
   box-shadow: 0 2px 8px #2222;
   cursor: pointer;
-  white-space: nowrap;
-  padding: 0.7em 2em;
+  white-space: normal;         /* ✅ Passe à normal */
+  padding: 0.7em 0.3em;        /* ✅ Réduit le padding horizontal */
+}
+
 }
 
 
