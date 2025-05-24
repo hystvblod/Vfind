@@ -1758,7 +1758,7 @@ header,
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 0px;
   margin-bottom: 0.4rem;
 }
 .btn-premium-fullwidth:hover {
@@ -1813,22 +1813,22 @@ header,
 
   display: flex;
   align-items: center;
-  justify-content: center; /* <-- centre horizontalement le texte ! */
-  gap: 0;
-  padding: 0.7em 2em;
-  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
-  border: none;
-  border-radius: 100px;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
   min-width: 195px;
   min-height: 2.4em;
+  padding: 0.7em 2em;
   font-size: 1.12rem;
   font-weight: bold;
-  box-shadow: 0 2px 8px #2222;
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   color: #222;
+  border: none;
+  border-radius: 100px;
+  box-shadow: 0 2px 8px #2222;
   cursor: pointer;
   white-space: nowrap;
-  text-align: center; /* <-- bonus sécurité */
-  width: 100%;         /* si tu veux qu'il occupe la largeur dispo */
+  gap: 0;         /* Optionnel si pas d'icône */
 }
 
 
@@ -1837,3 +1837,11 @@ header,
   box-shadow: 0 4px 12px #ffd70030;
 }
 
+.btn-boutique-pill, .btn-boutique-fullwidth {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 0 !important;    /* Pas de décalage */
+  font-weight: bold;
+}
