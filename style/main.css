@@ -1802,22 +1802,27 @@ header,
 }
 
 .btn-boutique-pill {
-  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
-  color: #222;
-  border: none;
-  border-radius: 100px;
-  font-size: 1.12rem;
-  font-weight: bold;
-  padding: 1em 2.4em 1em 2em;
-  box-shadow: 0 2px 8px #2222;
-  transition: background 0.18s, box-shadow 0.16s;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between; /* <-- sépare texte et icône ! */
+  gap: 0;
+  padding: 1em 2em 1em 2em;
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  border: none;
+  border-radius: 100px;
   min-width: 195px;
   min-height: 2.4em;
+  font-size: 1.12rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px #2222;
+  color: #222;
   cursor: pointer;
   white-space: nowrap;
+}
+.icon-btn-right {
+  display: flex;
+  align-items: center;
+  margin-left: 1em;
 }
 .btn-boutique-pill:hover {
   background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
