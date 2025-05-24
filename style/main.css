@@ -1810,16 +1810,15 @@ header,
 }
 
 .btn-boutique-pill {
-
   display: flex;
   align-items: center;
-  justify-content: center; /* <-- centre horizontalement le texte ! */
+  justify-content: center;
   gap: 0;
   padding: 0.7em 2em;
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   border: none;
   border-radius: 100px;
-  min-width: 195px;
+  min-width: 140px;     /* réduis le min si tu veux */
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
@@ -1827,10 +1826,11 @@ header,
   color: #222;
   cursor: pointer;
   white-space: nowrap;
-  text-align: center; /* <-- bonus sécurité */
-  width: 100%;         /* si tu veux qu'il occupe la largeur dispo */
+  text-align: center;
+  /* width: 100%;   <<< SUPPRIME cette ligne ! */
+  flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
+  max-width: 260px;    /* ou 230px si tu veux un max */
 }
-
 
 .btn-boutique-pill:hover {
   background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
