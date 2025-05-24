@@ -634,21 +634,27 @@ color: #000;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(104, 104, 110, 0.15); /* gris foncé transparent */
+  background: rgba(104, 104, 110, 0.15);
   padding: 10px 20px;
   margin: 20px auto;
   border-radius: 12px;
   font-weight: bold;
   color: white;
   font-size: 1.2rem;
-  max-width: 330px;
+  max-width: 350px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  white-space: nowrap;           /* Empêche de passer à la ligne */
+  overflow-x: auto;   
 }
 .timer-box .icon-svg {
   width: 30px;
   height: 30px;
   flex-shrink: 0;
   display: inline-block;
+}
+.timer-text {
+  white-space: nowrap;
+
 
 }
 .camera-container-fullscreen {
