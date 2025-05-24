@@ -1737,10 +1737,10 @@ header,
   margin-top: 0.18em;
 }
 .premium-btn-row {
-  width: 100%;
   display: flex;
   justify-content: center;
-  margin: 1.2rem 0 1.1rem 0;
+  align-items: center;
+  width: 100%;
 }
 
 .btn-premium-fullwidth {
@@ -1797,11 +1797,12 @@ header,
 .btn-boutique-fullwidth {
   width: 100%;
   max-width: 99%;
-  justify-content: center;   /* Centre le texte dans le bouton */
-  text-align: center;
+  padding: 0;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
-
 .btn-boutique-inline {
   display: flex;
   gap: 1.2em;
@@ -1810,15 +1811,14 @@ header,
 }
 
 .btn-boutique-pill {
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0;
   min-width: 195px;
   min-height: 2.4em;
-  padding: 0.7em 2em;
   font-size: 1.12rem;
   font-weight: bold;
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
@@ -1828,7 +1828,7 @@ header,
   box-shadow: 0 2px 8px #2222;
   cursor: pointer;
   white-space: nowrap;
-  gap: 0;         /* Optionnel si pas d'icône */
+  padding: 0.7em 2em;
 }
 
 
