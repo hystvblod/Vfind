@@ -1638,48 +1638,99 @@ header,
   flex-direction: column;
   align-items: center;
 }
+/* Réduit la taille du titre */
+.achat-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+/* Main container centrage */
 .achat-main-buttons {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  justify-content: center;
+  gap: 1.8rem;
   align-items: center;
-  margin: 2.5rem 0 3rem 0;
   width: 100%;
+  margin: 2rem 0 2.2rem 0;
 }
 
-.achat-row {
+/* Ligne 1 : pub + ami côte à côte */
+.achat-row-top {
   display: flex;
-  gap: 1.7rem;
-  justify-content: center;
+  gap: 1rem;
   width: 100%;
+  justify-content: center;
+  margin-bottom: .5rem;
+}
+.achat-btn-top {
+  min-width: 120px;
+  max-width: 170px;
+  font-size: 1rem;
+  padding: 0.8rem 0.5rem 0.7rem 0.5rem;
+  border-radius: 13px;
+  background: #39394e;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 3px 12px #2222;
+  transition: background 0.3s;
+  text-align: center;
+  line-height: 1.1;
+}
+.achat-btn-top:hover {
+  background: #504f72;
+}
+.achat-btn-top .achat-desc {
+  font-size: 0.96em;
+  opacity: .7;
+  display: block;
+  margin-top: 0.2em;
+}
+
+/* Ligne 2 : Packs d'achat */
+.achat-row-packs {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
   flex-wrap: wrap;
 }
-.achat-row-packs {
-  margin-top: 1rem;
+.achat-btn-pack {
+  min-width: 120px;
+  max-width: 140px;
+  font-size: 0.98rem;
+  padding: 0.8rem 0.5rem 0.6rem 0.5rem;
+  border-radius: 13px;
+  background: #39394e;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 3px 12px #2222;
+  margin-bottom: 0.3rem;
+  text-align: center;
+  line-height: 1.1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.achat-btn-pack:hover {
+  background: #504f72;
+}
+.icon-piece {
+  width: 18px;
+  vertical-align: middle;
+  margin-right: 5px;
+  margin-bottom: 2px;
 }
 
-.achat-btn {
-  background: #ffffff22;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  font-size: 1.15rem;
-  font-weight: bold;
-  padding: 1.2rem 2.2rem;
-  transition: background 0.3s;
-  cursor: pointer;
-  box-shadow: 0 3px 12px #2222;
-  text-align: center;
-  min-width: 150px;
-}
-.achat-btn:hover {
-  background: #ffffff44;
-}
+/* Description sous le bouton */
 .achat-desc {
-  font-size: 1rem;
+  font-size: 0.94em;
   font-weight: normal;
   display: block;
   opacity: .75;
-  margin-top: 0.3em;
+  margin-top: 0.18em;
 }
+
