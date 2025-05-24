@@ -666,10 +666,13 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px;
   justify-items: center;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 
