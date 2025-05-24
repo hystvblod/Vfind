@@ -1747,7 +1747,7 @@ header,
   width: 100%;
   max-width: 98%; /* Pour un très léger espace */
   background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #222;
+  color: #fff;
   border: none;
   border-radius: 14px;
   font-size: 1.13rem;
