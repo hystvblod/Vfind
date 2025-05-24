@@ -1841,3 +1841,21 @@ header,
   gap: 0 !important;    /* Pas de décalage */
   font-weight: bold;
 }
+.cadres-list {
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
