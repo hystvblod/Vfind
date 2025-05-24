@@ -1,8 +1,9 @@
-// === duel.js (VERSION FINALE 100% PRO, MIRROIR SOLO & AFFICHAGE MINITURE/CADRE) ===
+// === duel.js (VERSION FINALE 100% PRO, MIRROIR SOLO & AFFICHAGE MINIATURE/CADRE & SOLDE) ===
 import {
   getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+import { getUserDataCloud } from "./userData.js"; // <--- AJOUT pour récupérer le solde
 
 const db = getFirestore();
 const auth = getAuth();
@@ -16,6 +17,17 @@ let timerInterval = null;
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
+
+// === MISE À JOUR SOLDE PIECES/JETONS dès chargement (header duel) ===
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const data = await getUserDataCloud();
+    if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
+    if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
+  } catch (e) {
+    // rien
+  }
+});
 
 // ===== LOGIQUE MATCHMAKING RANDOM (duel_random.html) =====
 if (path.includes("duel_random.html")) {
@@ -100,6 +112,13 @@ if (path.includes("duel_game.html") && roomId) {
     }
     currentUserId = user.uid;
     listenRoom(roomId);
+
+    // Rafraîchir le solde aussi après authentification utilisateur
+    try {
+      const data = await getUserDataCloud();
+      if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
+      if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
+    } catch (e) {}
   });
 
   function listenRoom(roomId) {
@@ -117,50 +136,57 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   async function updateDuelUI() {
-  let advPseudo = "Adversaire";
-  let advID = "";
-  let myID = "";
-  isPlayer1 = false;
+    let advPseudo = "Adversaire";
+    let advID = "";
+    let myID = "";
+    isPlayer1 = false;
 
-  if (currentUserId && roomData) {
-    isPlayer1 = (currentUserId === roomData.player1);
-    myID = isPlayer1 ? roomData.player1 : roomData.player2;
-    advID = isPlayer1 ? roomData.player2 : roomData.player1;
+    if (currentUserId && roomData) {
+      isPlayer1 = (currentUserId === roomData.player1);
+      myID = isPlayer1 ? roomData.player1 : roomData.player2;
+      advID = isPlayer1 ? roomData.player2 : roomData.player1;
 
-    if (advID) {
-      const userRef = doc(db, "users", advID);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        advPseudo = data.pseudo || advID; // ✅ utilise pseudo si présent, sinon ID
-      } else {
-        advPseudo = advID; // ✅ même si le doc utilisateur n’existe pas
+      if (advID) {
+        const userRef = doc(db, "users", advID);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          advPseudo = data.pseudo || advID;
+        } else {
+          advPseudo = advID;
+        }
       }
     }
+
+    if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
+    if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
+    else if ($("timer")) $("timer").textContent = "--:--:--";
+
+    // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
+    let cadreActifMoi = "polaroid_01";
+    let cadreActifAdv = "polaroid_01";
+    try {
+      if (myID) {
+        const userRef = doc(db, "users", myID);
+        const snap = await getDoc(userRef);
+        if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
+      }
+      if (advID) {
+        const advRef = doc(db, "users", advID);
+        const snap = await getDoc(advRef);
+        if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
+      }
+    } catch(e) { /* ignore */ }
+
+    renderDefis({ myID, advID, advPseudo, cadreActifMoi, cadreActifAdv });
+
+    // === MISE À JOUR SOLDE SI CHANGEMENT EN COURS DE PARTIE ===
+    try {
+      const data = await getUserDataCloud();
+      if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
+      if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
+    } catch (e) {}
   }
-
-  if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
-  if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
-  else if ($("timer")) $("timer").textContent = "--:--:--";
-
-  // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
-  let cadreActifMoi = "polaroid_01";
-  let cadreActifAdv = "polaroid_01";
-  try {
-    if (myID) {
-      const userRef = doc(db, "users", myID);
-      const snap = await getDoc(userRef);
-      if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
-    }
-    if (advID) {
-      const advRef = doc(db, "users", advID);
-      const snap = await getDoc(advRef);
-      if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
-    }
-  } catch(e) { /* ignore */ }
-
-  renderDefis({ myID, advID, advPseudo, cadreActifMoi, cadreActifAdv });
-}
 
   function startGlobalTimer(startTime) {
     clearInterval(timerInterval);
@@ -184,7 +210,6 @@ if (path.includes("duel_game.html") && roomId) {
       return;
     }
 
-    // Récupération correcte des photos (string !)
     const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
     const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
 
@@ -218,7 +243,7 @@ if (path.includes("duel_game.html") && roomId) {
       // Si photo, structure SOLO (miniature/cadre)
       if (myPhotos[idxStr]) {
         const cadreDiv = document.createElement("div");
-       cadreDiv.className = "cadre-item cadre-duel-mini";
+        cadreDiv.className = "cadre-item cadre-duel-mini";
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
         const cadreImg = document.createElement("img");
@@ -306,7 +331,7 @@ if (path.includes("duel_game.html") && roomId) {
     const data = (await getDoc(duelRef)).data();
     const field = isPlayer1 ? "photosA" : "photosB";
     const photos = data[field] || {};
-    photos[String(idx)] = dataUrl; // IMPORTANT : clé string
+    photos[String(idx)] = dataUrl;
     await updateDoc(duelRef, { [field]: photos });
   };
 
