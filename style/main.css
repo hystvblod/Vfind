@@ -1734,10 +1734,35 @@ header,
   margin-top: 0.18em;
 }
 .premium-btn-row {
+  width: 100%;
   display: flex;
   justify-content: center;
-  margin: 0.8rem 0 1.2rem 0;
+  margin: 1.1rem 0 1.1rem 0;
 }
+
+.btn-premium-fullwidth {
+  width: 100%;
+  max-width: 98%; /* Pour un très léger espace */
+  background: linear-gradient(90deg, #ffcf40 0%, #ffd900 100%);
+  color: #222;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.13rem;
+  font-weight: bold;
+  padding: 1.1rem 0;
+  box-shadow: 0 2px 8px #2222;
+  transition: background 0.22s, box-shadow 0.22s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 0.4rem;
+}
+.btn-premium-fullwidth:hover {
+  background: linear-gradient(90deg, #ffe066 0%, #ffeeb0 100%);
+  box-shadow: 0 4px 16px #ffd90050;
+}
+
 .premium-btn {
   background: linear-gradient(90deg, #ff3c57 0%, #ff5e62 100%);
   color: #fff;
