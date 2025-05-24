@@ -31,11 +31,6 @@ html, body {
   overflow-wrap: break-word;
 }
 
-  .popup-inner {
-    width: 90vw;
-    height: auto;
-  }
-
   .main-button {
     font-size: 1rem;
     padding: 0.8rem 1.2rem;
@@ -350,15 +345,6 @@ nav.nav-icons {
   pointer-events: auto;
 }
 
-.popup-inner {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
 .cadre-preview.cadre-popup {
   position: relative;
   width: 300px;
@@ -429,11 +415,6 @@ nav.nav-icons {
   height: 70px; /* ✅ fixe une hauteur uniforme */
 }
 
-.popup-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .popup {
   width: auto;
@@ -1561,13 +1542,18 @@ header,
   text-align: center;
   padding: 32px 24px;
   min-width: 260px;
-  max-width: 95vw;
-  width: 330px;
+  width: 90vw;
+  max-width: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.popup-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 #popup-achat-jeton button {
   width: 100%;
   margin: 12px 0;
