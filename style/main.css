@@ -1541,15 +1541,22 @@ header,
   font-family: 'Poppins', sans-serif;
   text-align: center;
   padding: 32px 24px;
-  min-width: 260px;
-  width: 90vw;
-  max-width: 330px;
+  width: 90vw;          /* Adaptatif */
+  max-width: 330px;     /* Limite max sur desktop */
+  min-width: unset;     /* Enlève min-width qui casse le responsive */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-
 }
+@media (max-width: 370px) {
+  #popup-achat-jeton .popup-inner {
+    width: 98vw;
+    max-width: 98vw;
+    padding: 14px 5vw;
+  }
+}
+
 #popup-achat-jeton button {
   width: 100%;
   margin: 12px 0;
