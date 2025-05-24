@@ -654,12 +654,14 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* 3 colonnes fixes */
+  grid-template-columns: repeat(3, 1fr);   /* 3 colonnes, jamais moins */
   gap: 30px;
   justify-items: center;
   align-items: stretch;
-  max-width: 640px; /* ajustable, protège le layout sur desktop */
-  margin: 0 auto;   /* centre la grille */
+  width: 100%;
+  min-width: 600px;   /* Pour éviter le wrap, calcul : (3 * 180px) + (2 * 30px gap) = 600px */
+  margin: 0 auto;
+  overflow-x: auto;   /* Permet le scroll horizontal si la fenêtre est trop étroite */
 }
 
 
