@@ -1799,3 +1799,15 @@ header,
   font-size: 1.18em;
   vertical-align: middle;
 }
+.icon-bouton-piece {
+  width: 32px;      /* Mets 28px, 32px, voire plus selon ton goût */
+  height: 32px;     /* Garde carré pour éviter la déformation */
+  margin-right: 0.6em;  /* Garde un espace entre l’icône et le texte */
+  vertical-align: middle;
+}
+.icon-bouton-jeton {
+  width: 32px;      /* Ajuste à la taille voulue, par ex 32px, 36px... */
+  height: 32px;
+  margin-right: 0.6em;  /* Comme la pièce */
+  vertical-align: middle;
+}
