@@ -1827,9 +1827,16 @@ header,
   font-size: 1.18em;
   vertical-align: middle;
 }
-.icon-bouton-piece, .icon-bouton-jeton {
-  width: 24px;
-  height: 24px;
+.icon-bouton-piece {
+  width: 30px;
+  height: 30px;
+  margin-left: 0.6em;
+  margin-right: 0;
+  vertical-align: middle;
+}
+ .icon-bouton-jeton {
+  width: 28px;
+  height: 28px;
   margin-left: 0.6em;
   margin-right: 0;
   vertical-align: middle;
