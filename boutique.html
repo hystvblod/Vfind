@@ -66,29 +66,32 @@
   </footer>
 
   <!-- ✅ Popup : acheter des jetons -->
-  <div id="popup-achat-jeton" class="popup hidden">
-    <div class="popup-inner">
-      <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces pour 3 jetons</button>
-      <button onclick="acheterJetonsAvecPub()">📺 Voir une pub pour 3 jetons</button>
-      <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
-    </div>
+<!-- Popup Acheter Jetons -->
+<div id="popup-achat-jeton" class="popup hidden">
+  <div class="popup-inner">
+    <button class="close-btn" onclick="fermerPopupJetonBoutique()">✖</button>
+    <button onclick="acheterJetonsAvecPieces()">💸 Payer 100 pièces</button>
+    <button onclick="acheterJetonsAvecPub()">📺 Voir une pub</button>
+    <button onclick="fermerPopupJetonBoutique()">❌ Annuler</button>
   </div>
+</div>
 
-  <!-- ✅ Popup : passer Premium (identique jeton) -->
-  <div id="popup-premium" class="popup hidden">
-    <div class="popup-inner">
-      <h2 style="font-size:1.32em; color:#FFD700; margin-bottom:10px;">Devenir Premium</h2>
-      <ul style="text-align:left; margin:16px 0 24px 0; padding-left:0; list-style:none;">
-        <li style="margin-bottom:8px;"> <b>Booste pièce x2</b> sur chaque défi validé</li>
-        <li style="margin-bottom:8px;"> <b>Cadres réservés</b> exclusifs</li>
-        <li style="margin-bottom:8px;"> <b>800 pièces/mois</b> offertes</li>
-        <li style="margin-bottom:8px;"> <b>Impose un défi</b> parmi une liste de 10</li>
-        <li style="margin-bottom:8px;"> <b>ID en or</b> lors des duels</li>
-      </ul>
-      <button onclick="acheterPremium()" style="background:linear-gradient(90deg,#FFD700,#FFC700);color:#222;font-weight:bold;border-radius:12px;padding:14px 0;font-size:1.15rem;width:100%;margin-bottom:12px;border:none;box-shadow:0 2px 10px #2222;">✨ Acheter Premium</button>
-      <button onclick="fermerPopupPremium()" style="background:#333;color:#FFD700;font-weight:bold;border-radius:12px;padding:10px 0;font-size:1rem;width:100%;border:none;">Annuler</button>
-    </div>
+<!-- Popup Premium -->
+<div id="popup-premium" class="popup hidden">
+  <div class="popup-inner">
+    <button class="close-btn" onclick="fermerPopupPremium()">✖</button>
+    <h2 style="font-size:1.32em; color:#FFD700; margin-bottom:10px;">Devenir Premium</h2>
+    <ul style="text-align:left; margin:16px 0 24px 0; padding-left:0; list-style:none;">
+      <li style="margin-bottom:8px;"> <b>Booste pièce x2</b> sur chaque défi validé</li>
+      <li style="margin-bottom:8px;"> <b>Cadres réservés</b> exclusifs</li>
+      <li style="margin-bottom:8px;"> <b>800 pièces/mois</b> offertes</li>
+      <li style="margin-bottom:8px;"> <b>Impose un défi</b> parmi une liste de 10</li>
+      <li style="margin-bottom:8px;"> <b>ID en or</b> lors des duels</li>
+    </ul>
+    <button onclick="acheterPremium()">✨ Acheter Premium</button>
+    <button onclick="fermerPopupPremium()">Annuler</button>
   </div>
+</div>
 
   <!-- Scripts -->
   <script type="module" src="js/firebase.js"></script>
