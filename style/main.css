@@ -1548,11 +1548,7 @@ header,
   flex-direction: column;
   align-items: center;
 
-}
-.popup-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
 }
 #popup-achat-jeton button {
   width: 100%;
