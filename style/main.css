@@ -1264,7 +1264,7 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
-  background-color: #ffffff44;
+  background-color: #ffcc00;
   border: none;
   border-radius: 10px;
   padding: 12px 18px;
@@ -1746,8 +1746,8 @@ header,
 .btn-premium-fullwidth {
   width: 100%;
   max-width: 98%; /* Pour un très léger espace */
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #ffcf40 0%, #ffd900 100%);
+  color: #222;
   border: none;
   border-radius: 14px;
   font-size: 1.13rem;
@@ -1762,7 +1762,7 @@ header,
   margin-bottom: 0.4rem;
 }
 .btn-premium-fullwidth:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #ffeeb0 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #ffeeb0 100%);
   box-shadow: 0 4px 16px #ffd90050;
 }
 
@@ -1821,8 +1821,8 @@ header,
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  color: #222;
   border: none;
   border-radius: 100px;
   box-shadow: 0 2px 8px #2222;
@@ -1833,7 +1833,7 @@ header,
 
 
 .btn-boutique-pill:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #fff2b2 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
   box-shadow: 0 4px 12px #ffd70030;
 }
 
