@@ -1776,8 +1776,9 @@ header,
 .btn-boutique-fullwidth {
   width: 100%;
   max-width: 99%;
-  justify-content: center;
+  justify-content: center;   /* Centre le texte dans le bouton */
   text-align: center;
+  display: flex;
 }
 
 .btn-boutique-inline {
@@ -1805,30 +1806,9 @@ header,
   cursor: pointer;
   white-space: nowrap;
 }
-.icon-btn-right {
-  display: flex;
-  align-items: center;
-  margin-left: 1em;
-}
+
 .btn-boutique-pill:hover {
   background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
   box-shadow: 0 4px 12px #ffd70030;
 }
-.btn-boutique-pill .btn-icon-emoji {
-  font-size: 1.18em;
-  vertical-align: middle;
-}
-.icon-bouton-piece {
-  width: 30px;
-  height: 30px;
-  margin-left: 0.6em;
-  margin-right: 0;
-  vertical-align: middle;
-}
- .icon-bouton-jeton {
-  width: 28px;
-  height: 28px;
-  margin-left: 0.6em;
-  margin-right: 0;
-  vertical-align: middle;
-}
+
