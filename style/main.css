@@ -1398,7 +1398,7 @@ main {
 }
 .btn-categorie {
   background: #24263a;
-  color: #ffffff44;
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 16px;
@@ -1415,7 +1415,7 @@ main {
 .btn-categorie.active,
 .btn-categorie:hover {
   background: #ffffff44;
-  color: #24263a;
+  color: #fff;
 }
 .titre-categorie {
   text-align: center;
