@@ -672,6 +672,7 @@ color: #000;
   justify-items: center;
 }
 
+
 .cadre-item {
   background: rgba(255, 255, 255, 0.07);
   border-radius: 16px;
@@ -822,13 +823,6 @@ body, .page-container {
 main {
   flex-grow: 1;
   overflow-y: auto;
-}
-#boutique-container.grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
 
 }
 
