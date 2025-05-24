@@ -653,15 +653,15 @@ color: #000;
   pointer-events: auto;
 }
 .grid-cadres {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);   /* 3 colonnes, jamais moins */
-  gap: 30px;
-  justify-items: center;
-  align-items: stretch;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 32px !important;
+  justify-items: center !important;
+  align-items: stretch !important;
   width: 100%;
-  min-width: 600px;   /* Pour éviter le wrap, calcul : (3 * 180px) + (2 * 30px gap) = 600px */
+  max-width: 800px;    /* Ajuste à ta convenance */
   margin: 0 auto;
-  overflow-x: auto;   /* Permet le scroll horizontal si la fenêtre est trop étroite */
+  padding: 24px 0;
 }
 
 
