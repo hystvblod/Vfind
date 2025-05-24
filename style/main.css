@@ -201,18 +201,6 @@ header nav a:hover {
 
 }
 
-/* CARTE CADRE */
-.cadre-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .cadre-item:hover {
   transform: translateY(-5px);
@@ -666,23 +654,30 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
   justify-items: center;
+  align-items: stretch;
 }
 
 .cadre-item {
-  background: rgba(255, 255, 255, 0.07);
+.cadre-item {
+  background: rgba(255, 255, 255, 0.07);      /* fond léger */
   border-radius: 16px;
-  padding: 12px;
+  padding: 16px 10px 14px 10px;               /* padding équilibré */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-  min-height: 160px;
+  justify-content: flex-start;                /* on ne met space-between QUE si tu veux forcer le bouton en bas à tout prix, mais ça étire tout si peu de contenu */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);    /* ombre douce pro */
+  min-height: 260px;                          /* hauteur uniforme, ajuste selon visuel */
+  max-height: 270px;
+  width: 180px;                               /* largeur fixe */
+  text-align: center;
+  transition: transform 0.2s;
+  position: relative;
+}
+
 }
 
 .cadre-item:hover {
@@ -1264,7 +1259,7 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
-  background-color: #ffcc00;
+  background-color: #ffffff44;
   border: none;
   border-radius: 10px;
   padding: 12px 18px;
@@ -1746,7 +1741,7 @@ header,
 .btn-premium-fullwidth {
   width: 100%;
   max-width: 98%; /* Pour un très léger espace */
-  background: linear-gradient(90deg, #ffcf40 0%, #ffd900 100%);
+  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
   color: #222;
   border: none;
   border-radius: 14px;
@@ -1762,7 +1757,7 @@ header,
   margin-bottom: 0.4rem;
 }
 .btn-premium-fullwidth:hover {
-  background: linear-gradient(90deg, #ffe066 0%, #ffeeb0 100%);
+  background: linear-gradient(90deg, #ffffff44 0%, #ffeeb0 100%);
   box-shadow: 0 4px 16px #ffd90050;
 }
 
@@ -1821,7 +1816,7 @@ header,
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
   color: #222;
   border: none;
   border-radius: 100px;
@@ -1833,7 +1828,7 @@ header,
 
 
 .btn-boutique-pill:hover {
-  background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
+  background: linear-gradient(90deg, #ffffff44 0%, #fff2b2 100%);
   box-shadow: 0 4px 12px #ffd70030;
 }
 
