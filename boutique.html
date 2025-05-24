@@ -25,37 +25,30 @@
     </div>
   </header>
 
-<!-- LIGNE 1 : SOLDE GLOBAL -->
-<div class="solde-ligne-boutique">
-  <div class="solde-item">
-    <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
-    <span id="points">100</span>
+  <!-- LIGNE 1 : SOLDE GLOBAL -->
+  <div class="solde-ligne-boutique">
+    <div class="solde-item">
+      <img src="assets/img/vcoin.webp" class="icon-boutique-piece" />
+      <span id="points">100</span>
+    </div>
+    <div class="solde-item">
+      <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
+      <span id="jetons">6</span>
+    </div>
   </div>
-  <div class="solde-item">
-    <img src="assets/img/jeton_p.webp" class="icon-boutique-jeton" />
-    <span id="jetons">6</span>
+
+  <!-- GROUPE BOUTONS STYLE PILULE -->
+  <div class="btn-boutique-group">
+    <button class="btn-boutique-pill" onclick="activerPremium()">
+      <span class="btn-icon-emoji">⭐</span> Passer Premium
+    </button>
+    <button class="btn-boutique-pill" onclick="window.location.href='achat.html'">
+      <img src="assets/img/vcoin.webp" alt="" style="width:1.25em;vertical-align:middle;"> Obtenir pièces
+    </button>
+    <button class="btn-boutique-pill" onclick="ouvrirPopupJetonBoutique()">
+      <img src="assets/img/jeton_p.webp" alt="" style="width:1.25em;vertical-align:middle;"> Acheter jetons
+    </button>
   </div>
-</div>
-
-<!-- GROS BOUTON PREMIUM UNIQUEMENT UNE FOIS -->
-<div class="premium-btn-row">
-  <button class="btn-action-boutique btn-premium-fullwidth" onclick="activerPremium()">
-    ⭐ Passer Premium
-  </button>
-</div>
-
-
-<!-- LIGNE 2 : BOUTONS ACHAT -->
-<div class="btn-inline">
-  <button onclick="window.location.href='achat.html'" class="btn-action-boutique">
-    Obtenir pièces
-    <img src="assets/img/vcoin.webp" class="icon-bouton-piece" />
-  </button>
-  <button class="btn-action-boutique" onclick="ouvrirPopupJetonBoutique()">
-    Acheter jetons
-    <img src="assets/img/jeton_p.webp" class="icon-bouton-jeton" />
-  </button>
-</div>
 
   <!-- SECTION BOUTIQUE -->
   <section class="cadres-list">
