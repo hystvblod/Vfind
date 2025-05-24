@@ -201,6 +201,18 @@ header nav a:hover {
 
 }
 
+/* CARTE CADRE */
+.cadre-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .cadre-item:hover {
   transform: translateY(-5px);
@@ -653,38 +665,25 @@ color: #000;
   pointer-events: auto;
 }
 .grid-cadres {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 32px !important;
-  justify-items: center !important;
-  align-items: stretch !important;
-  width: 100%;
-  max-width: 800px;    /* Ajuste à ta convenance */
-  margin: 0 auto;
-  padding: 24px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 🔥 Fixe à 3 colonnes */
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
 }
 
-
 .cadre-item {
-
   background: rgba(255, 255, 255, 0.07);
   border-radius: 16px;
-  padding: 16px 10px 14px 10px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  min-height: 260px;
-  max-height: 270px;
-  /* width: 180px;   ⛔️ SUPPRIME cette ligne */
-  width: 100%;        /* ✅ Ajoute cette ligne */
-  max-width: 210px;   /* ✅ Optionnel pour éviter que les cartes soient trop larges sur grands écrans */
-  text-align: center;
-  transition: transform 0.2s;
-  position: relative;
+  transition: transform 0.2s ease;
+  min-height: 160px;
 }
-
 
 .cadre-item:hover {
   transform: scale(1.03);
@@ -1265,7 +1264,7 @@ main {
 
 /* ✅ Boutons jaunes uniformes */
 .btn-action-boutique {
-  background-color: #ffffff44;
+  background-color: #ffcc00;
   border: none;
   border-radius: 10px;
   padding: 12px 18px;
@@ -1747,8 +1746,8 @@ header,
 .btn-premium-fullwidth {
   width: 100%;
   max-width: 98%; /* Pour un très léger espace */
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #ffcf40 0%, #ffd900 100%);
+  color: #222;
   border: none;
   border-radius: 14px;
   font-size: 1.13rem;
@@ -1763,7 +1762,7 @@ header,
   margin-bottom: 0.4rem;
 }
 .btn-premium-fullwidth:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #ffeeb0 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #ffeeb0 100%);
   box-shadow: 0 4px 16px #ffd90050;
 }
 
@@ -1822,8 +1821,8 @@ header,
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #ffffff44 0%, #ffffff44 100%);
-  color: #fff;
+  background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
+  color: #222;
   border: none;
   border-radius: 100px;
   box-shadow: 0 2px 8px #2222;
@@ -1834,7 +1833,7 @@ header,
 
 
 .btn-boutique-pill:hover {
-  background: linear-gradient(90deg, #ffffff44 0%, #fff2b2 100%);
+  background: linear-gradient(90deg, #ffe066 0%, #fff2b2 100%);
   box-shadow: 0 4px 12px #ffd70030;
 }
 
