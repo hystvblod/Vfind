@@ -1817,7 +1817,6 @@ header,
   align-items: center;
   text-align: center;
   gap: 0;
-  /* min-width: 195px; */      /* ⛔️ À SUPPRIMER */
   min-height: 2.4em;
   font-size: 1.12rem;
   font-weight: bold;
@@ -1830,9 +1829,6 @@ header,
   white-space: normal;         /* ✅ Passe à normal */
   padding: 0.7em 0.3em;        /* ✅ Réduit le padding horizontal */
 }
-
-}
-
 
 .btn-boutique-pill:hover {
   background: linear-gradient(90deg, #ffffff44 0%, #fff2b2 100%);
