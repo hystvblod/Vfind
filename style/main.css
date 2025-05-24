@@ -673,7 +673,6 @@ color: #000;
 }
 
 .cadre-item {
-.cadre-item {
   background: rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   padding: 12px;
@@ -683,12 +682,8 @@ color: #000;
   justify-content: space-between;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   transition: transform 0.2s ease;
-  height: 100%;                  /* ✅ prend toute la hauteur possible */
-  min-height: 260px;             /* ✅ assure une taille égale même si moins de contenu */
-  max-height: 260px;             /* ✅ force tout le monde à rester aligné */
   box-sizing: border-box;
-}
-
+  /* ❌ PAS DE height fixe — laisse la grille s’adapter comme avant */
 }
 
 .cadre-item:hover {
