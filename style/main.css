@@ -654,11 +654,14 @@ color: #000;
 }
 .grid-cadres {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, 1fr);  /* 3 colonnes fixes */
   gap: 30px;
   justify-items: center;
   align-items: stretch;
+  max-width: 640px; /* ajustable, protège le layout sur desktop */
+  margin: 0 auto;   /* centre la grille */
 }
+
 
 .cadre-item {
 
@@ -677,6 +680,7 @@ color: #000;
   transition: transform 0.2s;
   position: relative;
 }
+
 
 .cadre-item:hover {
   transform: scale(1.03);
