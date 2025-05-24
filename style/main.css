@@ -1533,6 +1533,18 @@ header,
   background: rgba(20, 20, 40, 0.33); /* overlay sombre */
 }
 
+#popup-achat-jeton {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background: rgba(20, 20, 40, 0.33); /* overlay sombre */
+}
+
 #popup-achat-jeton .popup-inner {
   background: linear-gradient(to bottom, #2e2e50, #3f3f70);
   border-radius: 20px;
@@ -1541,14 +1553,20 @@ header,
   font-family: 'Poppins', sans-serif;
   text-align: center;
   padding: 32px 24px;
-  width: 90vw;          /* Adaptatif */
-  max-width: 330px;     /* Limite max sur desktop */
-  min-width: unset;     /* Enlève min-width qui casse le responsive */
+  width: 90vw;         /* S’adapte à l’écran */
+  max-width: 330px;    /* Largeur max sur desktop */
+  min-width: unset;    /* Retire la contrainte sur mobile */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
+#popup-achat-jeton.hidden {
+  display: none !important;
+}
+
+/* Extra safe pour très petits écrans */
 @media (max-width: 370px) {
   #popup-achat-jeton .popup-inner {
     width: 98vw;

@@ -187,18 +187,12 @@ window.inviteFriend = async function () {
 // --- Popup achat jetons ---
 window.ouvrirPopupJetonBoutique = function () {
   const popup = document.getElementById("popup-achat-jeton");
-  if (popup) {
-    popup.classList.remove("hidden");
-    popup.classList.add("show");
-  }
-}
+  if (popup) popup.classList.remove("hidden");
+};
 window.fermerPopupJetonBoutique = function () {
   const popup = document.getElementById("popup-achat-jeton");
-  if (popup) {
-    popup.classList.remove("show");
-    popup.classList.add("hidden");
-  }
-}
+  if (popup) popup.classList.add("hidden");
+};
 
 window.acheterJetonsAvecPieces = async function () {
   if (await removePoints(100)) {
