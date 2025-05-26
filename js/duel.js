@@ -349,3 +349,16 @@ if (path.includes("duel_game.html") && roomId) {
 function $(id) {
   return document.getElementById(id);
 }
+
+// === Ajout : fermeture croix popup ===
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.close-btn, #close-popup').forEach(btn => {
+    btn.onclick = function() {
+      let popup = btn.closest('.popup');
+      if (popup) {
+        popup.classList.add('hidden');
+        popup.classList.remove('show');
+      }
+    };
+  });
+});
