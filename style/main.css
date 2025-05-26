@@ -2085,14 +2085,14 @@ header,
   filter: drop-shadow(0 1px 4px #ffe89c77);
 }
 
-.btn-premium-pro {
-  margin-top: 10px;
+.btn-premium-pro,
+.btn-annuler-premium-pro {
   width: 100%;
   padding: 16px 0;
   font-size: 1.15em;
   font-weight: bold;
   background: linear-gradient(90deg, #ffd800 20%, #ffe14a 80%);
-  color: #312600;
+  color: #222; /* texte noir pour les deux */
   border: none;
   border-radius: 14px;
   box-shadow: 0 2px 18px #ffe04a44;
@@ -2101,11 +2101,17 @@ header,
   letter-spacing: 1px;
   text-shadow: 0 1px 0 #fff8;
   outline: none;
+  margin-top: 10px;
+  margin-bottom: 0;
+  opacity: 1;
 }
-.btn-premium-pro:hover {
+
+.btn-premium-pro:hover,
+.btn-annuler-premium-pro:hover {
   background: linear-gradient(90deg, #ffe14a 0%, #ffd800 90%);
   transform: scale(1.03);
 }
+
 
 .btn-annuler-premium-pro {
   margin-top: 14px;
