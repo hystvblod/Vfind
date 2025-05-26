@@ -1,7 +1,9 @@
-// === firebase.js (VFind PRO, initialisation et gestion utilisateur unique) ===
+// === firebase.js (VFind PRO, id public = clé doc Firestore, gestion photos aimées) ===
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { 
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove 
+} from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
 // -- Config Firebase --
@@ -24,7 +26,7 @@ async function generateUniquePseudoPublic() {
   let tempID = randomTempID();
   let taken = true;
   while (taken) {
-    const q = query(collection(db, "users"), where("pseudoPublic", "==", tempID));
+    const q = query(collection(db, "users"), where("__name__", "==", tempID));
     const res = await getDocs(q);
     if (res.empty) taken = false;
     else tempID = randomTempID();
@@ -37,46 +39,30 @@ function randomTempID() {
 }
 
 // --- Initialise et connecte l'utilisateur Firebase ---
-//   => Retourne l'objet utilisateur complet (promesse)
+//   => Crée/retourne le doc Firestore sous /users/{pseudoPublic}
 export async function initFirebaseUser() {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
       try {
         if (!user) user = (await signInAnonymously(auth)).user;
-        const uid = user.uid;
-        const ref = doc(db, "users", uid);
+        let pseudoPublic = localStorage.getItem('pseudoPublic');
+        let needCreate = false;
+
+        // Si pas de pseudoPublic en localStorage, on le génère et on crée le doc
+        if (!pseudoPublic) {
+          pseudoPublic = await generateUniquePseudoPublic();
+          localStorage.setItem('pseudoPublic', pseudoPublic);
+          needCreate = true;
+        }
+
+        const ref = doc(db, "users", pseudoPublic);
         let snap = await getDoc(ref);
 
-        // Création auto du profil avec ID unique si non-existant
-        if (!snap.exists()) {
-          const urlParams = new URLSearchParams(window.location.search);
-          let parrain = null;
-          if (urlParams.has('parrain') && urlParams.get('parrain') !== uid) {
-            parrain = urlParams.get('parrain');
-            // Ajout points/cadre à l'utilisateur parrain
-            const refParrain = doc(db, "users", parrain);
-            const snapParrain = await getDoc(refParrain);
-            if (snapParrain.exists()) {
-              const dataParrain = snapParrain.data();
-              let nbFilleuls = (dataParrain.filleuls || 0) + 1;
-              let newPoints = (dataParrain.points || 0) + 300;
-              let cadres = dataParrain.cadres || [];
-              if (nbFilleuls === 3 && !cadres.includes("polaroid_302")) {
-                cadres.push("polaroid_302");
-              }
-              await updateDoc(refParrain, {
-                filleuls: nbFilleuls,
-                points: newPoints,
-                cadres: cadres
-              });
-            }
-          }
-
-          // Génère un pseudoPublic unique
-          const pseudoPublic = await generateUniquePseudoPublic();
-
+        // Si le doc n'existe pas, on le crée
+        if (!snap.exists() || needCreate) {
+          const dateInscription = new Date().toISOString();
           await setDoc(ref, {
-            pseudo: "Joueur",
+            pseudoPublic: pseudoPublic,  // utilisé pour affichage/partage ET comme clé doc
             points: 100,
             jetons: 3,
             cadres: ["polaroid_01", "polaroid_02"],
@@ -86,14 +72,16 @@ export async function initFirebaseUser() {
             amis: [],
             demandesRecues: [],
             demandesEnvoyees: [],
-            photoProfil: "",
-            pseudoPublic: pseudoPublic,  // <-- ID unique généré et stocké !
-            idFixe: false,
-            ...(parrain ? { parrain: parrain } : {})
+            historique: [],
+            historiqueDuel: [],
+            dateInscription: dateInscription,
+            photosAimees: [],
+            // PLUS DE pseudo ni photoProfil
+            // Ajoute ici tout nouveau champ voulu !
           });
-          snap = await getDoc(ref);
         }
-        resolve(user);
+
+        resolve(pseudoPublic); // Retourne l'identifiant public (et clé firestore)
       } catch (e) {
         reject(e);
       }
@@ -101,5 +89,128 @@ export async function initFirebaseUser() {
   });
 }
 
-// Export des outils Firebase pour les autres fichiers/appels
-export { db, auth, getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onAuthStateChanged, signInAnonymously };
+// --- Accès direct au doc utilisateur courant (toujours via pseudoPublic stocké local) ---
+async function getUserRef() {
+  const pseudoPublic = localStorage.getItem('pseudoPublic');
+  if (!pseudoPublic) throw "Utilisateur non initialisé !";
+  return doc(db, "users", pseudoPublic);
+}
+
+// ===================
+// FONCTIONS UTILISATEUR
+// ===================
+
+// Points (Vcoins)
+export async function getPoints() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().points || 0) : 0;
+}
+export async function addPoints(n) {
+  const ref = await getUserRef();
+  const points = await getPoints();
+  await updateDoc(ref, { points: points + n });
+}
+export async function removePoints(n) {
+  const points = await getPoints();
+  if (points < n) return false;
+  const ref = await getUserRef();
+  await updateDoc(ref, { points: points - n });
+  return true;
+}
+
+// Jetons
+export async function getJetons() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().jetons || 0) : 0;
+}
+export async function addJetons(n) {
+  const ref = await getUserRef();
+  const jetons = await getJetons();
+  await updateDoc(ref, { jetons: jetons + n });
+}
+export async function removeJeton() {
+  const jetons = await getJetons();
+  if (jetons <= 0) return false;
+  const ref = await getUserRef();
+  await updateDoc(ref, { jetons: jetons - 1 });
+  return true;
+}
+
+// Cadres possédés et sélectionné
+export async function getCadresPossedes() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().cadres || []) : [];
+}
+export async function possedeCadre(id) {
+  const cadres = await getCadresPossedes();
+  return cadres.includes(id);
+}
+export async function acheterCadre(id) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { cadres: arrayUnion(id) });
+}
+export async function getCadreSelectionne() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().cadreActif || "polaroid_01") : "polaroid_01";
+}
+export async function setCadreSelectionne(id) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { cadreActif: id });
+}
+
+// Historique SOLO/DUEL
+export async function sauvegarderPhoto(base64, defi) {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  const historique = snap.exists() ? (snap.data().historique || []) : [];
+  historique.push({ base64, defi, date: new Date().toISOString() });
+  await updateDoc(ref, { historique });
+}
+export async function getHistoriquePhotos() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().historique || []) : [];
+}
+export async function getHistoriqueDuel() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().historiqueDuel || []) : [];
+}
+
+// Premium
+export async function isPremium() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().premium === true) : false;
+}
+export async function setPremium(status) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { premium: !!status });
+}
+
+// --- PHOTOS AIMÉES (like/unlike une photo, gestion tableau) ---
+export async function likePhoto(photoId) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { photosAimees: arrayUnion(photoId) });
+}
+export async function unlikePhoto(photoId) {
+  const ref = await getUserRef();
+  await updateDoc(ref, { photosAimees: arrayRemove(photoId) });
+}
+export async function getPhotosAimees() {
+  const ref = await getUserRef();
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data().photosAimees || []) : [];
+}
+
+// --- PATCH INFOS (si tu veux éditer pseudoPublic, amis, etc) ---
+export async function updateUserData(update) {
+  const ref = await getUserRef();
+  await updateDoc(ref, update);
+}
+
+export { db, auth, getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove };
