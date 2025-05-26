@@ -146,12 +146,13 @@ if (path.includes("duel_game.html") && roomId) {
       myID = isPlayer1 ? roomData.player1 : roomData.player2;
       advID = isPlayer1 ? roomData.player2 : roomData.player1;
 
+      // PATCH : on récupère le pseudoPublic (PAS le champ "pseudo" ni le UID)
       if (advID) {
         const userRef = doc(db, "users", advID);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
           const data = userSnap.data();
-          advPseudo = data.pseudo || advID;
+          advPseudo = data.pseudoPublic || advID; // 🔥 On utilise pseudoPublic
         } else {
           advPseudo = advID;
         }
@@ -288,7 +289,7 @@ if (path.includes("duel_game.html") && roomId) {
       colAdv.className = 'adversaire-col';
       const titreAdv = document.createElement('div');
       titreAdv.className = 'col-title';
-      titreAdv.textContent = advPseudo || "Joueur";
+      titreAdv.textContent = advPseudo || "Adversaire";
       colAdv.appendChild(titreAdv);
 
       // Miniature ADVERSAIRE si dispo

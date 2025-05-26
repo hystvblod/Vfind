@@ -22,7 +22,6 @@
     .id-user:hover {
       color: #ffe04a;
     }
-
     /* ===== POPUP changement ID indépendante ===== */
     .popChangementID-bg {
       display: none;
@@ -172,131 +171,120 @@ import { db, auth, initFirebaseUser } from './js/firebase.js';
 import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
-function randomTempID() {
-  const rand = Math.random().toString(36).substring(2, 7);
-  return "user_" + rand;
-}
+// === ON GARDE LA STRUCTURE : l'ID public (pseudoPublic) devient la clé Firestore ===
 
-let profil, ref, uid;
+let profil, ref, pseudoPublic;
 
 async function refreshProfilDisplay() {
   const snap = await getDoc(ref);
   profil = snap.data();
   document.getElementById("idUserDisplay").textContent =
-  "ID public : " + (profil.pseudoPublic || "???") + " / UID : " + uid;
+    "ID public : " + (profil.pseudoPublic || "???");
   document.getElementById("idUserDisplay").style.color = "#fff";
   document.getElementById("vcoins").textContent = profil.points || 0;
   document.getElementById("jetons").textContent = profil.jetons || 0;
 }
 
 async function setupProfile() {
-  await initFirebaseUser();
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) return await signInAnonymously(auth);
+  // On récupère le pseudoPublic depuis firebase.js (clé Firestore et id public)
+  pseudoPublic = await initFirebaseUser();
+  ref = doc(db, "users", pseudoPublic);
+  let snap = await getDoc(ref);
 
-    uid = user.uid;
-    ref = doc(db, "users", uid);
-    let snap = await getDoc(ref);
+  // Création auto si profil inexistant
+  if (!snap.exists()) {
+    let tempID = pseudoPublic;
+    await setDoc(ref, {
+      points: 100,
+      jetons: 3,
+      pseudoPublic: tempID,
+      idFixe: false,
+      cadres: [],
+      filleuls: 0,
+      amis: [],
+      demandesRecues: [],
+      demandesEnvoyees: [],
+      historique: [],
+      historiqueDuel: [],
+      photosAimees: [],
+      // Ajoute ici tout champ supplémentaire voulu !
+    });
+    snap = await getDoc(ref);
+  }
 
-    // Création auto si profil inexistant
-    if (!snap.exists()) {
-      let tempID = randomTempID();
-      let taken = true;
-      while (taken) {
-        const q = query(collection(db, "users"), where("pseudoPublic", "==", tempID));
-        const res = await getDocs(q);
-        if (res.empty) taken = false;
-        else tempID = randomTempID();
-      }
-      await setDoc(ref, {
-        points: 100,
-        jetons: 3,
-        pseudoPublic: tempID,
-        idFixe: false,
-        cadres: [],
-        filleuls: 0,
-        amis: [],
-        demandesRecues: [],
-        demandesEnvoyees: [],
-        photoProfil: ""
-      });
-      snap = await getDoc(ref);
+  profil = snap.data();
+  await refreshProfilDisplay();
+
+  // Ouvre la popChangementID
+  document.getElementById("showChangeIdBtn").onclick = () => {
+    document.getElementById("popChangementID-bg").classList.add("active");
+    document.getElementById("popNewIdInput").value = "";
+    document.getElementById("popIdError").textContent = "";
+    document.getElementById("popIdError").classList.remove("valid");
+    if (profil.idFixe) {
+      document.getElementById("popIdText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
+    } else {
+      document.getElementById("popIdText").textContent = "Modifier mon identifiant public :";
     }
+    setTimeout(()=>document.getElementById("popNewIdInput").focus(), 120);
+  };
+  document.getElementById("popCancelId").onclick = () => {
+    document.getElementById("popChangementID-bg").classList.remove("active");
+  };
 
-    profil = snap.data();
-    await refreshProfilDisplay();
-
-    // Ouvre la popChangementID
-    document.getElementById("showChangeIdBtn").onclick = () => {
-      document.getElementById("popChangementID-bg").classList.add("active");
-      document.getElementById("popNewIdInput").value = "";
-      document.getElementById("popIdError").textContent = "";
-      document.getElementById("popIdError").classList.remove("valid");
-      if (profil.idFixe) {
-        document.getElementById("popIdText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
-      } else {
-        document.getElementById("popIdText").textContent = "Modifier mon identifiant public :";
+  // Validation nouvel ID
+  document.getElementById("popValidateId").onclick = async () => {
+    const newId = document.getElementById("popNewIdInput").value.trim();
+    const err = document.getElementById("popIdError");
+    err.textContent = "";
+    err.classList.remove("valid");
+    if (newId.length < 3) {
+      err.textContent = "ID trop court (min 3 caractères)";
+      return;
+    }
+    if (newId.length > 18) {
+      err.textContent = "ID trop long (max 18 caractères)";
+      return;
+    }
+    if (!/^[a-zA-Z0-9_.-]+$/.test(newId)) {
+      err.textContent = "ID : caractères autorisés A-Z 0-9 . _ -";
+      return;
+    }
+    // Vérifie unicité
+    const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
+    const res = await getDocs(q);
+    if (!res.empty) {
+      err.textContent = "ID déjà pris 😕";
+      return;
+    }
+    // Changement avec coût si déjà fixé
+    if (profil.idFixe) {
+      if ((profil.points || 0) < 200) {
+        err.textContent = "Il te faut 200 pièces pour changer d’ID !";
+        return;
       }
-      setTimeout(()=>document.getElementById("popNewIdInput").focus(), 120);
-    };
-    document.getElementById("popCancelId").onclick = () => {
+      await updateDoc(ref, {
+        pseudoPublic: newId,
+        idFixe: true,
+        points: (profil.points || 0) - 200
+      });
+      profil.points -= 200;
+    } else {
+      await updateDoc(ref, {
+        pseudoPublic: newId,
+        idFixe: true
+      });
+    }
+    profil.pseudoPublic = newId;
+    profil.idFixe = true;
+    document.getElementById("idUserDisplay").textContent = "ID public : " + newId;
+    err.classList.add("valid");
+    err.textContent = "✅ Ton ID public a été changé !";
+    setTimeout(()=>{
       document.getElementById("popChangementID-bg").classList.remove("active");
-    };
-
-    // Validation nouvel ID
-    document.getElementById("popValidateId").onclick = async () => {
-      const newId = document.getElementById("popNewIdInput").value.trim();
-      const err = document.getElementById("popIdError");
-      err.textContent = "";
-      err.classList.remove("valid");
-      if (newId.length < 3) {
-        err.textContent = "ID trop court (min 3 caractères)";
-        return;
-      }
-      if (newId.length > 18) {
-        err.textContent = "ID trop long (max 18 caractères)";
-        return;
-      }
-      if (!/^[a-zA-Z0-9_.-]+$/.test(newId)) {
-        err.textContent = "ID : caractères autorisés A-Z 0-9 . _ -";
-        return;
-      }
-      // Vérifie unicité
-      const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
-      const res = await getDocs(q);
-      if (!res.empty) {
-        err.textContent = "ID déjà pris 😕";
-        return;
-      }
-      // Changement avec coût si déjà fixé
-      if (profil.idFixe) {
-        if ((profil.points || 0) < 200) {
-          err.textContent = "Il te faut 200 pièces pour changer d’ID !";
-          return;
-        }
-        await updateDoc(ref, {
-          pseudoPublic: newId,
-          idFixe: true,
-          points: (profil.points || 0) - 200
-        });
-        profil.points -= 200;
-      } else {
-        await updateDoc(ref, {
-          pseudoPublic: newId,
-          idFixe: true
-        });
-      }
-      profil.pseudoPublic = newId;
-      profil.idFixe = true;
-      document.getElementById("idUserDisplay").textContent = "ID : " + newId;
-      err.classList.add("valid");
-      err.textContent = "✅ Ton ID public a été changé !";
-      setTimeout(()=>{
-        document.getElementById("popChangementID-bg").classList.remove("active");
-        refreshProfilDisplay();
-      }, 900);
-    };
-  });
+      refreshProfilDisplay();
+    }, 900);
+  };
 }
 setupProfile();
 </script>
