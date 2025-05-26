@@ -182,7 +182,8 @@ let profil, ref, uid;
 async function refreshProfilDisplay() {
   const snap = await getDoc(ref);
   profil = snap.data();
-  document.getElementById("idUserDisplay").textContent = "ID : " + (profil.pseudoPublic || "???");
+  document.getElementById("idUserDisplay").textContent =
+  "ID public : " + (profil.pseudoPublic || "???") + " / UID : " + uid;
   document.getElementById("idUserDisplay").style.color = "#fff";
   document.getElementById("vcoins").textContent = profil.points || 0;
   document.getElementById("jetons").textContent = profil.jetons || 0;
