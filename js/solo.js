@@ -264,3 +264,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// === Ajout : fermeture croix popup ===
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.close-btn, #close-popup').forEach(btn => {
+    btn.onclick = function() {
+      let popup = btn.closest('.popup');
+      if (popup) {
+        popup.classList.add('hidden');
+        popup.classList.remove('show');
+      }
+    };
+  });
+});
