@@ -142,7 +142,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const hasPhoto = !!dataUrl;
       const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
-      const boutonPhoto = `<button onclick="window.ouvrirCameraPour('${defi.id}')">${boutonTexte}</button>`;
+      const boutonPhoto = `
+  <img
+    src="assets/icons/photo.svg"
+    alt="Prendre une photo"
+    style="width:2.2em;cursor:pointer;display:block;margin:0 auto;"
+    onclick="window.ouvrirCameraPour('${defi.id}')"
+  >
+`;
+
 
       li.innerHTML = `
         <div class="defi-content">

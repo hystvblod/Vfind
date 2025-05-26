@@ -19,15 +19,24 @@
     </div>
   </div>
 
-  <!-- POPUP VALIDATION PAR JETON -->
-  <div id="popup-jeton" class="popup hidden">
-    <div class="popup-inner">
-      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
-      <p id="solde-jeton">Jetons disponibles : --</p>
-      <button id="valider-jeton-btn">✅ Valider</button>
-      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+<!-- ✅ Popup validation de défi (NOUVEAU STYLE HARMONISÉ) -->
+<div id="popup-jeton" class="popup hidden">
+  <div class="popup-inner popup-premium-pro">
+    <div class="premium-badge">VALIDER</div>
+    <div class="popup-premium-title">Valider ce défi</div>
+    <div class="popup-premium-price" style="margin-bottom: 18px;">
+      Veux-tu valider ce défi avec un jeton&nbsp;?
     </div>
+    <div class="premium-list-pro" style="margin-bottom:18px;">
+      <button class="btn-premium-pro" id="valider-jeton-btn">✅ Valider</button>
+    </div>
+    <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">
+      Annuler
+    </button>
+    <div id="solde-jeton" style="margin-top:10px;text-align:center;color:#ffe04a;font-weight:bold;"></div>
   </div>
+</div>
+
 
   <!-- POPUP PARTIE TERMINÉE -->
   <div id="popup-end" class="popup hidden">
