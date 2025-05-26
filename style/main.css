@@ -1866,6 +1866,68 @@ header,
 #popup-premium.hidden {
   display: none !important;
 }
+/* Style titre jaune Premium */
+.popup-premium-title {
+  background: #ffc400;
+  color: #1a173b;
+  font-weight: 700;
+  font-size: 1.28em;
+  padding: 13px 0 11px 0;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+/* Prix juste sous le titre */
+.popup-premium-prix {
+  color: #fff;
+  background: #5a41b4;
+  border-radius: 7px;
+  padding: 4px 0 4px 0;
+  margin-bottom: 15px;
+  font-size: 1.05em;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* Liste avantages Premium */
+.premium-list {
+  text-align: left;
+  margin: 16px 0 22px 0;
+  padding-left: 0;
+  list-style: none;
+  width: 100%;
+}
+.premium-list li {
+  margin-bottom: 8px;
+  color: #fff;
+  font-size: 1.05em;
+}
+
+/* Nouveau bouton Annuler harmonisé */
+.btn-annuler-premium {
+  background: #ffc400;
+  color: #d60022;
+  font-weight: 600;
+  border: none;
+  padding: 14px 0;
+  border-radius: 10px;
+  font-size: 1.09em;
+  width: 100%;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+.btn-annuler-premium:hover {
+  background: #ffd966;
+}
+
 /* --- CORRECTION POPUP BOUTIQUE --- */
 .popup, #popup-achat-jeton {
   position: fixed !important;
