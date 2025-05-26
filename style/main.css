@@ -225,21 +225,6 @@ header nav a:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.cadre-item button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.cadre-item button.owned {
-  background-color: #d3d3d3;
-  color: #333;
-  cursor: default;
-}
 
 .cadre-preview {
   position: relative;
@@ -705,7 +690,13 @@ color: #000;
   background-color: #4caf50;
   color: white;
   font-size: 0.9rem;
+
+  /* AJOUTE CES LIGNES pour aligner le bouton en bas */
+  margin-top: auto;
+  width: 90%;           /* ou 100% si tu veux un bouton full-width */
+  display: block;
 }
+
 
 .cadre-item button[disabled] {
   background-color: #ccc;
