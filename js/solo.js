@@ -173,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const containerCadre = document.createElement("div");
         containerCadre.className = "cadre-item cadre-duel-mini";
 
-
         const preview = document.createElement("div");
         preview.className = "cadre-preview";
 
@@ -263,6 +262,49 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.reload();
     }
   });
+
+  // === GESTION DE LA FIN DE PARTIE & POPUP PARTIE TERMINÉE ===
+  window.endGame = async function() {
+    // Récupère les défis et photos prises pour compter les pièces
+    const data = await getUserDataCloud();
+    let defis = data.defiActifs || [];
+    let nbPhotos = 0;
+    defis.forEach(defi => {
+      const photoUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+      if (photoUrl) nbPhotos++;
+    });
+    let gain = nbPhotos * 10;
+    if (nbPhotos === 3) gain = 40; // Bonus si 3 photos prises
+
+    // Mets à jour le solde dans Firebase (ajoute les pièces)
+    const oldPoints = data.points || 0;
+    const newPoints = oldPoints + gain;
+    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0 }); // Réinitialise les défis
+
+    // Affiche le popup de fin
+    document.getElementById("gain-message").textContent =
+      `+${gain} pièces (10/photo${nbPhotos === 3 ? " + 10 bonus" : ""})`;
+
+    document.getElementById("popup-end").classList.remove("hidden");
+    document.getElementById("popup-end").classList.add("show");
+
+    // Met à jour le header points
+    if (document.getElementById("points")) document.getElementById("points").textContent = newPoints;
+  };
+
+  // Bouton "Rejouer"
+  document.getElementById("replayBtnEnd").onclick = async function() {
+    document.getElementById("popup-end").classList.add("hidden");
+    document.getElementById("popup-end").classList.remove("show");
+    await startGame();
+  };
+
+  // Bouton "Retour" → demande confirmation avant
+  document.getElementById("returnBtnEnd").onclick = function() {
+    if (confirm("Quitter la partie ? Tu devras recommencer une nouvelle partie la prochaine fois.")) {
+      window.location.href = "index.html";
+    }
+  };
 });
 
 // === Ajout : fermeture croix popup ===
