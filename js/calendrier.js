@@ -22,14 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (snap.exists()) {
         const data = snap.data();
 
-        // Date inscription
         dateInscription = data.dateInscription 
           ? new Date(data.dateInscription)
           : null;
 
-        // Historique SOLO/DUEL
         historique = [];
-        // SOLO
+
         (data.historique || []).forEach(e => {
           historique.push({
             date: e.date,
@@ -37,52 +35,29 @@ document.addEventListener("DOMContentLoaded", () => {
             type: "solo"
           });
         });
-        // DUEL
+
         (data.historiqueDuel || []).forEach(e => {
           if (e.defis_duel && Array.isArray(e.defis_duel)) {
             let parts = e.date.split(',')[0].split('/');
             let dateISO = parts.length === 3 ?
               `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
+
+            let type = e.type === 'amis' ? 'duel_amis' : 'duel_random';
+
             historique.push({
               date: dateISO,
               defis: e.defis_duel,
-              type: "duel"
+              type: type
             });
           }
         });
 
-        // Date inscription fallback
         if (!dateInscription && historique.length) {
           let minDate = historique
             .map(e => new Date(e.date))
             .sort((a, b) => a - b)[0];
           dateInscription = minDate || new Date();
         }
-      } else {
-        // Fallback localstorage pour dev/test
-        let historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
-        let historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
-        historique = [];
-        historiqueSolo.forEach(e => {
-          historique.push({
-            date: e.date,
-            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : [],
-            type: "solo"
-          });
-        });
-        historiqueDuel.forEach(e => {
-          if (e.defis_duel && Array.isArray(e.defis_duel)) {
-            let parts = e.date.split(',')[0].split('/');
-            let dateISO = parts.length === 3 ?
-              `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
-            historique.push({
-              date: dateISO,
-              defis: e.defis_duel,
-              type: "duel"
-            });
-          }
-        });
-        dateInscription = null;
       }
     } catch (err) {
       console.error("Erreur lors du chargement de l'historique :", err);
@@ -97,18 +72,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
-    // indexer solo/duel séparés par jour
     const soloParJour = {};
-    const duelParJour = {};
+    const duelRandomParJour = {};
+    const duelAmisParJour = {};
+
     historique.forEach(entree => {
       let dateISO = entree.date && entree.date.length === 10 ? entree.date : (entree.date || '').slice(0, 10);
       if (entree.type === "solo") {
         if (!soloParJour[dateISO]) soloParJour[dateISO] = [];
         soloParJour[dateISO] = soloParJour[dateISO].concat(entree.defis || []);
       }
-      if (entree.type === "duel") {
-        if (!duelParJour[dateISO]) duelParJour[dateISO] = [];
-        duelParJour[dateISO] = duelParJour[dateISO].concat(entree.defis || []);
+      if (entree.type === "duel_random") {
+        if (!duelRandomParJour[dateISO]) duelRandomParJour[dateISO] = [];
+        duelRandomParJour[dateISO] = duelRandomParJour[dateISO].concat(entree.defis || []);
+      }
+      if (entree.type === "duel_amis") {
+        if (!duelAmisParJour[dateISO]) duelAmisParJour[dateISO] = [];
+        duelAmisParJour[dateISO] = duelAmisParJour[dateISO].concat(entree.defis || []);
       }
     });
 
@@ -120,7 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalDefisMois = 0;
     let totalDefisTous = 0;
     Object.values(soloParJour).forEach(list => totalDefisTous += list.length);
-    Object.values(duelParJour).forEach(list => totalDefisTous += list.length);
+    Object.values(duelRandomParJour).forEach(list => totalDefisTous += list.length);
+    Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
     for (let j = 1; j <= nbJours; j++) {
       const d = new Date(anneeAffichee, moisAffiche, j);
@@ -128,25 +109,30 @@ document.addEventListener("DOMContentLoaded", () => {
       let color = "#fff";
 
       let soloCount = soloParJour[dstr]?.length || 0;
-      let duelCount = duelParJour[dstr]?.length || 0;
+      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
 
       if (!dateInscription || d < dateInscription) {
         color = "#fff";
       } else if (d > new Date()) {
         color = "#fff";
       } else {
-        if (soloCount === 0 && duelCount === 0) {
+        const totalJour = soloCount + duelRandCount + duelAmisCount;
+        if (totalJour === 0) {
           color = "#ff2c2c"; // rouge
-        } else if ((soloCount === 3) || (duelCount === 3)) {
+        } else if (
+          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+        ) {
           color = "#089e29"; // vert foncé
-        } else if ((soloCount === 2) || (duelCount === 2) || (soloCount === 1) || (duelCount === 1)) {
+        } else {
           color = "#baffc7"; // vert clair
         }
-        totalDefisMois += soloCount + duelCount;
+        totalDefisMois += totalJour;
       }
 
-      html += `<div class="jour" style="background:${color}">${j}</div>`;
+      html += `<div class="jour" style="background:${color}; color:${color === '#fff' ? '#000' : '#fff'}">${j}</div>`;
     }
+
     html += '</div>';
 
     document.getElementById('calendrier-container').innerHTML = html;
@@ -172,7 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
     afficherCalendrier();
   };
 
-  // Ajoute le style du calendrier (inline)
   const style = document.createElement('style');
   style.textContent = `
     .calendrier {
@@ -204,6 +189,5 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 
-  // Charge tout au démarrage
   chargerHistoriqueEtInscription();
 });

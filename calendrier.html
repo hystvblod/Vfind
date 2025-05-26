@@ -41,5 +41,11 @@
 <script type="module" src="js/firebase.js"></script>
 <!-- Script JS dédié au calendrier -->
 <script type="module" src="js/calendrier.js"></script>
+
+<!-- ✅ Recharge automatique si on revient sur l'onglet -->
+<script>
+  window.addEventListener("focus", () => location.reload());
+</script>
+
 </body>
 </html>
