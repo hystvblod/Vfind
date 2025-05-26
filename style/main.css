@@ -693,7 +693,7 @@ color: #000;
 
   /* AJOUTE CES LIGNES pour aligner le bouton en bas */
   margin-top: auto;
-  width: 90%;           /* ou 100% si tu veux un bouton full-width */
+  width: 100%;           /* ou 100% si tu veux un bouton full-width */
   display: block;
 }
 
