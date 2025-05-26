@@ -1,24 +1,28 @@
-// === amis.js (version PRO tout Firebase) ===
+// === amis.js (version PRO tout Firebase, pseudoPublic) ===
 import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
-// Initialisation Firebase
 const db = getFirestore();
 const auth = getAuth();
 let currentUser = null;
+let myPseudo = null;
 
-// On récupère l'utilisateur connecté
-auth.onAuthStateChanged(user => {
+// Récupère l'utilisateur connecté
+auth.onAuthStateChanged(async user => {
   if (user) {
     currentUser = user;
-    listenUserData(); // Listen les updates temps réel de ses amis/demandes
+    // Récupère pseudoPublic
+    const userRef = doc(db, "users", currentUser.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) myPseudo = snap.data().pseudoPublic || currentUser.uid;
+    listenUserData();
+    detecterInvitationParLien();
   } else {
-    // Redirige si pas connecté
     window.location.href = "login.html";
   }
 });
 
-// Ecoute en temps réel des données utilisateur
+// Écoute en temps réel les listes (amis/demandes)
 function listenUserData() {
   const userRef = doc(db, "users", currentUser.uid);
   onSnapshot(userRef, (snap) => {
@@ -49,7 +53,7 @@ function afficherListesAmis(data) {
   }
 
   // Demandes reçues
-  const ulRecues = document.getElementById("liste-demandes-recues");
+  const ulRecues = document.getElementById("demandes-recue") || document.getElementById("liste-demandes-recues");
   if (ulRecues) {
     ulRecues.innerHTML = "";
     if (!data.demandesRecues || data.demandesRecues.length === 0) {
@@ -67,7 +71,7 @@ function afficherListesAmis(data) {
   }
 
   // Demandes envoyées
-  const ulEnvoyees = document.getElementById("liste-demandes-envoyees");
+  const ulEnvoyees = document.getElementById("demandes-envoyees");
   if (ulEnvoyees) {
     ulEnvoyees.innerHTML = "";
     if (!data.demandesEnvoyees || data.demandesEnvoyees.length === 0) {
@@ -80,31 +84,55 @@ function afficherListesAmis(data) {
   }
 }
 
-// Envoie une demande d'ami
+// --- GESTION DES AMIS ---
+
+// Envoie une demande d'ami par pseudoPublic
 window.envoyerDemandeAmi = async function(pseudoAmi) {
-  if (!currentUser) return;
-  // On cherche le user par pseudo
-  const querySnapshot = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
-  if (!querySnapshot.exists()) {
+  if (!currentUser || !pseudoAmi) return;
+  if (pseudoAmi === myPseudo) {
+    alert("Tu ne peux pas t'ajouter toi-même !");
+    return;
+  }
+  // Cherche le user par pseudoPublic dans users_by_pseudo
+  const userByPseudoRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
+  if (!userByPseudoRef.exists()) {
     alert("Aucun utilisateur trouvé avec ce pseudo.");
     return;
   }
-  const amiUid = querySnapshot.data().uid;
+  const amiUid = userByPseudoRef.data().uid;
 
-  // Ajoute la demande envoyée à l'utilisateur courant
+  // Vérifie que tu n'as pas déjà envoyé/reçu la demande ou que vous n'êtes pas déjà amis
+  const selfRef = doc(db, "users", currentUser.uid);
+  const selfSnap = await getDoc(selfRef);
+  const selfData = selfSnap.data() || {};
+  if ((selfData.amis||[]).includes(pseudoAmi)) {
+    alert("Vous êtes déjà amis !");
+    return;
+  }
+  if ((selfData.demandesEnvoyees||[]).includes(pseudoAmi)) {
+    alert("Demande déjà envoyée.");
+    return;
+  }
+  if ((selfData.demandesRecues||[]).includes(pseudoAmi)) {
+    alert("Cette personne t'a déjà envoyé une demande !");
+    return;
+  }
+
+  // Ajoute la demande envoyée à toi-même
   await updateDoc(doc(db, "users", currentUser.uid), {
     demandesEnvoyees: arrayUnion(pseudoAmi)
   });
-  // Ajoute la demande reçue à l'autre utilisateur
+  // Ajoute la demande reçue à l'autre
   await updateDoc(doc(db, "users", amiUid), {
-    demandesRecues: arrayUnion(currentUser.displayName)
+    demandesRecues: arrayUnion(myPseudo)
   });
-}
 
-// Accepte une demande d'ami
+  alert("Demande envoyée à " + pseudoAmi + " !");
+};
+
+// Accepter une demande d'ami
 window.accepterDemande = async function(pseudoAmi) {
-  if (!currentUser) return;
-  // Chercher l'uid du pseudo
+  if (!currentUser || !pseudoAmi) return;
   const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
   if (!amiRef.exists()) return;
   const amiUid = amiRef.data().uid;
@@ -115,15 +143,15 @@ window.accepterDemande = async function(pseudoAmi) {
     demandesRecues: arrayRemove(pseudoAmi)
   });
   await updateDoc(doc(db, "users", amiUid), {
-    amis: arrayUnion(currentUser.displayName),
-    demandesEnvoyees: arrayRemove(currentUser.displayName)
+    amis: arrayUnion(myPseudo),
+    demandesEnvoyees: arrayRemove(myPseudo)
   });
-}
+  alert("Vous êtes maintenant amis !");
+};
 
-// Refuse une demande d'ami
+// Refuser une demande d'ami
 window.refuserDemande = async function(pseudoAmi) {
-  if (!currentUser) return;
-  // Chercher l'uid du pseudo
+  if (!currentUser || !pseudoAmi) return;
   const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
   if (!amiRef.exists()) return;
   const amiUid = amiRef.data().uid;
@@ -132,14 +160,14 @@ window.refuserDemande = async function(pseudoAmi) {
     demandesRecues: arrayRemove(pseudoAmi)
   });
   await updateDoc(doc(db, "users", amiUid), {
-    demandesEnvoyees: arrayRemove(currentUser.displayName)
+    demandesEnvoyees: arrayRemove(myPseudo)
   });
-}
+  alert("Demande refusée !");
+};
 
 // Supprimer un ami
 window.supprimerAmi = async function(pseudoAmi) {
-  if (!currentUser) return;
-  // Chercher l'uid du pseudo
+  if (!currentUser || !pseudoAmi) return;
   const amiRef = await getDoc(doc(db, "users_by_pseudo", pseudoAmi));
   if (!amiRef.exists()) return;
   const amiUid = amiRef.data().uid;
@@ -148,9 +176,10 @@ window.supprimerAmi = async function(pseudoAmi) {
     amis: arrayRemove(pseudoAmi)
   });
   await updateDoc(doc(db, "users", amiUid), {
-    amis: arrayRemove(currentUser.displayName)
+    amis: arrayRemove(myPseudo)
   });
-}
+  alert("Ami supprimé.");
+};
 
 // Défi (à compléter selon la logique duel de ton app)
 window.defierAmi = function(pseudoAmi) {
@@ -158,10 +187,35 @@ window.defierAmi = function(pseudoAmi) {
   window.location.href = `duel.html?ami=${pseudoAmi}`;
 };
 
-// Recherche d’ami (formulaire)
-document.getElementById("btn-chercher-ami")?.addEventListener("click", () => {
-  const pseudo = document.getElementById("input-pseudo-ami").value.trim();
+// Recherche d’ami (formulaire, bouton)
+document.getElementById("btn-ajouter-ami")?.addEventListener("click", () => {
+  const pseudo = document.getElementById("pseudo-ami").value.trim();
   if (pseudo) envoyerDemandeAmi(pseudo);
 });
 
-// --- Fin amis.js ---
+// --- GESTION DU LIEN D’INVITATION ---
+document.getElementById("btn-lien-invit")?.addEventListener("click", async () => {
+  if (!currentUser) return alert("Non connecté !");
+  const userRef = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
+  if (snap.exists()) {
+    const pseudo = snap.data().pseudoPublic;
+    const base = window.location.origin + window.location.pathname;
+    document.getElementById("lien-invit-output").value = `${base}?add=${pseudo}`;
+  }
+});
+
+// --- Détection ajout ami via lien d’invitation ?add=... ---
+function detecterInvitationParLien() {
+  const params = new URLSearchParams(window.location.search);
+  const toAdd = params.get("add");
+  if (toAdd) {
+    // Préremplit et auto-propose l’envoi
+    document.getElementById("pseudo-ami").value = toAdd;
+    if (confirm(`Ajouter ${toAdd} comme ami ?`)) {
+      envoyerDemandeAmi(toAdd);
+      // Nettoie l’URL après
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+}

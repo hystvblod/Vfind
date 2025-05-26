@@ -8,7 +8,6 @@
 </head>
 <body class="duel-container">
   <header class="header-boutique">
-    <a href="profil.html" class="back-btn">&#8592;</a>
     <a href="profil.html" class="back-btn" title="Retour">
       <img src="assets/icons/arrow_back.svg" alt="Retour" />
     </a>
@@ -22,16 +21,26 @@
 
   <main>
     <div class="main-buttons" style="margin-top:2rem;max-width:600px;margin-left:auto;margin-right:auto;">
-      <input id="pseudo-ami" type="text" placeholder="Pseudo de l'ami" class="main-button" style="margin-bottom:1rem;" />
-      <button class="main-button" onclick="ajouterAmi()">Ajouter un ami</button>
+
+      <!-- Ajout par pseudo -->
+      <input id="pseudo-ami" type="text" placeholder="Pseudo public de l'ami" class="main-button" style="margin-bottom:1rem;" />
+      <button class="main-button" id="btn-ajouter-ami">Ajouter un ami</button>
+      
+      <!-- Ajout par lien d'invitation -->
+      <div style="margin-top:1em;">
+        <button class="main-button" id="btn-lien-invit" style="background:#ffe04a;color:#232323;">Générer mon lien d’invitation</button>
+        <input id="lien-invit-output" readonly style="width:98%;margin-top:6px;text-align:center;font-size:0.98em;" onclick="this.select();" />
+      </div>
+
+      <hr style="margin:2em 0 1em 0;">
 
       <h3>Mes amis</h3>
       <ul id="liste-amis"></ul>
 
-      <h3>Demandes de duel reçues</h3>
+      <h3>Demandes d’amis reçues</h3>
       <ul id="demandes-recue"></ul>
 
-      <h3>Demandes de duel envoyées</h3>
+      <h3>Demandes d’amis envoyées</h3>
       <ul id="demandes-envoyees"></ul>
     </div>
   </main>
