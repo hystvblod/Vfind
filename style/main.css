@@ -1995,4 +1995,20 @@ header,
   box-shadow: 0 1px 4px rgba(0,0,0,0.13);
   margin-bottom: 0;   /* réduit la marge si tu veux un rendu plus compact */
 }
+.popup-jetons-label {
+  font-family: 'Poppins', 'Arial', sans-serif; /* Même police que le titre */
+  font-size: 1.45em;     /* Plus grand, tu peux monter à 1.6em si tu veux encore plus gros */
+  font-weight: 700;
+  color: #fff;           /* Blanc pour contraste, ou #ffc400 pour jaune */
+  margin-bottom: 20px;
+  margin-top: -8px;      /* Ajuste si besoin */
+  text-align: center;
+  letter-spacing: 0.01em;
+  /* Si tu veux un fond jaune comme les autres titres :
+  background: #ffc400;
+  color: #1a173b;
+  border-radius: 10px;
+  padding: 14px 0 12px 0;
+  */
+}
 

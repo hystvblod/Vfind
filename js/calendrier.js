@@ -6,67 +6,83 @@ document.addEventListener("DOMContentLoaded", () => {
   let moisAffiche = dateCourante.getMonth();
   let anneeAffichee = dateCourante.getFullYear();
   let historique = [];
+  let dateInscription = null;
 
-  // Mois en français
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
-  // Fonction principale pour charger l'historique depuis Firebase (users/UID/historique)
-  async function chargerHistorique() {
+  async function chargerHistoriqueEtInscription() {
     await initFirebaseUser();
     const user = auth.currentUser;
     if (!user) return;
 
     try {
-      // Suppose que tu stockes l'historique dans users/UID/historique (type : array)
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
         const data = snap.data();
-        // On fusionne solo/duel si stockés séparément, sinon adapte ici :
-        let historiqueSolo = data.historique || [];
-        let historiqueDuel = data.historiqueDuel || [];
-        historique = [];
 
-        historiqueSolo.forEach(e => {
+        // Date inscription
+        dateInscription = data.dateInscription 
+          ? new Date(data.dateInscription)
+          : null;
+
+        // Historique SOLO/DUEL
+        historique = [];
+        // SOLO
+        (data.historique || []).forEach(e => {
           historique.push({
-            date: e.date, // ISO
-            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : []
+            date: e.date,
+            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : [],
+            type: "solo"
           });
         });
-        historiqueDuel.forEach(e => {
+        // DUEL
+        (data.historiqueDuel || []).forEach(e => {
           if (e.defis_duel && Array.isArray(e.defis_duel)) {
             let parts = e.date.split(',')[0].split('/');
-            let dateISO = parts.length === 3 ? 
-              `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}` : e.date;
+            let dateISO = parts.length === 3 ?
+              `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
             historique.push({
               date: dateISO,
-              defis: e.defis_duel
+              defis: e.defis_duel,
+              type: "duel"
             });
           }
         });
+
+        // Date inscription fallback
+        if (!dateInscription && historique.length) {
+          let minDate = historique
+            .map(e => new Date(e.date))
+            .sort((a, b) => a - b)[0];
+          dateInscription = minDate || new Date();
+        }
       } else {
-        // Fallback si rien dans Firebase (optionnel, utile pour dev)
+        // Fallback localstorage pour dev/test
         let historiqueSolo = (JSON.parse(localStorage.getItem('vfindUserData')) || {}).historique || [];
         let historiqueDuel = JSON.parse(localStorage.getItem('vfindHistorique')) || [];
         historique = [];
         historiqueSolo.forEach(e => {
           historique.push({
             date: e.date,
-            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : []
+            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : [],
+            type: "solo"
           });
         });
         historiqueDuel.forEach(e => {
           if (e.defis_duel && Array.isArray(e.defis_duel)) {
             let parts = e.date.split(',')[0].split('/');
-            let dateISO = parts.length === 3 ? 
-              `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}` : e.date;
+            let dateISO = parts.length === 3 ?
+              `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
             historique.push({
               date: dateISO,
-              defis: e.defis_duel
+              defis: e.defis_duel,
+              type: "duel"
             });
           }
         });
+        dateInscription = null;
       }
     } catch (err) {
       console.error("Erreur lors du chargement de l'historique :", err);
@@ -81,11 +97,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
-    const parJour = {};
+    // indexer solo/duel séparés par jour
+    const soloParJour = {};
+    const duelParJour = {};
     historique.forEach(entree => {
-      let dateISO = entree.date.length === 10 ? entree.date : entree.date.slice(0,10);
-      if (!parJour[dateISO]) parJour[dateISO] = [];
-      parJour[dateISO] = parJour[dateISO].concat(entree.defis || []);
+      let dateISO = entree.date && entree.date.length === 10 ? entree.date : (entree.date || '').slice(0, 10);
+      if (entree.type === "solo") {
+        if (!soloParJour[dateISO]) soloParJour[dateISO] = [];
+        soloParJour[dateISO] = soloParJour[dateISO].concat(entree.defis || []);
+      }
+      if (entree.type === "duel") {
+        if (!duelParJour[dateISO]) duelParJour[dateISO] = [];
+        duelParJour[dateISO] = duelParJour[dateISO].concat(entree.defis || []);
+      }
     });
 
     let html = '<div class="calendrier">';
@@ -95,20 +119,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let totalDefisMois = 0;
     let totalDefisTous = 0;
-    Object.values(parJour).forEach(list => totalDefisTous += list.length);
+    Object.values(soloParJour).forEach(list => totalDefisTous += list.length);
+    Object.values(duelParJour).forEach(list => totalDefisTous += list.length);
 
     for (let j = 1; j <= nbJours; j++) {
       const d = new Date(anneeAffichee, moisAffiche, j);
       const dstr = d.toISOString().slice(0, 10);
-      const defisJour = parJour[dstr] || [];
       let color = "#fff";
 
-      if (d < new Date()) {
-        if (defisJour.length >= 3) color = "#089e29";
-        else if (defisJour.length > 0) color = "#baffc7";
-        else color = "#ff2c2c";
-        totalDefisMois += defisJour.length;
+      let soloCount = soloParJour[dstr]?.length || 0;
+      let duelCount = duelParJour[dstr]?.length || 0;
+
+      if (!dateInscription || d < dateInscription) {
+        color = "#fff";
+      } else if (d > new Date()) {
+        color = "#fff";
+      } else {
+        if (soloCount === 0 && duelCount === 0) {
+          color = "#ff2c2c"; // rouge
+        } else if ((soloCount === 3) || (duelCount === 3)) {
+          color = "#089e29"; // vert foncé
+        } else if ((soloCount === 2) || (duelCount === 2) || (soloCount === 1) || (duelCount === 1)) {
+          color = "#baffc7"; // vert clair
+        }
+        totalDefisMois += soloCount + duelCount;
       }
+
       html += `<div class="jour" style="background:${color}">${j}</div>`;
     }
     html += '</div>';
@@ -168,6 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 
-  // Charge les données au démarrage
-  chargerHistorique();
+  // Charge tout au démarrage
+  chargerHistoriqueEtInscription();
 });
