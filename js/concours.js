@@ -1,5 +1,6 @@
 import { db, auth } from './firebase.js';
 import { collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { ouvrirCameraPour } from "./camera.js"; // Mets bien tout en haut du fichier
 
 // Utilitaire : concoursId de la semaine (ex : "22-2025")
 function getConcoursId() {
@@ -10,8 +11,6 @@ function getConcoursId() {
   const week = Math.ceil((days + firstJan.getDay() + 1) / 7);
   return `${week}-${year}`;
 }
-
-import { ouvrirCameraPour } from "./camera.js"; // Mets bien tout en haut du fichier
 
 // -- VOTES ET SESSION
 let votesToday = 0;
@@ -35,13 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   afficherGalerieConcours();
 });
-
-
-// Simulation d’ouverture caméra (à remplacer par ton vrai code camera.js)
-async function ouvrirCameraPourConcours() {
-  // Remplace par ton vrai appel caméra/photo !
-  return prompt("Colle ici une URL d'image ou base64 pour simuler la prise de photo");
-}
 
 // Ajoute la photo dans la bonne sous-collection Firestore
 export async function ajouterPhotoConcours(urlDeLaPhoto) {
