@@ -3,8 +3,10 @@ import {
   doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-// ======== UTILS FIRESTORE USER ========
+// ======== CACHE GLOBAL UTILISATEUR ========
+let userDataCache = null;
 
+// ==== ACCÈS REF UTILISATEUR FIRESTORE ====
 async function getUserRef() {
   await initFirebaseUser();
   return new Promise((resolve, reject) => {
@@ -16,143 +18,190 @@ async function getUserRef() {
   });
 }
 
-// ========== DONNÉES UTILISATEUR CLASSIQUES ==========
-
-export async function getPseudo() {
+// ==== CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ====
+export async function loadUserData(force = false) {
+  if (userDataCache && !force) return userDataCache;
   const ref = await getUserRef();
   const snap = await getDoc(ref);
-  return snap.exists() ? snap.data().pseudo || "Toi" : "Toi";
+  if (snap.exists()) {
+    userDataCache = snap.data();
+  } else {
+    // Création automatique du doc si absent
+    userDataCache = {
+      pseudo: "Toi",
+      points: 100,
+      jetons: 3,
+      cadres: ["polaroid_01", "polaroid_02"],
+      cadreActif: "polaroid_01",
+      historique: [],
+      likedPhotos: [],
+      signaledPhotos: [],
+      premium: false,
+      votesConcours: {}
+    };
+    await setDoc(ref, userDataCache);
+  }
+  return userDataCache;
+}
+
+// ==== FONCTIONS LECTURE ÉCLAIR (accès cache) ====
+export function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
+export function getPointsCached()        { return userDataCache?.points ?? 0; }
+export function getJetonsCached()        { return userDataCache?.jetons ?? 0; }
+export function getCadresPossedesCached(){ return userDataCache?.cadres ?? []; }
+export function getCadreSelectionneCached() { return userDataCache?.cadreActif ?? "polaroid_01"; }
+export function isPremiumCached()        { return !!userDataCache?.premium; }
+export function getLikedPhotosCached()   { return userDataCache?.likedPhotos ?? []; }
+export function getSignaledPhotosCached(){ return userDataCache?.signaledPhotos ?? []; }
+export function getHistoriqueCached()    { return userDataCache?.historique ?? []; }
+export function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
+
+// ========== GET/SET/UPDATE VERS FIRESTORE (+ cache MAJ) ==========
+
+// PSEUDO
+export async function getPseudo() {
+  await loadUserData();
+  return getPseudoCached();
 }
 export async function setPseudo(pseudo) {
   const ref = await getUserRef();
   await updateDoc(ref, { pseudo });
+  userDataCache.pseudo = pseudo;
 }
 
-// Points (Vcoins)
+// POINTS (Vcoins)
 export async function getPoints() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().points || 0) : 0;
+  await loadUserData();
+  return getPointsCached();
 }
 export async function addPoints(n) {
+  await loadUserData();
+  userDataCache.points = getPointsCached() + n;
   const ref = await getUserRef();
-  const points = await getPoints();
-  await updateDoc(ref, { points: points + n });
+  await updateDoc(ref, { points: userDataCache.points });
 }
 export async function removePoints(n) {
-  const points = await getPoints();
-  if (points < n) return false;
+  await loadUserData();
+  if (getPointsCached() < n) return false;
+  userDataCache.points -= n;
   const ref = await getUserRef();
-  await updateDoc(ref, { points: points - n });
+  await updateDoc(ref, { points: userDataCache.points });
   return true;
 }
 
-// Jetons
+// JETONS
 export async function getJetons() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().jetons || 0) : 0;
+  await loadUserData();
+  return getJetonsCached();
 }
 export async function addJetons(n) {
+  await loadUserData();
+  userDataCache.jetons = getJetonsCached() + n;
   const ref = await getUserRef();
-  const jetons = await getJetons();
-  await updateDoc(ref, { jetons: jetons + n });
+  await updateDoc(ref, { jetons: userDataCache.jetons });
 }
 export async function removeJeton() {
-  const jetons = await getJetons();
-  if (jetons <= 0) return false;
+  await loadUserData();
+  if (getJetonsCached() <= 0) return false;
+  userDataCache.jetons -= 1;
   const ref = await getUserRef();
-  await updateDoc(ref, { jetons: jetons - 1 });
+  await updateDoc(ref, { jetons: userDataCache.jetons });
   return true;
 }
 
-// Cadres possédés
+// CADRES
 export function formatCadreId(id) {
   const num = id.replace(/[^\d]/g, "");
   const padded = num.padStart(2, "0");
   return "polaroid_" + padded;
 }
 export async function getCadresPossedes() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().cadres || []) : [];
+  await loadUserData();
+  return getCadresPossedesCached();
 }
 export async function possedeCadre(id) {
+  await loadUserData();
   const idClean = formatCadreId(id);
-  const cadres = await getCadresPossedes();
-  return cadres.includes(idClean);
+  return getCadresPossedesCached().includes(idClean);
 }
 export async function acheterCadre(id) {
-  const ref = await getUserRef();
+  await loadUserData();
   const idClean = formatCadreId(id);
-  await updateDoc(ref, { cadres: arrayUnion(idClean) });
+  userDataCache.cadres = Array.from(new Set([...(userDataCache.cadres || []), idClean]));
+  const ref = await getUserRef();
+  await updateDoc(ref, { cadres: userDataCache.cadres });
 }
 export async function getCadreSelectionne() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().cadreActif || "polaroid_01") : "polaroid_01";
+  await loadUserData();
+  return getCadreSelectionneCached();
 }
 export async function setCadreSelectionne(id) {
-  const ref = await getUserRef();
   const idClean = formatCadreId(id);
+  const ref = await getUserRef();
   await updateDoc(ref, { cadreActif: idClean });
+  userDataCache.cadreActif = idClean;
 }
 
-// Historique
+// HISTORIQUE
 export async function sauvegarderPhoto(base64, defi) {
+  await loadUserData();
+  const historique = [...(userDataCache.historique || []), { base64, defi, date: new Date().toISOString() }];
+  userDataCache.historique = historique;
   const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  const historique = snap.exists() ? (snap.data().historique || []) : [];
-  historique.push({ base64, defi, date: new Date().toISOString() });
   await updateDoc(ref, { historique });
 }
 export async function getHistoriquePhotos() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().historique || []) : [];
+  await loadUserData();
+  return getHistoriqueCached();
 }
 
-// Likes photos
+// LIKES PHOTOS
 export async function likePhoto(photoId) {
+  await loadUserData();
+  if (!userDataCache.likedPhotos.includes(photoId))
+    userDataCache.likedPhotos.push(photoId);
   const ref = await getUserRef();
-  await updateDoc(ref, { likedPhotos: arrayUnion(photoId) });
+  await updateDoc(ref, { likedPhotos: userDataCache.likedPhotos });
 }
 export async function unlikePhoto(photoId) {
+  await loadUserData();
+  userDataCache.likedPhotos = (userDataCache.likedPhotos || []).filter(id => id !== photoId);
   const ref = await getUserRef();
-  await updateDoc(ref, { likedPhotos: arrayRemove(photoId) });
+  await updateDoc(ref, { likedPhotos: userDataCache.likedPhotos });
 }
 export async function getLikedPhotos() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().likedPhotos || []) : [];
+  await loadUserData();
+  return getLikedPhotosCached();
 }
 
-// Signalements photos
+// SIGNALER PHOTOS
 export async function signalerPhoto(photoId) {
+  await loadUserData();
+  if (!userDataCache.signaledPhotos.includes(photoId))
+    userDataCache.signaledPhotos.push(photoId);
   const ref = await getUserRef();
-  await updateDoc(ref, { signaledPhotos: arrayUnion(photoId) });
+  await updateDoc(ref, { signaledPhotos: userDataCache.signaledPhotos });
 }
 export async function getSignaledPhotos() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().signaledPhotos || []) : [];
+  await loadUserData();
+  return getSignaledPhotosCached();
 }
 
-// Premium
+// PREMIUM
 export async function isPremium() {
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data().premium === true) : false;
+  await loadUserData();
+  return isPremiumCached();
 }
 export async function setPremium(status) {
   const ref = await getUserRef();
   await updateDoc(ref, { premium: !!status });
+  userDataCache.premium = !!status;
 }
 
-// Réinitialisation complète (ATTENTION : efface tout le doc Firestore !)
+// RESET/UPDATE
 export async function resetUserData() {
   const ref = await getUserRef();
-  await setDoc(ref, {
+  userDataCache = {
     pseudo: "Toi",
     points: 0,
     jetons: 0,
@@ -161,53 +210,22 @@ export async function resetUserData() {
     historique: [],
     likedPhotos: [],
     signaledPhotos: [],
-    premium: false
-  });
+    premium: false,
+    votesConcours: {}
+  };
+  await setDoc(ref, userDataCache);
 }
-
-// Mise à jour partielle (patch)
 export async function updateUserData(update) {
+  await loadUserData();
+  Object.assign(userDataCache, update);
   const ref = await getUserRef();
   await updateDoc(ref, update);
 }
 
-// Accès à toutes les infos Firestore de l'utilisateur courant
+// ACCÈS GLOBAL À TOUTES LES DONNÉES (depuis le cache)
 export async function getUserDataCloud() {
-  try {
-    const ref = await getUserRef();
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      return snap.data();
-    } else {
-      // Création automatique du doc si absent
-      const baseData = {
-        pseudo: "Toi",
-        points: 100,
-        jetons: 3,
-        cadres: ["polaroid_01", "polaroid_02"],
-        cadreActif: "polaroid_01",
-        historique: [],
-        likedPhotos: [],
-        signaledPhotos: [],
-        premium: false
-      };
-      await setDoc(ref, baseData);
-      return baseData;
-    }
-  } catch (e) {
-    console.error("Erreur getUserDataCloud:", e);
-    return {
-      pseudo: "Toi",
-      points: 0,
-      jetons: 0,
-      cadres: ["polaroid_01"],
-      cadreActif: "polaroid_01",
-      historique: [],
-      likedPhotos: [],
-      signaledPhotos: [],
-      premium: false
-    };
-  }
+  await loadUserData();
+  return { ...userDataCache };
 }
 
 // ========== LOGIQUE CONCOURS ==========
@@ -224,28 +242,26 @@ export function getConcoursId() {
 
 // Nombre de votes restants aujourd'hui (et photos déjà votées ce jour)
 export async function getVotesInfoForConcours() {
+  await loadUserData();
   const concoursId = getConcoursId();
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  let userData = snap.exists() ? snap.data() : {};
-  const maxVotes = userData.premium ? 6 : 3;
-
-  if (!userData.votesConcours) userData.votesConcours = {};
-  if (!userData.votesConcours[concoursId]) userData.votesConcours[concoursId] = {};
-
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0];
+  const maxVotes = isPremiumCached() ? 6 : 3;
 
-  if (userData.votesConcours[concoursId].lastReset !== dateStr) {
-    userData.votesConcours[concoursId].lastReset = dateStr;
-    userData.votesConcours[concoursId].votesToday = maxVotes;
-    userData.votesConcours[concoursId].votes = userData.votesConcours[concoursId].votes || {};
-    userData.votesConcours[concoursId].votes[dateStr] = [];
-    await updateDoc(ref, { votesConcours: userData.votesConcours });
+  if (!userDataCache.votesConcours) userDataCache.votesConcours = {};
+  if (!userDataCache.votesConcours[concoursId]) userDataCache.votesConcours[concoursId] = {};
+
+  if (userDataCache.votesConcours[concoursId].lastReset !== dateStr) {
+    userDataCache.votesConcours[concoursId].lastReset = dateStr;
+    userDataCache.votesConcours[concoursId].votesToday = maxVotes;
+    userDataCache.votesConcours[concoursId].votes = userDataCache.votesConcours[concoursId].votes || {};
+    userDataCache.votesConcours[concoursId].votes[dateStr] = [];
+    const ref = await getUserRef();
+    await updateDoc(ref, { votesConcours: userDataCache.votesConcours });
   }
 
-  const dejaVotees = userData.votesConcours[concoursId].votes?.[dateStr] || [];
-  const votesToday = userData.votesConcours[concoursId].votesToday ?? maxVotes;
+  const dejaVotees = userDataCache.votesConcours[concoursId].votes?.[dateStr] || [];
+  const votesToday = userDataCache.votesConcours[concoursId].votesToday ?? maxVotes;
 
   return {
     votesToday,
@@ -256,38 +272,36 @@ export async function getVotesInfoForConcours() {
 
 // Voter pour une photo (ajoute le vote Firestore, pas de retrait possible)
 export async function voterPourPhoto(photoId) {
+  await loadUserData();
   const concoursId = getConcoursId();
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  let userData = snap.exists() ? snap.data() : {};
-  const maxVotes = userData.premium ? 6 : 3;
-
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0];
+  const maxVotes = isPremiumCached() ? 6 : 3;
 
-  if (!userData.votesConcours) userData.votesConcours = {};
-  if (!userData.votesConcours[concoursId]) userData.votesConcours[concoursId] = {};
-  if (!userData.votesConcours[concoursId].votes) userData.votesConcours[concoursId].votes = {};
-  if (!userData.votesConcours[concoursId].votes[dateStr]) userData.votesConcours[concoursId].votes[dateStr] = [];
+  if (!userDataCache.votesConcours) userDataCache.votesConcours = {};
+  if (!userDataCache.votesConcours[concoursId]) userDataCache.votesConcours[concoursId] = {};
+  if (!userDataCache.votesConcours[concoursId].votes) userDataCache.votesConcours[concoursId].votes = {};
+  if (!userDataCache.votesConcours[concoursId].votes[dateStr]) userDataCache.votesConcours[concoursId].votes[dateStr] = [];
 
   // Reset auto si date différente
-  if (userData.votesConcours[concoursId].lastReset !== dateStr) {
-    userData.votesConcours[concoursId].lastReset = dateStr;
-    userData.votesConcours[concoursId].votesToday = maxVotes;
-    userData.votesConcours[concoursId].votes[dateStr] = [];
+  if (userDataCache.votesConcours[concoursId].lastReset !== dateStr) {
+    userDataCache.votesConcours[concoursId].lastReset = dateStr;
+    userDataCache.votesConcours[concoursId].votesToday = maxVotes;
+    userDataCache.votesConcours[concoursId].votes[dateStr] = [];
   }
 
-  const votesToday = userData.votesConcours[concoursId].votesToday;
-  const dejaVotees = userData.votesConcours[concoursId].votes[dateStr];
+  const votesToday = userDataCache.votesConcours[concoursId].votesToday;
+  const dejaVotees = userDataCache.votesConcours[concoursId].votes[dateStr];
 
   if (votesToday <= 0) throw new Error("Tu as utilisé tous tes votes aujourd'hui !");
   if (dejaVotees.includes(photoId)) throw new Error("Tu as déjà voté pour cette photo aujourd'hui.");
 
-  // MAJ user
-  userData.votesConcours[concoursId].votesToday -= 1;
-  userData.votesConcours[concoursId].votes[dateStr].push(photoId);
-  userData.votesConcours[concoursId].lastReset = dateStr;
-  await updateDoc(ref, { votesConcours: userData.votesConcours });
+  // MAJ user (cache & firestore)
+  userDataCache.votesConcours[concoursId].votesToday -= 1;
+  userDataCache.votesConcours[concoursId].votes[dateStr].push(photoId);
+  userDataCache.votesConcours[concoursId].lastReset = dateStr;
+  const ref = await getUserRef();
+  await updateDoc(ref, { votesConcours: userDataCache.votesConcours });
 
   // MAJ votes sur la photo
   const photoRef = doc(db, "concoursPhotos", photoId);
