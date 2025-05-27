@@ -2126,31 +2126,54 @@ header,
   opacity: 1;
   text-decoration: underline;
 }
-/* === PATCH: Popup photo centrée exactement sur la taille du cadre === */
+/* Force la popup photo à être à la taille du cadre, strictement centrée */
+#popup-photo.popup,
+#popup-photo.popup.show {
+  align-items: center !important;
+  justify-content: center !important;
+  /* Garde bien la taille plein écran ici pour overlay */
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+}
+
+/* Force la boite centrale à ne prendre QUE la taille du cadre */
 #popup-photo .popup-inner {
   width: 300px !important;
   height: 375px !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  max-width: unset !important;
+  max-height: unset !important;
+  box-sizing: content-box !important;
   padding: 0 !important;
-  background: none !important;   /* Pas de fond dégradé si tu veux voir le cadre pur */
-  box-shadow: none !important;   /* Optionnel */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #232346 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 2px 20px #0006 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative;
 }
 
-/* Pour que le cadre soit bien centré dans la popup */
-#popup-photo .cadre-preview {
-  width: 300px !important;
-  height: 375px !important;
-  margin: 0 !important;
+/* Pour que le cadre soit centré dans la popup */
+#popup-photo .cadre-preview.cadre-popup {
+  width: 260px !important;
+  height: 260px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: none !important;
 }
 
-/* Bouton fermer (croix) bien positionné */
+/* Bouton fermeture bien positionné */
 #popup-photo .close-btn,
 #popup-photo #close-popup {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 5;
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  z-index: 10 !important;
 }
+

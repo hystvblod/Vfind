@@ -23,11 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const participerBtn = document.getElementById("participerBtn");
   if (participerBtn) {
     participerBtn.addEventListener("click", async () => {
-      // Ouvre la caméra et récupère la photo comme en solo/duel
       const photoUrl = await ouvrirCameraPour("concours");
-      if (photoUrl) {
+      // Sécurité : n'accepte QUE si la photo est valide
+      if (photoUrl && typeof photoUrl === "string" && photoUrl.trim().length > 5) {
         await ajouterPhotoConcours(photoUrl);
         afficherGalerieConcours();
+      } else {
+        // Rien ne se passe (aucune photo ajoutée ni affichée)
       }
     });
   }
@@ -37,6 +39,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Ajoute la photo dans la bonne sous-collection Firestore
 export async function ajouterPhotoConcours(urlDeLaPhoto) {
+  if (!urlDeLaPhoto || typeof urlDeLaPhoto !== "string" || urlDeLaPhoto.trim().length < 5) {
+    // Rien à ajouter si vide
+    return;
+  }
   const concoursId = getConcoursId();
   const user = auth.currentUser;
   const userName = user.displayName || user.email || user.uid;
@@ -81,7 +87,6 @@ export async function getPhotosConcours() {
 // -- AFFICHAGE, VOTE, POPUP
 
 async function majVotesRestants() {
-  // À relier plus tard à la logique utilisateur côté serveur si besoin
   votesToday = 3;
   maxVotes = 3;
   dejaVotees = JSON.parse(localStorage.getItem("votesConcours-" + getConcoursId()) || "[]");
@@ -121,7 +126,8 @@ export async function afficherGalerieConcours() {
       const gridTop = document.createElement("div");
       gridTop.className = "galerie-concours";
       top.forEach(photo => {
-        gridTop.appendChild(creerCartePhoto(photo, true));
+        const card = creerCartePhoto(photo, true);
+        if (card) gridTop.appendChild(card);
       });
       galerie.appendChild(gridTop);
     }
@@ -135,7 +141,8 @@ export async function afficherGalerieConcours() {
       const gridAutres = document.createElement("div");
       gridAutres.className = "galerie-concours";
       autres.forEach(photo => {
-        gridAutres.appendChild(creerCartePhoto(photo, false));
+        const card = creerCartePhoto(photo, false);
+        if (card) gridAutres.appendChild(card);
       });
       galerie.appendChild(gridAutres);
     }
@@ -146,7 +153,7 @@ export async function afficherGalerieConcours() {
 }
 
 function creerCartePhoto(photo, isTop) {
-  // Si l'URL est vide ou non valide : on retourne null, donc rien ne s'affiche dans la galerie
+  // Si pas d’URL photo : RIEN ne s’affiche
   if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) {
     return null;
   }
@@ -166,7 +173,7 @@ function creerCartePhoto(photo, isTop) {
     <div class="photo-concours-user">${photo.user || "?"}</div>
   `;
 
-  // ...reste inchangé...
+  // Gestion vote direct sur bouton cœur
   const btn = div.querySelector(".btn-coeur-concours");
   if (!dejaVotees.includes(photo.id) && votesToday > 0) {
     btn.addEventListener("click", async (e) => {
@@ -174,9 +181,11 @@ function creerCartePhoto(photo, isTop) {
       btn.disabled = true;
       btn.querySelector("img").style.opacity = "0.43";
       try {
+        // Update votesTotal dans Firestore
         await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
           votesTotal: (photo.votesTotal || 0) + 1
         });
+        // Mets à jour localStorage
         dejaVotees.push(photo.id);
         localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
         btn.querySelector(".nbvotes").textContent = Number(btn.querySelector(".nbvotes").textContent) + 1;
@@ -196,9 +205,10 @@ function creerCartePhoto(photo, isTop) {
   return div;
 }
 
-
 // POPUP ZOOM PHOTO
 function ouvrirPopupZoom(photo) {
+  if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) return; // rien si photo absente
+
   let old = document.getElementById("popup-photo-zoom");
   if (old) old.remove();
 
