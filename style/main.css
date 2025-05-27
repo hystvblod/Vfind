@@ -1893,7 +1893,7 @@ header,
 }
 
 /* --- CORRECTION POPUP BOUTIQUE --- */
-.popup, #popup-achat-jeton {
+#popup-achat-jeton, #popup-premium, #popup-end, #popup-jeton {
   position: fixed !important;
   top: 0; left: 0;
   width: 100vw;
@@ -2140,31 +2140,46 @@ header,
   transform: translate(-50%, -50%) scale(1);
   pointer-events: auto;
 }
+/* === Popup cadre zoomée : centrée, pas plein écran === */
+#popup-photo.popup {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(34, 40, 58, 0.96);
+  z-index: 1001;
+  padding: 0;
+  border-radius: 18px;
+  box-shadow: 0 6px 28px #0007;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  max-width: 96vw;
+  max-height: 98vh;
+  opacity: 1;
+}
+
+#popup-photo .popup-inner {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  width: auto;
+  max-width: none;
+}
+
+#popup-photo .cadre-preview.cadre-popup {
+  width: 320px;
+  height: 400px;
+  background: none;
+  margin: 0;
+}
+
 @media (max-width: 500px) {
-  .popup {
-    max-width: 98vw !important;
-    width: 98vw !important;
-    min-width: 0 !important;
-    padding: 2vw 0 !important;
-  }
-  .popup-inner {
-    padding: 8px !important;
-    min-width: 0 !important;
-    max-width: 98vw !important;
-    width: 98vw !important;
-  }
-  .cadre-preview.cadre-popup {
-    width: 90vw !important;
-    height: calc(90vw * 1.25) !important;
+  #popup-photo .cadre-preview.cadre-popup {
+    width: 92vw !important;
+    height: calc(92vw * 1.25) !important;
     max-width: 98vw !important;
     max-height: 80vh !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-  }
-  #close-popup, .close-btn {
-    right: 2vw !important;
-    top: 2vw !important;
-    font-size: 1.5rem !important;
-    padding: 4px !important;
   }
 }
