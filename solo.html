@@ -6,7 +6,7 @@
   <title>VFind - Mode Solo</title>
   <link rel="stylesheet" href="style/main.css" />
 </head>
-<body class="page-container">
+<body>
 
   <!-- POPUP PHOTO -->
   <div id="popup-photo" class="popup hidden">
@@ -19,24 +19,23 @@
     </div>
   </div>
 
-<!-- ✅ Popup validation de défi (NOUVEAU STYLE HARMONISÉ) -->
-<div id="popup-jeton" class="popup hidden">
-  <div class="popup-inner popup-premium-pro">
-    <div class="premium-badge">VALIDER</div>
-    <div class="popup-premium-title">Valider ce défi</div>
-    <div class="popup-premium-price" style="margin-bottom: 18px;">
-      Veux-tu valider ce défi avec un jeton&nbsp;?
+  <!-- ✅ Popup validation de défi -->
+  <div id="popup-jeton" class="popup hidden">
+    <div class="popup-inner popup-premium-pro">
+      <div class="premium-badge">VALIDER</div>
+      <div class="popup-premium-title">Valider ce défi</div>
+      <div class="popup-premium-price" style="margin-bottom: 18px;">
+        Veux-tu valider ce défi avec un jeton&nbsp;?
+      </div>
+      <div class="premium-list-pro" style="margin-bottom:18px;">
+        <button class="btn-premium-pro" id="valider-jeton-btn">✅ Valider</button>
+      </div>
+      <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">
+        Annuler
+      </button>
+      <div id="solde-jeton" style="margin-top:10px;text-align:center;color:#ffe04a;font-weight:bold;"></div>
     </div>
-    <div class="premium-list-pro" style="margin-bottom:18px;">
-      <button class="btn-premium-pro" id="valider-jeton-btn">✅ Valider</button>
-    </div>
-    <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">
-      Annuler
-    </button>
-    <div id="solde-jeton" style="margin-top:10px;text-align:center;color:#ffe04a;font-weight:bold;"></div>
   </div>
-</div>
-
 
   <!-- POPUP PARTIE TERMINÉE -->
   <div id="popup-end" class="popup hidden">
