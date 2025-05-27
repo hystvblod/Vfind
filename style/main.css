@@ -2134,3 +2134,14 @@ header,
   opacity: 1;
   text-decoration: underline;
 }
+@media (max-width: 500px) {
+  .cadre-preview.cadre-popup {
+    width: 90vw !important;
+    height: calc(90vw * 1.25) !important; /* 4/5 ratio approx. */
+    max-width: 98vw;
+    max-height: 80vh;
+  }
+  .popup-inner {
+    padding: 8px !important;
+  }
+}
