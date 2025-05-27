@@ -409,29 +409,25 @@ nav.nav-icons {
   padding: 10px 20px 30px;
 }
 
-.close-btn,
-#close-popup {
+.close-btn, #close-popup {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 14px;
+  right: 14px;
   background: white;
   color: black;
   border: none;
   border-radius: 50%;
-  padding: 6px;
-  font-size: 1.15rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 6px 8px;
+  font-size: 1.18rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   cursor: pointer;
-  z-index: 1001;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
   transition: color 0.18s, background 0.16s;
-
-  }
-  .close-btn:hover,
-#close-popup:hover {
+}
+.close-btn:hover, #close-popup:hover {
   background: #e94e4e;
   color: #fff;
 }
@@ -1958,6 +1954,8 @@ header,
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+
 }
 
 @media (max-width: 400px) {
