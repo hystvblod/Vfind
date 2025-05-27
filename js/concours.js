@@ -1,8 +1,9 @@
 import { db, auth } from './firebase.js';
 import { collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-import { ouvrirCameraPour } from "./camera.js"; // Mets bien tout en haut du fichier
+import { ouvrirCameraPour } from "./camera.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-storage.js";
 
-// Utilitaire : concoursId de la semaine (ex : "22-2025")
+// Utilitaire : concoursId de la semaine (ex : "22-2025")
 function getConcoursId() {
   const now = new Date();
   const year = now.getFullYear();
@@ -17,19 +18,38 @@ let votesToday = 0;
 let maxVotes = 0;
 let dejaVotees = [];
 
+// Fonction upload sur Storage + retourne l'URL publique
+async function uploadImageToStorage(dataUrl) {
+  const storage = getStorage();
+  const filename = "concours_photos/" + Date.now() + "_" + Math.random().toString(36).substr(2,9) + ".webp";
+  const storageRef = ref(storage, filename);
+  try {
+    await uploadString(storageRef, dataUrl, 'data_url');
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  } catch (e) {
+    console.error("Erreur upload storage:", e);
+    return null;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   await majVotesRestants();
 
   const participerBtn = document.getElementById("participerBtn");
   if (participerBtn) {
     participerBtn.addEventListener("click", async () => {
-      const photoUrl = await ouvrirCameraPour("concours");
-      // Sécurité : n'accepte QUE si la photo est valide
-      if (photoUrl && typeof photoUrl === "string" && photoUrl.trim().length > 5) {
-        await ajouterPhotoConcours(photoUrl);
-        afficherGalerieConcours();
-      } else {
-        // Rien ne se passe (aucune photo ajoutée ni affichée)
+      // Prends la photo et récupère le base64
+      const base64 = await ouvrirCameraPour("concours", "base64");
+      if (base64 && typeof base64 === "string" && base64.trim().length > 5) {
+        // Upload sur Firebase Storage pour obtenir l'URL
+        const photoUrl = await uploadImageToStorage(base64);
+        if (photoUrl && typeof photoUrl === "string" && photoUrl.trim().length > 5) {
+          await ajouterPhotoConcours(photoUrl);
+          afficherGalerieConcours();
+        } else {
+          alert("Erreur lors de l'upload de la photo !");
+        }
       }
     });
   }
@@ -40,7 +60,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Ajoute la photo dans la bonne sous-collection Firestore
 export async function ajouterPhotoConcours(urlDeLaPhoto) {
   if (!urlDeLaPhoto || typeof urlDeLaPhoto !== "string" || urlDeLaPhoto.trim().length < 5) {
-    // Rien à ajouter si vide
     return;
   }
   const concoursId = getConcoursId();
@@ -205,7 +224,7 @@ function creerCartePhoto(photo, isTop) {
   return div;
 }
 
-// POPUP ZOOM PHOTO
+// POPUP ZOOM PHOTO (inchangé)
 function ouvrirPopupZoom(photo) {
   if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) return; // rien si photo absente
 

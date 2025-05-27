@@ -3,7 +3,7 @@ import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
-let userData = null; // Stocke la data utilisateur
+let userData = null;
 let allDefis = [];
 let defiIndexActuel = null;
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newDefis = getRandomDefis(3);
     const endTime = Date.now() + 24 * 60 * 60 * 1000;
     await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
-    await chargerUserData(true); // Recharge après update
+    await chargerUserData(true);
     showGame();
   }
 
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateTimer() {
     const interval = setInterval(async () => {
-      await chargerUserData(); // Use cache (pas de nouveau call tant que pas de forceRefresh)
+      await chargerUserData();
       const endTime = userData.defiTimer;
       if (!endTime) return;
       const now = Date.now();
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (diff <= 0) {
         clearInterval(interval);
-        endGame();
+        await window.endGameAuto(); // <--- CORRECTION ici
         return;
       }
 
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadDefis() {
-    await chargerUserData(); // Use cache
+    await chargerUserData();
     let defis = userData.defiActifs || [];
     if (!defis || !Array.isArray(defis) || defis.length === 0) {
       defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
@@ -275,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ----------- PATCH FIN DE PARTIE PRO -----------
   window.endGame = async function() {
     await chargerUserData();
     let defis = userData.defiActifs || [];
@@ -288,7 +289,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const oldPoints = userData.points || 0;
     const newPoints = oldPoints + gain;
-    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0 });
+
+    // Ajoute à l'historique pour le calendrier
+    const date = new Date().toISOString().slice(0, 10);
+    let historique = userData.historique || [];
+    historique.push({ date, defi: defis.map(d => d.id) });
+
+    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0, historique });
     await chargerUserData(true);
 
     document.getElementById("gain-message").textContent =
@@ -299,6 +306,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (document.getElementById("points")) document.getElementById("points").textContent = newPoints;
   };
+
+  // Fin automatique après timer (24h écoulées)
+  window.endGameAuto = async function() {
+    await chargerUserData();
+    let defis = userData.defiActifs || [];
+    if (!defis.length) return;
+
+    // Ajout à l'historique pour le calendrier
+    const date = new Date().toISOString().slice(0, 10);
+    let historique = userData.historique || [];
+    historique.push({ date, defi: defis.map(d => d.id) });
+    await updateUserData({
+      historique,
+      defiActifs: [],
+      defiTimer: 0
+    });
+
+    document.getElementById("end-message").textContent = "⏰ Temps écoulé, partie terminée !";
+    document.getElementById("gain-message").textContent = "+0 pièce (temps écoulé)";
+    document.getElementById("popup-end").classList.remove("hidden");
+    document.getElementById("popup-end").classList.add("show");
+    if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
+  };
+  // ----------- FIN PATCH PRO -----------
 
   document.getElementById("replayBtnEnd").onclick = async function() {
     document.getElementById("popup-end").classList.add("hidden");
