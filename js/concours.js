@@ -11,6 +11,8 @@ function getConcoursId() {
   return `${week}-${year}`;
 }
 
+import { ouvrirCameraPour } from "./camera.js"; // Mets bien tout en haut du fichier
+
 // -- VOTES ET SESSION
 let votesToday = 0;
 let maxVotes = 0;
@@ -22,8 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const participerBtn = document.getElementById("participerBtn");
   if (participerBtn) {
     participerBtn.addEventListener("click", async () => {
-      // Ouvre la caméra et récupère la photo (modifie ici selon ton système camera.js)
-      const photoUrl = await ouvrirCameraPourConcours(); // Voir fonction ci-dessous
+      // Ouvre la caméra et récupère la photo comme en solo/duel
+      const photoUrl = await ouvrirCameraPour("concours");
       if (photoUrl) {
         await ajouterPhotoConcours(photoUrl);
         afficherGalerieConcours();
@@ -33,6 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   afficherGalerieConcours();
 });
+
 
 // Simulation d’ouverture caméra (à remplacer par ton vrai code camera.js)
 async function ouvrirCameraPourConcours() {
