@@ -305,24 +305,6 @@ nav.nav-icons {
   transform: translateY(-10px);
 }
 
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  background: rgba(34, 40, 58, 0.95);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  z-index: 1000;
-  opacity: 0;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 90vw;
-  height: auto;
-}
 
 .cadre-preview.cadre-popup {
   position: relative;
@@ -2125,55 +2107,5 @@ header,
 .btn-annuler-premium-pro:hover {
   opacity: 1;
   text-decoration: underline;
-}
-/* Force la popup photo à être à la taille du cadre, strictement centrée */
-#popup-photo.popup,
-#popup-photo.popup.show {
-  align-items: center !important;
-  justify-content: center !important;
-  /* Garde bien la taille plein écran ici pour overlay */
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 0 !important;
-}
-
-/* Force la boite centrale à ne prendre QUE la taille du cadre */
-#popup-photo .popup-inner {
-  width: 300px !important;
-  height: 375px !important;
-  min-width: unset !important;
-  min-height: unset !important;
-  max-width: unset !important;
-  max-height: unset !important;
-  box-sizing: content-box !important;
-  padding: 0 !important;
-  background: #232346 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 2px 20px #0006 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative;
-}
-
-/* Pour que le cadre soit centré dans la popup */
-#popup-photo .cadre-preview.cadre-popup {
-  width: 260px !important;
-  height: 260px !important;
-  margin: 0 auto !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: none !important;
-}
-
-/* Bouton fermeture bien positionné */
-#popup-photo .close-btn,
-#popup-photo #close-popup {
-  position: absolute !important;
-  top: 15px !important;
-  right: 15px !important;
-  z-index: 10 !important;
 }
 
