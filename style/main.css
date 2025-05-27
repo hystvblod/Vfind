@@ -1895,21 +1895,6 @@ header,
   background: #ffd966;
 }
 
-/* --- CORRECTION POPUP BOUTIQUE --- */
-.popup, #popup-achat-jeton {
-  position: fixed !important;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999;
-  background: rgba(20, 20, 40, 0.33);
-  opacity: 1;
-  pointer-events: auto;
-  transform: none !important;
-}
 
 .popup.hidden, #popup-achat-jeton.hidden {
   display: none !important;
