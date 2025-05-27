@@ -8,7 +8,7 @@
 </head>
 <body class="page-container">
 
-  <!-- HEADER (identique aux autres pages) -->
+  <!-- HEADER -->
   <header class="header-solo" style="border-bottom: 5px solid #888;">
     <div class="header-row">
       <a href="index.html" class="back-btn" title="Retour">
@@ -16,42 +16,36 @@
       </a>
       <h1>Concours</h1>
       <div class="top-buttons">
+        <!-- Bouton Profil ajouté ici -->
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
         <a href="parametres.html" class="btn-icon">
           <img src="assets/icons/settings.svg" alt="Paramètres" />
         </a>
       </div>
     </div>
-    <div class="solde-container solde-solo">
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
-          <span id="points"></span>
-        </div>
-      </div>
-      <div class="solde-item">
-        <div class="solde-ligne">
-          <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
-          <span id="jetons"></span>
-        </div>
-      </div>
+    <div class="lot-concours" style="text-align:center;margin:22px 0 10px 0;font-size:1.22em;font-weight:600;color:#ffe04a;">
+      Lot à gagner : <span id="lot-concours">Une carte cadeau Amazon de 50€</span>
     </div>
   </header>
 
   <main class="solo-container">
-    <!-- Titre du défi (modifiable directement dans le HTML) -->
     <h2 class="titre-concours" style="margin-top:22px; margin-bottom:16px; text-align:center;">Titre du défi concours ici</h2>
     
-    <!-- Bouton Participer (SVG photo) -->
+    <!-- Bouton Participer -->
     <button id="participerBtn" class="main-button" style="width:90%;margin:0 auto 26px auto;display:flex;align-items:center;justify-content:center;gap:12px;">
       <img src="assets/icons/photo.svg" alt="Prendre une photo" style="height:28px;width:28px;vertical-align:middle;" />
       Participer
     </button>
-    
+
+    <!-- Nombre de votes restants : injecté automatiquement par JS -->
+
     <!-- Galerie des photos -->
-    <div id="galerie-concours" class="galerie-concours">
-      <!-- Les photos s'affichent ici en JS -->
-    </div>
+    <div id="galerie-concours" class="galerie-concours"></div>
   </main>
+
+  <!-- La popup zoom sera injectée par JS -->
 
   <script type="module" src="js/concours.js"></script>
   <script type="module" src="js/firebase.js"></script>
