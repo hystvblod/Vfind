@@ -22,12 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (snap.exists()) {
         const data = snap.data();
 
-        dateInscription = data.dateInscription 
-          ? new Date(data.dateInscription)
-          : null;
+        dateInscription = data.dateInscription ? new Date(data.dateInscription) : null;
 
         historique = [];
 
+        // Historique solo
         (data.historique || []).forEach(e => {
           historique.push({
             date: e.date,
@@ -36,14 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
 
+        // Historique duel
         (data.historiqueDuel || []).forEach(e => {
           if (e.defis_duel && Array.isArray(e.defis_duel)) {
             let parts = e.date.split(',')[0].split('/');
             let dateISO = parts.length === 3 ?
               `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
-
             let type = e.type === 'amis' ? 'duel_amis' : 'duel_random';
-
             historique.push({
               date: dateISO,
               defis: e.defis_duel,
@@ -52,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
+        // Si pas de date inscription, prendre la plus ancienne date historique
         if (!dateInscription && historique.length) {
           let minDate = historique
             .map(e => new Date(e.date))
@@ -72,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
+    // Regroupe les défis par jour et par type
     const soloParJour = {};
     const duelRandomParJour = {};
     const duelAmisParJour = {};
@@ -79,16 +79,13 @@ document.addEventListener("DOMContentLoaded", () => {
     historique.forEach(entree => {
       let dateISO = entree.date && entree.date.length === 10 ? entree.date : (entree.date || '').slice(0, 10);
       if (entree.type === "solo") {
-        if (!soloParJour[dateISO]) soloParJour[dateISO] = [];
-        soloParJour[dateISO] = soloParJour[dateISO].concat(entree.defis || []);
+        soloParJour[dateISO] = (soloParJour[dateISO] || []).concat(entree.defis || []);
       }
       if (entree.type === "duel_random") {
-        if (!duelRandomParJour[dateISO]) duelRandomParJour[dateISO] = [];
-        duelRandomParJour[dateISO] = duelRandomParJour[dateISO].concat(entree.defis || []);
+        duelRandomParJour[dateISO] = (duelRandomParJour[dateISO] || []).concat(entree.defis || []);
       }
       if (entree.type === "duel_amis") {
-        if (!duelAmisParJour[dateISO]) duelAmisParJour[dateISO] = [];
-        duelAmisParJour[dateISO] = duelAmisParJour[dateISO].concat(entree.defis || []);
+        duelAmisParJour[dateISO] = (duelAmisParJour[dateISO] || []).concat(entree.defis || []);
       }
     });
 

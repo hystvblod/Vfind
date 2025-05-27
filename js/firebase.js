@@ -21,14 +21,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// --- Génère un pseudoPublic unique ---
+// Génère un pseudoPublic unique (clé Firestore)
 async function generateUniquePseudoPublic() {
   let tempID = randomTempID();
   let taken = true;
   while (taken) {
-    const q = query(collection(db, "users"), where("__name__", "==", tempID));
-    const res = await getDocs(q);
-    if (res.empty) taken = false;
+    const ref = doc(db, "users", tempID);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) taken = false;
     else tempID = randomTempID();
   }
   return tempID;
@@ -38,8 +38,7 @@ function randomTempID() {
   return "user_" + rand;
 }
 
-// --- Initialise et connecte l'utilisateur Firebase ---
-//   => Crée/retourne le doc Firestore sous /users/{pseudoPublic}
+// Initialise et connecte l'utilisateur Firebase (création si besoin)
 export async function initFirebaseUser() {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
@@ -48,7 +47,6 @@ export async function initFirebaseUser() {
         let pseudoPublic = localStorage.getItem('pseudoPublic');
         let needCreate = false;
 
-        // Si pas de pseudoPublic en localStorage, on le génère et on crée le doc
         if (!pseudoPublic) {
           pseudoPublic = await generateUniquePseudoPublic();
           localStorage.setItem('pseudoPublic', pseudoPublic);
@@ -58,11 +56,10 @@ export async function initFirebaseUser() {
         const ref = doc(db, "users", pseudoPublic);
         let snap = await getDoc(ref);
 
-        // Si le doc n'existe pas, on le crée
         if (!snap.exists() || needCreate) {
           const dateInscription = new Date().toISOString();
           await setDoc(ref, {
-            pseudoPublic: pseudoPublic,  // utilisé pour affichage/partage ET comme clé doc
+            pseudoPublic: pseudoPublic,
             points: 100,
             jetons: 3,
             cadres: ["polaroid_01", "polaroid_02"],
@@ -74,14 +71,13 @@ export async function initFirebaseUser() {
             demandesEnvoyees: [],
             historique: [],
             historiqueDuel: [],
-            dateInscription: dateInscription,
+            dateInscription,
             photosAimees: [],
-            // PLUS DE pseudo ni photoProfil
-            // Ajoute ici tout nouveau champ voulu !
+            // Ajoute ici tout champ voulu
           });
         }
 
-        resolve(pseudoPublic); // Retourne l'identifiant public (et clé firestore)
+        resolve(pseudoPublic);
       } catch (e) {
         reject(e);
       }
@@ -89,7 +85,7 @@ export async function initFirebaseUser() {
   });
 }
 
-// --- Accès direct au doc utilisateur courant (toujours via pseudoPublic stocké local) ---
+// Accès direct au doc utilisateur courant (via pseudoPublic localStorage)
 async function getUserRef() {
   const pseudoPublic = localStorage.getItem('pseudoPublic');
   if (!pseudoPublic) throw "Utilisateur non initialisé !";
@@ -207,10 +203,12 @@ export async function getPhotosAimees() {
   return snap.exists() ? (snap.data().photosAimees || []) : [];
 }
 
-// --- PATCH INFOS (si tu veux éditer pseudoPublic, amis, etc) ---
+// --- PATCH INFOS (modification partielle profil) ---
 export async function updateUserData(update) {
   const ref = await getUserRef();
   await updateDoc(ref, update);
 }
 
-export { db, auth, getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove };
+export {
+  db, auth, getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove
+};

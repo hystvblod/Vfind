@@ -3,11 +3,21 @@ import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
+let userData = null; // Stocke la data utilisateur
+let allDefis = [];
+let defiIndexActuel = null;
+
+async function chargerUserData(forceRefresh = false) {
+  if (userData && !forceRefresh) return userData;
+  userData = await getUserDataCloud();
+  return userData;
+}
+
 // MAJ solde points et jetons dès chargement
 document.addEventListener("DOMContentLoaded", async () => {
-  const data = await getUserDataCloud();
-  if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
-  if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
+  await chargerUserData(true);
+  if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
+  if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,9 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const endSection = document.getElementById("end-section");
   const timerDisplay = document.getElementById("timer");
   const defiList = document.getElementById("defi-list");
-
-  let allDefis = [];
-  let defiIndexActuel = null;
 
   let userLang = navigator.language || navigator.userLanguage;
   userLang = userLang.split("-")[0];
@@ -51,10 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn?.addEventListener("click", startGame);
     replayBtn?.addEventListener("click", showStart);
 
-    const data = await getUserDataCloud();
-    if (!data.defiActifs || !Array.isArray(data.defiActifs) || data.defiActifs.length === 0) {
+    await chargerUserData(true);
+    if (!userData.defiActifs || !Array.isArray(userData.defiActifs) || userData.defiActifs.length === 0) {
       showStart();
-    } else if (data.defiTimer && Date.now() < data.defiTimer) {
+    } else if (userData.defiTimer && Date.now() < userData.defiTimer) {
       showGame();
     } else {
       showStart();
@@ -65,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newDefis = getRandomDefis(3);
     const endTime = Date.now() + 24 * 60 * 60 * 1000;
     await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
+    await chargerUserData(true); // Recharge après update
     showGame();
   }
 
@@ -89,8 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateTimer() {
     const interval = setInterval(async () => {
-      const data = await getUserDataCloud();
-      const endTime = data.defiTimer;
+      await chargerUserData(); // Use cache (pas de nouveau call tant que pas de forceRefresh)
+      const endTime = userData.defiTimer;
       if (!endTime) return;
       const now = Date.now();
       const diff = endTime - now;
@@ -109,8 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function loadDefis() {
-    const data = await getUserDataCloud();
-    let defis = data.defiActifs || [];
+    await chargerUserData(); // Use cache
+    let defis = userData.defiActifs || [];
     if (!defis || !Array.isArray(defis) || defis.length === 0) {
       defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
       return;
@@ -128,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!dataUrl) {
         try {
-          const userData = await getUserDataCloud();
           const defisSolo = userData.defisSolo || {};
           if (defisSolo[defi.id]) {
             dataUrl = defisSolo[defi.id];
@@ -141,16 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
       photosMap[defi.id] = dataUrl || null;
 
       const hasPhoto = !!dataUrl;
-      const boutonTexte = hasPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
       const boutonPhoto = `
-  <img
-    src="assets/icons/photo.svg"
-    alt="Prendre une photo"
-    style="width:2.2em;cursor:pointer;display:block;margin:0 auto;"
-    onclick="window.ouvrirCameraPour('${defi.id}')"
-  >
-`;
-
+        <img
+          src="assets/icons/photo.svg"
+          alt="Prendre une photo"
+          style="width:2.2em;cursor:pointer;display:block;margin:0 auto;"
+          onclick="window.ouvrirCameraPour('${defi.id}')"
+        >
+      `;
 
       li.innerHTML = `
         <div class="defi-content">
@@ -168,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     await afficherPhotosSauvegardees(photosMap);
   }
 
-  // ✅✅✅ PATCH STRUCTURE MINIATURE CORRECTE
   async function afficherPhotosSauvegardees(photosMap) {
     const cadreActuel = await getCadreSelectionne();
 
@@ -177,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const dataUrl = photosMap[id];
 
       if (dataUrl) {
-        // Structure CORRECTE comme avant :
         const containerCadre = document.createElement("div");
         containerCadre.className = "cadre-item cadre-duel-mini";
 
@@ -200,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
         if (container) {
           container.innerHTML = '';
-          container.appendChild(containerCadre); // ✅ le parent .cadre-item est bien là
+          container.appendChild(containerCadre);
           defiEl.classList.add("done");
         }
       }
@@ -218,11 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.validerDefi = async function(index) {
-    const data = await getUserDataCloud();
-    let defis = data.defiActifs || [];
+    await chargerUserData();
+    let defis = userData.defiActifs || [];
     if (!defis[index].done) {
       defis[index].done = true;
       await updateUserData({ defiActifs: defis });
+      await chargerUserData(true);
       await loadDefis();
     }
   };
@@ -271,11 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === GESTION DE LA FIN DE PARTIE & POPUP PARTIE TERMINÉE ===
   window.endGame = async function() {
-    // Récupère les défis et photos prises pour compter les pièces
-    const data = await getUserDataCloud();
-    let defis = data.defiActifs || [];
+    await chargerUserData();
+    let defis = userData.defiActifs || [];
     let nbPhotos = 0;
     defis.forEach(defi => {
       const photoUrl = localStorage.getItem(`photo_defi_${defi.id}`);
@@ -284,30 +286,26 @@ document.addEventListener("DOMContentLoaded", () => {
     let gain = nbPhotos * 10;
     if (nbPhotos === 3) gain = 40; // Bonus si 3 photos prises
 
-    // Mets à jour le solde dans Firebase (ajoute les pièces)
-    const oldPoints = data.points || 0;
+    const oldPoints = userData.points || 0;
     const newPoints = oldPoints + gain;
-    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0 }); // Réinitialise les défis
+    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0 });
+    await chargerUserData(true);
 
-    // Affiche le popup de fin
     document.getElementById("gain-message").textContent =
       `+${gain} pièces (10/photo${nbPhotos === 3 ? " + 10 bonus" : ""})`;
 
     document.getElementById("popup-end").classList.remove("hidden");
     document.getElementById("popup-end").classList.add("show");
 
-    // Met à jour le header points
     if (document.getElementById("points")) document.getElementById("points").textContent = newPoints;
   };
 
-  // Bouton "Rejouer"
   document.getElementById("replayBtnEnd").onclick = async function() {
     document.getElementById("popup-end").classList.add("hidden");
     document.getElementById("popup-end").classList.remove("show");
     await startGame();
   };
 
-  // Bouton "Retour" → demande confirmation avant
   document.getElementById("returnBtnEnd").onclick = function() {
     if (confirm("Quitter la partie ? Tu devras recommencer une nouvelle partie la prochaine fois.")) {
       window.location.href = "index.html";

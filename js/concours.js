@@ -1,11 +1,17 @@
-import { ouvrirCameraPour } from "./camera.js";
-import {
-  getPhotosConcours,
-  getVotesInfoForConcours,
-  voterPourPhoto,
-  getPseudo
-} from "./userData.js";
+import { db, auth } from './firebase.js';
+import { collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
+// Utilitaire : concoursId de la semaine (ex : "22-2025")
+function getConcoursId() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const firstJan = new Date(year, 0, 1);
+  const days = Math.floor((now - firstJan) / 86400000);
+  const week = Math.ceil((days + firstJan.getDay() + 1) / 7);
+  return `${week}-${year}`;
+}
+
+// -- VOTES ET SESSION
 let votesToday = 0;
 let maxVotes = 0;
 let dejaVotees = [];
@@ -15,34 +21,85 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const participerBtn = document.getElementById("participerBtn");
   if (participerBtn) {
-    participerBtn.addEventListener("click", () => {
-      ouvrirCameraPour("concours");
+    participerBtn.addEventListener("click", async () => {
+      // Ouvre la caméra et récupère la photo (modifie ici selon ton système camera.js)
+      const photoUrl = await ouvrirCameraPourConcours(); // Voir fonction ci-dessous
+      if (photoUrl) {
+        await ajouterPhotoConcours(photoUrl);
+        afficherGalerieConcours();
+      }
     });
   }
 
   afficherGalerieConcours();
 });
 
-// Met à jour l'affichage des votes restants dans le header
-async function majVotesRestants() {
-  try {
-    const info = await getVotesInfoForConcours();
-    votesToday = info.votesToday;
-    maxVotes = info.maxVotes;
-    dejaVotees = info.dejaVotees;
+// Simulation d’ouverture caméra (à remplacer par ton vrai code camera.js)
+async function ouvrirCameraPourConcours() {
+  // Remplace par ton vrai appel caméra/photo !
+  return prompt("Colle ici une URL d'image ou base64 pour simuler la prise de photo");
+}
 
-    let affichage = `${votesToday}/${maxVotes} vote${maxVotes > 1 ? "s" : ""} restants aujourd'hui`;
-    let compteur = document.getElementById("votes-restants");
-    if (!compteur) {
-      compteur = document.createElement("div");
-      compteur.id = "votes-restants";
-      compteur.style = "text-align:center;margin-top:10px;margin-bottom:10px;font-weight:bold;font-size:1.07em;color:#ffe04a;";
-      document.querySelector("main").insertBefore(compteur, document.querySelector("main").children[1]);
-    }
-    compteur.textContent = affichage;
+// Ajoute la photo dans la bonne sous-collection Firestore
+export async function ajouterPhotoConcours(urlDeLaPhoto) {
+  const concoursId = getConcoursId();
+  const user = auth.currentUser;
+  const userName = user.displayName || user.email || user.uid;
+  try {
+    const photosRef = collection(db, "concours", concoursId, "photos");
+    await addDoc(photosRef, {
+      url: urlDeLaPhoto,
+      user: userName,
+      votesTotal: 0
+    });
   } catch (e) {
-    console.error("Erreur votes restants :", e);
+    alert("Erreur lors de l'ajout de la photo au concours.");
+    console.error(e);
   }
+}
+
+// Récupère toutes les photos du concours courant (TOP 9 + autres)
+export async function getPhotosConcours() {
+  const concoursId = getConcoursId();
+  const photosRef = collection(db, "concours", concoursId, "photos");
+  try {
+    const snap = await getDocs(photosRef);
+    let photos = [];
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      photos.push({
+        id: docSnap.id,
+        url: d.url,
+        user: d.user || "Inconnu",
+        votesTotal: d.votesTotal || 0
+      });
+    });
+    // Tri décroissant sur les votes
+    photos.sort((a, b) => b.votesTotal - a.votesTotal);
+    return photos;
+  } catch (e) {
+    console.error("Erreur lors de la récupération des photos concours :", e);
+    return [];
+  }
+}
+
+// -- AFFICHAGE, VOTE, POPUP
+
+async function majVotesRestants() {
+  // À relier plus tard à la logique utilisateur côté serveur si besoin
+  votesToday = 3;
+  maxVotes = 3;
+  dejaVotees = JSON.parse(localStorage.getItem("votesConcours-" + getConcoursId()) || "[]");
+
+  let affichage = `${votesToday}/${maxVotes} votes restants aujourd'hui`;
+  let compteur = document.getElementById("votes-restants");
+  if (!compteur) {
+    compteur = document.createElement("div");
+    compteur.id = "votes-restants";
+    compteur.style = "text-align:center;margin-top:10px;margin-bottom:10px;font-weight:bold;font-size:1.07em;color:#ffe04a;";
+    document.querySelector("main").insertBefore(compteur, document.querySelector("main").children[1]);
+  }
+  compteur.textContent = affichage;
 }
 
 export async function afficherGalerieConcours() {
@@ -60,7 +117,6 @@ export async function afficherGalerieConcours() {
     const top = photos.slice(0, 9);
     const autres = photos.slice(9);
 
-    // Section TOP 9
     if (top.length > 0) {
       const titreTop = document.createElement("div");
       titreTop.textContent = "🏆 TOP 9";
@@ -75,7 +131,6 @@ export async function afficherGalerieConcours() {
       galerie.appendChild(gridTop);
     }
 
-    // Section AUTRES
     if (autres.length > 0) {
       const titreAutres = document.createElement("div");
       titreAutres.textContent = "Toutes les photos";
@@ -95,13 +150,11 @@ export async function afficherGalerieConcours() {
   }
 }
 
-// Crée une carte photo
 function creerCartePhoto(photo, isTop) {
   const div = document.createElement("div");
   div.className = "photo-concours-item";
   if (isTop) div.classList.add("top9-photo");
 
-  // Affichage cœur SVG, vote et zoom
   div.innerHTML = `
     <div class="photo-concours-img-wrapper" style="position:relative;cursor:pointer;">
       <img src="${photo.url}" class="photo-concours-img" />
@@ -114,7 +167,7 @@ function creerCartePhoto(photo, isTop) {
     <div class="photo-concours-user">${photo.user || "?"}</div>
   `;
 
-  // Gestion vote direct sur bouton cœur (petit, discret)
+  // Gestion vote direct sur bouton cœur
   const btn = div.querySelector(".btn-coeur-concours");
   if (!dejaVotees.includes(photo.id) && votesToday > 0) {
     btn.addEventListener("click", async (e) => {
@@ -122,18 +175,23 @@ function creerCartePhoto(photo, isTop) {
       btn.disabled = true;
       btn.querySelector("img").style.opacity = "0.43";
       try {
-        await voterPourPhoto(photo.id);
+        // Update votesTotal dans Firestore
+        await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
+          votesTotal: (photo.votesTotal || 0) + 1
+        });
+        // Mets à jour localStorage
+        dejaVotees.push(photo.id);
+        localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
         btn.querySelector(".nbvotes").textContent = Number(btn.querySelector(".nbvotes").textContent) + 1;
         votesToday--;
-        dejaVotees.push(photo.id);
         await majVotesRestants();
-      } catch (err) {
-        alert(err.message);
+      } catch (e) {
+        alert("Erreur lors du vote.");
+        console.error(e);
       }
     });
   }
 
-  // Ouverture popup zoom sur clic sur l'image (hors cœur)
   div.querySelector(".photo-concours-img-wrapper").addEventListener("click", () => {
     ouvrirPopupZoom(photo);
   });
@@ -143,11 +201,9 @@ function creerCartePhoto(photo, isTop) {
 
 // POPUP ZOOM PHOTO
 function ouvrirPopupZoom(photo) {
-  // Supprime ancienne popup s'il y en a une
   let old = document.getElementById("popup-photo-zoom");
   if (old) old.remove();
 
-  // Création popup
   const popup = document.createElement("div");
   popup.id = "popup-photo-zoom";
   popup.className = "popup show";
@@ -176,28 +232,28 @@ function ouvrirPopupZoom(photo) {
       </div>
     </div>
   `;
-
   document.body.appendChild(popup);
 
-  // Fermeture popup
   popup.querySelector("#close-popup-zoom").onclick = () => popup.remove();
 
-  // Bouton vote dans popup
   const btnVote = popup.querySelector(".btn-coeur-popup");
   if (!dejaVotees.includes(photo.id) && votesToday > 0) {
     btnVote.addEventListener("click", async () => {
       btnVote.disabled = true;
       btnVote.querySelector("img").style.opacity = "0.43";
       try {
-        await voterPourPhoto(photo.id);
+        await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
+          votesTotal: (photo.votesTotal || 0) + 1
+        });
+        dejaVotees.push(photo.id);
+        localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
         btnVote.querySelector(".nbvotes").textContent = Number(btnVote.querySelector(".nbvotes").textContent) + 1;
         votesToday--;
-        dejaVotees.push(photo.id);
         await majVotesRestants();
-        // Met à jour la galerie derrière
         setTimeout(afficherGalerieConcours, 400);
-      } catch (err) {
-        alert(err.message);
+      } catch (e) {
+        alert("Erreur lors du vote.");
+        console.error(e);
       }
     });
   }

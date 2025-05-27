@@ -5,6 +5,10 @@ import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.
 export async function ouvrirCameraPour(defiId, mode = "solo") {
   await initFirebaseUser();
   const user = auth.currentUser;
+  if (!user) {
+    alert("Utilisateur non connecté !");
+    return;
+  }
 
   const container = document.createElement("div");
   container.className = "camera-container-fullscreen";
@@ -61,7 +65,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
     if (mode === "duel") {
       // ==== Mode Duel ====
       if (window.savePhotoDuel) {
-        await window.savePhotoDuel(defiId, dataUrl); // <-- AWAIT AJOUTÉ
+        await window.savePhotoDuel(defiId, dataUrl);
       } else {
         alert("Erreur : fonction savePhotoDuel introuvable !");
       }
@@ -78,7 +82,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo") {
       } catch (e) {
         console.warn("⚠️ Erreur d'enregistrement Firebase (solo):", e);
       }
-      // Affichage direct dans l'interface
       if (window.afficherPhotoDansCadreSolo) {
         window.afficherPhotoDansCadreSolo(defiId, dataUrl);
       }

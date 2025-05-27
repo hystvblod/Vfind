@@ -24,6 +24,11 @@ if (!window.firebaseAppInit) {
   });
 }
 
+// === Mémo user data pour limiter les lectures Firestore ===
+window.userDataCache = null;
+window.userDataCacheTime = 0;
+const USER_CACHE_DURATION = 10000; // ms, durée validité du cache user (10 sec)
+
 // === Attendre que Firebase soit prêt ===
 function waitForFirebaseAuthReady() {
   return new Promise(resolve => {
@@ -44,13 +49,21 @@ async function getUserDocRef() {
   return window.firebaseFirestore.doc(window.firebaseDB, "users", user.uid);
 }
 
-async function getUserDataCloud() {
+async function getUserDataCloud(force = false) {
   await waitForFirebaseAuthReady();
+  const now = Date.now();
+  if (!force && window.userDataCache && (now - window.userDataCacheTime < USER_CACHE_DURATION)) {
+    return window.userDataCache;
+  }
   const ref = await getUserDocRef();
   const snap = await window.firebaseFirestore.getDoc(ref);
-  if (snap.exists()) return snap.data();
+  if (snap.exists()) {
+    window.userDataCache = snap.data();
+    window.userDataCacheTime = now;
+    return window.userDataCache;
+  }
   // Création si jamais le doc n’existe pas
-  await window.firebaseFirestore.setDoc(ref, {
+  const base = {
     pseudo: "Joueur",
     points: 100,
     jetons: 3,
@@ -60,13 +73,19 @@ async function getUserDataCloud() {
     amis: [],
     photoProfil: "",
     premium: false
-  });
-  return (await window.firebaseFirestore.getDoc(ref)).data();
+  };
+  await window.firebaseFirestore.setDoc(ref, base);
+  window.userDataCache = base;
+  window.userDataCacheTime = now;
+  return base;
 }
 
 async function updateUserDataCloud(update) {
   const ref = await getUserDocRef();
   await window.firebaseFirestore.updateDoc(ref, update);
+  // Maj le cache !
+  window.userDataCache = { ...(window.userDataCache || {}), ...update };
+  window.userDataCacheTime = Date.now();
 }
 
 // Helpers cloud (uniquement Firestore)
@@ -138,7 +157,7 @@ async function acheterCadreBoutique(id, prix) {
   await acheterCadre(id);
   await updatePointsDisplay();
   alert("✅ Cadre acheté !");
-  await renderBoutique(currentCategory); // ✅ recharge uniquement la catégorie actuelle
+  await renderBoutique(currentCategory);
 }
 
 // --- Popups et pub ---
@@ -467,6 +486,4 @@ window.acheterJetonsAvecPieces = acheterJetonsAvecPieces;
 window.acheterJetonsAvecPub = acheterJetonsAvecPub;
 window.watchAd = watchAd;
 window.inviteFriend = inviteFriend;
-
-// Ajoute la fonction patchée au global si besoin pour debug
 window.afficherPhotosSauvegardees = afficherPhotosSauvegardees;

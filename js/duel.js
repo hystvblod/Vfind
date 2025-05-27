@@ -3,7 +3,7 @@ import {
   getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, getDocs, query, where
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-import { getUserDataCloud } from "./userData.js"; // <--- AJOUT pour récupérer le solde
+import { getUserDataCloud } from "./userData.js"; // <--- Pour solde points/jetons
 
 const db = getFirestore();
 const auth = getAuth();
@@ -24,9 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await getUserDataCloud();
     if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
     if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
-  } catch (e) {
-    // rien
-  }
+  } catch (e) {}
 });
 
 // ===== LOGIQUE MATCHMAKING RANDOM (duel_random.html) =====
@@ -70,6 +68,7 @@ if (path.includes("duel_random.html")) {
       const roomId = Math.random().toString(36).substring(2, 9);
       const duelRef = doc(collection(db, "duels"), roomId);
 
+      // On tire les défis aléatoires
       const defisCol = collection(db, "defis");
       const defisSnap = await getDocs(defisCol);
       let allDefis = defisSnap.docs.map(doc => doc.data().intitule);
@@ -91,6 +90,7 @@ if (path.includes("duel_random.html")) {
 
       localStorage.setItem("duel_random_room", roomId);
 
+      // Attente du 2e joueur : redirige automatiquement
       onSnapshot(duelRef, (snap) => {
         const data = snap.data();
         if (data && data.status === "playing") {
@@ -113,7 +113,6 @@ if (path.includes("duel_game.html") && roomId) {
     currentUserId = user.uid;
     listenRoom(roomId);
 
-    // Rafraîchir le solde aussi après authentification utilisateur
     try {
       const data = await getUserDataCloud();
       if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
@@ -146,15 +145,13 @@ if (path.includes("duel_game.html") && roomId) {
       myID = isPlayer1 ? roomData.player1 : roomData.player2;
       advID = isPlayer1 ? roomData.player2 : roomData.player1;
 
-      // PATCH : on récupère le pseudoPublic (PAS le champ "pseudo" ni le UID)
+      // PATCH : pseudoPublic préféré
       if (advID) {
         const userRef = doc(db, "users", advID);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
           const data = userSnap.data();
-          advPseudo = data.pseudoPublic || advID; // 🔥 On utilise pseudoPublic
-        } else {
-          advPseudo = advID;
+          advPseudo = data.pseudoPublic || advID;
         }
       }
     }
@@ -181,7 +178,6 @@ if (path.includes("duel_game.html") && roomId) {
 
     renderDefis({ myID, advID, advPseudo, cadreActifMoi, cadreActifAdv });
 
-    // === MISE À JOUR SOLDE SI CHANGEMENT EN COURS DE PARTIE ===
     try {
       const data = await getUserDataCloud();
       if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
@@ -241,7 +237,7 @@ if (path.includes("duel_game.html") && roomId) {
       titreJoueur.textContent = "Toi";
       colJoueur.appendChild(titreJoueur);
 
-      // Si photo, structure SOLO (miniature/cadre)
+      // Miniature/cadre si photo présente
       if (myPhotos[idxStr]) {
         const cadreDiv = document.createElement("div");
         cadreDiv.className = "cadre-item cadre-duel-mini";
@@ -268,7 +264,7 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // Jeton P (toujours affiché)
+      // Jeton P
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
       jetonBtn.textContent = "🅿️";

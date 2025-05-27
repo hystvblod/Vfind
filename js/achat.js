@@ -13,61 +13,48 @@ export async function acheterPack(packId) {
   }
 
   const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) {
-    alert("Profil utilisateur introuvable.");
-    return;
-  }
-
-  const userData = userSnap.data();
-
-  // Définition des packs
-  const packs = {
-    pack_099: {
-      prix: 0.99,
-      base: 1500,
-      bonus: 500,
-      flag: "firstBuy_099"
-    },
-    pack_199: {
-      prix: 1.99,
-      base: 4000,
-      bonus: 1000,
-      flag: "firstBuy_199"
-    },
-    pack_249: {
-      prix: 2.49,
-      base: 12000,
-      bonus: 3000,
-      flag: "firstBuy_249"
-    }
-  };
-
-  const pack = packs[packId];
-
-  if (!pack) {
-    alert("Pack inconnu.");
-    return;
-  }
-
-  let total = pack.base;
-
-  if (!userData[pack.flag]) {
-    total += pack.bonus;
-    await updateDoc(userRef, {
-      [pack.flag]: true
-    });
-  }
 
   try {
-    await updateDoc(userRef, {
-      pieces: increment(total)
-    });
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("Profil utilisateur introuvable.");
+      return;
+    }
+
+    const userData = userSnap.data();
+
+    // Packs disponibles
+    const packs = {
+      pack_099: { prix: 0.99, base: 1500, bonus: 500, flag: "firstBuy_099" },
+      pack_199: { prix: 1.99, base: 4000, bonus: 1000, flag: "firstBuy_199" },
+      pack_249: { prix: 2.49, base: 12000, bonus: 3000, flag: "firstBuy_249" }
+    };
+
+    const pack = packs[packId];
+
+    if (!pack) {
+      alert("Pack inconnu.");
+      return;
+    }
+
+    let total = pack.base;
+
+    const updates = {};
+
+    if (!userData[pack.flag]) {
+      total += pack.bonus;
+      updates[pack.flag] = true;
+    }
+
+    updates.pieces = increment(total);
+
+    await updateDoc(userRef, updates);
     alert(`+${total} pièces ajoutées à votre compte !`);
+
   } catch (error) {
-    console.error("Erreur lors de l'ajout de pièces :", error);
-    alert("Une erreur est survenue lors de l'ajout de pièces.");
+    console.error("Erreur lors de l'achat :", error);
+    alert("Une erreur est survenue pendant l'achat.");
   }
 }
 
@@ -84,9 +71,7 @@ export async function activerPremium() {
   const userRef = doc(db, "users", user.uid);
 
   try {
-    await updateDoc(userRef, {
-      premium: true
-    });
+    await updateDoc(userRef, { premium: true });
     alert("Statut Premium activé avec succès !");
   } catch (error) {
     console.error("Erreur lors de l'activation du premium :", error);

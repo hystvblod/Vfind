@@ -1,18 +1,18 @@
-// js/pub.js (version Firebase PRO)
 import { isPremium, addPoints, getPoints } from './userData.js'; // adapte si besoin !
 
 export async function showAd(type) {
-  // Statut premium Firestore
-  if (await isPremium()) {
+  // Vérifie si Premium une seule fois
+  const premium = await isPremium();
+  if (premium) {
     if (type === "rewarded") {
       await addPoints(10);
       alert("🎁 Bonus Premium : 10 pièces sans pub !");
-      await updatePointsDisplay();
     } else if (type === "interstitial") {
       alert("✨ Premium actif : aucune pub !");
     } else if (type === "premium") {
       alert("✅ Tu es déjà Premium !");
     }
+    await updatePointsDisplay();
     return;
   }
 
