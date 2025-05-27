@@ -146,6 +146,10 @@ export async function afficherGalerieConcours() {
 }
 
 function creerCartePhoto(photo, isTop) {
+  // Si l'URL est vide ou non valide : on retourne null, donc rien ne s'affiche dans la galerie
+  if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) {
+    return null;
+  }
   const div = document.createElement("div");
   div.className = "photo-concours-item";
   if (isTop) div.classList.add("top9-photo");
@@ -162,7 +166,7 @@ function creerCartePhoto(photo, isTop) {
     <div class="photo-concours-user">${photo.user || "?"}</div>
   `;
 
-  // Gestion vote direct sur bouton cœur
+  // ...reste inchangé...
   const btn = div.querySelector(".btn-coeur-concours");
   if (!dejaVotees.includes(photo.id) && votesToday > 0) {
     btn.addEventListener("click", async (e) => {
@@ -170,11 +174,9 @@ function creerCartePhoto(photo, isTop) {
       btn.disabled = true;
       btn.querySelector("img").style.opacity = "0.43";
       try {
-        // Update votesTotal dans Firestore
         await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
           votesTotal: (photo.votesTotal || 0) + 1
         });
-        // Mets à jour localStorage
         dejaVotees.push(photo.id);
         localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
         btn.querySelector(".nbvotes").textContent = Number(btn.querySelector(".nbvotes").textContent) + 1;
@@ -193,6 +195,7 @@ function creerCartePhoto(photo, isTop) {
 
   return div;
 }
+
 
 // POPUP ZOOM PHOTO
 function ouvrirPopupZoom(photo) {

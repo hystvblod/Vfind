@@ -2126,17 +2126,31 @@ header,
   opacity: 1;
   text-decoration: underline;
 }
-.popup,
-#popup-photo, #popup-jeton, #popup-end, #popup-premium, #popup-achat-jeton {
-  position: fixed !important;
-  top: 0; left: 0;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999;
-  background: rgba(20, 20, 40, 0.33);
-  margin: 0 !important;
+/* === PATCH: Popup photo centrée exactement sur la taille du cadre === */
+#popup-photo .popup-inner {
+  width: 300px !important;
+  height: 375px !important;
   padding: 0 !important;
+  background: none !important;   /* Pas de fond dégradé si tu veux voir le cadre pur */
+  box-shadow: none !important;   /* Optionnel */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pour que le cadre soit bien centré dans la popup */
+#popup-photo .cadre-preview {
+  width: 300px !important;
+  height: 375px !important;
+  margin: 0 !important;
+}
+
+/* Bouton fermer (croix) bien positionné */
+#popup-photo .close-btn,
+#popup-photo #close-popup {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
 }
