@@ -2126,3 +2126,17 @@ header,
   opacity: 1;
   text-decoration: underline;
 }
+.popup,
+#popup-photo, #popup-jeton, #popup-end, #popup-premium, #popup-achat-jeton {
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999;
+  background: rgba(20, 20, 40, 0.33);
+  margin: 0 !important;
+  padding: 0 !important;
+}
