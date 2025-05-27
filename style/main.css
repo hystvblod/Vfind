@@ -2128,24 +2128,3 @@ overflow-y: auto;
   background: rgba(20, 20, 40, 0.33);
   z-index: 9999;
 }
-/* PATCH FINAL PRO pour overlays premium/jeton */
-#popup-premium,
-#popup-achat-jeton {
-  position: fixed !important;
-  top: 0 !important; left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
-  background: rgba(20, 20, 40, 0.33) !important;
-}
-
-/* Assure que .popup (global) NE gêne pas ces overlays */
-#popup-premium.popup,
-#popup-achat-jeton.popup {
-  top: 0 !important;
-  left: 0 !important;
-  transform: none !important;
-}
