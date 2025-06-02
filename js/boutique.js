@@ -464,3 +464,10 @@ window.acheterJetonsAvecPub = acheterJetonsAvecPub;
 window.watchAd = watchAd;
 window.inviteFriend = inviteFriend;
 window.afficherPhotosSauvegardees = afficherPhotosSauvegardees;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchCadres();
+  await renderBoutique('classique');
+  await updatePointsDisplay();
+  await updateJetonsDisplay();
+});
