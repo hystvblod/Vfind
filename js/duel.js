@@ -1,4 +1,4 @@
-// ==== duel.js (SUPABASE + CACHE OPTIMISÉ) ====
+// ==== duel.js (SUPABASE + CACHE OPTIMISÉ + COEUR LOCAL) ====
 
 import { supabase, getCurrentUser } from './supabase.js';
 
@@ -65,6 +65,23 @@ let timerInterval = null;
 // --------- Utilitaires ---------
 function $(id) {
   return document.getElementById(id);
+}
+
+// --------- COEURS LOCAUX (aimer/retirer) ---------
+function getPhotosAimeesDuel() {
+  return JSON.parse(localStorage.getItem("photos_aimees_duel") || "[]");
+}
+function aimerPhotoDuel(defiId) {
+  let aimes = getPhotosAimeesDuel();
+  if (!aimes.includes(defiId)) {
+    aimes.push(defiId);
+    localStorage.setItem("photos_aimees_duel", JSON.stringify(aimes));
+  }
+}
+function retirerPhotoAimeeDuel(defiId) {
+  let aimes = getPhotosAimeesDuel();
+  aimes = aimes.filter(id => id !== defiId);
+  localStorage.setItem("photos_aimees_duel", JSON.stringify(aimes));
 }
 
 // --------- Matchmaking aléatoire (duel_random.html) ---------
@@ -158,19 +175,13 @@ if (path.includes("duel_game.html") && roomId) {
     let advPseudo = "Adversaire";
     let advID = isPlayer1 ? roomData.player2 : roomData.player1;
 
-    // Récup pseudoPublic adverse
-    if (advID) {
-      // Option : stocker le pseudo adversaire en local (optimisation à faire sur d'autres pages)
-      advPseudo = advID;
-    }
+    if (advID) advPseudo = advID;
     if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
     if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
-    // Cadre actif : à custom selon ta logique
     let cadreActifMoi = "polaroid_01";
     let cadreActifAdv = "polaroid_01";
-    // Affichage des défis/photos
     renderDefis({ cadreActifMoi, cadreActifAdv });
   }
 
@@ -188,7 +199,7 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // --------- Gestion de l'affichage des défis + cache photo ---------
+  // --------- Affichage des défis + boutons + coeur ---------
   async function renderDefis({ cadreActifMoi, cadreActifAdv }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
@@ -198,6 +209,7 @@ if (path.includes("duel_game.html") && roomId) {
 
     const myChamp = isPlayer1 ? 'photosA' : 'photosB';
     const advChamp = isPlayer1 ? 'photosB' : 'photosA';
+    const photosAimees = getPhotosAimeesDuel();
 
     ul.innerHTML = '';
     for (let idx = 0; idx < roomData.defis.length; idx++) {
@@ -242,6 +254,26 @@ if (path.includes("duel_game.html") && roomId) {
 
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
+
+        // --- Bouton coeur pour aimer la photo ---
+        const coeurBtn = document.createElement("img");
+        coeurBtn.src = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "assets/icons/coeur_plein.svg" : "assets/icons/coeur.svg";
+        coeurBtn.alt = "Aimer";
+        coeurBtn.style.width = "2em";
+        coeurBtn.style.cursor = "pointer";
+        coeurBtn.style.marginLeft = "0.6em";
+        coeurBtn.title = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "Retirer des photos aimées" : "Ajouter aux photos aimées";
+        coeurBtn.onclick = () => {
+          if (photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`)) {
+            retirerPhotoAimeeDuel(`${roomId}_${myChamp}_${idxStr}`);
+          } else {
+            aimerPhotoDuel(`${roomId}_${myChamp}_${idxStr}`);
+          }
+          renderDefis({ cadreActifMoi, cadreActifAdv }); // MAJ UI
+        };
+        preview.appendChild(coeurBtn);
+        // ----------------------------------------
+
         cadreDiv.appendChild(preview);
         colJoueur.appendChild(cadreDiv);
       }
@@ -313,7 +345,6 @@ if (path.includes("duel_game.html") && roomId) {
 
   window.savePhotoDuel = async function(idx, dataUrl) {
     const champ = isPlayer1 ? 'photosA' : 'photosB';
-    // Sauvegarde sur Supabase + cache local
     const room = await getRoom(roomId);
     let photos = room[champ] || {};
     photos[idx] = dataUrl;
@@ -321,7 +352,6 @@ if (path.includes("duel_game.html") && roomId) {
     await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, dataUrl);
   };
 
-  // Agrandir la photo (popup)
   window.agrandirPhoto = function(dataUrl, cadre) {
     $("photo-affichee").src = dataUrl;
     $("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
@@ -330,7 +360,6 @@ if (path.includes("duel_game.html") && roomId) {
     popup.classList.add("show");
   };
 
-  // Appelle à la fin du duel (fin, retour, etc)
   window.cleanupDuelPhotos = async function() {
     await VFindDuelDB.deleteAllForRoom(roomId);
   };
@@ -342,7 +371,6 @@ async function getRoom(roomId) {
   return data;
 }
 
-// Pour la bande passante : photo d'abord dans cache local, sinon on va chercher sur Supabase puis on met en cache
 async function getPhotoDuel(roomId, champ, idx) {
   const cacheKey = `${roomId}_${champ}_${idx}`;
   let dataUrl = await VFindDuelDB.get(cacheKey);
@@ -353,18 +381,13 @@ async function getPhotoDuel(roomId, champ, idx) {
   return dataUrl;
 }
 
-// Pour tirer des défis random (à personnaliser)
 async function getRandomDefis(count = 3) {
-  // Ex : si tu as une table defis dans Supabase, fais un select ici
-  // Pour démo :
   return [
     "Selfie avec un objet bleu",
     "Photo d'un animal",
     "Photo d'une ombre"
   ].sort(() => 0.5 - Math.random()).slice(0, count);
 }
-
-// ==================================== //
 
 // Fermer la popup (bouton croix, général)
 document.addEventListener("DOMContentLoaded", () => {
