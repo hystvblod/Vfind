@@ -6,7 +6,6 @@
   <title>VFind - Profil</title>
   <link rel="stylesheet" href="style/main.css"/>
   <style>
-    /* ID style */
     .id-user {
       color: #fff;
       font-weight: bold;
@@ -22,7 +21,6 @@
     .id-user:hover {
       color: #ffe04a;
     }
-    /* ===== POPUP changement ID indépendante ===== */
     .popChangementID-bg {
       display: none;
       position: fixed;
@@ -165,19 +163,15 @@
   <p>© 2025 VFind</p>
 </footer>
 
-<!-- ==== FIREBASE CENTRALISÉ PRO ==== -->
+<!-- ==== SUPABASE CENTRALISÉ ==== -->
 <script type="module">
-import { db, auth, initFirebaseUser } from './js/firebase.js';
-import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+import { supabase, getCurrentUser, getProfile, updateProfile } from './js/supabase.js';
 
-// === ON GARDE LA STRUCTURE : l'ID public (pseudoPublic) devient la clé Firestore ===
+let profil, pseudoPublic;
 
-let profil, ref, pseudoPublic;
-
+// Rafraîchit l’affichage du profil
 async function refreshProfilDisplay() {
-  const snap = await getDoc(ref);
-  profil = snap.data();
+  profil = await getProfile(pseudoPublic);
   document.getElementById("idUserDisplay").textContent =
     "ID public : " + (profil.pseudoPublic || "???");
   document.getElementById("idUserDisplay").style.color = "#fff";
@@ -185,37 +179,16 @@ async function refreshProfilDisplay() {
   document.getElementById("jetons").textContent = profil.jetons || 0;
 }
 
+// Initialisation du profil utilisateur
 async function setupProfile() {
-  // On récupère le pseudoPublic depuis firebase.js (clé Firestore et id public)
-  pseudoPublic = await initFirebaseUser();
-  ref = doc(db, "users", pseudoPublic);
-  let snap = await getDoc(ref);
-
-  // Création auto si profil inexistant
-  if (!snap.exists()) {
-    let tempID = pseudoPublic;
-    await setDoc(ref, {
-      points: 100,
-      jetons: 3,
-      pseudoPublic: tempID,
-      idFixe: false,
-      cadres: [],
-      filleuls: 0,
-      amis: [],
-      demandesRecues: [],
-      demandesEnvoyees: [],
-      historique: [],
-      historiqueDuel: [],
-      photosAimees: [],
-      // Ajoute ici tout champ supplémentaire voulu !
-    });
-    snap = await getDoc(ref);
+  pseudoPublic = await getCurrentUser();
+  profil = await getProfile(pseudoPublic);
+  if (!profil) {
+    await updateProfile(pseudoPublic, { pseudoPublic });
+    profil = await getProfile(pseudoPublic);
   }
-
-  profil = snap.data();
   await refreshProfilDisplay();
 
-  // Ouvre la popChangementID
   document.getElementById("showChangeIdBtn").onclick = () => {
     document.getElementById("popChangementID-bg").classList.add("active");
     document.getElementById("popNewIdInput").value = "";
@@ -251,9 +224,12 @@ async function setupProfile() {
       return;
     }
     // Vérifie unicité
-    const q = query(collection(db, "users"), where("pseudoPublic", "==", newId));
-    const res = await getDocs(q);
-    if (!res.empty) {
+    let { data } = await supabase
+      .from("users")
+      .select("pseudoPublic")
+      .eq("pseudoPublic", newId)
+      .single();
+    if (data) {
       err.textContent = "ID déjà pris 😕";
       return;
     }
@@ -263,20 +239,20 @@ async function setupProfile() {
         err.textContent = "Il te faut 200 pièces pour changer d’ID !";
         return;
       }
-      await updateDoc(ref, {
+      await updateProfile(pseudoPublic, {
         pseudoPublic: newId,
         idFixe: true,
         points: (profil.points || 0) - 200
       });
-      profil.points -= 200;
     } else {
-      await updateDoc(ref, {
+      await updateProfile(pseudoPublic, {
         pseudoPublic: newId,
         idFixe: true
       });
     }
-    profil.pseudoPublic = newId;
-    profil.idFixe = true;
+    localStorage.setItem('pseudoPublic', newId);
+    pseudoPublic = newId;
+    profil = await getProfile(pseudoPublic);
     document.getElementById("idUserDisplay").textContent = "ID public : " + newId;
     err.classList.add("valid");
     err.textContent = "✅ Ton ID public a été changé !";

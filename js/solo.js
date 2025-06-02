@@ -1,25 +1,97 @@
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-import { db } from "./firebase.js";
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
+import { supabase } from "./js/supabase.js"; // Chemin à adapter si besoin
 
 let userData = null;
 let allDefis = [];
 let defiIndexActuel = null;
 
+const DEFIS_CACHE_KEY = "vfind_defis_cache";
+const DEFIS_CACHE_DATE_KEY = "vfind_defis_cache_date";
+const DEFIS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
+
+// --------- CHARGEMENT DES DEFIS : SUPABASE puis CACHE LOCAL ---------
+async function chargerDefisDepuisSupabase(lang = "fr") {
+  // Si cache < 24h : charge local
+  const lastFetch = parseInt(localStorage.getItem(DEFIS_CACHE_DATE_KEY) || "0");
+  if (Date.now() - lastFetch < DEFIS_CACHE_TTL) {
+    const defisCache = localStorage.getItem(DEFIS_CACHE_KEY);
+    if (defisCache) {
+      allDefis = JSON.parse(defisCache);
+      return allDefis;
+    }
+  }
+
+  // Sinon, va sur Supabase
+  let { data, error } = await supabase.from("defis").select("*");
+  if (error) {
+    console.error("Erreur chargement défis Supabase :", error);
+    allDefis = [];
+    return [];
+  }
+  allDefis = data.map(d => ({
+    id: d.id,
+    texte: lang === "fr" ? d.intitule : (d[lang] || d.intitule),
+    done: false
+  }));
+
+  localStorage.setItem(DEFIS_CACHE_KEY, JSON.stringify(allDefis));
+  localStorage.setItem(DEFIS_CACHE_DATE_KEY, Date.now().toString());
+  return allDefis;
+}
+
+// ---------- GESTION DU PROFIL UTILISATEUR ----------
 async function chargerUserData(forceRefresh = false) {
   if (userData && !forceRefresh) return userData;
   userData = await getUserDataCloud();
   return userData;
 }
 
-// MAJ solde points et jetons dès chargement
+// ----------- NETTOYAGE PHOTOS EXPIREES -------------
+function nettoyerPhotosDefis() {
+  const now = Date.now();
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("photo_defi_")) {
+      // Chaque photo a une date : localStorage["photo_defi_X_date"]
+      const dateKey = key + "_date";
+      const time = parseInt(localStorage.getItem(dateKey) || "0");
+      if (time && now - time > DEFIS_CACHE_TTL) {
+        // Vérifie si la photo est aimée
+        const photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+        const photoId = key.replace("photo_defi_", "");
+        if (!photosAimees.includes(photoId)) {
+          localStorage.removeItem(key);
+          localStorage.removeItem(dateKey);
+        }
+      }
+    }
+  });
+}
+
+// ----------- STOCKAGE PHOTO AIMEE -------------
+function aimerPhoto(defiId) {
+  let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+  if (!photosAimees.includes(defiId)) {
+    photosAimees.push(defiId);
+    localStorage.setItem("photos_aimees", JSON.stringify(photosAimees));
+  }
+}
+
+function retirerPhotoAimee(defiId) {
+  let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+  photosAimees = photosAimees.filter(id => id !== defiId);
+  localStorage.setItem("photos_aimees", JSON.stringify(photosAimees));
+}
+
+// ----------- MAJ SOLDE POINTS/JETONS -------------
 document.addEventListener("DOMContentLoaded", async () => {
+  nettoyerPhotosDefis();
   await chargerUserData(true);
   if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
   if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
 });
 
+// ----------- LOGIQUE JEU -------------
 document.addEventListener("DOMContentLoaded", () => {
   const startBtn = document.getElementById("startBtn");
   const replayBtn = document.getElementById("replayBtn");
@@ -38,21 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
 
-  getDocs(collection(db, "defis"))
-    .then(snapshot => {
-      allDefis = snapshot.docs.map(doc => {
-        const d = doc.data();
-        return {
-          id: doc.id,
-          texte: userLang === "fr" ? d.intitule : d[userLang],
-          done: false
-        };
-      });
-      init();
-    })
-    .catch(err => {
-      console.error("❌ Erreur Firestore :", err);
-    });
+  chargerDefisDepuisSupabase(userLang).then(() => {
+    init();
+  });
 
   async function init() {
     startBtn?.addEventListener("click", startGame);
@@ -105,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (diff <= 0) {
         clearInterval(interval);
-        await window.endGameAuto(); // <--- CORRECTION ici
+        await window.endGameAuto();
         return;
       }
 
@@ -134,17 +194,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
 
-      if (!dataUrl) {
-        try {
-          const defisSolo = userData.defisSolo || {};
-          if (defisSolo[defi.id]) {
-            dataUrl = defisSolo[defi.id];
-            localStorage.setItem(`photo_defi_${defi.id}`, dataUrl);
-          }
-        } catch (e) {
-          console.warn("⚠️ Impossible de charger la photo depuis Firebase", e);
-        }
-      }
+      // Pas de chargement Firestore : uniquement localStorage
+
       photosMap[defi.id] = dataUrl || null;
 
       const hasPhoto = !!dataUrl;
@@ -162,6 +213,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="defi-texte">
             <p>${defi.texte}</p>
             ${boutonPhoto}
+        <img
+  src="assets/icons/coeur.svg"
+  alt="Ajouter aux photos aimées"
+  style="width:2em;cursor:pointer;display:inline-block;margin-left:0.6em;vertical-align:middle;"
+  onclick="window.aimerPhoto('${defi.id}')"
+>
+
           </div>
           <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
         </div>
@@ -264,7 +322,18 @@ document.addEventListener("DOMContentLoaded", () => {
   window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
     if (!defiId || !dataUrl) return;
     localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+    localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
     await loadDefis();
+  };
+
+  window.aimerPhoto = function(defiId) {
+    aimerPhoto(defiId);
+    alert("Photo ajoutée à tes photos aimées !");
+  };
+
+  window.retirerPhotoAimee = function(defiId) {
+    retirerPhotoAimee(defiId);
+    alert("Photo retirée de tes photos aimées.");
   };
 
   document.addEventListener("photoAjouteeSolo", async () => {
@@ -323,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
       defiTimer: 0
     });
 
-    document.getElementById("end-message").textContent = "⏰ Temps écoulé, partie terminée !";
+    document.getElementById("end-message").textContent = "Temps écoulé, partie terminée !";
     document.getElementById("gain-message").textContent = "+0 pièce (temps écoulé)";
     document.getElementById("popup-end").classList.remove("hidden");
     document.getElementById("popup-end").classList.add("show");

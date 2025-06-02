@@ -11,7 +11,7 @@
     <a href="index.html" class="back-btn" title="Retour">
       <img src="assets/icons/arrow_back.svg" alt="Retour" />
     </a>
-    <h1 class="titre-centre">Duel avec un ami</h1>
+    <h1 class="titre-centre">Duel privé</h1>
     <div class="top-buttons">
       <a href="profil.html" class="btn-icon">
         <img src="assets/icons/user.svg" alt="Profil" />
@@ -23,19 +23,190 @@
   </header>
   <main>
     <div style="text-align:center;margin-top:2rem;">
-      <button class="main-button" onclick="ajouterAmi()">Ajouter un ami</button>
       <h3>Mes amis</h3>
       <ul id="liste-amis"></ul>
       <h3>Demandes de duel reçues</h3>
       <ul id="demandes-recue"></ul>
       <h3>Demandes de duel envoyées</h3>
       <ul id="demandes-envoyees"></ul>
+      <button class="main-button" id="btn-inviter-duel" style="margin-top:2rem;">Inviter un ami à un duel</button>
     </div>
   </main>
   <footer>
     <p>&copy; 2025 VFind</p>
   </footer>
-  <script src="js/amis.js"></script>
-  <script type="module" src="js/firebase.js"></script>
+  <script type="module">
+    import { supabase, getCurrentUser, getProfile, updateProfile } from "./js/supabase.js";
+
+    let pseudoPublic = null;
+    let profil = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      pseudoPublic = await getCurrentUser();
+      profil = await getProfile(pseudoPublic);
+      afficherAmis();
+      afficherDemandesDuel();
+    });
+
+    // Afficher la liste des amis avec bouton lancer un duel
+    async function afficherAmis() {
+      const amis = profil.amis || [];
+      const ul = document.getElementById("liste-amis");
+      ul.innerHTML = "";
+      if (!amis.length) {
+        ul.innerHTML = "<li>Aucun ami enregistré.</li>";
+        return;
+      }
+      amis.forEach(ami => {
+        const li = document.createElement("li");
+        li.textContent = ami;
+        const btn = document.createElement("button");
+        btn.textContent = "Inviter en duel";
+        btn.onclick = () => inviterDuel(ami);
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+    }
+
+    // Envoyer une invitation à un ami
+    async function inviterDuel(amiPseudo) {
+      // Charge profil de l'ami
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      if (!ami) {
+        alert("Ami introuvable.");
+        return;
+      }
+      // Ajoute la demande chez l'ami
+      const demandesRecues = new Set([...(ami.demandesDuelRecues || []), pseudoPublic]);
+      await supabase.from("users").update({
+        demandesDuelRecues: Array.from(demandesRecues)
+      }).eq("pseudoPublic", amiPseudo);
+
+      // Ajoute la demande chez toi
+      const demandesEnvoyees = new Set([...(profil.demandesDuelEnvoyees || []), amiPseudo]);
+      await supabase.from("users").update({
+        demandesDuelEnvoyees: Array.from(demandesEnvoyees)
+      }).eq("pseudoPublic", pseudoPublic);
+
+      alert("Invitation envoyée !");
+      profil = await getProfile(pseudoPublic);
+      afficherDemandesDuel();
+    }
+
+    // Affichage des demandes de duel reçues/envoyées
+    async function afficherDemandesDuel() {
+      // Reçues
+      const ulRecue = document.getElementById("demandes-recue");
+      ulRecue.innerHTML = "";
+      const recues = profil.demandesDuelRecues || [];
+      if (!recues.length) ulRecue.innerHTML = "<li>Aucune demande.</li>";
+      for (const ami of recues) {
+        const li = document.createElement("li");
+        li.textContent = ami + " ";
+        // Accepter
+        const btnAcc = document.createElement("button");
+        btnAcc.textContent = "Accepter";
+        btnAcc.onclick = () => accepterDuel(ami);
+        li.appendChild(btnAcc);
+        // Refuser
+        const btnRef = document.createElement("button");
+        btnRef.textContent = "Refuser";
+        btnRef.onclick = () => refuserDuel(ami);
+        li.appendChild(btnRef);
+        ulRecue.appendChild(li);
+      }
+      // Envoyées
+      const ulEnv = document.getElementById("demandes-envoyees");
+      ulEnv.innerHTML = "";
+      const envoyees = profil.demandesDuelEnvoyees || [];
+      if (!envoyees.length) ulEnv.innerHTML = "<li>Aucune demande.</li>";
+      envoyees.forEach(ami => {
+        const li = document.createElement("li");
+        li.textContent = ami;
+        ulEnv.appendChild(li);
+      });
+    }
+
+    // Accepter la demande de duel
+    async function accepterDuel(amiPseudo) {
+      // Crée la room de duel et supprime les demandes des deux côtés
+      const defis = await getRandomDefis();
+      const { data, error } = await supabase.from('duels').insert([{
+        player1: amiPseudo,
+        player2: pseudoPublic,
+        status: 'playing',
+        createdAt: Date.now(),
+        defis,
+        startTime: Date.now(),
+        photosA: {},
+        photosB: {}
+      }]).select();
+
+      // Supprime la demande chez toi
+      await supabase.from("users").update({
+        demandesDuelRecues: (profil.demandesDuelRecues || []).filter(p => p !== amiPseudo)
+      }).eq("pseudoPublic", pseudoPublic);
+
+      // Supprime la demande envoyée chez l'ami
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      await supabase.from("users").update({
+        demandesDuelEnvoyees: (ami.demandesDuelEnvoyees || []).filter(p => p !== pseudoPublic)
+      }).eq("pseudoPublic", amiPseudo);
+
+      // MAJ affichage
+      profil = await getProfile(pseudoPublic);
+      afficherDemandesDuel();
+
+      // Redirige vers la room
+      if (data && data.length) {
+        window.location.href = `duel_game.html?room=${data[0].id}`;
+      }
+    }
+
+    // Refuser une demande de duel
+    async function refuserDuel(amiPseudo) {
+      await supabase.from("users").update({
+        demandesDuelRecues: (profil.demandesDuelRecues || []).filter(p => p !== amiPseudo)
+      }).eq("pseudoPublic", pseudoPublic);
+
+      // Supprime chez l'ami
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      await supabase.from("users").update({
+        demandesDuelEnvoyees: (ami.demandesDuelEnvoyees || []).filter(p => p !== pseudoPublic)
+      }).eq("pseudoPublic", amiPseudo);
+
+      profil = await getProfile(pseudoPublic);
+      afficherDemandesDuel();
+    }
+
+    // Bouton "Inviter un ami à un duel"
+    document.getElementById("btn-inviter-duel").onclick = async () => {
+      const idAmi = prompt("Pseudo public de ton ami à inviter :");
+      if (!idAmi || idAmi === pseudoPublic) return;
+      // Vérifie que c'est dans la liste des amis
+      if (!(profil.amis || []).includes(idAmi)) {
+        alert("Cet utilisateur n'est pas dans ta liste d'amis.");
+        return;
+      }
+      inviterDuel(idAmi);
+    };
+
+    // --- TIRAGE ALEATOIRE DANS LA BASE DES DEFIS ---
+    async function getRandomDefis(count = 3) {
+      // Sélectionne les défis actifs dans Supabase
+      const { data, error } = await supabase
+        .from('defis')
+        .select('intitule')
+        .eq('actif', true);
+
+      if (!data || data.length < count) {
+        // Fallback si moins de 3 défis trouvés
+        return (data || []).map(d => d.intitule);
+      }
+      // Mélange et slice
+      const shuffled = data.sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count).map(d => d.intitule);
+    }
+  </script>
 </body>
 </html>

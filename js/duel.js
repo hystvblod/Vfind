@@ -1,188 +1,177 @@
-// === duel.js (VERSION FINALE 100% PRO, MIRROIR SOLO & AFFICHAGE MINIATURE/CADRE & SOLDE) ===
-import {
-  getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, getDocs, query, where
-} from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-import { getUserDataCloud } from "./userData.js"; // <--- Pour solde points/jetons
+// ==== duel.js (SUPABASE + CACHE OPTIMISÉ) ====
 
-const db = getFirestore();
-const auth = getAuth();
+import { supabase, getCurrentUser } from './supabase.js';
 
+// ========== IndexedDB cache ========== //
+const VFindDuelDB = {
+  db: null,
+  async init() {
+    return new Promise((resolve, reject) => {
+      const open = indexedDB.open('VFindDuelPhotos', 1);
+      open.onupgradeneeded = () => {
+        open.result.createObjectStore('photos', { keyPath: 'key' });
+      };
+      open.onsuccess = () => {
+        VFindDuelDB.db = open.result;
+        resolve();
+      };
+      open.onerror = reject;
+    });
+  },
+  async set(key, dataUrl) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('photos', 'readwrite');
+      tx.objectStore('photos').put({ key, dataUrl });
+      tx.oncomplete = resolve;
+      tx.onerror = reject;
+    });
+  },
+  async get(key) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('photos', 'readonly');
+      const req = tx.objectStore('photos').get(key);
+      req.onsuccess = () => resolve(req.result ? req.result.dataUrl : null);
+      req.onerror = reject;
+    });
+  },
+  async deleteAllForRoom(roomId) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('photos', 'readwrite');
+      const store = tx.objectStore('photos');
+      const req = store.openCursor();
+      req.onsuccess = function() {
+        const cursor = req.result;
+        if (cursor) {
+          if (cursor.key.startsWith(roomId + "_")) cursor.delete();
+          cursor.continue();
+        }
+      };
+      tx.oncomplete = resolve;
+      tx.onerror = reject;
+    });
+  }
+};
+// ===================================== //
+
+// --------- Variables globales ---------
 let currentRoomId = null;
-let currentUserId = null;
 let isPlayer1 = false;
 let roomData = null;
 let timerInterval = null;
 
+// --------- Utilitaires ---------
+function $(id) {
+  return document.getElementById(id);
+}
+
+// --------- Matchmaking aléatoire (duel_random.html) ---------
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
-// === MISE À JOUR SOLDE PIECES/JETONS dès chargement (header duel) ===
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const data = await getUserDataCloud();
-    if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
-    if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
-  } catch (e) {}
-});
-
-// ===== LOGIQUE MATCHMAKING RANDOM (duel_random.html) =====
 if (path.includes("duel_random.html")) {
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-    const oldRoomId = localStorage.getItem("duel_random_room");
-    if (oldRoomId) {
-      const ref = doc(db, "duels", oldRoomId);
-      const snap = await getDoc(ref);
-      if (snap.exists() && (snap.data().status === "waiting" || snap.data().status === "playing")) {
-        window.location.href = `duel_game.html?room=${oldRoomId}`;
-        return;
-      } else {
-        localStorage.removeItem("duel_random_room");
-      }
-    }
-    await startMatchmaking(user.uid);
-  });
+  (async () => {
+    const pseudo = await getCurrentUser();
+    // Cherche une room waiting SANS toi
+    let { data: rooms } = await supabase
+      .from('duels')
+      .select('*')
+      .eq('status', 'waiting')
+      .neq('player1', pseudo);
 
-  async function startMatchmaking(uid) {
-    const duelsCol = collection(db, "duels");
-    const q = query(duelsCol, where("status", "==", "waiting"), where("player1", "!=", uid));
-    const qsnap = await getDocs(q);
-
-    if (!qsnap.empty) {
-      const first = qsnap.docs[0];
-      const roomId = first.id;
-      const duelRef = doc(db, "duels", roomId);
-      await updateDoc(duelRef, {
-        player2: uid,
-        status: "playing",
+    if (rooms && rooms.length > 0) {
+      // Rejoint room
+      const room = rooms[0];
+      await supabase.from('duels').update({
+        player2: pseudo,
+        status: 'playing',
         startTime: Date.now()
-      });
-      localStorage.setItem("duel_random_room", roomId);
-      window.location.href = `duel_game.html?room=${roomId}`;
+      }).eq('id', room.id);
+      localStorage.setItem("duel_random_room", room.id);
+      localStorage.setItem("duel_is_player1", "0");
+      window.location.href = `duel_game.html?room=${room.id}`;
     } else {
-      const roomId = Math.random().toString(36).substring(2, 9);
-      const duelRef = doc(collection(db, "duels"), roomId);
-
-      // On tire les défis aléatoires
-      const defisCol = collection(db, "defis");
-      const defisSnap = await getDocs(defisCol);
-      let allDefis = defisSnap.docs.map(doc => doc.data().intitule);
-      const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
-      const defisChoisis = shuffled.slice(0, 3);
-
-      await setDoc(duelRef, {
-        player1: uid,
+      // Crée nouvelle room
+      const defis = await getRandomDefis();
+      const { data, error } = await supabase.from('duels').insert([{
+        player1: pseudo,
         player2: null,
-        score1: 0,
-        score2: 0,
-        status: "waiting",
+        status: 'waiting',
         createdAt: Date.now(),
-        defis: defisChoisis,
+        defis,
         startTime: null,
         photosA: {},
         photosB: {}
-      });
-
-      localStorage.setItem("duel_random_room", roomId);
-
-      // Attente du 2e joueur : redirige automatiquement
-      onSnapshot(duelRef, (snap) => {
-        const data = snap.data();
-        if (data && data.status === "playing") {
-          window.location.href = `duel_game.html?room=${roomId}`;
+      }]).select();
+      localStorage.setItem("duel_random_room", data[0].id);
+      localStorage.setItem("duel_is_player1", "1");
+      // Attend le 2e joueur en poll toutes les 1.5s (live realtime = + de requêtes = + bande passante !)
+      const waitRoom = async () => {
+        const { data: r } = await supabase.from('duels').select('*').eq('id', data[0].id).single();
+        if (r && r.status === "playing") {
+          window.location.href = `duel_game.html?room=${data[0].id}`;
+        } else {
+          setTimeout(waitRoom, 1500);
         }
-      });
+      };
+      waitRoom();
     }
-  }
+  })();
 }
 
-// ===== DUEL GAME (duel_game.html) =====
+// --------- Jeu du duel (duel_game.html) ---------
 if (path.includes("duel_game.html") && roomId) {
   currentRoomId = roomId;
 
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-    currentUserId = user.uid;
-    listenRoom(roomId);
-
-    try {
-      const data = await getUserDataCloud();
-      if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
-      if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
-    } catch (e) {}
-  });
-
-  function listenRoom(roomId) {
-    const duelRef = doc(db, "duels", roomId);
-    onSnapshot(duelRef, async (snap) => {
-      if (!snap.exists()) {
-        localStorage.removeItem("duel_random_room");
-        alert("Room supprimée ou introuvable !");
-        window.location.href = "duel.html";
-        return;
-      }
-      roomData = snap.data();
-      await updateDuelUI();
+  (async () => {
+    const pseudo = await getCurrentUser();
+    // Charge la room et découvre si player1 ou 2
+    const room = await getRoom(roomId);
+    isPlayer1 = (room.player1 === pseudo);
+    subscribeRoom(roomId, (data) => {
+      roomData = data;
+      updateDuelUI();
     });
+    // Initial render
+    roomData = await getRoom(roomId);
+    updateDuelUI();
+  })();
+
+  function subscribeRoom(roomId, callback) {
+    supabase
+      .channel('duel_room_' + roomId)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'duels',
+        filter: `id=eq.${roomId}`
+      }, payload => {
+        callback(payload.new);
+      })
+      .subscribe();
   }
 
   async function updateDuelUI() {
     let advPseudo = "Adversaire";
-    let advID = "";
-    let myID = "";
-    isPlayer1 = false;
+    let advID = isPlayer1 ? roomData.player2 : roomData.player1;
 
-    if (currentUserId && roomData) {
-      isPlayer1 = (currentUserId === roomData.player1);
-      myID = isPlayer1 ? roomData.player1 : roomData.player2;
-      advID = isPlayer1 ? roomData.player2 : roomData.player1;
-
-      // PATCH : pseudoPublic préféré
-      if (advID) {
-        const userRef = doc(db, "users", advID);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          advPseudo = data.pseudoPublic || advID;
-        }
-      }
+    // Récup pseudoPublic adverse
+    if (advID) {
+      // Option : stocker le pseudo adversaire en local (optimisation à faire sur d'autres pages)
+      advPseudo = advID;
     }
-
     if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
     if (roomData.startTime && $("timer")) startGlobalTimer(roomData.startTime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
-    // ==== RECUP CADRE ACTIF DE CHAQUE JOUEUR ====
+    // Cadre actif : à custom selon ta logique
     let cadreActifMoi = "polaroid_01";
     let cadreActifAdv = "polaroid_01";
-    try {
-      if (myID) {
-        const userRef = doc(db, "users", myID);
-        const snap = await getDoc(userRef);
-        if (snap.exists() && snap.data().cadreActif) cadreActifMoi = snap.data().cadreActif;
-      }
-      if (advID) {
-        const advRef = doc(db, "users", advID);
-        const snap = await getDoc(advRef);
-        if (snap.exists() && snap.data().cadreActif) cadreActifAdv = snap.data().cadreActif;
-      }
-    } catch(e) { /* ignore */ }
-
-    renderDefis({ myID, advID, advPseudo, cadreActifMoi, cadreActifAdv });
-
-    try {
-      const data = await getUserDataCloud();
-      if (document.getElementById("points")) document.getElementById("points").textContent = data.points || 0;
-      if (document.getElementById("jetons")) document.getElementById("jetons").textContent = data.jetons || 0;
-    } catch (e) {}
+    // Affichage des défis/photos
+    renderDefis({ cadreActifMoi, cadreActifAdv });
   }
 
   function startGlobalTimer(startTime) {
@@ -199,16 +188,16 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // ========== AFFICHAGE DES DÉFIS, CADRES DYNAMIQUES, PHOTOS, etc. ==========
-  async function renderDefis({myID, advID, advPseudo, cadreActifMoi, cadreActifAdv}) {
+  // --------- Gestion de l'affichage des défis + cache photo ---------
+  async function renderDefis({ cadreActifMoi, cadreActifAdv }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
       if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
       return;
     }
 
-    const myPhotos = isPlayer1 ? (roomData.photosA || {}) : (roomData.photosB || {});
-    const advPhotos = isPlayer1 ? (roomData.photosB || {}) : (roomData.photosA || {});
+    const myChamp = isPlayer1 ? 'photosA' : 'photosB';
+    const advChamp = isPlayer1 ? 'photosB' : 'photosA';
 
     ul.innerHTML = '';
     for (let idx = 0; idx < roomData.defis.length; idx++) {
@@ -217,7 +206,7 @@ if (path.includes("duel_game.html") && roomId) {
       const li = document.createElement('li');
       li.className = 'defi-item';
 
-      // Cartouche défi (en haut)
+      // Cartouche défi
       const cartouche = document.createElement('div');
       cartouche.className = 'defi-cartouche-center';
       cartouche.textContent = defi;
@@ -227,18 +216,18 @@ if (path.includes("duel_game.html") && roomId) {
       const row = document.createElement('div');
       row.className = 'duel-defi-row';
 
-      // ======== Colonne Joueur (gauche) ========
+      // --- Colonne Joueur (gauche) ---
       const colJoueur = document.createElement('div');
       colJoueur.className = 'joueur-col';
 
-      // Titre
       const titreJoueur = document.createElement('div');
       titreJoueur.className = 'col-title';
       titreJoueur.textContent = "Toi";
       colJoueur.appendChild(titreJoueur);
 
-      // Miniature/cadre si photo présente
-      if (myPhotos[idxStr]) {
+      // Photo joueur (cache optimisé)
+      const myPhoto = await getPhotoDuel(roomId, myChamp, idxStr);
+      if (myPhoto) {
         const cadreDiv = document.createElement("div");
         cadreDiv.className = "cadre-item cadre-duel-mini";
         const preview = document.createElement("div");
@@ -248,8 +237,8 @@ if (path.includes("duel_game.html") && roomId) {
         cadreImg.src = "./assets/cadres/" + cadreActifMoi + ".webp";
         const photoImg = document.createElement("img");
         photoImg.className = "photo-user";
-        photoImg.src = myPhotos[idxStr];
-        photoImg.onclick = () => agrandirPhoto(myPhotos[idxStr], cadreActifMoi);
+        photoImg.src = myPhoto;
+        photoImg.onclick = () => agrandirPhoto(myPhoto, cadreActifMoi);
 
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
@@ -257,7 +246,7 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // Boutons sous le cadre/miniature (ou seuls si pas de photo)
+      // Boutons
       const btnRow = document.createElement('div');
       btnRow.style.display = "flex";
       btnRow.style.gap = "10px";
@@ -274,22 +263,23 @@ if (path.includes("duel_game.html") && roomId) {
 
       // Bouton photo
       const photoBtn = document.createElement('button');
-      photoBtn.textContent = myPhotos[idxStr] ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+      photoBtn.textContent = myPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
       photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
       btnRow.appendChild(photoBtn);
 
       colJoueur.appendChild(btnRow);
 
-      // ======== Colonne Adversaire (droite) ========
+      // --- Colonne Adversaire (droite) ---
       const colAdv = document.createElement('div');
       colAdv.className = 'adversaire-col';
       const titreAdv = document.createElement('div');
       titreAdv.className = 'col-title';
-      titreAdv.textContent = advPseudo || "Adversaire";
+      titreAdv.textContent = "Adversaire";
       colAdv.appendChild(titreAdv);
 
-      // Miniature ADVERSAIRE si dispo
-      if (advPhotos[idxStr]) {
+      // Photo adversaire (cache optimisé)
+      const advPhoto = await getPhotoDuel(roomId, advChamp, idxStr);
+      if (advPhoto) {
         const cadreDiv = document.createElement("div");
         cadreDiv.className = "cadre-item cadre-duel-mini";
         const preview = document.createElement("div");
@@ -299,8 +289,8 @@ if (path.includes("duel_game.html") && roomId) {
         cadreImg.src = "./assets/cadres/" + cadreActifAdv + ".webp";
         const photoImg = document.createElement("img");
         photoImg.className = "photo-user";
-        photoImg.src = advPhotos[idxStr];
-        photoImg.onclick = () => agrandirPhoto(advPhotos[idxStr], cadreActifAdv);
+        photoImg.src = advPhoto;
+        photoImg.onclick = () => agrandirPhoto(advPhoto, cadreActifAdv);
 
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
@@ -308,46 +298,75 @@ if (path.includes("duel_game.html") && roomId) {
         colAdv.appendChild(cadreDiv);
       }
 
-      // Ajout des colonnes à la row
       row.appendChild(colJoueur);
       row.appendChild(colAdv);
 
-      // Ajout row à l'item li
       li.appendChild(row);
       ul.appendChild(li);
     }
   }
 
-  // ==== Camera ====
+  // ==== Camera ==== //
   window.ouvrirCameraPourDuel = function(idx) {
     window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx);
   };
 
   window.savePhotoDuel = async function(idx, dataUrl) {
-    const duelRef = doc(db, "duels", currentRoomId);
-    const data = (await getDoc(duelRef)).data();
-    const field = isPlayer1 ? "photosA" : "photosB";
-    const photos = data[field] || {};
-    photos[String(idx)] = dataUrl;
-    await updateDoc(duelRef, { [field]: photos });
+    const champ = isPlayer1 ? 'photosA' : 'photosB';
+    // Sauvegarde sur Supabase + cache local
+    const room = await getRoom(roomId);
+    let photos = room[champ] || {};
+    photos[idx] = dataUrl;
+    await supabase.from('duels').update({ [champ]: photos }).eq('id', roomId);
+    await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, dataUrl);
   };
 
   // Agrandir la photo (popup)
   window.agrandirPhoto = function(dataUrl, cadre) {
-    document.getElementById("photo-affichee").src = dataUrl;
-    document.getElementById("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
-    const popup = document.getElementById("popup-photo");
+    $("photo-affichee").src = dataUrl;
+    $("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
+    const popup = $("popup-photo");
     popup.classList.remove("hidden");
     popup.classList.add("show");
   };
+
+  // Appelle à la fin du duel (fin, retour, etc)
+  window.cleanupDuelPhotos = async function() {
+    await VFindDuelDB.deleteAllForRoom(roomId);
+  };
 }
 
-// ==== Utils ====
-function $(id) {
-  return document.getElementById(id);
+// ======== UTILS SUPABASE ========== //
+async function getRoom(roomId) {
+  const { data } = await supabase.from('duels').select('*').eq('id', roomId).single();
+  return data;
 }
 
-// === Ajout : fermeture croix popup ===
+// Pour la bande passante : photo d'abord dans cache local, sinon on va chercher sur Supabase puis on met en cache
+async function getPhotoDuel(roomId, champ, idx) {
+  const cacheKey = `${roomId}_${champ}_${idx}`;
+  let dataUrl = await VFindDuelDB.get(cacheKey);
+  if (dataUrl) return dataUrl;
+  const room = await getRoom(roomId);
+  dataUrl = room && room[champ] && room[champ][idx];
+  if (dataUrl) await VFindDuelDB.set(cacheKey, dataUrl);
+  return dataUrl;
+}
+
+// Pour tirer des défis random (à personnaliser)
+async function getRandomDefis(count = 3) {
+  // Ex : si tu as une table defis dans Supabase, fais un select ici
+  // Pour démo :
+  return [
+    "Selfie avec un objet bleu",
+    "Photo d'un animal",
+    "Photo d'une ombre"
+  ].sort(() => 0.5 - Math.random()).slice(0, count);
+}
+
+// ==================================== //
+
+// Fermer la popup (bouton croix, général)
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.close-btn, #close-popup').forEach(btn => {
     btn.onclick = function() {

@@ -37,17 +37,22 @@
     </div>
   </div>
 
-  <!-- POPUP PARTIE TERMINÉE -->
-  <div id="popup-end" class="popup hidden">
-    <div class="popup-inner">
-      <h2>🎉 Partie terminée !</h2>
-      <p id="end-message">Félicitations, tu as terminé cette partie !</p>
-      <p id="gain-message" style="font-weight:bold;font-size:1.15em;"></p>
-      <div style="display:flex;justify-content:center;gap:0.6em;margin-top:1em;">
-        <button id="replayBtnEnd" class="main-button">🔁 Rejouer</button>
-        <button id="returnBtnEnd" class="main-button">🏠 Retour</button>
-      </div>
+<!-- POPUP PARTIE TERMINÉE -->
+<div id="popup-end" class="popup hidden">
+  <div class="popup-inner">
+    <h2>Partie terminée !</h2>
+    <p id="end-message">Félicitations, tu as terminé cette partie !</p>
+    <p id="gain-message" style="font-weight:bold;font-size:1.15em;"></p>
+    <div style="display:flex;justify-content:center;gap:0.6em;margin-top:1em;">
+      <button id="replayBtnEnd" class="main-button" title="Rejouer">
+        <img src="assets/icons/repeat.svg" alt="Rejouer" style="width:2em;height:2em;vertical-align:middle;" />
+      </button>
+      <button id="returnBtnEnd" class="main-button" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" style="width:2em;height:2em;vertical-align:middle;" />
+      </button>
     </div>
+  </div>
+
   </div>
 
   <!-- HEADER -->
@@ -103,7 +108,7 @@
   </main>
 
   <!-- SCRIPTS -->
-  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/supabase.js"></script>
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/camera.js"></script>
   <script type="module" src="js/solo.js"></script>

@@ -154,8 +154,11 @@
     });
   </script>
 
-  <!-- === Connexion Firebase CENTRALISÉE === -->
-  <script type="module" src="js/firebase.js"></script>
+<script type="module">
+import { getCurrentUser } from './js/supabase.js';
+getCurrentUser();
+</script>
+
 
 </body>
 </html>
