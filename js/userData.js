@@ -420,6 +420,13 @@ export async function getDefisFromSupabase(lang = "fr") {
 export async function getOwnedFrames(force = false) {
   return await getCadresPossedes(force);
 }
+
+// Permet de récupérer l'ID utilisateur (utile pour la boutique, le parrainage, etc.)
+export function getUserId() {
+  return userIdCache;
+}
+
+// EXPORTS PRINCIPAUX
 export {
   getPoints,
   addPoints,
