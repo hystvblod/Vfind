@@ -434,7 +434,7 @@ export {
   getConcoursParticipationStatus,
   hasDownloadedVZone,
   getUserId,
-  getUserDataCloud,
+  getUserData,
   getDefisFromSupabase,
   getOwnedFrames
 };
