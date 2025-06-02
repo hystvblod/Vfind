@@ -29,7 +29,7 @@ function setCachedOwnedFrames(frames) {
 }
 
 // --------- CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ----------
-export async function loadUserData(force = false) {
+async function loadUserData(force = false) {
   await ensureAuth();
   if (userDataCache && !force) return userDataCache;
   const { data, error } = await supabase
@@ -63,35 +63,35 @@ export async function loadUserData(force = false) {
 }
 
 // --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
-export function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
-export function getPointsCached()        { return userDataCache?.points ?? 0; }
-export function getJetonsCached()        { return userDataCache?.jetons ?? 0; }
-export function getCadresPossedesCached(){ return userDataCache?.cadres ?? []; }
-export function getCadreSelectionneCached() { return userDataCache?.cadreActif ?? "polaroid_01"; }
-export function isPremiumCached()        { return !!userDataCache?.premium; }
-export function getLikedPhotosCached()   { return userDataCache?.likedPhotos ?? []; }
-export function getSignaledPhotosCached(){ return userDataCache?.signaledPhotos ?? []; }
-export function getHistoriqueCached()    { return userDataCache?.historique ?? []; }
-export function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
-export function hasDownloadedVZoneCached() { return userDataCache?.hasDownloadedVZone ?? false; }
-export function hasDownloadedVBlocksCached() { return userDataCache?.hasDownloadedVBlocks ?? false; }
-export function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
+function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
+function getPointsCached()        { return userDataCache?.points ?? 0; }
+function getJetonsCached()        { return userDataCache?.jetons ?? 0; }
+function getCadresPossedesCached(){ return userDataCache?.cadres ?? []; }
+function getCadreSelectionneCached() { return userDataCache?.cadreActif ?? "polaroid_01"; }
+function isPremiumCached()        { return !!userDataCache?.premium; }
+function getLikedPhotosCached()   { return userDataCache?.likedPhotos ?? []; }
+function getSignaledPhotosCached(){ return userDataCache?.signaledPhotos ?? []; }
+function getHistoriqueCached()    { return userDataCache?.historique ?? []; }
+function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
+function hasDownloadedVZoneCached() { return userDataCache?.hasDownloadedVZone ?? false; }
+function hasDownloadedVBlocksCached() { return userDataCache?.hasDownloadedVBlocks ?? false; }
+function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
 
 // ---------- FONCTIONS CLOUD ----------
-export async function getPseudo() { await loadUserData(); return getPseudoCached(); }
-export async function setPseudo(pseudo) {
+async function getPseudo() { await loadUserData(); return getPseudoCached(); }
+async function setPseudo(pseudo) {
   await loadUserData();
   userDataCache.pseudo = pseudo;
   await supabase.from('users').update({ pseudo }).eq('id', userIdCache);
 }
 
-export async function getPoints() { await loadUserData(); return getPointsCached(); }
-export async function addPoints(n) {
+async function getPoints() { await loadUserData(); return getPointsCached(); }
+async function addPoints(n) {
   await loadUserData();
   userDataCache.points += n;
   await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
 }
-export async function removePoints(n) {
+async function removePoints(n) {
   await loadUserData();
   if (userDataCache.points < n) return false;
   userDataCache.points -= n;
@@ -99,13 +99,13 @@ export async function removePoints(n) {
   return true;
 }
 
-export async function getJetons() { await loadUserData(); return getJetonsCached(); }
-export async function addJetons(n) {
+async function getJetons() { await loadUserData(); return getJetonsCached(); }
+async function addJetons(n) {
   await loadUserData();
   userDataCache.jetons += n;
   await supabase.from('users').update({ jetons: userDataCache.jetons }).eq('id', userIdCache);
 }
-export async function removeJeton() {
+async function removeJeton() {
   await loadUserData();
   if (userDataCache.jetons <= 0) return false;
   userDataCache.jetons -= 1;
@@ -114,12 +114,12 @@ export async function removeJeton() {
 }
 
 // CADRES
-export function formatCadreId(id) {
+function formatCadreId(id) {
   const num = id.replace(/[^\d]/g, "");
   const padded = num.padStart(2, "0");
   return "polaroid_" + padded;
 }
-export async function getCadresPossedes(force = false) {
+async function getCadresPossedes(force = false) {
   if (!force) {
     const cached = getCachedOwnedFrames();
     if (cached) return cached;
@@ -128,119 +128,116 @@ export async function getCadresPossedes(force = false) {
   setCachedOwnedFrames(getCadresPossedesCached());
   return getCadresPossedesCached();
 }
-export async function possedeCadre(id) {
+async function possedeCadre(id) {
   await loadUserData();
   const idClean = formatCadreId(id);
   return getCadresPossedesCached().includes(idClean);
 }
-export async function acheterCadre(id) {
+async function acheterCadre(id) {
   await loadUserData();
   const idClean = formatCadreId(id);
   userDataCache.cadres = Array.from(new Set([...(userDataCache.cadres || []), idClean]));
   await supabase.from('users').update({ cadres: userDataCache.cadres }).eq('id', userIdCache);
   setCachedOwnedFrames(userDataCache.cadres);
 }
-export async function getCadreSelectionne() {
+async function getCadreSelectionne() {
   await loadUserData();
   return getCadreSelectionneCached();
 }
-export async function setCadreSelectionne(id) {
+async function setCadreSelectionne(id) {
   const idClean = formatCadreId(id);
   await loadUserData();
   userDataCache.cadreActif = idClean;
   await supabase.from('users').update({ cadreActif: idClean }).eq('id', userIdCache);
 }
 
-// HISTORIQUE PHOTOS (chaque entrée = {base64, defi, date, type, defis})
-export async function sauvegarderPhoto(base64, defi, type = "solo") {
+// HISTORIQUE PHOTOS
+async function sauvegarderPhoto(base64, defi, type = "solo") {
   await loadUserData();
   const historique = [...(userDataCache.historique || []), { base64, defi, date: new Date().toISOString(), type, defis: [defi] }];
   userDataCache.historique = historique;
   await supabase.from('users').update({ historique }).eq('id', userIdCache);
 }
-export async function getHistoriquePhotos() {
+async function getHistoriquePhotos() {
   await loadUserData();
   return getHistoriqueCached();
 }
 
 // LIKES PHOTOS
-export async function likePhoto(photoId) {
+async function likePhoto(photoId) {
   await loadUserData();
   if (!userDataCache.likedPhotos.includes(photoId))
     userDataCache.likedPhotos.push(photoId);
   await supabase.from('users').update({ likedPhotos: userDataCache.likedPhotos }).eq('id', userIdCache);
 }
-export async function unlikePhoto(photoId) {
+async function unlikePhoto(photoId) {
   await loadUserData();
   userDataCache.likedPhotos = (userDataCache.likedPhotos || []).filter(id => id !== photoId);
   await supabase.from('users').update({ likedPhotos: userDataCache.likedPhotos }).eq('id', userIdCache);
 }
-export async function getLikedPhotos() {
+async function getLikedPhotos() {
   await loadUserData();
   return getLikedPhotosCached();
 }
 
 // SIGNALER PHOTOS
-export async function signalerPhoto(photoId) {
+async function signalerPhoto(photoId) {
   await loadUserData();
   if (!userDataCache.signaledPhotos.includes(photoId))
     userDataCache.signaledPhotos.push(photoId);
   await supabase.from('users').update({ signaledPhotos: userDataCache.signaledPhotos }).eq('id', userIdCache);
 }
-export async function getSignaledPhotos() {
+async function getSignaledPhotos() {
   await loadUserData();
   return getSignaledPhotosCached();
 }
 
 // PREMIUM
-export async function isPremium() { await loadUserData(); return isPremiumCached(); }
-export async function setPremium(status) {
+async function isPremium() { await loadUserData(); return isPremiumCached(); }
+async function setPremium(status) {
   await loadUserData();
   userDataCache.premium = !!status;
   await supabase.from('users').update({ premium: !!status }).eq('id', userIdCache);
 }
 
-// Flags pour conditions spécifiques (ex: téléchargements et invitations)
-export async function setHasDownloadedVZone(value) {
+// Flags pour conditions spécifiques
+async function setHasDownloadedVZone(value) {
   await loadUserData();
   userDataCache.hasDownloadedVZone = !!value;
   await supabase.from('users').update({ hasDownloadedVZone: !!value }).eq('id', userIdCache);
 }
-export async function hasDownloadedVZone() {
+async function hasDownloadedVZone() {
   await loadUserData();
   return !!userDataCache.hasDownloadedVZone;
 }
-export async function setHasDownloadedVBlocks(value) {
+async function setHasDownloadedVBlocks(value) {
   await loadUserData();
   userDataCache.hasDownloadedVBlocks = !!value;
   await supabase.from('users').update({ hasDownloadedVBlocks: !!value }).eq('id', userIdCache);
 }
-export async function hasDownloadedVBlocks() {
+async function hasDownloadedVBlocks() {
   await loadUserData();
   return !!userDataCache.hasDownloadedVBlocks;
 }
-export async function setFriendsInvited(count) {
+async function setFriendsInvited(count) {
   await loadUserData();
   userDataCache.friendsInvited = count;
   await supabase.from('users').update({ friendsInvited: count }).eq('id', userIdCache);
 }
-export async function getNbAmisInvites() {
+async function getNbAmisInvites() {
   await loadUserData();
   return userDataCache.friendsInvited || 0;
 }
-export async function incrementFriendsInvited() {
+async function incrementFriendsInvited() {
   await loadUserData();
   userDataCache.friendsInvited = (userDataCache.friendsInvited || 0) + 1;
   await supabase.from('users').update({ friendsInvited: userDataCache.friendsInvited }).eq('id', userIdCache);
 }
 
 // ========== CONDITIONS CADRES SPÉCIAUX ==========
-
-export async function getJoursDefisRealises() {
+async function getJoursDefisRealises() {
   await loadUserData();
   const historique = userDataCache?.historique || [];
-
-  // Regroupe par date et type
   const defisParJourType = {};
   historique.forEach(entry => {
     let dateISO = entry.date && entry.date.length === 10 ? entry.date : (entry.date || '').slice(0, 10);
@@ -249,8 +246,6 @@ export async function getJoursDefisRealises() {
     if (entry.type === "duel_random") defisParJourType[dateISO].duel_random += (entry.defis?.length || 0);
     if (entry.type === "duel_amis") defisParJourType[dateISO].duel_amis += (entry.defis?.length || 0);
   });
-
-  // Compte 1 jour validé si une des catégories a 3 défis ce jour-là
   let joursValides = 0;
   for (const date in defisParJourType) {
     const { solo, duel_random, duel_amis } = defisParJourType[date];
@@ -259,12 +254,10 @@ export async function getJoursDefisRealises() {
   return joursValides;
 }
 
-export async function getConcoursParticipationStatus() {
+async function getConcoursParticipationStatus() {
   await loadUserData();
   const concoursId = getConcoursId();
-  // Vérifier photo postée cette semaine
   const aPoste = (userDataCache.concoursPhotosPostees || []).includes(concoursId);
-  // Vérifier votes sur au moins 3 jours
   const votes = userDataCache.votesConcours?.[concoursId]?.votes || {};
   const joursVotés = Object.keys(votes).filter(date => (votes[date]?.length ?? 0) > 0);
   const aVote3Jours = joursVotés.length >= 3;
@@ -272,8 +265,7 @@ export async function getConcoursParticipationStatus() {
 }
 
 // ========== LOGIQUE CONCOURS ==========
-
-export function getConcoursId() {
+function getConcoursId() {
   const now = new Date();
   const year = now.getFullYear();
   const firstJan = new Date(year, 0, 1);
@@ -282,7 +274,7 @@ export function getConcoursId() {
   return `${year}-${week}`;
 }
 
-export async function getVotesInfoForConcours() {
+async function getVotesInfoForConcours() {
   await loadUserData();
   const concoursId = getConcoursId();
   const now = new Date();
@@ -310,7 +302,7 @@ export async function getVotesInfoForConcours() {
   };
 }
 
-export async function voterPourPhoto(photoId) {
+async function voterPourPhoto(photoId) {
   await loadUserData();
   const concoursId = getConcoursId();
   const now = new Date();
@@ -322,7 +314,6 @@ export async function voterPourPhoto(photoId) {
   if (!userDataCache.votesConcours[concoursId].votes) userDataCache.votesConcours[concoursId].votes = {};
   if (!userDataCache.votesConcours[concoursId].votes[dateStr]) userDataCache.votesConcours[concoursId].votes[dateStr] = [];
 
-  // Reset auto si date différente
   if (userDataCache.votesConcours[concoursId].lastReset !== dateStr) {
     userDataCache.votesConcours[concoursId].lastReset = dateStr;
     userDataCache.votesConcours[concoursId].votesToday = maxVotes;
@@ -335,13 +326,11 @@ export async function voterPourPhoto(photoId) {
   if (votesToday <= 0) throw new Error("Tu as utilisé tous tes votes aujourd'hui !");
   if (dejaVotees.includes(photoId)) throw new Error("Tu as déjà voté pour cette photo aujourd'hui.");
 
-  // MAJ user (cache & supabase)
   userDataCache.votesConcours[concoursId].votesToday -= 1;
   userDataCache.votesConcours[concoursId].votes[dateStr].push(photoId);
   userDataCache.votesConcours[concoursId].lastReset = dateStr;
   await supabase.from('users').update({ votesConcours: userDataCache.votesConcours }).eq('id', userIdCache);
 
-  // MAJ votes sur la photo (table "concoursPhotos", champ votesTotal)
   const { data: photo, error } = await supabase
     .from('concoursPhotos')
     .select('*')
@@ -354,7 +343,7 @@ export async function voterPourPhoto(photoId) {
   return true;
 }
 
-export async function getPhotosConcours() {
+async function getPhotosConcours() {
   const concoursId = getConcoursId();
   const { data, error } = await supabase
     .from('concoursPhotos')
@@ -371,7 +360,7 @@ export async function getPhotosConcours() {
 }
 
 // RESET/UPDATE
-export async function resetUserData() {
+async function resetUserData() {
   await ensureAuth();
   userDataCache = {
     id: userIdCache,
@@ -393,7 +382,7 @@ export async function resetUserData() {
   setCachedOwnedFrames([]);
 }
 
-export async function updateUserData(update) {
+async function updateUserData(update) {
   await loadUserData();
   Object.assign(userDataCache, update);
   await supabase.from('users').update(update).eq('id', userIdCache);
@@ -401,13 +390,13 @@ export async function updateUserData(update) {
 }
 
 // ACCÈS GLOBAL À TOUTES LES DONNÉES (depuis le cache)
-export async function getUserDataCloud() {
+async function getUserDataCloud() {
   await loadUserData();
   return { ...userDataCache };
 }
 
 // Récupère la liste des défis (toutes langues)
-export async function getDefisFromSupabase(lang = "fr") {
+async function getDefisFromSupabase(lang = "fr") {
   let { data, error } = await supabase.from("defis").select("*");
   if (error) throw error;
   return (data || []).map(d => ({
@@ -417,17 +406,17 @@ export async function getDefisFromSupabase(lang = "fr") {
   }));
 }
 
+// Alias rétrocompatible pour compatibilité boutique.js
+async function getOwnedFrames(force = false) {
+  return await getCadresPossedes(force);
+}
 
-// Permet de récupérer l'ID utilisateur (utile pour la boutique, le parrainage, etc.)
-export function getUserId() {
+// Permet de récupérer l'ID utilisateur
+function getUserId() {
   return userIdCache;
 }
 
 // EXPORTS PRINCIPAUX (AUCUN DOUBLON !)
-// NE PAS DUPLIQUER L'EXPORT getOwnedFrames !
-// NE PAS FAIRE DE "as getOwnedFrames" SUR getCadresPossedes !
-
-// FIN DU FICHIER :
 export {
   getPoints,
   addPoints,
@@ -447,5 +436,5 @@ export {
   getUserId,
   getUserDataCloud,
   getDefisFromSupabase,
-  getOwnedFrames  // ← UNE SEULE FOIS !
+  getOwnedFrames
 };
