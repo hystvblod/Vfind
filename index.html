@@ -60,8 +60,6 @@
       color: #ccc;
       font-size: 0.9rem;
     }
-
-    /* === ANIMATION INTRO LOGO === */
     #intro-logo {
       position: fixed;
       top: 0;
@@ -73,16 +71,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: fadeOut 1.2s ease-out 2.2s forwards; /* 🟢 plus rapide */
+      animation: fadeOut 1.2s ease-out 2.2s forwards;
     }
-
     .logo-img {
-      width: 180px; /* 🟢 plus grand */
+      width: 180px;
       opacity: 0;
       transform: translateY(20px) scale(0.9);
       animation: appear 1.2s ease-out forwards;
     }
-
     @keyframes appear {
       0% {
         opacity: 0;
@@ -93,7 +89,6 @@
         transform: translateY(0) scale(1);
       }
     }
-
     @keyframes fadeOut {
       to {
         opacity: 0;
@@ -133,7 +128,7 @@
     </div>
 
     <footer>
-      © 2025 VFinds. Tous droits réservés.
+      © 2025 VFindz. Tous droits réservés.
     </footer>
   </div>
 
@@ -144,21 +139,20 @@
       // ✅ Empêche l'intro de se rejouer à chaque retour
       if (!sessionStorage.getItem("introShown")) {
         sessionStorage.setItem("introShown", "true");
-
         setTimeout(() => {
           if (intro) intro.remove();
-        }, 3800); // 1.2s (animation) + 1s (pause) + 1s (fade out)
+        }, 3800);
       } else {
-        if (intro) intro.remove(); // déjà vu = on le retire immédiatement
+        if (intro) intro.remove();
       }
     });
   </script>
 
-<script type="module">
-import { getCurrentUser } from './js/supabase.js';
-getCurrentUser();
-</script>
-
+  <!-- Appel unique pour initialiser l'utilisateur (id unique universel) -->
+  <script type="module">
+    import { getUserId } from './js/supabase.js';
+    getUserId(); // Crée l'utilisateur s'il n'existe pas déjà, et l'ID est stocké dans localStorage
+  </script>
 
 </body>
 </html>

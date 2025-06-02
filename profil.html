@@ -118,16 +118,16 @@
 </header>
 
 <div style="text-align:center;margin-bottom:2em;">
-  <button id="showChangeIdBtn" style="background:#ffe04a;padding:7px 16px;border-radius:7px;border:none;font-weight:bold;cursor:pointer;">Changer mon pseudo public</button>
+  <button id="showChangeIdBtn" style="background:#ffe04a;padding:7px 16px;border-radius:7px;border:none;font-weight:bold;cursor:pointer;">Changer mon identifiant</button>
 </div>
 
 <!-- Popup changement ID UNIQUE et isolée -->
 <div class="popChangementID-bg" id="popChangementID-bg">
   <div class="popChangementID">
     <div id="popIdText" style="font-size:1.11em;margin-bottom:0.2em;">
-      Modifier mon identifiant public :
+      Modifier mon identifiant :
     </div>
-    <input type="text" id="popNewIdInput" placeholder="Nouveau pseudo unique" maxlength="18" autocomplete="off" />
+    <input type="text" id="popNewIdInput" placeholder="Nouveau ID unique" maxlength="18" autocomplete="off" />
     <div>
       <button id="popValidateId">Valider</button>
       <button id="popCancelId" type="button">Annuler</button>
@@ -165,28 +165,23 @@
 
 <!-- ==== SUPABASE CENTRALISÉ ==== -->
 <script type="module">
-import { supabase, getCurrentUser, getProfile, updateProfile } from './js/supabase.js';
+import { getUserId, getProfile, updateProfile, changeUserId } from './js/supabase.js';
 
-let profil, pseudoPublic;
+let profil, currentId;
 
-// Rafraîchit l’affichage du profil
+// Affiche le profil et l'ID
 async function refreshProfilDisplay() {
-  profil = await getProfile(pseudoPublic);
+  currentId = getUserId();
+  profil = await getProfile(currentId);
   document.getElementById("idUserDisplay").textContent =
-    "ID public : " + (profil.pseudoPublic || "???");
+    "ID : " + (profil?.id || "???");
   document.getElementById("idUserDisplay").style.color = "#fff";
-  document.getElementById("vcoins").textContent = profil.points || 0;
-  document.getElementById("jetons").textContent = profil.jetons || 0;
+  document.getElementById("vcoins").textContent = profil?.points || 0;
+  document.getElementById("jetons").textContent = profil?.jetons || 0;
 }
 
 // Initialisation du profil utilisateur
 async function setupProfile() {
-  pseudoPublic = await getCurrentUser();
-  profil = await getProfile(pseudoPublic);
-  if (!profil) {
-    await updateProfile(pseudoPublic, { pseudoPublic });
-    profil = await getProfile(pseudoPublic);
-  }
   await refreshProfilDisplay();
 
   document.getElementById("showChangeIdBtn").onclick = () => {
@@ -194,11 +189,6 @@ async function setupProfile() {
     document.getElementById("popNewIdInput").value = "";
     document.getElementById("popIdError").textContent = "";
     document.getElementById("popIdError").classList.remove("valid");
-    if (profil.idFixe) {
-      document.getElementById("popIdText").innerHTML = "Changer d'ID public :<br><span style='color:#ff8c00;'>Ce changement coûte 200 pièces.</span>";
-    } else {
-      document.getElementById("popIdText").textContent = "Modifier mon identifiant public :";
-    }
     setTimeout(()=>document.getElementById("popNewIdInput").focus(), 120);
   };
   document.getElementById("popCancelId").onclick = () => {
@@ -220,46 +210,21 @@ async function setupProfile() {
       return;
     }
     if (!/^[a-zA-Z0-9_.-]+$/.test(newId)) {
-      err.textContent = "ID : caractères autorisés A-Z 0-9 . _ -";
+      err.textContent = "Caractères autorisés : A-Z 0-9 . _ -";
       return;
     }
-    // Vérifie unicité
-    let { data } = await supabase
-      .from("users")
-      .select("pseudoPublic")
-      .eq("pseudoPublic", newId)
-      .single();
-    if (data) {
-      err.textContent = "ID déjà pris 😕";
-      return;
+    // Vérifie unicité et change dans Supabase + localStorage
+    try {
+      await changeUserId(newId);
+      err.classList.add("valid");
+      err.textContent = "✅ Ton ID a bien été changé !";
+      setTimeout(() => {
+        document.getElementById("popChangementID-bg").classList.remove("active");
+        refreshProfilDisplay();
+      }, 900);
+    } catch(e) {
+      err.textContent = e.message || "Erreur inconnue";
     }
-    // Changement avec coût si déjà fixé
-    if (profil.idFixe) {
-      if ((profil.points || 0) < 200) {
-        err.textContent = "Il te faut 200 pièces pour changer d’ID !";
-        return;
-      }
-      await updateProfile(pseudoPublic, {
-        pseudoPublic: newId,
-        idFixe: true,
-        points: (profil.points || 0) - 200
-      });
-    } else {
-      await updateProfile(pseudoPublic, {
-        pseudoPublic: newId,
-        idFixe: true
-      });
-    }
-    localStorage.setItem('pseudoPublic', newId);
-    pseudoPublic = newId;
-    profil = await getProfile(pseudoPublic);
-    document.getElementById("idUserDisplay").textContent = "ID public : " + newId;
-    err.classList.add("valid");
-    err.textContent = "✅ Ton ID public a été changé !";
-    setTimeout(()=>{
-      document.getElementById("popChangementID-bg").classList.remove("active");
-      refreshProfilDisplay();
-    }, 900);
   };
 }
 setupProfile();
