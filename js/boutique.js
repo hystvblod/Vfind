@@ -112,6 +112,17 @@ async function acheterCadreBoutique(id, prix) {
     return;
   }
   await acheterCadre(id);
+
+// Télécharger l’image depuis Supabase Storage (en public)
+const url = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
+const res = await fetch(url);
+const blob = await res.blob();
+const reader = new FileReader();
+reader.onloadend = async () => {
+  localStorage.setItem(`cadre_${id}`, reader.result); // stock base64
+};
+reader.readAsDataURL(blob);
+
   await updatePointsDisplay();
   alert("✅ Cadre acheté !");
   await renderBoutique(currentCategory);

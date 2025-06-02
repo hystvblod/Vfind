@@ -416,3 +416,7 @@ export async function getDefisFromSupabase(lang = "fr") {
     done: false
   }));
 }
+// Alias rétrocompatible pour compatibilité boutique.js
+export async function getOwnedFrames(force = false) {
+  return await getCadresPossedes(force);
+}
