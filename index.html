@@ -135,7 +135,6 @@
   <script>
     window.addEventListener("load", () => {
       const intro = document.getElementById("intro-logo");
-
       // ✅ Empêche l'intro de se rejouer à chaque retour
       if (!sessionStorage.getItem("introShown")) {
         sessionStorage.setItem("introShown", "true");
@@ -148,10 +147,10 @@
     });
   </script>
 
-  <!-- Appel unique pour initialiser l'utilisateur (id unique universel) -->
+  <!-- Appel unique pour initialiser l'utilisateur avec Supabase Auth anonyme -->
   <script type="module">
-    import { getUserId } from './js/supabase.js';
-    getUserId(); // Crée l'utilisateur s'il n'existe pas déjà, et l'ID est stocké dans localStorage
+    import { loadUserData } from './js/userData.js';
+    loadUserData(true);
   </script>
 
 </body>
