@@ -78,7 +78,6 @@ export function hasDownloadedVBlocksCached() { return userDataCache?.hasDownload
 export function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
 
 // ---------- FONCTIONS CLOUD ----------
-
 export async function getPseudo() { await loadUserData(); return getPseudoCached(); }
 export async function setPseudo(pseudo) {
   await loadUserData();
@@ -259,12 +258,6 @@ export async function getJoursDefisRealises() {
     if (solo >= 3 || duel_random >= 3 || duel_amis >= 3) joursValides++;
   }
   return joursValides;
-}
-
-// 2. NOMBRE D'AMIS INVITÉS (direct)
-export async function getNbAmisInvites() {
-  await loadUserData();
-  return userDataCache.friendsInvited || 0;
 }
 
 // 3. PARTICIPATION CONCOURS (photo postée + votes sur 3 jours)
