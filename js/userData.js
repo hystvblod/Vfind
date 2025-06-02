@@ -427,7 +427,7 @@ export {
   acheterCadre,
   getCadresPossedes,
   isPremium,
-  updateUserData,
+  updateUserDatacloud,
   getCadreSelectionne,
   getJoursDefisRealises,
   getNbAmisInvites,
