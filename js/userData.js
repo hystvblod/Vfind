@@ -428,6 +428,10 @@ export function getUserId() {
 }
 
 // EXPORTS PRINCIPAUX (AUCUN DOUBLON !)
+// NE PAS DUPLIQUER L'EXPORT getOwnedFrames !
+// NE PAS FAIRE DE "as getOwnedFrames" SUR getCadresPossedes !
+
+// FIN DU FICHIER :
 export {
   getPoints,
   addPoints,
@@ -446,5 +450,6 @@ export {
   hasDownloadedVZone,
   getUserId,
   getUserDataCloud,
-  getOwnedFrames // <--- c'est CETTE fonction qu'il faut exporter pour la compatibilité
+  getDefisFromSupabase,
+  getOwnedFrames  // ← UNE SEULE FOIS !
 };
