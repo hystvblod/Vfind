@@ -1,7 +1,7 @@
 import {
   getPoints, addPoints, removePoints, getJetons, addJetons,
   possedeCadre, acheterCadre, getOwnedFrames, isPremium,
-  updateUserDataCloud, getCadreSelectionne,
+  updateUserData, getCadreSelectionne,
   getJoursDefisRealises, getNbAmisInvites, getConcoursParticipationStatus,
   hasDownloadedVZone // (si besoin, à implémenter)
 } from './userData.js';
@@ -432,7 +432,7 @@ function fermerPopupPremium() {
 }
 async function acheterPremium() {
   if (await removePoints(3500)) {
-    await updateUserDataCloud({ premium: true });
+    await updateUserData({ premium: true });
     alert("✨ Bravo, tu es maintenant Premium !");
     window.location.reload(); // Recharge pour activer premium partout
   } else {
@@ -445,7 +445,7 @@ window.activerPremium = activerPremium;
 window.fermerPopupPremium = fermerPopupPremium;
 window.acheterPremium = acheterPremium;
 window.removePoints = removePoints;
-window.updateUserDataCloud = updateUserDataCloud;
+window.updateUserData = updateUserData;
 window.closePopup = closePopup;
 window.showUnlockPopup = showUnlockPopup;
 window.ouvrirPopupJetonBoutique = ouvrirPopupJetonBoutique;
