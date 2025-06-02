@@ -1,7 +1,8 @@
-import { supabase } from './js/supabase.js';
+import { supabase, getUserId } from './js/supabase.js';
 
 // ==== FONCTION D'UPLOAD PHOTO DUEL SUR SUPABASE STORAGE ====
-async function uploadPhotoDuelWebp(dataUrl, duelId, userId) {
+async function uploadPhotoDuelWebp(dataUrl, duelId) {
+  const userId = getUserId();
   const base64 = dataUrl.split(',')[1];
   const binary = atob(base64);
   const array = new Uint8Array(binary.length);
@@ -29,7 +30,8 @@ async function uploadPhotoDuelWebp(dataUrl, duelId, userId) {
 }
 
 // ==== FONCTION D'UPLOAD PHOTO CONCOURS SUPABASE ====
-async function uploadPhotoConcoursWebp(dataUrl, concoursId, userId) {
+async function uploadPhotoConcoursWebp(dataUrl, concoursId) {
+  const userId = getUserId();
   const base64 = dataUrl.split(',')[1];
   const binary = atob(base64);
   const array = new Uint8Array(binary.length);
@@ -62,7 +64,7 @@ async function uploadPhotoConcoursWebp(dataUrl, concoursId, userId) {
  * - SOLO: photo seule, en localStorage.
  * - BASE64: retourne la photo seule en base64 (webp, 500x550).
  */
-export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, duelId = null) { 
+export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) { 
   return new Promise((resolve, reject) => {
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
@@ -110,7 +112,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
     };
 
     takeBtn.onclick = async () => {
-      // Canvas pour la photo
       const canvas = document.createElement("canvas");
       canvas.width = VIDEO_WIDTH;
       canvas.height = VIDEO_HEIGHT;
@@ -122,8 +123,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
 
       // --- DUEL ---
       if (mode === "duel") {
-        if (!userId || !duelId) {
-          alert("Erreur interne : userId ou duelId manquant.");
+        if (!duelId) {
+          alert("Erreur interne : duelId manquant.");
           return;
         }
         const cadreImg = new Image();
@@ -132,7 +133,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, userId);
+            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId);
             if (window.savePhotoDuel) {
               await window.savePhotoDuel(defiId, urlPhoto);
             } else {
@@ -149,8 +150,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
       
       // --- CONCOURS ---
       } else if (mode === "concours") {
-        if (!userId || !defiId) { // defiId = concoursId ici
-          alert("Erreur interne : userId ou concoursId manquant.");
+        if (!defiId) { // defiId = concoursId ici
+          alert("Erreur interne : concoursId manquant.");
           return;
         }
         const cadreImg = new Image();
@@ -159,7 +160,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const urlPhoto = await uploadPhotoConcoursWebp(dataUrl, defiId, userId);
+            const urlPhoto = await uploadPhotoConcoursWebp(dataUrl, defiId);
             if (window.savePhotoConcours) {
               await window.savePhotoConcours(defiId, urlPhoto);
             } else {
@@ -206,9 +207,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo", userId = null, due
 
 // ==== FONCTIONS GLOBALES POUR LE MODE DUEL ET CONCOURS ====
 window.ouvrirCameraPour = ouvrirCameraPour;
-window.cameraOuvrirCameraPourDuel = function(idx, userId, duelId) {
-  ouvrirCameraPour(idx, "duel", userId, duelId);
+window.cameraOuvrirCameraPourDuel = function(idx, duelId) {
+  ouvrirCameraPour(idx, "duel", duelId);
 };
-window.cameraOuvrirCameraPourConcours = function(concoursId, userId) {
-  ouvrirCameraPour(concoursId, "concours", userId);
+window.cameraOuvrirCameraPourConcours = function(concoursId) {
+  ouvrirCameraPour(concoursId, "concours");
 };
