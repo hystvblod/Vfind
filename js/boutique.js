@@ -1,11 +1,12 @@
-
 import {
+  supabase, // <-- AJOUTE CETTE LIGNE !!!
   getPoints, addPoints, removePoints, getJetons, addJetons,
   possedeCadre, acheterCadre, getOwnedFrames, isPremium,
   updateUserData, getCadreSelectionne,
   getJoursDefisRealises, getNbAmisInvites, getConcoursParticipationStatus,
   hasDownloadedVZone // (si besoin, à implémenter)
 } from './userData.js';
+
 
 // === IndexedDB cache boutique/cadres.json ===
 const BOUTIQUE_DB_NAME = 'VFindBoutiqueCache';
