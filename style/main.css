@@ -2128,3 +2128,23 @@ overflow-y: auto;
   background: rgba(20, 20, 40, 0.33);
   z-index: 9999;
 }
+.grid-cadres {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* 3 colonnes fixes sur large écran */
+  gap: 20px 14px;
+  padding: 20px;
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 250px) {
+  .grid-cadres {
+    grid-template-columns: repeat(2, 1fr); /* 2 colonnes sous 700px */
+  }
+}
+@media (max-width: 100px) {
+  .grid-cadres {
+    grid-template-columns: 1fr; /* 1 colonne sous 400px si tu veux */
+  }
+}
