@@ -1,5 +1,3 @@
-// js/userData.js
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 const SUPABASE_URL = 'https://swmdepiukfginzhbeccz.supabase.co';
@@ -394,6 +392,7 @@ export async function resetUserData() {
   await supabase.from('users').upsert([userDataCache]);
   setCachedOwnedFrames([]);
 }
+
 export async function updateUserData(update) {
   await loadUserData();
   Object.assign(userDataCache, update);
@@ -406,6 +405,7 @@ export async function getUserDataCloud() {
   await loadUserData();
   return { ...userDataCache };
 }
+
 // Récupère la liste des défis (toutes langues)
 export async function getDefisFromSupabase(lang = "fr") {
   let { data, error } = await supabase.from("defis").select("*");
@@ -416,7 +416,8 @@ export async function getDefisFromSupabase(lang = "fr") {
     done: false
   }));
 }
-// Alias rétrocompatible pour compatibilité boutique.js
+
+// Alias rétrocompatible pour compatibilité boutique.js (PAS d'export doublon !)
 export async function getOwnedFrames(force = false) {
   return await getCadresPossedes(force);
 }
@@ -426,7 +427,7 @@ export function getUserId() {
   return userIdCache;
 }
 
-// EXPORTS PRINCIPAUX
+// EXPORTS PRINCIPAUX (AUCUN DOUBLON !)
 export {
   getPoints,
   addPoints,
@@ -435,7 +436,7 @@ export {
   addJetons,
   possedeCadre,
   acheterCadre,
-  getCadresPossedes as getOwnedFrames, // important pour boutique.js
+  getCadresPossedes,
   isPremium,
   updateUserDataCloud,
   getCadreSelectionne,
@@ -444,6 +445,6 @@ export {
   getConcoursParticipationStatus,
   hasDownloadedVZone,
   getUserId,
-  getUserDataCloud // permet aussi de tout récupérer facilement
+  getUserDataCloud,
+  getOwnedFrames // <--- c'est CETTE fonction qu'il faut exporter pour la compatibilité
 };
-
