@@ -293,11 +293,18 @@ async function fetchCadres(force = false) {
       return;
     }
   }
-  const res = await fetch("data/cadres.json");
-  const data = await res.json();
+
+  // Requête Supabase
+  const { data, error } = await supabase.from('cadres').select('*');
+  if (error || !data) {
+    console.error("Erreur chargement Supabase :", error);
+    return;
+  }
+
   CADRES_DATA = data;
   await setBoutiqueCache(data);
 }
+
 
 async function renderBoutique(categoryKey) {
   const catBarContainer = document.getElementById("boutique-categories");
@@ -343,7 +350,7 @@ async function renderBoutique(categoryKey) {
       wrapper.style.margin = "0 auto 10px";
 
       const cadreImg = document.createElement("img");
-      cadreImg.src = `assets/cadres/${cadre.id}.webp`;
+      cadreImg.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
       cadreImg.className = "photo-cadre";
 
       const photo = document.createElement("img");
@@ -360,7 +367,7 @@ async function renderBoutique(categoryKey) {
           <div class="popup-inner">
             <button id="close-popup" onclick="document.body.removeChild(this.parentNode.parentNode)">✖</button>
             <div class="cadre-preview cadre-popup">
-              <img class="photo-cadre" src="assets/cadres/${cadre.id}.webp" />
+              <img class="photo-cadre" src="https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp" />
               <img class="photo-user" src="assets/img/exemple.jpg" />
             </div>
           </div>
