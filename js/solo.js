@@ -1,6 +1,5 @@
-import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud } from "./userData.js";
+import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud, getDefisFromSupabase } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
-import { supabase } from "./js/supabase.js"; // Chemin à adapter si besoin
 
 let userData = null;
 let allDefis = [];
@@ -11,7 +10,7 @@ const DEFIS_CACHE_DATE_KEY = "vfind_defis_cache_date";
 const DEFIS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
 // --------- CHARGEMENT DES DEFIS : SUPABASE puis CACHE LOCAL ---------
-async function chargerDefisDepuisSupabase(lang = "fr") {
+async function chargerDefis(lang = "fr") {
   // Si cache < 24h : charge local
   const lastFetch = parseInt(localStorage.getItem(DEFIS_CACHE_DATE_KEY) || "0");
   if (Date.now() - lastFetch < DEFIS_CACHE_TTL) {
@@ -21,20 +20,8 @@ async function chargerDefisDepuisSupabase(lang = "fr") {
       return allDefis;
     }
   }
-
-  // Sinon, va sur Supabase
-  let { data, error } = await supabase.from("defis").select("*");
-  if (error) {
-    console.error("Erreur chargement défis Supabase :", error);
-    allDefis = [];
-    return [];
-  }
-  allDefis = data.map(d => ({
-    id: d.id,
-    texte: lang === "fr" ? d.intitule : (d[lang] || d.intitule),
-    done: false
-  }));
-
+  // Sinon, va sur Supabase via userData.js (pro)
+  allDefis = await getDefisFromSupabase(lang);
   localStorage.setItem(DEFIS_CACHE_KEY, JSON.stringify(allDefis));
   localStorage.setItem(DEFIS_CACHE_DATE_KEY, Date.now().toString());
   return allDefis;
@@ -76,7 +63,6 @@ function aimerPhoto(defiId) {
     localStorage.setItem("photos_aimees", JSON.stringify(photosAimees));
   }
 }
-
 function retirerPhotoAimee(defiId) {
   let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
   photosAimees = photosAimees.filter(id => id !== defiId);
@@ -110,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
 
-  chargerDefisDepuisSupabase(userLang).then(() => {
+  chargerDefis(userLang).then(() => {
     init();
   });
 
@@ -193,9 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
       li.setAttribute("data-defi-id", defi.id);
 
       let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-
-      // Pas de chargement Firestore : uniquement localStorage
-
       photosMap[defi.id] = dataUrl || null;
 
       const hasPhoto = !!dataUrl;
@@ -214,12 +197,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>${defi.texte}</p>
             ${boutonPhoto}
         <img
-  src="assets/icons/coeur.svg"
-  alt="Ajouter aux photos aimées"
-  style="width:2em;cursor:pointer;display:inline-block;margin-left:0.6em;vertical-align:middle;"
-  onclick="window.aimerPhoto('${defi.id}')"
->
-
+          src="assets/icons/coeur.svg"
+          alt="Ajouter aux photos aimées"
+          style="width:2em;cursor:pointer;display:inline-block;margin-left:0.6em;vertical-align:middle;"
+          onclick="window.aimerPhoto('${defi.id}')"
+        >
           </div>
           <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
         </div>

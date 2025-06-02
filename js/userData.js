@@ -406,3 +406,13 @@ export async function getUserDataCloud() {
   await loadUserData();
   return { ...userDataCache };
 }
+// Récupère la liste des défis (toutes langues)
+export async function getDefisFromSupabase(lang = "fr") {
+  let { data, error } = await supabase.from("defis").select("*");
+  if (error) throw error;
+  return (data || []).map(d => ({
+    id: d.id,
+    texte: lang === "fr" ? d.intitule : (d[lang] || d.intitule),
+    done: false
+  }));
+}
