@@ -417,10 +417,6 @@ export async function getDefisFromSupabase(lang = "fr") {
   }));
 }
 
-// Alias rétrocompatible pour compatibilité boutique.js (PAS d'export doublon !)
-export async function getOwnedFrames(force = false) {
-  return await getCadresPossedes(force);
-}
 
 // Permet de récupérer l'ID utilisateur (utile pour la boutique, le parrainage, etc.)
 export function getUserId() {
