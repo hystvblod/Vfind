@@ -1,138 +1,76 @@
-// === INITIALISATION FIREBASE SI PAS DÉJÀ FAIT (version pro, compatible multi-pages) ===
-if (!window.firebaseAppInit) {
-  window.firebaseAppInit = true;
-  import("https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js").then(({ initializeApp }) => {
-    window.firebaseApp = initializeApp({
-      apiKey: "AIzaSyD2AttV3LYAsWShgIMEPIvfpc6wmPpsK3U",
-      authDomain: "vfind-12866.firebaseapp.com",
-      projectId: "vfind-12866",
-      storageBucket: "vfind-12866.appspot.com",
-      messagingSenderId: "953801570333",
-      appId: "1:953801570333:web:92ed5e604d0df316046ef4",
-      measurementId: "G-WTSN5KCBDJ"
-    });
-    import("https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js").then(({ getAuth, onAuthStateChanged, signInAnonymously }) => {
-      window.firebaseAuth = getAuth(window.firebaseApp);
-      onAuthStateChanged(window.firebaseAuth, (user) => {
-        if (!user) signInAnonymously(window.firebaseAuth);
-      });
-    });
-    import("https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js").then((fb) => {
-      window.firebaseFirestore = fb;
-      window.firebaseDB = fb.getFirestore(window.firebaseApp);
-    });
+import {
+  getPoints, addPoints, removePoints, getJetons, addJetons,
+  possedeCadre, acheterCadre, getOwnedFrames, isPremium,
+  updateUserDataCloud, getCadreSelectionne
+  // Tu peux ajouter ici d'autres helpers selon tes conditions
+} from './userData.js';
+
+// === IndexedDB cache boutique/cadres.json ===
+const BOUTIQUE_DB_NAME = 'VFindBoutiqueCache';
+const BOUTIQUE_STORE = 'boutiqueData';
+async function openBoutiqueDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(BOUTIQUE_DB_NAME, 1);
+    req.onupgradeneeded = e => {
+      e.target.result.createObjectStore(BOUTIQUE_STORE, { keyPath: 'key' });
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = reject;
+  });
+}
+async function getBoutiqueCache() {
+  const db = await openBoutiqueDB();
+  return new Promise(res => {
+    const tx = db.transaction(BOUTIQUE_STORE, 'readonly');
+    const store = tx.objectStore(BOUTIQUE_STORE);
+    const req = store.get('cadres');
+    req.onsuccess = () => res(req.result?.data || null);
+    req.onerror = () => res(null);
+  });
+}
+async function setBoutiqueCache(data) {
+  const db = await openBoutiqueDB();
+  return new Promise(res => {
+    const tx = db.transaction(BOUTIQUE_STORE, 'readwrite');
+    const store = tx.objectStore(BOUTIQUE_STORE);
+    store.put({ key: 'cadres', data, ts: Date.now() });
+    tx.oncomplete = res;
   });
 }
 
-// === Mémo user data pour limiter les lectures Firestore ===
-window.userDataCache = null;
-window.userDataCacheTime = 0;
-const USER_CACHE_DURATION = 10000; // ms, durée validité du cache user (10 sec)
+// ================== CONDITIONS CADRES UNIVERSAL ===================
+async function checkCadreUnlock(cadre) {
+  // Si pas de condition, tout le monde peut acheter (normal)
+  if (!cadre.condition) return { unlocked: true };
 
-// === Attendre que Firebase soit prêt ===
-function waitForFirebaseAuthReady() {
-  return new Promise(resolve => {
-    function check() {
-      if (window.firebaseAuth && window.firebaseDB && window.firebaseFirestore && window.firebaseAuth.currentUser) {
-        resolve();
-      } else {
-        setTimeout(check, 100);
+  switch (cadre.condition.type) {
+    case "premium":
+      return { unlocked: await isPremium(), texte: cadre.condition.texte || "Compte premium requis" };
+    case "jours_defis":
+      // Ex : avoir fait X jours de défis (doit exister dans userData.js)
+      // TODO : Remplacer par la vraie fonction asynchrone selon ton app
+      if (typeof getJoursDefisRealises === "function") {
+        const nb = await getJoursDefisRealises();
+        return {
+          unlocked: nb >= (cadre.condition.nombre || 0),
+          texte: cadre.condition.texte || `Fais ${cadre.condition.nombre} jours de défis pour débloquer`
+        };
       }
-    }
-    check();
-  });
-}
-
-async function getUserDocRef() {
-  await waitForFirebaseAuthReady();
-  const user = window.firebaseAuth.currentUser;
-  return window.firebaseFirestore.doc(window.firebaseDB, "users", user.uid);
-}
-
-async function getUserDataCloud(force = false) {
-  await waitForFirebaseAuthReady();
-  const now = Date.now();
-  if (!force && window.userDataCache && (now - window.userDataCacheTime < USER_CACHE_DURATION)) {
-    return window.userDataCache;
+      return { unlocked: false, texte: "Fonction de check non dispo" };
+    case "inviter_amis":
+      // Exemple : avoir X amis invités (fonction à faire côté userData)
+      if (typeof getNbAmisInvites === "function") {
+        const nb = await getNbAmisInvites();
+        return {
+          unlocked: nb >= (cadre.condition.nombre || 0),
+          texte: cadre.condition.texte || `Invite ${cadre.condition.nombre} amis`
+        };
+      }
+      return { unlocked: false, texte: "Fonction de check non dispo" };
+    // ➕ Ajoute ici tes futurs types !
+    default:
+      return { unlocked: false, texte: cadre.condition.texte || "Condition inconnue" };
   }
-  const ref = await getUserDocRef();
-  const snap = await window.firebaseFirestore.getDoc(ref);
-  if (snap.exists()) {
-    window.userDataCache = snap.data();
-    window.userDataCacheTime = now;
-    return window.userDataCache;
-  }
-  // Création si jamais le doc n’existe pas
-  const base = {
-    pseudo: "Joueur",
-    points: 100,
-    jetons: 3,
-    cadres: ["polaroid_01", "polaroid_02"],
-    demandesRecues: [],
-    demandesEnvoyees: [],
-    amis: [],
-    photoProfil: "",
-    premium: false
-  };
-  await window.firebaseFirestore.setDoc(ref, base);
-  window.userDataCache = base;
-  window.userDataCacheTime = now;
-  return base;
-}
-
-async function updateUserDataCloud(update) {
-  const ref = await getUserDocRef();
-  await window.firebaseFirestore.updateDoc(ref, update);
-  // Maj le cache !
-  window.userDataCache = { ...(window.userDataCache || {}), ...update };
-  window.userDataCacheTime = Date.now();
-}
-
-// Helpers cloud (uniquement Firestore)
-async function getPoints() { return (await getUserDataCloud()).points || 0; }
-async function addPoints(n) {
-  const data = await getUserDataCloud();
-  await updateUserDataCloud({ points: (data.points || 0) + n });
-}
-async function removePoints(n) {
-  const data = await getUserDataCloud();
-  if ((data.points || 0) >= n) {
-    await updateUserDataCloud({ points: data.points - n });
-    return true;
-  }
-  return false;
-}
-async function getJetons() { return (await getUserDataCloud()).jetons || 0; }
-async function addJetons(n) {
-  const data = await getUserDataCloud();
-  await updateUserDataCloud({ jetons: (data.jetons || 0) + n });
-}
-async function possedeCadre(id) {
-  const data = await getUserDataCloud();
-  return (data.cadres || []).includes(id);
-}
-async function acheterCadre(id) {
-  const data = await getUserDataCloud();
-  if (!(data.cadres || []).includes(id)) {
-    await updateUserDataCloud({ cadres: [...(data.cadres || []), id] });
-  }
-}
-async function getOwnedFrames() {
-  const data = await getUserDataCloud();
-  return data.cadres || [];
-}
-async function isPremium() {
-  const data = await getUserDataCloud();
-  return !!data.premium;
-}
-
-async function updatePointsDisplay() {
-  const pointsDisplay = document.getElementById("points");
-  if (pointsDisplay) pointsDisplay.textContent = await getPoints();
-}
-async function updateJetonsDisplay() {
-  const jetonsSpan = document.getElementById("jetons");
-  if (jetonsSpan) jetonsSpan.textContent = await getJetons();
 }
 
 // --- Feedback popups ---
@@ -195,11 +133,15 @@ async function watchAd() {
   closePopup();
 }
 
-// === Parrainage code Firebase (UID) ===
+// === Parrainage code (génère lien d’invitation ===
 async function inviteFriend() {
-  await waitForFirebaseAuthReady();
-  const uid = window.firebaseAuth.currentUser.uid;
-  const lien = window.location.origin + "/profil.html?parrain=" + uid;
+  let userId = null;
+  try { userId = (await import('./userData.js')).getUserId(); } catch {}
+  if (!userId) {
+    alert('Connecte-toi pour inviter !');
+    return;
+  }
+  const lien = window.location.origin + "/profil.html?parrain=" + userId;
   prompt("Partage ce lien à ton ami pour qu’il s’inscrive et que tu gagnes 300 pièces :\n\n" + lien + "\n\n(Ton ami doit cliquer sur ce lien AVANT sa première connexion)");
 }
 
@@ -224,7 +166,6 @@ async function acheterJetonsAvecPieces() {
     alert("❌ Pas assez de pièces.");
   }
 }
-
 async function acheterJetonsAvecPub() {
   alert("📺 Simulation de pub regardée !");
   setTimeout(async () => {
@@ -235,12 +176,24 @@ async function acheterJetonsAvecPub() {
   }, 3000);
 }
 
+// --- Affichage points/jetons ---
+async function updatePointsDisplay() {
+  const pointsDisplay = document.getElementById("points");
+  if (pointsDisplay) pointsDisplay.textContent = await getPoints();
+}
+async function updateJetonsDisplay() {
+  const jetonsSpan = document.getElementById("jetons");
+  if (jetonsSpan) jetonsSpan.textContent = await getJetons();
+}
+
+// Patch scroll & overflow
 setTimeout(() => {
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
   document.body.style.overflowX = "hidden";
 }, 100);
 
+// Gestion click global pour feedback
 document.addEventListener("click", function (e) {
   const popupGain = document.getElementById("gain-feedback");
   if (popupGain && popupGain.classList.contains("show") && e.target === popupGain) {
@@ -265,14 +218,57 @@ function getCategorie(id) {
   return 'autre';
 }
 
-// --- 10 jours complet pour débloquer polaroid_901 ---
-function hasCompleted10FullDaysStrict() {
-  // À adapter si historique dans Firestore
-  return false;
+// ---- PATCH MINIATURES DEFI (fixes 100% le centrage et l'affichage)
+async function afficherPhotosSauvegardees(photosMap) {
+  const cadreActuel = await getCadreSelectionne();
+  document.querySelectorAll(".defi-item").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = photosMap[id];
+
+    const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+    container.innerHTML = '';
+    container.style.minWidth = "90px";
+    container.style.minHeight = "110px";
+
+    if (dataUrl) {
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
+
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      container.appendChild(preview);
+      defiEl.classList.add("done");
+    }
+  });
 }
 
+// --- Initialisation principale avec cache boutique ---
 let CADRES_DATA = [];
 let currentCategory = 'classique';
+
+async function fetchCadres(force = false) {
+  if (!force) {
+    const cached = await getBoutiqueCache();
+    if (cached) {
+      CADRES_DATA = cached;
+      return;
+    }
+  }
+  // Si pas en cache : fetch, puis store
+  const res = await fetch("data/cadres.json");
+  const data = await res.json();
+  CADRES_DATA = data;
+  await setBoutiqueCache(data);
+}
 
 async function renderBoutique(categoryKey) {
   const catBarContainer = document.getElementById("boutique-categories");
@@ -347,35 +343,37 @@ async function renderBoutique(categoryKey) {
       title.textContent = cadre.nom;
 
       const price = document.createElement("p");
-      price.textContent = `${cadre.prix} pièces`;
+      price.textContent = `${cadre.prix ? cadre.prix + " pièces" : ""}`;
 
       const button = document.createElement("button");
 
-      if (categoryKey === "bloque") {
-        if (cadre.id === "polaroid_901") {
-          if (hasCompleted10FullDaysStrict()) {
+      // -------- NOUVELLE LOGIQUE DE CONDITIONS --------
+      if (cadre.condition) {
+        checkCadreUnlock(cadre).then(unlockInfo => {
+          if (unlockInfo.unlocked) {
             if (!ownedFrames.includes(cadre.id)) {
-              await acheterCadre(cadre.id);
-              ownedFrames = await getOwnedFrames();
+              button.textContent = cadre.prix ? "Acheter" : "Débloqué !";
+              button.disabled = !!cadre.prix ? false : true;
+              if (cadre.prix) {
+                button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+              } else {
+                button.classList.add("btn-success");
+              }
+            } else {
+              button.textContent = "Débloqué !";
+              button.disabled = true;
+              button.classList.add("btn-success");
             }
-            button.textContent = "Débloqué !";
-            button.disabled = true;
-            button.classList.add("btn-success");
           } else {
             button.textContent = "Infos";
             button.disabled = false;
             button.classList.add("btn-info");
-            button.onclick = () =>
-              showUnlockPopup(cadre.nom, cadre.unlock || "Valide 10 jours de défi pour débloquer ce cadre.");
+            button.onclick = () => showUnlockPopup(cadre.nom, unlockInfo.texte);
           }
-        } else {
-          button.textContent = "Infos";
-          button.disabled = false;
-          button.classList.add("btn-info");
-          button.onclick = () =>
-            showUnlockPopup(cadre.nom, cadre.unlock || "Aucune information pour ce cadre.");
-        }
-      } else if (categoryKey === "premium" && !(await isPremium())) {
+        });
+      }
+      // -------- FIN NOUVELLE LOGIQUE --------
+      else if (categoryKey === "premium" && !(await isPremium())) {
         button.textContent = "Premium requis";
         button.disabled = true;
         button.classList.add("disabled-premium");
@@ -398,19 +396,13 @@ async function renderBoutique(categoryKey) {
   boutiqueContainer.appendChild(grid);
 }
 
-// --- Initialisation principale ---
+// --- Initialisation principale avec cache boutique ---
 document.addEventListener("DOMContentLoaded", async () => {
-  await waitForFirebaseAuthReady();
-  fetch("data/cadres.json")
-    .then(res => res.json())
-    .then(async data => {
-      CADRES_DATA = data;
-      await renderBoutique(currentCategory);
-      await updatePointsDisplay();
-      await updateJetonsDisplay();
-    });
+  await fetchCadres(); // cache ou réseau
+  await renderBoutique(currentCategory);
+  await updatePointsDisplay();
+  await updateJetonsDisplay();
 
-  // Met à jour le solde aussi au focus (pour éviter la désynchro si retour sur page)
   window.addEventListener("focus", async () => {
     await updatePointsDisplay();
     await updateJetonsDisplay();
@@ -422,12 +414,10 @@ function activerPremium() {
   const popup = document.getElementById("popup-premium");
   if (popup) popup.classList.remove("hidden");
 }
-
 function fermerPopupPremium() {
   const popup = document.getElementById("popup-premium");
   if (popup) popup.classList.add("hidden");
 }
-
 async function acheterPremium() {
   if (await removePoints(3500)) {
     await updateUserDataCloud({ premium: true });
@@ -436,40 +426,6 @@ async function acheterPremium() {
   } else {
     alert("❌ Pas assez de pièces pour passer Premium (3500 nécessaires).");
   }
-}
-
-// --- PATCH MINIATURES DEFI (fixes 100% le centrage et l'affichage)
-async function afficherPhotosSauvegardees(photosMap) {
-  const cadreActuel = await getCadreSelectionne();
-
-  document.querySelectorAll(".defi-item").forEach(defiEl => {
-    const id = defiEl.getAttribute("data-defi-id");
-    const dataUrl = photosMap[id];
-
-    const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-    container.innerHTML = '';
-    container.style.minWidth = "90px";
-    container.style.minHeight = "110px";
-
-    if (dataUrl) {
-      const preview = document.createElement("div");
-      preview.className = "cadre-preview";
-
-      const fond = document.createElement("img");
-      fond.className = "photo-cadre";
-      fond.src = `./assets/cadres/${cadreActuel}.webp`;
-
-      const photo = document.createElement("img");
-      photo.className = "photo-user";
-      photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id);
-
-      preview.appendChild(fond);
-      preview.appendChild(photo);
-      container.appendChild(preview);
-      defiEl.classList.add("done");
-    }
-  });
 }
 
 // === EXPOSE TO WINDOW POUR ACCÈS HTML INLINE ===

@@ -1,33 +1,45 @@
-import { db, auth, initFirebaseUser } from './firebase.js';
-import {
-  doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs
-} from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// ======== CACHE GLOBAL UTILISATEUR ========
+const SUPABASE_URL = 'https://swmdepiukfginzhbeccz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3bWRlcGl1a2ZnaW56aGJlY2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0MjEyNTksImV4cCI6MjA2Mzk5NzI1OX0.--VONIyPdx1tTi45nd4e-F-ZuKNgbDSY1pP0rXHyJgI';
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let userDataCache = null;
+let userIdCache = null;
 
-// ==== ACCÈS REF UTILISATEUR FIRESTORE ====
-async function getUserRef() {
-  await initFirebaseUser();
-  return new Promise((resolve, reject) => {
-    const unsub = auth.onAuthStateChanged(async user => {
-      unsub();
-      if (!user) reject("Utilisateur non connecté");
-      else resolve(doc(db, "users", user.uid));
-    });
-  });
+// ---------- AUTH ANONYME AUTOMATIQUE SUPABASE ----------
+async function ensureAuth() {
+  let session = (await supabase.auth.getSession()).data.session;
+  if (!session) {
+    let res = await supabase.auth.signInAnonymously();
+    if (res.error) throw new Error("Erreur de connexion anonyme Supabase : " + res.error.message);
+    session = (await supabase.auth.getSession()).data.session;
+  }
+  userIdCache = session.user.id;
+  return session.user.id;
 }
 
-// ==== CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ====
+// --------- UTILS CACHE LOCAL CADRES POSSÉDÉS ----------
+function getCachedOwnedFrames() {
+  try { return JSON.parse(localStorage.getItem("ownedFrames")) || null; }
+  catch(e){ return null; }
+}
+function setCachedOwnedFrames(frames) {
+  localStorage.setItem("ownedFrames", JSON.stringify(frames));
+}
+
+// --------- CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ----------
 export async function loadUserData(force = false) {
+  await ensureAuth();
   if (userDataCache && !force) return userDataCache;
-  const ref = await getUserRef();
-  const snap = await getDoc(ref);
-  if (snap.exists()) {
-    userDataCache = snap.data();
-  } else {
-    // Création automatique du doc si absent
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', userIdCache)
+    .single();
+  if (error || !data) {
     userDataCache = {
+      id: userIdCache,
       pseudo: "Toi",
       points: 100,
       jetons: 3,
@@ -39,12 +51,16 @@ export async function loadUserData(force = false) {
       premium: false,
       votesConcours: {}
     };
-    await setDoc(ref, userDataCache);
+    await supabase.from('users').insert([userDataCache]);
+  } else {
+    userDataCache = data;
   }
+  // MAJ du cache local cadres
+  setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
 
-// ==== FONCTIONS LECTURE ÉCLAIR (accès cache) ====
+// --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
 export function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
 export function getPointsCached()        { return userDataCache?.points ?? 0; }
 export function getJetonsCached()        { return userDataCache?.jetons ?? 0; }
@@ -56,56 +72,43 @@ export function getSignaledPhotosCached(){ return userDataCache?.signaledPhotos 
 export function getHistoriqueCached()    { return userDataCache?.historique ?? []; }
 export function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
 
-// ========== GET/SET/UPDATE VERS FIRESTORE (+ cache MAJ) ==========
+// ---------- FONCTIONS CLOUD ----------
 
 // PSEUDO
-export async function getPseudo() {
-  await loadUserData();
-  return getPseudoCached();
-}
+export async function getPseudo() { await loadUserData(); return getPseudoCached(); }
 export async function setPseudo(pseudo) {
-  const ref = await getUserRef();
-  await updateDoc(ref, { pseudo });
+  await loadUserData();
   userDataCache.pseudo = pseudo;
+  await supabase.from('users').update({ pseudo }).eq('id', userIdCache);
 }
 
 // POINTS (Vcoins)
-export async function getPoints() {
-  await loadUserData();
-  return getPointsCached();
-}
+export async function getPoints() { await loadUserData(); return getPointsCached(); }
 export async function addPoints(n) {
   await loadUserData();
-  userDataCache.points = getPointsCached() + n;
-  const ref = await getUserRef();
-  await updateDoc(ref, { points: userDataCache.points });
+  userDataCache.points += n;
+  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
 }
 export async function removePoints(n) {
   await loadUserData();
-  if (getPointsCached() < n) return false;
+  if (userDataCache.points < n) return false;
   userDataCache.points -= n;
-  const ref = await getUserRef();
-  await updateDoc(ref, { points: userDataCache.points });
+  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
   return true;
 }
 
 // JETONS
-export async function getJetons() {
-  await loadUserData();
-  return getJetonsCached();
-}
+export async function getJetons() { await loadUserData(); return getJetonsCached(); }
 export async function addJetons(n) {
   await loadUserData();
-  userDataCache.jetons = getJetonsCached() + n;
-  const ref = await getUserRef();
-  await updateDoc(ref, { jetons: userDataCache.jetons });
+  userDataCache.jetons += n;
+  await supabase.from('users').update({ jetons: userDataCache.jetons }).eq('id', userIdCache);
 }
 export async function removeJeton() {
   await loadUserData();
-  if (getJetonsCached() <= 0) return false;
+  if (userDataCache.jetons <= 0) return false;
   userDataCache.jetons -= 1;
-  const ref = await getUserRef();
-  await updateDoc(ref, { jetons: userDataCache.jetons });
+  await supabase.from('users').update({ jetons: userDataCache.jetons }).eq('id', userIdCache);
   return true;
 }
 
@@ -115,8 +118,13 @@ export function formatCadreId(id) {
   const padded = num.padStart(2, "0");
   return "polaroid_" + padded;
 }
-export async function getCadresPossedes() {
+export async function getCadresPossedes(force = false) {
+  if (!force) {
+    const cached = getCachedOwnedFrames();
+    if (cached) return cached;
+  }
   await loadUserData();
+  setCachedOwnedFrames(getCadresPossedesCached());
   return getCadresPossedesCached();
 }
 export async function possedeCadre(id) {
@@ -128,8 +136,8 @@ export async function acheterCadre(id) {
   await loadUserData();
   const idClean = formatCadreId(id);
   userDataCache.cadres = Array.from(new Set([...(userDataCache.cadres || []), idClean]));
-  const ref = await getUserRef();
-  await updateDoc(ref, { cadres: userDataCache.cadres });
+  await supabase.from('users').update({ cadres: userDataCache.cadres }).eq('id', userIdCache);
+  setCachedOwnedFrames(userDataCache.cadres);
 }
 export async function getCadreSelectionne() {
   await loadUserData();
@@ -137,9 +145,9 @@ export async function getCadreSelectionne() {
 }
 export async function setCadreSelectionne(id) {
   const idClean = formatCadreId(id);
-  const ref = await getUserRef();
-  await updateDoc(ref, { cadreActif: idClean });
+  await loadUserData();
   userDataCache.cadreActif = idClean;
+  await supabase.from('users').update({ cadreActif: idClean }).eq('id', userIdCache);
 }
 
 // HISTORIQUE
@@ -147,8 +155,7 @@ export async function sauvegarderPhoto(base64, defi) {
   await loadUserData();
   const historique = [...(userDataCache.historique || []), { base64, defi, date: new Date().toISOString() }];
   userDataCache.historique = historique;
-  const ref = await getUserRef();
-  await updateDoc(ref, { historique });
+  await supabase.from('users').update({ historique }).eq('id', userIdCache);
 }
 export async function getHistoriquePhotos() {
   await loadUserData();
@@ -160,14 +167,12 @@ export async function likePhoto(photoId) {
   await loadUserData();
   if (!userDataCache.likedPhotos.includes(photoId))
     userDataCache.likedPhotos.push(photoId);
-  const ref = await getUserRef();
-  await updateDoc(ref, { likedPhotos: userDataCache.likedPhotos });
+  await supabase.from('users').update({ likedPhotos: userDataCache.likedPhotos }).eq('id', userIdCache);
 }
 export async function unlikePhoto(photoId) {
   await loadUserData();
   userDataCache.likedPhotos = (userDataCache.likedPhotos || []).filter(id => id !== photoId);
-  const ref = await getUserRef();
-  await updateDoc(ref, { likedPhotos: userDataCache.likedPhotos });
+  await supabase.from('users').update({ likedPhotos: userDataCache.likedPhotos }).eq('id', userIdCache);
 }
 export async function getLikedPhotos() {
   await loadUserData();
@@ -179,8 +184,7 @@ export async function signalerPhoto(photoId) {
   await loadUserData();
   if (!userDataCache.signaledPhotos.includes(photoId))
     userDataCache.signaledPhotos.push(photoId);
-  const ref = await getUserRef();
-  await updateDoc(ref, { signaledPhotos: userDataCache.signaledPhotos });
+  await supabase.from('users').update({ signaledPhotos: userDataCache.signaledPhotos }).eq('id', userIdCache);
 }
 export async function getSignaledPhotos() {
   await loadUserData();
@@ -188,20 +192,18 @@ export async function getSignaledPhotos() {
 }
 
 // PREMIUM
-export async function isPremium() {
-  await loadUserData();
-  return isPremiumCached();
-}
+export async function isPremium() { await loadUserData(); return isPremiumCached(); }
 export async function setPremium(status) {
-  const ref = await getUserRef();
-  await updateDoc(ref, { premium: !!status });
+  await loadUserData();
   userDataCache.premium = !!status;
+  await supabase.from('users').update({ premium: !!status }).eq('id', userIdCache);
 }
 
 // RESET/UPDATE
 export async function resetUserData() {
-  const ref = await getUserRef();
+  await ensureAuth();
   userDataCache = {
+    id: userIdCache,
     pseudo: "Toi",
     points: 0,
     jetons: 0,
@@ -213,13 +215,14 @@ export async function resetUserData() {
     premium: false,
     votesConcours: {}
   };
-  await setDoc(ref, userDataCache);
+  await supabase.from('users').upsert([userDataCache]);
+  setCachedOwnedFrames([]);
 }
 export async function updateUserData(update) {
   await loadUserData();
   Object.assign(userDataCache, update);
-  const ref = await getUserRef();
-  await updateDoc(ref, update);
+  await supabase.from('users').update(update).eq('id', userIdCache);
+  if ('cadres' in update) setCachedOwnedFrames(update.cadres);
 }
 
 // ACCÈS GLOBAL À TOUTES LES DONNÉES (depuis le cache)
@@ -256,8 +259,7 @@ export async function getVotesInfoForConcours() {
     userDataCache.votesConcours[concoursId].votesToday = maxVotes;
     userDataCache.votesConcours[concoursId].votes = userDataCache.votesConcours[concoursId].votes || {};
     userDataCache.votesConcours[concoursId].votes[dateStr] = [];
-    const ref = await getUserRef();
-    await updateDoc(ref, { votesConcours: userDataCache.votesConcours });
+    await supabase.from('users').update({ votesConcours: userDataCache.votesConcours }).eq('id', userIdCache);
   }
 
   const dejaVotees = userDataCache.votesConcours[concoursId].votes?.[dateStr] || [];
@@ -270,7 +272,7 @@ export async function getVotesInfoForConcours() {
   };
 }
 
-// Voter pour une photo (ajoute le vote Firestore, pas de retrait possible)
+// Voter pour une photo (ajoute le vote cloud, pas de retrait possible)
 export async function voterPourPhoto(photoId) {
   await loadUserData();
   const concoursId = getConcoursId();
@@ -296,19 +298,21 @@ export async function voterPourPhoto(photoId) {
   if (votesToday <= 0) throw new Error("Tu as utilisé tous tes votes aujourd'hui !");
   if (dejaVotees.includes(photoId)) throw new Error("Tu as déjà voté pour cette photo aujourd'hui.");
 
-  // MAJ user (cache & firestore)
+  // MAJ user (cache & supabase)
   userDataCache.votesConcours[concoursId].votesToday -= 1;
   userDataCache.votesConcours[concoursId].votes[dateStr].push(photoId);
   userDataCache.votesConcours[concoursId].lastReset = dateStr;
-  const ref = await getUserRef();
-  await updateDoc(ref, { votesConcours: userDataCache.votesConcours });
+  await supabase.from('users').update({ votesConcours: userDataCache.votesConcours }).eq('id', userIdCache);
 
-  // MAJ votes sur la photo
-  const photoRef = doc(db, "concoursPhotos", photoId);
-  const photoSnap = await getDoc(photoRef);
-  let votesTotal = photoSnap.exists() ? (photoSnap.data().votesTotal || 0) : 0;
+  // MAJ votes sur la photo (table "concoursPhotos", champ votesTotal)
+  const { data: photo, error } = await supabase
+    .from('concoursPhotos')
+    .select('*')
+    .eq('id', photoId)
+    .single();
+  let votesTotal = photo?.votesTotal || 0;
   votesTotal += 1;
-  await updateDoc(photoRef, { votesTotal });
+  await supabase.from('concoursPhotos').update({ votesTotal }).eq('id', photoId);
 
   return true;
 }
@@ -316,20 +320,16 @@ export async function voterPourPhoto(photoId) {
 // Récupère toutes les photos du concours actuel (triées par votes décroissant)
 export async function getPhotosConcours() {
   const concoursId = getConcoursId();
-  const photosRef = collection(db, "concoursPhotos");
-  const q = query(photosRef, where("concoursId", "==", concoursId));
-  const snap = await getDocs(q);
-  let photos = [];
-  snap.forEach(docSnap => {
-    const d = docSnap.data();
-    photos.push({
-      id: docSnap.id,
-      url: d.url,
-      user: d.user || "Inconnu",
-      votesTotal: d.votesTotal || 0
-    });
-  });
-  // Tri décroissant (plus de votes en haut)
+  const { data, error } = await supabase
+    .from('concoursPhotos')
+    .select('*')
+    .eq('concoursId', concoursId);
+  let photos = (data || []).map(d => ({
+    id: d.id,
+    url: d.url,
+    user: d.user || "Inconnu",
+    votesTotal: d.votesTotal || 0
+  }));
   photos.sort((a, b) => b.votesTotal - a.votesTotal);
   return photos;
 }

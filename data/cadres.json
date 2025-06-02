@@ -270,5 +270,11 @@
     "nom": "Colors",
     "prix":0,
     "unlock": "Invite 3 amis pour débloquer ce cadre."
+  },
+      {
+    "id": "polaroid_903",
+    "nom": "Liégois",
+    "prix":0,
+    "unlock": "participe à un concours : poste une phot et vote au moins 3 jours."
   }
 ]
