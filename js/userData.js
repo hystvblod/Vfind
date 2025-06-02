@@ -420,3 +420,23 @@ export async function getDefisFromSupabase(lang = "fr") {
 export async function getOwnedFrames(force = false) {
   return await getCadresPossedes(force);
 }
+export {
+  getPoints,
+  addPoints,
+  removePoints,
+  getJetons,
+  addJetons,
+  possedeCadre,
+  acheterCadre,
+  getCadresPossedes as getOwnedFrames, // important pour boutique.js
+  isPremium,
+  updateUserDataCloud,
+  getCadreSelectionne,
+  getJoursDefisRealises,
+  getNbAmisInvites,
+  getConcoursParticipationStatus,
+  hasDownloadedVZone,
+  getUserId,
+  getUserDataCloud // permet aussi de tout récupérer facilement
+};
+
