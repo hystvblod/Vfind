@@ -7,64 +7,67 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const defaultProfile = () => ({
-  pseudoPublic: null,
-  points: 100,
-  jetons: 3,
-  idFixe: false,
-  cadres: [],
-  filleuls: 0,
-  amis: [],
-  demandesRecues: [],
-  demandesEnvoyees: [],
-  historique: [],
-  historiqueDuel: [],
-  photosAimees: []
-});
-
-export async function getCurrentUser() {
-  let pseudoPublic = localStorage.getItem('pseudoPublic');
-  if (!pseudoPublic) {
-    pseudoPublic = await generateUniquePseudo();
-    localStorage.setItem('pseudoPublic', pseudoPublic);
-    await createProfile(pseudoPublic);
+// ----------- LOGIQUE ID UNIQUE -----------
+export function getUserId() {
+  let id = localStorage.getItem("id");
+  if (!id) {
+    id = "user_" + Math.random().toString(36).substring(2, 10); // Simple ID lisible, modifiable
+    localStorage.setItem("id", id);
+    createProfile(id);
   }
-  return pseudoPublic;
+  return id;
 }
 
-async function generateUniquePseudo() {
-  let pseudo;
-  let exists = true;
-  while (exists) {
-    pseudo = "user_" + Math.random().toString(36).substring(2, 8);
-    const { data } = await supabase
-      .from("users")
-      .select("pseudoPublic")
-      .eq("pseudoPublic", pseudo)
-      .single();
-    exists = !!data;
-  }
-  return pseudo;
-}
-
-export async function createProfile(pseudoPublic) {
-  const profile = defaultProfile();
-  profile.pseudoPublic = pseudoPublic;
+// ----------- CRÉATION DU PROFIL -----------
+export async function createProfile(id) {
+  // Ne crée QUE si absent dans Supabase !
+  const { data } = await supabase.from("users").select("id").eq("id", id);
+  if (data && data.length) return;
+  const profile = {
+    id,
+    points: 100,
+    jetons: 3,
+    cadres: [],
+    historique: [],
+    amis: [],
+    // Ajoute ici tous les champs utiles !
+  };
   await supabase.from("users").insert([profile]);
 }
 
-export async function getProfile(pseudoPublic) {
+// ----------- LECTURE PROFIL -----------
+export async function getProfile(id = getUserId()) {
   const { data } = await supabase
     .from("users")
     .select("*")
-    .eq("pseudoPublic", pseudoPublic)
+    .eq("id", id)
     .single();
   return data;
 }
 
-export async function updateProfile(pseudoPublic, updates) {
+// ----------- UPDATE PROFIL -----------
+export async function updateProfile(updates, id = getUserId()) {
   await supabase
     .from("users")
     .update(updates)
-    .eq("pseudoPublic", pseudoPublic);
+    .eq("id", id);
 }
+
+// ----------- CHANGEMENT D'ID -----------
+export async function changeUserId(newId) {
+  // Vérifie unicité
+  const { data } = await supabase.from("users").select("id").eq("id", newId);
+  if (data && data.length) throw new Error("Cet ID existe déjà !");
+  const oldId = getUserId();
+
+  // Met à jour dans Supabase (il faut migrer toutes les relations si tu en as dans d'autres tables !)
+  await supabase.from("users").update({ id: newId }).eq("id", oldId);
+
+  // Si tu veux gérer le changement d'ID dans d'autres tables (photos, duels...), ajoute ici les migrations
+  // Exemple :
+  // await supabase.from("photos").update({ userId: newId }).eq("userId", oldId);
+
+  // Mets à jour en local
+  localStorage.setItem("id", newId);
+}
+
