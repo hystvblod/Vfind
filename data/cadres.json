@@ -1,280 +1,70 @@
-[{
-  "id": "polaroid_01",
-  "nom": "Blanc",
-  "prix": 100
-},
-{
-  "id": "polaroid_02",
-  "nom": "Noir",
-  "prix": 100
-},
-{
-  "id": "polaroid_03",
-  "nom": "Rose",
-  "prix": 600
-},
-{
-  "id": "polaroid_04",
-  "nom": "Jaune",
-  "prix": 600
-},
-{
-  "id": "polaroid_05",
-  "nom": "Vert",
-  "prix": 600
-},
-{
-  "id": "polaroid_06",
-  "nom": "Rouge",
-  "prix": 600
-},
-{
-  "id": "polaroid_07",
-  "nom": "Violet",
-  "prix": 600
-},
-{
-  "id": "polaroid_08",
-  "nom": "Bleu",
-  "prix": 600
-},
-  {
-    "id": "polaroid_10",
-    "nom": "Or",
-    "prix": 1200
+[
+  { "id": "polaroid_01", "nom": "Blanc", "prix": 100 },
+  { "id": "polaroid_02", "nom": "Noir", "prix": 100 },
+  { "id": "polaroid_03", "nom": "Rose", "prix": 600 },
+  { "id": "polaroid_04", "nom": "Jaune", "prix": 600 },
+  { "id": "polaroid_05", "nom": "Vert", "prix": 600 },
+  { "id": "polaroid_06", "nom": "Rouge", "prix": 600 },
+  { "id": "polaroid_07", "nom": "Violet", "prix": 600 },
+  { "id": "polaroid_08", "nom": "Bleu", "prix": 600 },
+  { "id": "polaroid_10", "nom": "Or", "prix": 1200 },
+  { "id": "polaroid_11", "nom": "Nuages", "prix": 1200 },
+  { "id": "polaroid_12", "nom": "Aquarelle bleue", "prix": 1200 },
+  { "id": "polaroid_13", "nom": "Aquarelle rose", "prix": 1200 },
+  { "id": "polaroid_14", "nom": "Arc-en-ciel", "prix": 1200 },
+  { "id": "polaroid_15", "nom": "Rose Aquarelle", "prix": 1200 },
+  { "id": "polaroid_16", "nom": "Crayons gris", "prix": 1200 },
+  { "id": "polaroid_17", "nom": "Coups de pinceau", "prix": 1200 },
+  { "id": "polaroid_18", "nom": "Pinceau bleu", "prix": 1200 },
+  { "id": "polaroid_19", "nom": "Sous l'océan", "prix": 1200 },
+  { "id": "polaroid_20", "nom": "Papillons", "prix": 1200 },
+  { "id": "polaroid_21", "nom": "Papillons 2", "prix": 1200 },
+  { "id": "polaroid_22", "nom": "Étoiles", "prix": 1200 },
+  { "id": "polaroid_23", "nom": "Nuit étoilée", "prix": 1200 },
+  { "id": "polaroid_24", "nom": "Papier froissé", "prix": 1200 },
+  { "id": "polaroid_25", "nom": "Marbre noire", "prix": 1200 },
+  { "id": "polaroid_26", "nom": "Bois", "prix": 1200 },
+  { "id": "polaroid_27", "nom": "Brouillard", "prix": 1200 },
+  { "id": "polaroid_28", "nom": "Zebre", "prix": 1200 },
+  { "id": "polaroid_29", "nom": "Lépoard", "prix": 1200 },
+  { "id": "polaroid_30", "nom": "Girly", "prix": 1200 },
+  { "id": "polaroid_31", "nom": "Confettis", "prix": 1200 },
+  { "id": "polaroid_32", "nom": "Nuages", "prix": 1200 },
+  { "id": "polaroid_33", "nom": "Blue Zebre", "prix": 1200 },
+  { "id": "polaroid_34", "nom": "Rose poudré", "prix": 1200 },
+  { "id": "polaroid_35", "nom": "Seigaiha", "prix": 1200 },
+  { "id": "polaroid_40", "nom": "Or paillettes", "prix": 1200 },
+  { "id": "polaroid_41", "nom": "Rose paillettes", "prix": 1200 },
+  { "id": "polaroid_42", "nom": "Argent paillettes", "prix": 1200 },
+  { "id": "polaroid_50", "nom": "Cadre VIP", "prix": 5000 },
+  { "id": "polaroid_51", "nom": "Mosaïque Bleue", "prix": 5000 },
+  { "id": "polaroid_101", "nom": "Chat Kawaii", "prix": 1200 },
+  { "id": "polaroid_102", "nom": "Briques", "prix": 1200 },
+  { "id": "polaroid_103", "nom": "Vitraux", "prix": 1200 },
+  { "id": "polaroid_104", "nom": "Ecole", "prix": 1200 },
+  { "id": "polaroid_105", "nom": "Fleurs", "prix": 1200 },
+  { "id": "polaroid_106", "nom": "mousse", "prix": 1200 },
+  { "id": "polaroid_107", "nom": "VIP", "prix": 5000 },
+  { "id": "polaroid_108", "nom": "Feu", "prix": 5000 },
+  { "id": "polaroid_109", "nom": "Nature", "prix": 5000 },
+  { "id": "polaroid_110", "nom": "Fleurs dorées", "prix": 5000 },
+  { "id": "polaroid_111", "nom": "Sable", "prix": 5000 },
+  { "id": "polaroid_112", "nom": "USA", "prix": 5000 },
+
+  { "id": "polaroid_900", "nom": "Vzone", "prix": 0,
+    "unlock": "Télécharge le jeu VZone et connecte-toi pour débloquer ce cadre.",
+    "condition": { "type": "telechargement_vzone" }
   },
-  {
-    "id": "polaroid_11",
-    "nom": "Nuages",
-    "prix": 1200
+  { "id": "polaroid_901", "nom": "Marine", "prix": 0,
+    "unlock": "Valide 10 jours de défi pour débloquer ce cadre.",
+    "condition": { "type": "jours_defis", "nombre": 10 }
   },
-  {
-    "id": "polaroid_12",
-    "nom": "Aquarelle bleue",
-    "prix": 1200
+  { "id": "polaroid_902", "nom": "Colors", "prix": 0,
+    "unlock": "Invite 3 amis pour débloquer ce cadre.",
+    "condition": { "type": "inviter_amis", "nombre": 3 }
   },
-  {
-    "id": "polaroid_13",
-    "nom": "Aquarelle rose",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_14",
-    "nom": "Arc-en-ciel",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_15",
-    "nom": "Rose Aquarelle",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_16",
-    "nom": "Crayons gris",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_17",
-    "nom": "Coups de pinceau",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_18",
-    "nom": "Pinceau bleu",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_19",
-    "nom": "Sous l'océan",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_20",
-    "nom": "Papillons",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_21",
-    "nom": "Papillons 2",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_22",
-    "nom": "Étoiles",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_23",
-    "nom": "Nuit étoilée",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_24",
-    "nom": "Papier froissé",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_25",
-    "nom": "Marbre noire",
-    "prix": 1200
-  },
-    {
-    "id": "polaroid_26",
-    "nom": "Bois",
-    "prix": 1200
-  },
-      {
-    "id": "polaroid_27",
-    "nom": "Brouillard",
-    "prix": 1200
-  },
-        {
-    "id": "polaroid_28",
-    "nom": "Zebre",
-    "prix": 1200
-  },
-        {
-    "id": "polaroid_29",
-    "nom": "Lépoard",
-    "prix": 1200
-  },
-          {
-    "id": "polaroid_30",
-    "nom": "Girly",
-    "prix": 1200
-  },
-            {
-    "id": "polaroid_31",
-    "nom": "Confettis",
-    "prix": 1200
-  },
-             {
-    "id": "polaroid_32",
-    "nom": "Nuages",
-    "prix": 1200
-  },
-               {
-    "id": "polaroid_33",
-    "nom": "Bulles",
-    "prix": 1200
-  },
-                 {
-    "id": "polaroid_34",
-    "nom": "Rose poudré",
-    "prix": 1200
-  },
-                 {
-    "id": "polaroid_35",
-    "nom": "Seigaiha",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_40",
-    "nom": "Or paillettes",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_41",
-    "nom": "Rose paillettes",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_42",
-    "nom": "Argent paillettes",
-    "prix": 1200
-  },
-  {
-    "id": "polaroid_50",
-    "nom": "Cadre VIP",
-    "prix": 5000
-  },
-    {
-    "id": "polaroid_51",
-    "nom": "Mosaïque Bleue",
-    "prix": 5000
-  },
-      {
-    "id": "polaroid_101",
-    "nom": "Chat Kawaii",
-    "prix": 1200
-  },
-        {
-    "id": "polaroid_102",
-    "nom": "Briques",
-    "prix": 1200
-  },
-          {
-    "id": "polaroid_103",
-    "nom": "Vitraux",
-    "prix": 1200
-  },
-           {
-    "id": "polaroid_104",
-    "nom": "Ecole",
-    "prix": 1200
-  },
-             {
-    "id": "polaroid_105",
-    "nom": "Fleurs",
-    "prix": 1200
-  },
-               {
-    "id": "polaroid_106",
-    "nom": "mousse",
-    "prix": 1200
-  },
-                 {
-    "id": "polaroid_107",
-    "nom": "VIP",
-    "prix": 5000
-  },
-                   {
-    "id": "polaroid_108",
-    "nom": "Feu",
-    "prix": 5000
-  },
-                     {
-    "id": "polaroid_109",
-    "nom": "Nature",
-    "prix": 5000
-  },
-                       {
-    "id": "polaroid_110",
-    "nom": "Fleurs dorées",
-    "prix": 5000
-  },
-                         {
-    "id": "polaroid_111",
-    "nom": "Sable",
-    "prix": 5000
-  },
-                           {
-    "id": "polaroid_112",
-    "nom": "USA",
-    "prix": 5000
-  },
-                 {
-    "id": "polaroid_900",
-    "nom": "Vzone",
-    "prix":0,
-    "unlock": "Télécharge le jeu VZone et connecte-toi pour débloquer ce cadre."
-  },
-                 {
-    "id": "polaroid_901",
-    "nom": "Marine",
-    "prix":0,
-    "unlock": "Valide 10 jours de défi pour débloquer ce cadre."
-  },
-    {
-    "id": "polaroid_902",
-    "nom": "Colors",
-    "prix":0,
-    "unlock": "Invite 3 amis pour débloquer ce cadre."
-  },
-      {
-    "id": "polaroid_903",
-    "nom": "Liégois",
-    "prix":0,
-    "unlock": "participe à un concours : poste une phot et vote au moins 3 jours."
+  { "id": "polaroid_903", "nom": "Liégois", "prix": 0,
+    "unlock": "Participe à un concours : poste une photo et vote au moins 3 jours.",
+    "condition": { "type": "participation_concours" }
   }
 ]

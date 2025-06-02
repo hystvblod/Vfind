@@ -1,8 +1,9 @@
 import {
   getPoints, addPoints, removePoints, getJetons, addJetons,
   possedeCadre, acheterCadre, getOwnedFrames, isPremium,
-  updateUserDataCloud, getCadreSelectionne
-  // Tu peux ajouter ici d'autres helpers selon tes conditions
+  updateUserDataCloud, getCadreSelectionne,
+  getJoursDefisRealises, getNbAmisInvites, getConcoursParticipationStatus,
+  hasDownloadedVZone // (si besoin, à implémenter)
 } from './userData.js';
 
 // === IndexedDB cache boutique/cadres.json ===
@@ -40,36 +41,54 @@ async function setBoutiqueCache(data) {
 
 // ================== CONDITIONS CADRES UNIVERSAL ===================
 async function checkCadreUnlock(cadre) {
-  // Si pas de condition, tout le monde peut acheter (normal)
   if (!cadre.condition) return { unlocked: true };
 
   switch (cadre.condition.type) {
     case "premium":
       return { unlocked: await isPremium(), texte: cadre.condition.texte || "Compte premium requis" };
+
     case "jours_defis":
-      // Ex : avoir fait X jours de défis (doit exister dans userData.js)
-      // TODO : Remplacer par la vraie fonction asynchrone selon ton app
       if (typeof getJoursDefisRealises === "function") {
         const nb = await getJoursDefisRealises();
         return {
           unlocked: nb >= (cadre.condition.nombre || 0),
-          texte: cadre.condition.texte || `Fais ${cadre.condition.nombre} jours de défis pour débloquer`
+          texte: cadre.unlock || `Fais ${cadre.condition.nombre} jours de défis pour débloquer`
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
+
     case "inviter_amis":
-      // Exemple : avoir X amis invités (fonction à faire côté userData)
       if (typeof getNbAmisInvites === "function") {
         const nb = await getNbAmisInvites();
         return {
           unlocked: nb >= (cadre.condition.nombre || 0),
-          texte: cadre.condition.texte || `Invite ${cadre.condition.nombre} amis`
+          texte: cadre.unlock || `Invite ${cadre.condition.nombre} amis`
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
-    // ➕ Ajoute ici tes futurs types !
+
+    case "participation_concours":
+      if (typeof getConcoursParticipationStatus === "function") {
+        const ok = await getConcoursParticipationStatus();
+        return {
+          unlocked: ok,
+          texte: cadre.unlock || "Participe à un concours et vote au moins 3 jours"
+        };
+      }
+      return { unlocked: false, texte: "Fonction de check non dispo" };
+
+    case "telechargement_vzone":
+      if (typeof hasDownloadedVZone === "function") {
+        const ok = await hasDownloadedVZone();
+        return {
+          unlocked: ok,
+          texte: cadre.unlock || "Télécharge le jeu VZone pour débloquer ce cadre."
+        };
+      }
+      return { unlocked: false, texte: "Fonction de check non dispo" };
+
     default:
-      return { unlocked: false, texte: cadre.condition.texte || "Condition inconnue" };
+      return { unlocked: false, texte: cadre.unlock || "Condition inconnue" };
   }
 }
 
@@ -263,7 +282,6 @@ async function fetchCadres(force = false) {
       return;
     }
   }
-  // Si pas en cache : fetch, puis store
   const res = await fetch("data/cadres.json");
   const data = await res.json();
   CADRES_DATA = data;
@@ -302,7 +320,7 @@ async function renderBoutique(categoryKey) {
     empty.textContent = "Aucun cadre dans cette catégorie.";
     grid.appendChild(empty);
   } else {
-    for (let cadre of cadresCat) {
+    for (const cadre of cadresCat) {
       const item = document.createElement("div");
       item.classList.add("cadre-item");
 
@@ -347,33 +365,29 @@ async function renderBoutique(categoryKey) {
 
       const button = document.createElement("button");
 
-      // -------- NOUVELLE LOGIQUE DE CONDITIONS --------
       if (cadre.condition) {
-        checkCadreUnlock(cadre).then(unlockInfo => {
-          if (unlockInfo.unlocked) {
-            if (!ownedFrames.includes(cadre.id)) {
-              button.textContent = cadre.prix ? "Acheter" : "Débloqué !";
-              button.disabled = !!cadre.prix ? false : true;
-              if (cadre.prix) {
-                button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-              } else {
-                button.classList.add("btn-success");
-              }
+        const unlockInfo = await checkCadreUnlock(cadre);
+        if (unlockInfo.unlocked) {
+          if (!ownedFrames.includes(cadre.id)) {
+            button.textContent = cadre.prix ? "Acheter" : "Débloqué !";
+            button.disabled = !!cadre.prix ? false : true;
+            if (cadre.prix) {
+              button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
             } else {
-              button.textContent = "Débloqué !";
-              button.disabled = true;
               button.classList.add("btn-success");
             }
           } else {
-            button.textContent = "Infos";
-            button.disabled = false;
-            button.classList.add("btn-info");
-            button.onclick = () => showUnlockPopup(cadre.nom, unlockInfo.texte);
+            button.textContent = "Débloqué !";
+            button.disabled = true;
+            button.classList.add("btn-success");
           }
-        });
-      }
-      // -------- FIN NOUVELLE LOGIQUE --------
-      else if (categoryKey === "premium" && !(await isPremium())) {
+        } else {
+          button.textContent = "Infos";
+          button.disabled = false;
+          button.classList.add("btn-info");
+          button.onclick = () => showUnlockPopup(cadre.nom, unlockInfo.texte);
+        }
+      } else if (categoryKey === "premium" && !(await isPremium())) {
         button.textContent = "Premium requis";
         button.disabled = true;
         button.classList.add("disabled-premium");
@@ -395,19 +409,6 @@ async function renderBoutique(categoryKey) {
   }
   boutiqueContainer.appendChild(grid);
 }
-
-// --- Initialisation principale avec cache boutique ---
-document.addEventListener("DOMContentLoaded", async () => {
-  await fetchCadres(); // cache ou réseau
-  await renderBoutique(currentCategory);
-  await updatePointsDisplay();
-  await updateJetonsDisplay();
-
-  window.addEventListener("focus", async () => {
-    await updatePointsDisplay();
-    await updateJetonsDisplay();
-  });
-});
 
 // === POPUP PREMIUM ===
 function activerPremium() {

@@ -49,13 +49,15 @@ export async function loadUserData(force = false) {
       likedPhotos: [],
       signaledPhotos: [],
       premium: false,
-      votesConcours: {}
+      votesConcours: {},
+      hasDownloadedVZone: false,
+      hasDownloadedVBlocks: false,
+      friendsInvited: 0
     };
     await supabase.from('users').insert([userDataCache]);
   } else {
     userDataCache = data;
   }
-  // MAJ du cache local cadres
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
@@ -71,10 +73,12 @@ export function getLikedPhotosCached()   { return userDataCache?.likedPhotos ?? 
 export function getSignaledPhotosCached(){ return userDataCache?.signaledPhotos ?? []; }
 export function getHistoriqueCached()    { return userDataCache?.historique ?? []; }
 export function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
+export function hasDownloadedVZoneCached() { return userDataCache?.hasDownloadedVZone ?? false; }
+export function hasDownloadedVBlocksCached() { return userDataCache?.hasDownloadedVBlocks ?? false; }
+export function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
 
 // ---------- FONCTIONS CLOUD ----------
 
-// PSEUDO
 export async function getPseudo() { await loadUserData(); return getPseudoCached(); }
 export async function setPseudo(pseudo) {
   await loadUserData();
@@ -82,7 +86,6 @@ export async function setPseudo(pseudo) {
   await supabase.from('users').update({ pseudo }).eq('id', userIdCache);
 }
 
-// POINTS (Vcoins)
 export async function getPoints() { await loadUserData(); return getPointsCached(); }
 export async function addPoints(n) {
   await loadUserData();
@@ -97,7 +100,6 @@ export async function removePoints(n) {
   return true;
 }
 
-// JETONS
 export async function getJetons() { await loadUserData(); return getJetonsCached(); }
 export async function addJetons(n) {
   await loadUserData();
@@ -150,10 +152,10 @@ export async function setCadreSelectionne(id) {
   await supabase.from('users').update({ cadreActif: idClean }).eq('id', userIdCache);
 }
 
-// HISTORIQUE
-export async function sauvegarderPhoto(base64, defi) {
+// HISTORIQUE PHOTOS (chaque entrée = {base64, defi, date, type, defis})
+export async function sauvegarderPhoto(base64, defi, type = "solo") {
   await loadUserData();
-  const historique = [...(userDataCache.historique || []), { base64, defi, date: new Date().toISOString() }];
+  const historique = [...(userDataCache.historique || []), { base64, defi, date: new Date().toISOString(), type, defis: [defi] }];
   userDataCache.historique = historique;
   await supabase.from('users').update({ historique }).eq('id', userIdCache);
 }
@@ -199,41 +201,87 @@ export async function setPremium(status) {
   await supabase.from('users').update({ premium: !!status }).eq('id', userIdCache);
 }
 
-// RESET/UPDATE
-export async function resetUserData() {
-  await ensureAuth();
-  userDataCache = {
-    id: userIdCache,
-    pseudo: "Toi",
-    points: 0,
-    jetons: 0,
-    cadres: [],
-    cadreActif: "polaroid_01",
-    historique: [],
-    likedPhotos: [],
-    signaledPhotos: [],
-    premium: false,
-    votesConcours: {}
-  };
-  await supabase.from('users').upsert([userDataCache]);
-  setCachedOwnedFrames([]);
-}
-export async function updateUserData(update) {
+// Flags pour conditions spécifiques (ex: téléchargements et invitations)
+export async function setHasDownloadedVZone(value) {
   await loadUserData();
-  Object.assign(userDataCache, update);
-  await supabase.from('users').update(update).eq('id', userIdCache);
-  if ('cadres' in update) setCachedOwnedFrames(update.cadres);
+  userDataCache.hasDownloadedVZone = !!value;
+  await supabase.from('users').update({ hasDownloadedVZone: !!value }).eq('id', userIdCache);
+}
+export async function hasDownloadedVZone() {
+  await loadUserData();
+  return !!userDataCache.hasDownloadedVZone;
+}
+export async function setHasDownloadedVBlocks(value) {
+  await loadUserData();
+  userDataCache.hasDownloadedVBlocks = !!value;
+  await supabase.from('users').update({ hasDownloadedVBlocks: !!value }).eq('id', userIdCache);
+}
+export async function hasDownloadedVBlocks() {
+  await loadUserData();
+  return !!userDataCache.hasDownloadedVBlocks;
+}
+export async function setFriendsInvited(count) {
+  await loadUserData();
+  userDataCache.friendsInvited = count;
+  await supabase.from('users').update({ friendsInvited: count }).eq('id', userIdCache);
+}
+export async function getNbAmisInvites() {
+  await loadUserData();
+  return userDataCache.friendsInvited || 0;
+}
+export async function incrementFriendsInvited() {
+  await loadUserData();
+  userDataCache.friendsInvited = (userDataCache.friendsInvited || 0) + 1;
+  await supabase.from('users').update({ friendsInvited: userDataCache.friendsInvited }).eq('id', userIdCache);
 }
 
-// ACCÈS GLOBAL À TOUTES LES DONNÉES (depuis le cache)
-export async function getUserDataCloud() {
+// ========== CONDITIONS CADRES SPÉCIAUX ==========
+
+// 1. JOURS DE DÉFI VALIDÉS (3 défis solo OU 3 duel_random OU 3 duel_amis dans la même journée = 1 jour)
+export async function getJoursDefisRealises() {
   await loadUserData();
-  return { ...userDataCache };
+  const historique = userDataCache?.historique || [];
+
+  // Regroupe par date et type
+  const defisParJourType = {};
+  historique.forEach(entry => {
+    let dateISO = entry.date && entry.date.length === 10 ? entry.date : (entry.date || '').slice(0, 10);
+    if (!defisParJourType[dateISO]) defisParJourType[dateISO] = { solo: 0, duel_random: 0, duel_amis: 0 };
+    if (entry.type === "solo") defisParJourType[dateISO].solo += (entry.defis?.length || 0);
+    if (entry.type === "duel_random") defisParJourType[dateISO].duel_random += (entry.defis?.length || 0);
+    if (entry.type === "duel_amis") defisParJourType[dateISO].duel_amis += (entry.defis?.length || 0);
+  });
+
+  // Compte 1 jour validé si une des catégories a 3 défis ce jour-là
+  let joursValides = 0;
+  for (const date in defisParJourType) {
+    const { solo, duel_random, duel_amis } = defisParJourType[date];
+    if (solo >= 3 || duel_random >= 3 || duel_amis >= 3) joursValides++;
+  }
+  return joursValides;
+}
+
+// 2. NOMBRE D'AMIS INVITÉS (direct)
+export async function getNbAmisInvites() {
+  await loadUserData();
+  return userDataCache.friendsInvited || 0;
+}
+
+// 3. PARTICIPATION CONCOURS (photo postée + votes sur 3 jours)
+export async function getConcoursParticipationStatus() {
+  await loadUserData();
+  const concoursId = getConcoursId();
+  // Vérifier photo postée cette semaine
+  const aPoste = (userDataCache.concoursPhotosPostees || []).includes(concoursId);
+  // Vérifier votes sur au moins 3 jours
+  const votes = userDataCache.votesConcours?.[concoursId]?.votes || {};
+  const joursVotés = Object.keys(votes).filter(date => (votes[date]?.length ?? 0) > 0);
+  const aVote3Jours = joursVotés.length >= 3;
+  return aPoste && aVote3Jours;
 }
 
 // ========== LOGIQUE CONCOURS ==========
 
-// Donne l'ID concours (ex: "2024-22" pour la semaine 22 de 2024)
 export function getConcoursId() {
   const now = new Date();
   const year = now.getFullYear();
@@ -243,7 +291,6 @@ export function getConcoursId() {
   return `${year}-${week}`;
 }
 
-// Nombre de votes restants aujourd'hui (et photos déjà votées ce jour)
 export async function getVotesInfoForConcours() {
   await loadUserData();
   const concoursId = getConcoursId();
@@ -272,7 +319,6 @@ export async function getVotesInfoForConcours() {
   };
 }
 
-// Voter pour une photo (ajoute le vote cloud, pas de retrait possible)
 export async function voterPourPhoto(photoId) {
   await loadUserData();
   const concoursId = getConcoursId();
@@ -317,7 +363,6 @@ export async function voterPourPhoto(photoId) {
   return true;
 }
 
-// Récupère toutes les photos du concours actuel (triées par votes décroissant)
 export async function getPhotosConcours() {
   const concoursId = getConcoursId();
   const { data, error } = await supabase
@@ -332,4 +377,39 @@ export async function getPhotosConcours() {
   }));
   photos.sort((a, b) => b.votesTotal - a.votesTotal);
   return photos;
+}
+
+// RESET/UPDATE
+export async function resetUserData() {
+  await ensureAuth();
+  userDataCache = {
+    id: userIdCache,
+    pseudo: "Toi",
+    points: 0,
+    jetons: 0,
+    cadres: [],
+    cadreActif: "polaroid_01",
+    historique: [],
+    likedPhotos: [],
+    signaledPhotos: [],
+    premium: false,
+    votesConcours: {},
+    hasDownloadedVZone: false,
+    hasDownloadedVBlocks: false,
+    friendsInvited: 0
+  };
+  await supabase.from('users').upsert([userDataCache]);
+  setCachedOwnedFrames([]);
+}
+export async function updateUserData(update) {
+  await loadUserData();
+  Object.assign(userDataCache, update);
+  await supabase.from('users').update(update).eq('id', userIdCache);
+  if ('cadres' in update) setCachedOwnedFrames(update.cadres);
+}
+
+// ACCÈS GLOBAL À TOUTES LES DONNÉES (depuis le cache)
+export async function getUserDataCloud() {
+  await loadUserData();
+  return { ...userDataCache };
 }
