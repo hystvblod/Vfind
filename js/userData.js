@@ -1,3 +1,5 @@
+// js/userData.js
+
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 const SUPABASE_URL = 'https://swmdepiukfginzhbeccz.supabase.co';
@@ -236,7 +238,6 @@ export async function incrementFriendsInvited() {
 
 // ========== CONDITIONS CADRES SPÉCIAUX ==========
 
-// 1. JOURS DE DÉFI VALIDÉS (3 défis solo OU 3 duel_random OU 3 duel_amis dans la même journée = 1 jour)
 export async function getJoursDefisRealises() {
   await loadUserData();
   const historique = userDataCache?.historique || [];
@@ -260,7 +261,6 @@ export async function getJoursDefisRealises() {
   return joursValides;
 }
 
-// 3. PARTICIPATION CONCOURS (photo postée + votes sur 3 jours)
 export async function getConcoursParticipationStatus() {
   await loadUserData();
   const concoursId = getConcoursId();
