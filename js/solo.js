@@ -230,7 +230,6 @@ window.gererPrisePhoto = function(defiId, index) {
   let defi = defis[index];
   defi.photoCount = defi.photoCount || 0;
 
-  // Si pas encore de photo → autorisé
   if (!localStorage.getItem(`photo_defi_${defiId}`)) {
     canRetakePhoto = false;
     retakeDefiId = null;
@@ -238,7 +237,6 @@ window.gererPrisePhoto = function(defiId, index) {
     return;
   }
 
-  // Si premium → illimité
   if (isPremium()) {
     canRetakePhoto = true;
     retakeDefiId = defiId;
@@ -246,47 +244,48 @@ window.gererPrisePhoto = function(defiId, index) {
     return;
   }
 
-  // Si déjà une photo ET pas premium, alors demande pub pour chaque reprise
+  // PAS PREMIUM, on propose la pub
   if (defi.photoCount >= 1) {
-    if (confirm("Cette fonctionnalité est réservée aux premium ou après avoir regardé une pub. Voulez-vous regarder une pub pour reprendre la photo ?")) {
+    const popup = document.getElementById("popup-premium-photo");
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
+
+    // Clique PUB = autorise prise puis PUB juste après
+    document.getElementById("btnPubReprise").onclick = function() {
+      popup.classList.add("hidden");
+      popup.classList.remove("show");
       canRetakePhoto = true;
       retakeDefiId = defiId;
       window.ouvrirCameraPour(defiId);
-    }
+
+      // Marque qu’on attend la pub après la photo
+      window.pubAfterPhoto = true;
+    };
+    document.getElementById("btnAnnulerReprise").onclick = function() {
+      popup.classList.add("hidden");
+      popup.classList.remove("show");
+    };
+    return;
   } else {
-    // Fallback première prise (devrait jamais arriver ici)
     canRetakePhoto = false;
     retakeDefiId = null;
     window.ouvrirCameraPour(defiId);
   }
 };
 
+
 // ----------- PHOTO DANS CADRE & LOGIQUE PUB/PREMIUM -----------
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
-  let index = defis.findIndex(d => d.id == defiId); // bien "=="
+  let index = defis.findIndex(d => d.id == defiId);
   if (index === -1) {
-    // Défaut pro : message et retour sans crash
     alert("Impossible d’associer la photo à ce défi (id : " + defiId + "). Partie corrompue ou reset. Lance une nouvelle partie !");
     return;
   }
   let defi = defis[index];
   defi.photoCount = (defi.photoCount || 0) + 1;
 
-  if (canRetakePhoto && retakeDefiId === defiId && !isPremium() && defi.photoCount > 1) {
-    window.waitingPhotoToSave = { defiId, dataUrl };
-    alert("Pour valider cette nouvelle photo, regarde d'abord la publicité !");
-    showRewardedAd().then(async () => {
-      localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-      localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
-      canRetakePhoto = false;
-      retakeDefiId = null;
-      defis[index] = defi;
-      localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
-      await loadDefis();
-    });
-    return;
-  }
+  // On enregistre la photo prise dans le cache (toujours, premium ou non)
   localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
   localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
   canRetakePhoto = false;
@@ -294,7 +293,14 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   defis[index] = defi;
   localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
+
+  // Si on attend une pub (mode non premium, reprise), on l'affiche ici
+  if (window.pubAfterPhoto) {
+    window.pubAfterPhoto = false;
+    await showRewardedAd(); // ou ta vraie régie pub
+  }
 };
+
 
 
 async function afficherPhotosSauvegardees(photosMap) {

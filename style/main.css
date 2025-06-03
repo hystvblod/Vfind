@@ -2156,3 +2156,92 @@ overflow-y: auto;
   box-sizing: border-box;
   overflow: hidden;         /* Évite tout débordement */
 }
+.camera-controls {
+  display: flex;
+  justify-content: center;
+  gap: 2.3em;
+  margin: 2.2em 0 0 0;
+}
+.btn-camera {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #282e3a 60%, #474f62 100%);
+  box-shadow: 0 2px 12px #0005;
+  position: relative;
+  transition: transform 0.18s, background 0.3s;
+}
+.btn-camera:active {
+  transform: scale(0.93);
+  filter: brightness(0.93);
+}
+.btn-camera.capture {
+  background: linear-gradient(120deg, #ffeb3b 70%, #ffc107 100%);
+  box-shadow: 0 2px 12px #0006, 0 0 0 4px #fff8;
+}
+.btn-camera.switch::before, .btn-camera.close::before, .btn-camera.capture::before {
+  content: "";
+  display: block;
+  margin: 0 auto;
+}
+.btn-camera.switch::before {
+  width: 32px;
+  height: 32px;
+  background: none;
+  /* Icône rotative stylisée (double-flèche style “switch”) */
+  border: solid 3px #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-sizing: border-box;
+  position: absolute;
+  left: 20px; top: 20px;
+  transform: rotate(45deg);
+}
+.btn-camera.switch::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 12px;
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 10px solid #fff;
+  transform: translateX(-50%);
+}
+.btn-camera.close {
+  background: linear-gradient(120deg, #fa6565 70%, #d32f2f 100%);
+}
+.btn-camera.close::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  left: 20px; top: 20px;
+  background: none;
+  /* Croix stylisée */
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 0;
+  background:
+    linear-gradient(135deg, #fff 6px, #fff 8px, transparent 8px),
+    linear-gradient(-135deg, #fff 6px, #fff 8px, transparent 8px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.btn-camera.capture::before {
+  /* Bouton capture : rond blanc stylisé au centre */
+  content: "";
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px #fff6, 0 0 0 2px #ffeb3b;
+}

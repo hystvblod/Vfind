@@ -11,18 +11,19 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
     // UI Camera
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
-    container.innerHTML = `
-      <video autoplay playsinline class="camera-video"></video>
-      <div class="camera-controls">
-        <button id="switchCamera" title="Changer de caméra">
-          <img src="assets/icons/repeat.svg" alt="Switch camera" style="width:2.3em;height:2.3em;">
-        </button>
-        <button id="takePhoto" class="btn-capture" title="Prendre la photo">
-          <img src="assets/icons/photo.svg" alt="Prendre une photo" style="width:2.3em;height:2.3em;">
-        </button>
-        <button id="closeCamera" title="Fermer" style="font-size:2.2em;">❌</button>
-      </div>
-    `;
+  container.innerHTML = `
+  <video autoplay playsinline class="camera-video"></video>
+  <div class="camera-controls">
+    <button id="switchCamera" title="Changer de caméra">
+      <img src="assets/icons/repeat.svg" alt="Switch camera" style="width:2.3em;height:2.3em;">
+    </button>
+    <button id="takePhoto" class="btn-capture" title="Prendre la photo">
+      <img src="assets/icons/photo.svg" alt="Prendre une photo" style="width:2.3em;height:2.3em;">
+    </button>
+    <button id="closeCamera" title="Fermer" style="font-size:2.2em;">❌</button>
+  </div>
+`;
+
     document.body.appendChild(container);
 
     const video = container.querySelector("video");

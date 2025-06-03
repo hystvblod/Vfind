@@ -50,6 +50,22 @@
     </div>
   </div>
 
+  <!-- POPUP PREMIUM/VIDEO PUB POUR REPRENDRE UNE PHOTO -->
+  <div id="popup-premium-photo" class="popup hidden">
+    <div class="popup-inner popup-premium-pro">
+      <div class="premium-badge">PREMIUM</div>
+      <div class="popup-premium-title">Reprendre la photo</div>
+      <div class="popup-premium-price" style="margin-bottom: 18px;">
+        Cette fonctionnalité est réservée aux abonnés Premium<br>
+        <span style="font-size:0.98em;opacity:0.8;">ou accessible après avoir regardé une publicité.</span>
+      </div>
+      <div class="premium-list-pro" style="margin-bottom:18px;display:flex;gap:0.7em;">
+        <button class="btn-premium-pro" id="btnPubReprise">Regarder la pub</button>
+        <button class="btn-annuler-premium-pro" id="btnAnnulerReprise" style="background:#eee;color:#222;">Annuler</button>
+      </div>
+    </div>
+  </div>
+
   <!-- HEADER STYLE PRO -->
   <header class="header-solo" style="border-bottom: 5px solid #888;">
     <div class="header-row">
@@ -80,10 +96,6 @@
   </header>
 
   <main class="solo-container">
-    <section id="pre-game" class="centered">
-      <button id="startBtn" class="main-button">Lancer une partie</button>
-    </section>
-
     <section id="game-section" class="hidden">
       <div class="timer-box">
         <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
