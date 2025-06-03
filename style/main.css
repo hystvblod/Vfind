@@ -2138,12 +2138,12 @@ overflow-y: auto;
   box-sizing: border-box;
 }
 
-@media (max-width: 250px) {
+@media (max-width: 350px) {
   .grid-cadres {
     grid-template-columns: repeat(2, 1fr); /* 2 colonnes sous 700px */
   }
 }
-@media (max-width: 100px) {
+@media (max-width: 150px) {
   .grid-cadres {
     grid-template-columns: 1fr; /* 1 colonne sous 400px si tu veux */
   }
