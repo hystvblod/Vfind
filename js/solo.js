@@ -75,6 +75,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   await chargerUserData(true);
   if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
   if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
+  // Masque la barre de solde par défaut
+  const soldeContainer = document.getElementById("solde-container");
+  if (soldeContainer) soldeContainer.style.display = "none";
 });
 
 // ----------- LOGIQUE JEU -------------
@@ -86,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const endSection = document.getElementById("end-section");
   const timerDisplay = document.getElementById("timer");
   const defiList = document.getElementById("defi-list");
+  const soldeContainer = document.getElementById("solde-container");
 
   let userLang = navigator.language || navigator.userLanguage;
   userLang = userLang.split("-")[0];
@@ -131,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     preGame.classList.add("hidden");
     endSection.classList.add("hidden");
     gameSection.classList.remove("hidden");
+    if (soldeContainer) soldeContainer.style.display = "flex";
     updateTimer();
     loadDefis();
   }
@@ -139,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     preGame.classList.remove("hidden");
     gameSection.classList.add("hidden");
     endSection.classList.add("hidden");
+    if (soldeContainer) soldeContainer.style.display = "none";
   }
 
   function updateTimer() {
