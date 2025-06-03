@@ -70,28 +70,6 @@ function retirerPhotoAimee(defiId) {
 }
 
 // ----------- MAJ SOLDE POINTS/JETONS -------------
-document.addEventListener("DOMContentLoaded", async () => {
-  nettoyerPhotosDefis();
-  await chargerUserData(true);
-  majSolde();
-
-  // Langue
-  let userLang = navigator.language || navigator.userLanguage || "fr";
-  userLang = userLang.split("-")[0];
-  const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
-  const savedLang = localStorage.getItem("langue");
-  if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
-  if (!supportedLangs.includes(userLang)) userLang = "fr";
-
-  window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
-  await chargerDefis(userLang);
-  init();
-
-  // PATCH ULTRA DEEP : Attache le bouton après tout affichage
-  const btnStart = document.getElementById("startBtn");
-  if (btnStart) btnStart.onclick = startGame;
-});
-
 function majSolde() {
   if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
   if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
@@ -100,11 +78,11 @@ function majSolde() {
 // ----------- LOGIQUE JEU -------------
 async function init() {
   await chargerUserData(true);
-  // Récupère l'état SOLO localStorage
+
+  // PAS de pré-game, on démarre direct si aucune partie solo
   let defiActifs = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
   let defiTimer = parseInt(localStorage.getItem(SOLO_TIMER_KEY) || "0");
 
-  // Si partie en cours (timer OK et défis non tous faits)
   if (
     defiActifs.length > 0 &&
     defiTimer &&
@@ -117,18 +95,16 @@ async function init() {
     return;
   }
 
-  // Si partie FINIE (timer fini OU tous les défis faits)
   if (
     (defiActifs.length > 0 && defiTimer && Date.now() >= defiTimer) ||
     tousDefisFaits(defiActifs)
   ) {
-    // Fin automatique
     await endGameAuto();
     return;
   }
 
-  // Sinon : partie à lancer
-  showStart();
+  // Pas de partie → LANCE DIRECT une nouvelle partie
+  await startGame();
 }
 
 function tousDefisFaits(defis) {
@@ -136,7 +112,6 @@ function tousDefisFaits(defis) {
   return defis.every(d => d.done);
 }
 
-// Nettoie les photos solo AVANT nouvelle partie
 function nettoyerPhotosDefisPartie() {
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("photo_defi_")) {
@@ -148,18 +123,7 @@ function nettoyerPhotosDefisPartie() {
 
 async function startGame() {
   await chargerUserData(true);
-  // Si partie en cours, ne relance pas
-  let defiActifs = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
-  let defiTimer = parseInt(localStorage.getItem(SOLO_TIMER_KEY) || "0");
-  if (
-    defiActifs.length > 0 &&
-    defiTimer &&
-    Date.now() < defiTimer &&
-    !tousDefisFaits(defiActifs)
-  ) {
-    showGame();
-    return;
-  }
+  await chargerDefis();
   nettoyerPhotosDefisPartie();
   const newDefis = getRandomDefis(3);
   const endTime = Date.now() + 24 * 60 * 60 * 1000;
@@ -172,25 +136,22 @@ async function startGame() {
 
 function getRandomDefis(n) {
   const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n).map(defi => ({ ...defi, done: false, byJeton: false, canRetake: true }));
+  return shuffled.slice(0, n).map(defi => ({
+    ...defi,
+    done: false,
+    byJeton: false,
+    canRetake: true,
+    photoCount: 0 // compteur de photos prises pour logique premium/pub
+  }));
 }
 
 function showGame() {
-  document.getElementById("pre-game").classList.add("hidden");
+  // Masque tout sauf le vrai jeu
+  if (document.getElementById("pre-game")) document.getElementById("pre-game").classList.add("hidden");
   document.getElementById("end-section").classList.add("hidden");
   document.getElementById("game-section").classList.remove("hidden");
   const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "flex";
-}
-
-function showStart() {
-  document.getElementById("pre-game").classList.remove("hidden");
-  document.getElementById("game-section").classList.add("hidden");
-  document.getElementById("end-section").classList.add("hidden");
-  const soldeContainer = document.getElementById("solde-container");
-  if (soldeContainer) soldeContainer.style.display = "none";
-  const btnStart = document.getElementById("startBtn");
-  if (btnStart) btnStart.onclick = startGame;
 }
 
 function updateTimer() {
@@ -217,7 +178,7 @@ async function loadDefis() {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
   const defiList = document.getElementById("defi-list");
   if (!defis || !Array.isArray(defis) || defis.length === 0) {
-    defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
+    defiList.innerHTML = '<li class="defi-vide">Aucun défi en cours.</li>';
     return;
   }
   defiList.innerHTML = '';
@@ -248,8 +209,8 @@ async function loadDefis() {
     }
 
     let retakeBtn = '';
-    if (hasPhoto && !defi.done && !isPremium()) {
-      retakeBtn = `<button class="btn-retake-photo" onclick="window.askRetakePhoto('${defi.id}')">♻️ Reprendre photo</button>`;
+    if (hasPhoto && !defi.done) {
+      retakeBtn = `<button class="btn-retake-photo" onclick="window.askRetakePhoto('${defi.id}', ${index})">♻️ Reprendre photo</button>`;
     }
 
     li.innerHTML = `
@@ -270,14 +231,28 @@ async function loadDefis() {
 }
 
 // ----------- GESTION PHOTO & REPRISE PREMIUM/REWARD -----------
-window.askRetakePhoto = function(defiId) {
+window.askRetakePhoto = function(defiId, index) {
+  let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
+  let defi = defis[index];
+  defi.photoCount = defi.photoCount || 1;
+
+  // Si premium, illimité
   if (isPremium()) {
     canRetakePhoto = true;
     retakeDefiId = defiId;
     window.ouvrirCameraPour(defiId);
     return;
   }
-  if (confirm("Cette fonctionnalité est réservée aux premium ou après avoir regardé une pub. Voulez-vous regarder une pub pour reprendre la photo ?")) {
+
+  // Si déjà une photo, demander pub pour la 2e et plus
+  if (defi.photoCount >= 1) {
+    if (confirm("Cette fonctionnalité est réservée aux premium ou après avoir regardé une pub. Voulez-vous regarder une pub pour reprendre la photo ?")) {
+      canRetakePhoto = true;
+      retakeDefiId = defiId;
+      window.ouvrirCameraPour(defiId);
+    }
+  } else {
+    // Première fois, autorisé
     canRetakePhoto = true;
     retakeDefiId = defiId;
     window.ouvrirCameraPour(defiId);
@@ -285,7 +260,12 @@ window.askRetakePhoto = function(defiId) {
 };
 
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
-  if (canRetakePhoto && retakeDefiId === defiId && !isPremium()) {
+  let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
+  let index = defis.findIndex(d => d.id === defiId);
+  let defi = defis[index];
+  defi.photoCount = (defi.photoCount || 0) + 1;
+
+  if (canRetakePhoto && retakeDefiId === defiId && !isPremium() && defi.photoCount > 1) {
     window.waitingPhotoToSave = { defiId, dataUrl };
     alert("Pour valider cette nouvelle photo, regarde d'abord la publicité !");
     showRewardedAd().then(async () => {
@@ -293,6 +273,8 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
       localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
       canRetakePhoto = false;
       retakeDefiId = null;
+      defis[index] = defi;
+      localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
       await loadDefis();
     });
     return;
@@ -301,6 +283,8 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
   canRetakePhoto = false;
   retakeDefiId = null;
+  defis[index] = defi;
+  localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
 };
 
@@ -333,6 +317,21 @@ async function afficherPhotosSauvegardees(photosMap) {
     }
   });
 }
+
+// ----------- ZOOM PHOTO / POPUP -----------
+window.agrandirPhoto = async function(dataUrl, defiId) {
+  const cadre = document.getElementById("cadre-affiche");
+  const photo = document.getElementById("photo-affichee");
+  if (!cadre || !photo) return;
+  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+  cadre.src = `./assets/cadres/${cadreActuel}.webp`;
+  photo.src = dataUrl;
+  const popup = document.getElementById("popup-photo");
+  if (popup) {
+    popup.classList.remove("hidden");
+    popup.classList.add("show");
+  }
+};
 
 // ----------- VALIDATION DÉFI AVEC JETON OU PHOTO -----------
 window.validerDefi = async function(index) {
@@ -427,6 +426,11 @@ async function endGameAuto() {
 
 // === Ajout : fermeture croix popup + nettoyage du bouton cœur ===
 document.addEventListener("DOMContentLoaded", () => {
+  nettoyerPhotosDefis();
+  chargerUserData(true).then(majSolde);
+  // Lancement direct sans pré-game
+  init();
+
   document.querySelectorAll('.close-btn, #close-popup').forEach(btn => {
     btn.onclick = function() {
       let popup = btn.closest('.popup');
