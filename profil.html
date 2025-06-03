@@ -165,17 +165,33 @@
 
 <!-- ==== SUPABASE CENTRALISÉ ==== -->
 <script type="module">
-import { loadUserData, getPseudo, getPoints } from './js/userData.js';
+import { loadUserData, getPseudo, getPoints, setPseudo, getUserDataCloud } from './js/userData.js';
+import { supabase } from './js/userData.js';
 
+// Vérifie si un pseudo existe déjà (unicité)
+async function isPseudoTaken(pseudo) {
+  const { data } = await supabase.from('users').select('id').eq('pseudo', pseudo);
+  return data && data.length > 0;
+}
 
-let profil, currentId;
+// Change le pseudo dans Supabase (si unique)
+async function changeUserId(newPseudo) {
+  if (await isPseudoTaken(newPseudo)) {
+    throw new Error("Ce pseudo est déjà utilisé.");
+  }
+  await setPseudo(newPseudo);
+}
 
-// Affiche le profil et l'ID
+// Récupère toutes les infos du profil courant
+async function getProfile() {
+  return await getUserDataCloud();
+}
+
+// Affiche le pseudo comme ID public
 async function refreshProfilDisplay() {
-  currentId = getUserId();
-  profil = await getProfile(currentId);
+  const profil = await getProfile();
   document.getElementById("idUserDisplay").textContent =
-    "ID : " + (profil?.id || "???");
+    "ID : " + (profil?.pseudo || "???");
   document.getElementById("idUserDisplay").style.color = "#fff";
   document.getElementById("vcoins").textContent = profil?.points || 0;
   document.getElementById("jetons").textContent = profil?.jetons || 0;
@@ -214,7 +230,7 @@ async function setupProfile() {
       err.textContent = "Caractères autorisés : A-Z 0-9 . _ -";
       return;
     }
-    // Vérifie unicité et change dans Supabase + localStorage
+    // Vérifie unicité et change dans Supabase
     try {
       await changeUserId(newId);
       err.classList.add("valid");

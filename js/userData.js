@@ -377,9 +377,13 @@ async function getPhotosConcours() {
 // RESET/UPDATE
 async function resetUserData() {
   await ensureAuth();
+
+  // Génère un pseudo unique à chaque reset (ex: VUser_ab12x9)
+  const randomPseudo = "VUser_" + Math.random().toString(36).slice(2, 8);
+
   userDataCache = {
     id: userIdCache,
-    pseudo: "Toi",
+    pseudo: randomPseudo,
     points: 0,
     jetons: 0,
     cadres: [],
@@ -393,6 +397,7 @@ async function resetUserData() {
     hasDownloadedVBlocks: false,
     friendsInvited: 0
   };
+
   await supabase.from('users').upsert([userDataCache]);
   setCachedOwnedFrames([]);
 }
