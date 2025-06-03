@@ -418,7 +418,6 @@ function getUserId() {
   return userIdCache;
 }
 
-// EXPORTS PRINCIPAUX (AUCUN DOUBLON !)
 export {
   getPoints,
   addPoints,
@@ -438,5 +437,7 @@ export {
   getUserId,
   getUserDataCloud,
   getDefisFromSupabase,
-  getOwnedFrames
+  getOwnedFrames,
+  loadUserData           // ← AJOUTE JUSTE CETTE LIGNE ICI !
 };
+
