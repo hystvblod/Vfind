@@ -264,7 +264,11 @@ window.gererPrisePhoto = function(defiId, index) {
 // ----------- PHOTO DANS CADRE & LOGIQUE PUB/PREMIUM -----------
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
-  let index = defis.findIndex(d => d.id === defiId);
+  let index = defis.findIndex(d => d.id == defiId); // <= égalité lâche pour type (id number ou string)
+  if (index === -1) {
+    alert("Défi introuvable (id: " + defiId + "). Réinitialise la partie.");
+    return;
+  }
   let defi = defis[index];
   defi.photoCount = (defi.photoCount || 0) + 1;
 
@@ -290,6 +294,7 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
 };
+
 
 async function afficherPhotosSauvegardees(photosMap) {
   const cadreActuel = await getCadreSelectionne();
