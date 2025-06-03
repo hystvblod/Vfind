@@ -7,7 +7,6 @@ import {
   hasDownloadedVZone // (si besoin, à implémenter)
 } from './userData.js';
 
-
 // === IndexedDB cache boutique/cadres.json ===
 const BOUTIQUE_DB_NAME = 'VFindBoutiqueCache';
 const BOUTIQUE_STORE = 'boutiqueData';
@@ -114,25 +113,26 @@ async function acheterCadreBoutique(id, prix) {
     return;
   }
   await acheterCadre(id);
-  // Charge l’image en base64 et la stocke
-const img = new Image();
-img.crossOrigin = "anonymous";
-img.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
-img.onload = async () => {
-  const canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-  const base64 = canvas.toDataURL("image/webp");
-  localStorage.setItem(`cadre_${id}`, base64);
 
-  // Forcer mise à jour UI
-  await getCadresPossedes(true); // ← recharge le cache Supabase en local
-};
+  // 1. Stocke base64 via <canvas>
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
+  img.onload = async () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    const base64 = canvas.toDataURL("image/webp");
+    localStorage.setItem(`cadre_${id}`, base64);
+    localStorage.setItem('lastCadresUpdate', Date.now()); // Patch synchro UI
 
+    // Forcer re-sync cache Supabase
+    await getCadresPossedes(true);
+  };
 
-  // Attend que le base64 soit vraiment stocké AVANT de signaler l'achat
+  // 2. Fallback pour garantir la présence (cas fail)
   const url = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
   const res = await fetch(url);
   const blob = await res.blob();
@@ -144,6 +144,8 @@ img.onload = async () => {
     };
     reader.readAsDataURL(blob);
   });
+
+  localStorage.setItem('lastCadresUpdate', Date.now()); // Patch synchro UI (2)
 
   // Ici SEULEMENT tu affiches “Acheté !” ou tu fais le render.
   await updatePointsDisplay();
@@ -486,7 +488,16 @@ window.watchAd = watchAd;
 window.inviteFriend = inviteFriend;
 window.afficherPhotosSauvegardees = afficherPhotosSauvegardees;
 
+// --- PATCH SYNCHRONISATION POST-ACHAT CADRE ---
 document.addEventListener('DOMContentLoaded', async () => {
+  const lastUpdate = parseInt(localStorage.getItem('lastCadresUpdate') || "0");
+  if (Date.now() - lastUpdate < 5000) {
+    // Forçage de la synchro Supabase juste après un achat
+    await getCadresPossedes(true);
+    localStorage.removeItem('lastCadresUpdate');
+    // Patiente un peu pour que le base64 ait le temps d’être stocké (1 tick)
+    await new Promise(r => setTimeout(r, 100));
+  }
   await fetchCadres();
   await renderBoutique('classique');
   await updatePointsDisplay();

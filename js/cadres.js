@@ -1,15 +1,16 @@
 import {
   getCadresPossedes,
   getCadreSelectionne,
-  setCadreSelectionne,
-  syncCadresFromCloud
+  setCadreSelectionne
 } from './js/userData.js';
 
+// Renvoie l’URL du cadre : base64 local si dispo, sinon lien Supabase
 function getCadreUrl(id) {
   return localStorage.getItem(`cadre_${id}`) ||
     `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
 }
 
+// Zoom sur le cadre (popup)
 function zoomCadre(id) {
   const popup = document.createElement("div");
   popup.className = "popup show";
@@ -25,16 +26,17 @@ function zoomCadre(id) {
   document.body.appendChild(popup);
 }
 
+// Sélectionner un cadre
 async function utiliserCadre(id) {
   await setCadreSelectionne(id);
   alert("✅ Cadre sélectionné !");
   await afficherCadres();
 }
 
+// Affiche tous les cadres possédés
 async function afficherCadres() {
   const container = document.getElementById("cadres-list");
-  // Toujours forcer la synchro cloud au 1er affichage :
- const cadresPossedes = await getCadresPossedes();
+  const cadresPossedes = await getCadresPossedes();
   const cadreActif = await getCadreSelectionne();
 
   container.innerHTML = "";
@@ -60,7 +62,7 @@ async function afficherCadres() {
   });
 }
 
-// Initialisation
+// Initialisation et synchro juste après un achat
 document.addEventListener("DOMContentLoaded", async () => {
   window.zoomCadre = zoomCadre;
   window.utiliserCadre = utiliserCadre;
