@@ -73,7 +73,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   nettoyerPhotosDefis();
   await chargerUserData(true);
   majSolde();
-  // ...détection langue, etc. (ton code)
+
+  // Langue
+  let userLang = navigator.language || navigator.userLanguage || "fr";
+  userLang = userLang.split("-")[0];
+  const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
+  const savedLang = localStorage.getItem("langue");
+  if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
+  if (!supportedLangs.includes(userLang)) userLang = "fr";
+
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
   await chargerDefis(userLang);
   init();
@@ -176,6 +184,9 @@ function showStart() {
   document.getElementById("end-section").classList.add("hidden");
   const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "none";
+  // PATCH sécurité
+  const btnStart = document.getElementById("startBtn");
+  if (btnStart) btnStart.onclick = startGame;
 }
 
 function updateTimer() {
