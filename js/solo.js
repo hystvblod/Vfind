@@ -264,9 +264,10 @@ window.gererPrisePhoto = function(defiId, index) {
 // ----------- PHOTO DANS CADRE & LOGIQUE PUB/PREMIUM -----------
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
-  let index = defis.findIndex(d => d.id == defiId); // égalité lâche pour type (id number ou string)
+  let index = defis.findIndex(d => d.id == defiId); // bien "=="
   if (index === -1) {
-    alert("Défi introuvable (id: " + defiId + "). Réinitialise la partie.");
+    // Défaut pro : message et retour sans crash
+    alert("Impossible d’associer la photo à ce défi (id : " + defiId + "). Partie corrompue ou reset. Lance une nouvelle partie !");
     return;
   }
   let defi = defis[index];
@@ -294,6 +295,7 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
 };
+
 
 async function afficherPhotosSauvegardees(photosMap) {
   const cadreActuel = await getCadreSelectionne();
