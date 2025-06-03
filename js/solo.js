@@ -331,7 +331,8 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
   const cadre = document.getElementById("cadre-affiche");
   const photo = document.getElementById("photo-affichee");
   if (!cadre || !photo) return;
-  const cadreActuel = localStorage.getItem("cadre_selectionne") || "polaroid_01";
+  // Utilise la même logique que la miniature : appel asynchrone
+  const cadreActuel = await getCadreSelectionne();
   cadre.src = `./assets/cadres/${cadreActuel}.webp`;
   photo.src = dataUrl;
   const popup = document.getElementById("popup-photo");
@@ -340,6 +341,7 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
     popup.classList.add("show");
   }
 };
+
 
 // ----------- VALIDATION DÉFI AVEC JETON OU PHOTO -----------
 window.validerDefi = async function(index) {
