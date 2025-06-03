@@ -40,7 +40,6 @@ async function loadUserData(force = false) {
   if (error || !data) {
 userDataCache = {
   id: userIdCache,
-  pseudo: "Toi",
   points: 100,
   jetons: 3,
   cadres: ["polaroid_01", "polaroid_02"],
