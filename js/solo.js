@@ -11,7 +11,6 @@ const DEFIS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
 // --------- CHARGEMENT DES DEFIS : SUPABASE puis CACHE LOCAL ---------
 async function chargerDefis(lang = "fr") {
-  // Si cache < 24h : charge local
   const lastFetch = parseInt(localStorage.getItem(DEFIS_CACHE_DATE_KEY) || "0");
   if (Date.now() - lastFetch < DEFIS_CACHE_TTL) {
     const defisCache = localStorage.getItem(DEFIS_CACHE_KEY);
@@ -20,7 +19,6 @@ async function chargerDefis(lang = "fr") {
       return allDefis;
     }
   }
-  // Sinon, va sur Supabase via userData.js (pro)
   allDefis = await getDefisFromSupabase(lang);
   localStorage.setItem(DEFIS_CACHE_KEY, JSON.stringify(allDefis));
   localStorage.setItem(DEFIS_CACHE_DATE_KEY, Date.now().toString());
@@ -39,11 +37,9 @@ function nettoyerPhotosDefis() {
   const now = Date.now();
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("photo_defi_")) {
-      // Chaque photo a une date : localStorage["photo_defi_X_date"]
       const dateKey = key + "_date";
       const time = parseInt(localStorage.getItem(dateKey) || "0");
       if (time && now - time > DEFIS_CACHE_TTL) {
-        // Vérifie si la photo est aimée
         const photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
         const photoId = key.replace("photo_defi_", "");
         if (!photosAimees.includes(photoId)) {
@@ -75,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await chargerUserData(true);
   if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
   if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
-  // Masque la barre de solde par défaut
   const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "none";
 });
@@ -104,36 +99,30 @@ document.addEventListener("DOMContentLoaded", () => {
     init();
   });
 
-async function init() {
-  startBtn?.addEventListener("click", startGame);
-  replayBtn?.addEventListener("click", showStart);
+  async function init() {
+    startBtn?.addEventListener("click", startGame);
+    replayBtn?.addEventListener("click", showStart);
+    await chargerUserData(true);
 
-  await chargerUserData(true);
-
-  // Partie déjà lancée et encore active
-  if (
-    Array.isArray(userData.defiActifs) &&
-    userData.defiActifs.length > 0 &&
-    userData.defiTimer &&
-    Date.now() < userData.defiTimer
-  ) {
-    showGame();
+    if (
+      Array.isArray(userData.defiActifs) &&
+      userData.defiActifs.length > 0 &&
+      userData.defiTimer &&
+      Date.now() < userData.defiTimer
+    ) {
+      showGame();
+    } else if (
+      Array.isArray(userData.defiActifs) &&
+      userData.defiActifs.length > 0 &&
+      userData.defiTimer &&
+      Date.now() >= userData.defiTimer
+    ) {
+      await window.endGameAuto();
+      showStart();
+    } else {
+      showStart();
+    }
   }
-  // Partie expirée mais non réinitialisée
-  else if (
-    Array.isArray(userData.defiActifs) &&
-    userData.defiActifs.length > 0 &&
-    userData.defiTimer &&
-    Date.now() >= userData.defiTimer
-  ) {
-    await window.endGameAuto();
-    showStart();
-  }
-  // Aucune partie en cours
-  else {
-    showStart();
-  }
-}
 
   async function startGame() {
     const newDefis = getRandomDefis(3);
@@ -214,17 +203,12 @@ async function init() {
         >
       `;
 
+      // === SUPPRIME LE COEUR ICI ===
       li.innerHTML = `
         <div class="defi-content">
           <div class="defi-texte">
             <p>${defi.texte}</p>
             ${boutonPhoto}
-        <img
-          src="assets/icons/coeur.svg"
-          alt="Ajouter aux photos aimées"
-          style="width:2em;cursor:pointer;display:inline-block;margin-left:0.6em;vertical-align:middle;"
-          onclick="window.aimerPhoto('${defi.id}')"
-        >
           </div>
           <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
         </div>
@@ -279,6 +263,46 @@ async function init() {
     document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
 
     const popup = document.getElementById("popup-photo");
+
+    // Ajout du bouton cœur stylé dans le popup
+    let btnAimer = document.getElementById("btn-aimer-photo");
+    if (!btnAimer) {
+      btnAimer = document.createElement("button");
+      btnAimer.id = "btn-aimer-photo";
+      btnAimer.innerHTML = `<img src="assets/icons/coeur.svg" style="width:2.4em;height:2.4em;filter:drop-shadow(0 2px 6px #ffe04a90);">`;
+      btnAimer.style.display = "block";
+      btnAimer.style.margin = "14px auto 0";
+      btnAimer.style.background = "none";
+      btnAimer.style.border = "none";
+      btnAimer.style.cursor = "pointer";
+      btnAimer.onclick = function() {
+        aimerPhoto(id);
+        btnAimer.disabled = true;
+        btnAimer.style.opacity = "0.55";
+        btnAimer.title = "Photo aimée !";
+        alert("Photo ajoutée à tes photos aimées !");
+      };
+      document.querySelector("#popup-photo .cadre-popup").after(btnAimer);
+    } else {
+      btnAimer.disabled = false;
+      btnAimer.style.opacity = "1";
+      btnAimer.title = "";
+      btnAimer.onclick = function() {
+        aimerPhoto(id);
+        btnAimer.disabled = true;
+        btnAimer.style.opacity = "0.55";
+        btnAimer.title = "Photo aimée !";
+        alert("Photo ajoutée à tes photos aimées !");
+      };
+    }
+
+    let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+    if (photosAimees.includes(id)) {
+      btnAimer.disabled = true;
+      btnAimer.style.opacity = "0.55";
+      btnAimer.title = "Déjà ajoutée";
+    }
+
     popup.classList.remove("hidden");
     popup.classList.add("show");
   }
@@ -359,12 +383,10 @@ async function init() {
       if (photoUrl) nbPhotos++;
     });
     let gain = nbPhotos * 10;
-    if (nbPhotos === 3) gain = 40; // Bonus si 3 photos prises
+    if (nbPhotos === 3) gain = 40;
 
     const oldPoints = userData.points || 0;
     const newPoints = oldPoints + gain;
-
-    // Ajoute à l'historique pour le calendrier
     const date = new Date().toISOString().slice(0, 10);
     let historique = userData.historique || [];
     historique.push({ date, defi: defis.map(d => d.id) });
@@ -381,13 +403,10 @@ async function init() {
     if (document.getElementById("points")) document.getElementById("points").textContent = newPoints;
   };
 
-  // Fin automatique après timer (24h écoulées)
   window.endGameAuto = async function() {
     await chargerUserData();
     let defis = userData.defiActifs || [];
     if (!defis.length) return;
-
-    // Ajout à l'historique pour le calendrier
     const date = new Date().toISOString().slice(0, 10);
     let historique = userData.historique || [];
     historique.push({ date, defi: defis.map(d => d.id) });
@@ -403,7 +422,6 @@ async function init() {
     document.getElementById("popup-end").classList.add("show");
     if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
   };
-  // ----------- FIN PATCH PRO -----------
 
   document.getElementById("replayBtnEnd").onclick = async function() {
     document.getElementById("popup-end").classList.add("hidden");
@@ -418,7 +436,7 @@ async function init() {
   };
 });
 
-// === Ajout : fermeture croix popup ===
+// === Ajout : fermeture croix popup + nettoyage du bouton cœur ===
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.close-btn, #close-popup').forEach(btn => {
     btn.onclick = function() {
@@ -427,6 +445,9 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.classList.add('hidden');
         popup.classList.remove('show');
       }
+      // Nettoie le bouton cœur si existant
+      let btnAimer = document.getElementById("btn-aimer-photo");
+      if (btnAimer) btnAimer.remove();
     };
   });
 });
