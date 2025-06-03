@@ -43,21 +43,24 @@ async function loadUserData(force = false) {
     // Génère un pseudo aléatoire unique de type VUser_xxxxx
     const randomPseudo = "VUser_" + Math.random().toString(36).slice(2, 8);
 
-    userDataCache = {
-      id: userIdCache,
-      pseudo: randomPseudo,
-      points: 100,
-      jetons: 3,
-      cadres: ["polaroid_01", "polaroid_02"],
-      cadreActif: "polaroid_01",
-      historique: [],
-      likedPhotos: [],
-      signaledPhotos: [],
-      premium: false,
-      votesConcours: {},
-      hasDownloadedVZone: false,
-      hasDownloadedVBlocks: false,
-      friendsInvited: 0
+userDataCache = {
+  id: userIdCache,
+  pseudo: randomPseudo,
+  points: 100,
+  jetons: 3,
+  cadres: ["polaroid_01", "polaroid_02"],
+  cadreActif: "polaroid_01",
+  historique: [],
+  likedPhotos: [],
+  signaledPhotos: [],
+  premium: false,
+  votesConcours: {},
+  hasDownloadedVZone: false,
+  hasDownloadedVBlocks: false,
+  friendsInvited: 0,
+  // AJOUT POUR MODE SOLO
+  defiActifs: [],
+  defiTimer: 0
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {

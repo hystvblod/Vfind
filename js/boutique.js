@@ -114,7 +114,23 @@ async function acheterCadreBoutique(id, prix) {
     return;
   }
   await acheterCadre(id);
-  await getCadresPossedes(true);
+  // Charge l’image en base64 et la stocke
+const img = new Image();
+img.crossOrigin = "anonymous";
+img.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
+img.onload = async () => {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const base64 = canvas.toDataURL("image/webp");
+  localStorage.setItem(`cadre_${id}`, base64);
+
+  // Forcer mise à jour UI
+  await getCadresPossedes(true); // ← recharge le cache Supabase en local
+};
+
 
   // Attend que le base64 soit vraiment stocké AVANT de signaler l'achat
   const url = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
