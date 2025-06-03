@@ -104,19 +104,36 @@ document.addEventListener("DOMContentLoaded", () => {
     init();
   });
 
-  async function init() {
-    startBtn?.addEventListener("click", startGame);
-    replayBtn?.addEventListener("click", showStart);
+async function init() {
+  startBtn?.addEventListener("click", startGame);
+  replayBtn?.addEventListener("click", showStart);
 
-    await chargerUserData(true);
-    if (!userData.defiActifs || !Array.isArray(userData.defiActifs) || userData.defiActifs.length === 0) {
-      showStart();
-    } else if (userData.defiTimer && Date.now() < userData.defiTimer) {
-      showGame();
-    } else {
-      showStart();
-    }
+  await chargerUserData(true);
+
+  // Partie déjà lancée et encore active
+  if (
+    Array.isArray(userData.defiActifs) &&
+    userData.defiActifs.length > 0 &&
+    userData.defiTimer &&
+    Date.now() < userData.defiTimer
+  ) {
+    showGame();
   }
+  // Partie expirée mais non réinitialisée
+  else if (
+    Array.isArray(userData.defiActifs) &&
+    userData.defiActifs.length > 0 &&
+    userData.defiTimer &&
+    Date.now() >= userData.defiTimer
+  ) {
+    await window.endGameAuto();
+    showStart();
+  }
+  // Aucune partie en cours
+  else {
+    showStart();
+  }
+}
 
   async function startGame() {
     const newDefis = getRandomDefis(3);
