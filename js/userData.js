@@ -32,31 +32,45 @@ function setCachedOwnedFrames(frames) {
 async function loadUserData(force = false) {
   await ensureAuth();
   if (userDataCache && !force) return userDataCache;
+
   const { data, error } = await supabase
     .from('users')
     .select('*')
     .eq('id', userIdCache)
     .single();
-  if (error || !data) {
-userDataCache = {
-  id: userIdCache,
-  pseudo: "Toi",
-  points: 100,
-  jetons: 3,
-  cadres: ["polaroid_01", "polaroid_02"],
-  cadreActif: "polaroid_01",
-  historique: [],
-  likedPhotos: [],
-  signaledPhotos: [],
-  premium: false,
-  votesConcours: {},
-  hasDownloadedVZone: false,
-  hasDownloadedVBlocks: false,
-  friendsInvited: 0
-};
-await supabase.from('users').insert([userDataCache]);
 
-    await supabase.from('users').insert([userDataCache]);
+  if (!data) {
+    // Utilisateur pas encore créé dans la table : on l'ajoute
+    userDataCache = {
+      id: userIdCache,
+      pseudo: "Toi",
+      points: 100,
+      jetons: 3,
+      cadres: ["polaroid_01", "polaroid_02"],
+      cadreActif: "polaroid_01",
+      historique: [],
+      likedPhotos: [],
+      signaledPhotos: [],
+      premium: false,
+      votesConcours: {},
+      hasDownloadedVZone: false,
+      hasDownloadedVBlocks: false,
+      friendsInvited: 0
+    };
+    const { error: insertError } = await supabase.from('users').insert([userDataCache]);
+    if (insertError) {
+      // Si erreur parce que déjà existant, on le récupère (collision rare mais possible en double appel)
+      if (insertError.code === '23505' || insertError.message.includes('duplicate')) {
+        const { data: existing } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userIdCache)
+          .single();
+        userDataCache = existing;
+      } else {
+        throw insertError;
+      }
+    }
   } else {
     userDataCache = data;
   }
@@ -438,6 +452,5 @@ export {
   getUserDataCloud,
   getDefisFromSupabase,
   getOwnedFrames,
-  loadUserData           // ← AJOUTE JUSTE CETTE LIGNE ICI !
+  loadUserData
 };
-
