@@ -443,6 +443,7 @@ export {
   getPseudo,
   setPseudo,
   getPoints,
+  removeJeton,
   addPoints,
   removePoints,
   getJetons,
