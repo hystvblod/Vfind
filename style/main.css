@@ -2148,3 +2148,11 @@ overflow-y: auto;
     grid-template-columns: 1fr; /* 1 colonne sous 400px si tu veux */
   }
 }
+.grid-cadres .cadre-item {
+  width: 100%;              /* OCCUPE 100% DE SA COLONNE */
+  min-width: 0;             /* NE PAS DÉPASSER LA COLONNE ! */
+  max-width: 220px;         /* Limite physique (ou ce que tu veux) */
+  margin: 0 auto;           /* Centré si moins large */
+  box-sizing: border-box;
+  overflow: hidden;         /* Évite tout débordement */
+}
