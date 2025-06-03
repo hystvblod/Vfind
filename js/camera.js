@@ -1,71 +1,14 @@
-import { supabase, getUserId } from './js/supabase.js';
-
-// ==== FONCTION D'UPLOAD PHOTO DUEL SUR SUPABASE STORAGE ====
-async function uploadPhotoDuelWebp(dataUrl, duelId) {
-  const userId = getUserId();
-  const base64 = dataUrl.split(',')[1];
-  const binary = atob(base64);
-  const array = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
-  const file = new Blob([array], { type: "image/webp" });
-
-  const fileName = `${duelId}_${userId}_${Date.now()}.webp`;
-  let { error } = await supabase.storage.from('photosduel').upload(fileName, file, {
-    cacheControl: '3600', upsert: true, contentType: 'image/webp'
-  });
-  if (error) throw error;
-
-  const { data: publicUrlData } = supabase.storage.from('photosduel').getPublicUrl(fileName);
-  const publicUrl = publicUrlData.publicUrl;
-
-  await supabase.from('photos_duel').insert([{
-    duel_id: duelId,
-    user_id: userId,
-    photo_url: publicUrl,
-    created_at: new Date().toISOString(),
-    type: 'duel'
-  }]);
-
-  return publicUrl;
-}
-
-// ==== FONCTION D'UPLOAD PHOTO CONCOURS SUPABASE ====
-async function uploadPhotoConcoursWebp(dataUrl, concoursId) {
-  const userId = getUserId();
-  const base64 = dataUrl.split(',')[1];
-  const binary = atob(base64);
-  const array = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
-  const file = new Blob([array], { type: "image/webp" });
-
-  const fileName = `${concoursId}_${userId}_${Date.now()}.webp`;
-  let { error } = await supabase.storage.from('photosconcours').upload(fileName, file, {
-    cacheControl: '3600', upsert: true, contentType: 'image/webp'
-  });
-  if (error) throw error;
-
-  const { data: publicUrlData } = supabase.storage.from('photosconcours').getPublicUrl(fileName);
-  const publicUrl = publicUrlData.publicUrl;
-
-  await supabase.from('photos_concours').insert([{
-    concours_id: concoursId,
-    user_id: userId,
-    photo_url: publicUrl,
-    created_at: new Date().toISOString()
-  }]);
-
-  return publicUrl;
-}
-
 /**
- * Ouvre la caméra pour prendre une photo.
- * - DUEL: colle la photo sur le cadre, exporte le rendu webp, upload Supabase Storage (photosduel) et callback.
- * - CONCOURS: idem mais bucket 'photosconcours' + table 'photos_concours'.
- * - SOLO: photo seule, en localStorage.
- * - BASE64: retourne la photo seule en base64 (webp, 500x550).
+ * Camera universelle VFind : 
+ * - SOLO : photo et stockage 100% local
+ * - DUEL/CONCOURS : upload sur Supabase, cache local
+ * 
+ * /!\ Nécessite ./js/supabase.js sur la page pour DUEL/CONCOURS ! (Import dynamique)
  */
-export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) { 
+
+export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
   return new Promise((resolve, reject) => {
+    // UI Camera
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
     container.innerHTML = `
@@ -133,11 +76,12 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId);
+            // Import dynamique
+            const supa = await import('./js/supabase.js');
+            const urlPhoto = await supa.uploadPhotoDuelWebp(dataUrl, duelId);
+            localStorage.setItem(`photo_duel_${duelId}_${supa.getUserId()}`, urlPhoto);
             if (window.savePhotoDuel) {
               await window.savePhotoDuel(defiId, urlPhoto);
-            } else {
-              alert("Erreur : fonction savePhotoDuel introuvable !");
             }
           } catch (err) {
             alert("Erreur upload Supabase : " + err.message);
@@ -147,10 +91,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           resolve();
         };
         cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
-      
+
       // --- CONCOURS ---
       } else if (mode === "concours") {
-        if (!defiId) { // defiId = concoursId ici
+        if (!defiId) {
           alert("Erreur interne : concoursId manquant.");
           return;
         }
@@ -160,14 +104,15 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const urlPhoto = await uploadPhotoConcoursWebp(dataUrl, defiId);
+            // Import dynamique
+            const supa = await import('./js/supabase.js');
+            const urlPhoto = await supa.uploadPhotoConcoursWebp(dataUrl, defiId);
+            localStorage.setItem(`photo_concours_${defiId}_${supa.getUserId()}`, urlPhoto);
             if (window.savePhotoConcours) {
               await window.savePhotoConcours(defiId, urlPhoto);
-            } else {
-              alert("Photo concours envoyée !");
             }
           } catch (err) {
-            alert("Erreur upload concours Supabase : " + err.message);
+            alert("Erreur upload Supabase : " + err.message);
           }
           if (videoStream) videoStream.getTracks().forEach(track => track.stop());
           container.remove();
@@ -205,7 +150,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
   });
 }
 
-// ==== FONCTIONS GLOBALES POUR LE MODE DUEL ET CONCOURS ====
+// ==== Fonctions globales pour compatibilité boutons/événements ====
 window.ouvrirCameraPour = ouvrirCameraPour;
 window.cameraOuvrirCameraPourDuel = function(idx, duelId) {
   ouvrirCameraPour(idx, "duel", duelId);
