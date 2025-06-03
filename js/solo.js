@@ -125,49 +125,63 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     startBtn?.addEventListener("click", startGame);
-    replayBtn?.addEventListener("click", showStart);
-  }
+replayBtn?.addEventListener("click", showStart);
+}
 
-  async function startGame() {
-    // PATCH ici : on vérifie si une partie existe déjà AVANT de créer !
-    await chargerUserData(true);
-    if (
-      Array.isArray(userData.defiActifs) &&
-      userData.defiActifs.length > 0 &&
-      userData.defiTimer &&
-      Date.now() < userData.defiTimer
-    ) {
-      // Ne rien faire, une partie existe déjà.
-      showGame();
-      return;
+// === AJOUT : Nettoie toutes les anciennes photos solo du localStorage
+function nettoyerPhotosDefisPartie() {
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("photo_defi_")) {
+      localStorage.removeItem(key);
+      localStorage.removeItem(key + "_date");
     }
-    const newDefis = getRandomDefis(3);
-    const endTime = Date.now() + 24 * 60 * 60 * 1000;
-    await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
-    await chargerUserData(true);
+  });
+}
+
+async function startGame() {
+  await chargerUserData(true);
+  if (
+    Array.isArray(userData.defiActifs) &&
+    userData.defiActifs.length > 0 &&
+    userData.defiTimer &&
+    Date.now() < userData.defiTimer
+  ) {
+    // Ne rien faire, une partie existe déjà.
     showGame();
+    return;
   }
 
-  function getRandomDefis(n) {
-    const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n).map(defi => ({ ...defi, done: false }));
-  }
+  // === PATCH : Nettoyage des anciennes photos avant nouvelle partie ===
+  nettoyerPhotosDefisPartie();
 
-  function showGame() {
-    preGame.classList.add("hidden");
-    endSection.classList.add("hidden");
-    gameSection.classList.remove("hidden");
-    if (soldeContainer) soldeContainer.style.display = "flex";
-    updateTimer();
-    loadDefis();
-  }
+  const newDefis = getRandomDefis(3);
+  const endTime = Date.now() + 24 * 60 * 60 * 1000;
+  await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
+  await chargerUserData(true);
+  showGame();
+}
 
-  function showStart() {
-    preGame.classList.remove("hidden");
-    gameSection.classList.add("hidden");
-    endSection.classList.add("hidden");
-    if (soldeContainer) soldeContainer.style.display = "none";
-  }
+function getRandomDefis(n) {
+  const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n).map(defi => ({ ...defi, done: false }));
+}
+
+function showGame() {
+  preGame.classList.add("hidden");
+  endSection.classList.add("hidden");
+  gameSection.classList.remove("hidden");
+  if (soldeContainer) soldeContainer.style.display = "flex";
+  updateTimer();
+  loadDefis();
+}
+
+function showStart() {
+  preGame.classList.remove("hidden");
+  gameSection.classList.add("hidden");
+  endSection.classList.add("hidden");
+  if (soldeContainer) soldeContainer.style.display = "none";
+}
+
 
   function updateTimer() {
     const interval = setInterval(async () => {
