@@ -2156,92 +2156,78 @@ overflow-y: auto;
   box-sizing: border-box;
   overflow: hidden;         /* Évite tout débordement */
 }
-.camera-controls {
+/* === CAMERA VFind PRO STYLE === */
+.camera-container-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #13151a;
   display: flex;
-  justify-content: center;
-  gap: 2.3em;
-  margin: 2.2em 0 0 0;
-}
-.btn-camera {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.camera-video {
+  max-width: 95vw; max-height: 65vh;
+  border-radius: 2em;
+  background: #222;
+  box-shadow: 0 8px 28px #0007;
+  margin-bottom: 2.5em;
+}
+.camera-controls-pro {
+  display: flex;
+  gap: 2em;
+  justify-content: center;
+  align-items: flex-end;
+}
+.camera-btn {
   border: none;
-  outline: none;
+  background: none;
+  color: #f3f6fc;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 0.6em 0.8em;
+  border-radius: 1em;
   cursor: pointer;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(120deg, #282e3a 60%, #474f62 100%);
-  box-shadow: 0 2px 12px #0005;
-  position: relative;
-  transition: transform 0.18s, background 0.3s;
+  transition: background 0.14s, box-shadow 0.18s, transform 0.11s;
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 60px;
+  outline: none;
 }
-.btn-camera:active {
-  transform: scale(0.93);
-  filter: brightness(0.93);
+.camera-btn:active {
+  background: #394156;
+  transform: scale(0.97);
 }
-.btn-camera.capture {
-  background: linear-gradient(120deg, #ffeb3b 70%, #ffc107 100%);
-  box-shadow: 0 2px 12px #0006, 0 0 0 4px #fff8;
-}
-.btn-camera.switch::before, .btn-camera.close::before, .btn-camera.capture::before {
-  content: "";
+.cam-ico {
+  font-size: 2.1em;
   display: block;
-  margin: 0 auto;
+  margin-bottom: 0.1em;
 }
-.btn-camera.switch::before {
-  width: 32px;
-  height: 32px;
-  background: none;
-  /* Icône rotative stylisée (double-flèche style “switch”) */
-  border: solid 3px #fff;
-  border-radius: 50%;
-  border-top-color: transparent;
-  border-bottom-color: transparent;
-  box-sizing: border-box;
-  position: absolute;
-  left: 20px; top: 20px;
-  transform: rotate(45deg);
+.cam-label {
+  font-size: 0.92em;
+  opacity: 0.84;
+  letter-spacing: 0.03em;
 }
-.btn-camera.switch::after {
-  content: "";
-  position: absolute;
-  left: 50%; top: 12px;
-  width: 0; height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-bottom: 10px solid #fff;
-  transform: translateX(-50%);
-}
-.btn-camera.close {
-  background: linear-gradient(120deg, #fa6565 70%, #d32f2f 100%);
-}
-.btn-camera.close::before {
-  content: "";
-  width: 32px;
-  height: 32px;
-  position: absolute;
-  left: 20px; top: 20px;
-  background: none;
-  /* Croix stylisée */
-  box-sizing: border-box;
-  border-radius: 6px;
-  border: 0;
+.btn-capture .cam-ico-big {
+  width: 2.9em; height: 2.9em;
   background:
-    linear-gradient(135deg, #fff 6px, #fff 8px, transparent 8px),
-    linear-gradient(-135deg, #fff 6px, #fff 8px, transparent 8px);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.btn-camera.capture::before {
-  /* Bouton capture : rond blanc stylisé au centre */
-  content: "";
-  display: block;
-  width: 36px;
-  height: 36px;
+    radial-gradient(circle at 60% 40%, #fff 60%, #eaeaf0 100%),
+    radial-gradient(circle, #017aff 85%, #0157ba 100%);
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px #fff6, 0 0 0 2px #ffeb3b;
+  display: inline-block;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 5px #186cff66;
+  margin: 0;
+  content: '';
+}
+.btn-capture:active .cam-ico-big {
+  box-shadow: 0 0 0 0 #186cff44;
+  background:
+    radial-gradient(circle at 50% 50%, #eaf4fd 85%, #9fc6ed 100%),
+    radial-gradient(circle, #017aff 85%, #0157ba 100%);
+}
+.camera-btn-close .cam-ico { color: #ff3232; }
+@media (max-width: 700px) {
+  .camera-video { max-width: 98vw; max-height: 54vh; }
+  .camera-controls-pro { gap: 1em; }
 }

@@ -1,28 +1,24 @@
-/**
- * Camera universelle VFind : 
- * - SOLO : photo et stockage 100% local
- * - DUEL/CONCOURS : upload sur Supabase, cache local
- * 
- * /!\ Nécessite ./js/supabase.js sur la page pour DUEL/CONCOURS ! (Import dynamique)
- */
-
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
   return new Promise((resolve, reject) => {
     // UI Camera
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
-  container.innerHTML = `
-  <video autoplay playsinline class="camera-video"></video>
-  <div class="camera-controls">
-    <button id="switchCamera" title="Changer de caméra">
-      <img src="assets/icons/repeat.svg" alt="Switch camera" style="width:2.3em;height:2.3em;">
-    </button>
-    <button id="takePhoto" class="btn-capture" title="Prendre la photo">
-      <img src="assets/icons/photo.svg" alt="Prendre une photo" style="width:2.3em;height:2.3em;">
-    </button>
-    <button id="closeCamera" title="Fermer" style="font-size:2.2em;">❌</button>
-  </div>
-`;
+    container.innerHTML = `
+      <video autoplay playsinline class="camera-video"></video>
+      <div class="camera-controls camera-controls-pro">
+        <button id="switchCamera" title="Changer de caméra" class="camera-btn">
+          <span class="cam-ico">&#8635;</span>
+          <span class="cam-label">Retourner</span>
+        </button>
+        <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
+          <span class="cam-ico cam-ico-big"></span>
+        </button>
+        <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
+          <span class="cam-ico">&#10006;</span>
+          <span class="cam-label">Fermer</span>
+        </button>
+      </div>
+    `;
 
     document.body.appendChild(container);
 
@@ -77,7 +73,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            // Import dynamique
             const supa = await import('./js/supabase.js');
             const urlPhoto = await supa.uploadPhotoDuelWebp(dataUrl, duelId);
             localStorage.setItem(`photo_duel_${duelId}_${supa.getUserId()}`, urlPhoto);
@@ -105,7 +100,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            // Import dynamique
             const supa = await import('./js/supabase.js');
             const urlPhoto = await supa.uploadPhotoConcoursWebp(dataUrl, defiId);
             localStorage.setItem(`photo_concours_${defiId}_${supa.getUserId()}`, urlPhoto);
