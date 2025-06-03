@@ -1,5 +1,5 @@
 import {
-  supabase, // <-- AJOUTE CETTE LIGNE !!!
+  supabase, // <-- Ne jamais retirer cette ligne !
   getPoints, addPoints, removePoints, getJetons, addJetons,
   possedeCadre, acheterCadre, getOwnedFrames, isPremium,
   updateUserData, getCadreSelectionne,
@@ -47,7 +47,6 @@ async function checkCadreUnlock(cadre) {
   switch (cadre.condition.type) {
     case "premium":
       return { unlocked: await isPremium(), texte: cadre.condition.texte || "Compte premium requis" };
-
     case "jours_defis":
       if (typeof getJoursDefisRealises === "function") {
         const nb = await getJoursDefisRealises();
@@ -57,7 +56,6 @@ async function checkCadreUnlock(cadre) {
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
-
     case "inviter_amis":
       if (typeof getNbAmisInvites === "function") {
         const nb = await getNbAmisInvites();
@@ -67,7 +65,6 @@ async function checkCadreUnlock(cadre) {
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
-
     case "participation_concours":
       if (typeof getConcoursParticipationStatus === "function") {
         const ok = await getConcoursParticipationStatus();
@@ -77,7 +74,6 @@ async function checkCadreUnlock(cadre) {
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
-
     case "telechargement_vzone":
       if (typeof hasDownloadedVZone === "function") {
         const ok = await hasDownloadedVZone();
@@ -87,7 +83,6 @@ async function checkCadreUnlock(cadre) {
         };
       }
       return { unlocked: false, texte: "Fonction de check non dispo" };
-
     default:
       return { unlocked: false, texte: cadre.unlock || "Condition inconnue" };
   }
@@ -106,7 +101,7 @@ function showFeedback(text) {
   }, 1500);
 }
 
-// --- Acheter cadre depuis boutique (cloud) ---
+// --- Acheter cadre depuis boutique (cloud & local) ---
 async function acheterCadreBoutique(id, prix) {
   if (!(await removePoints(prix))) {
     alert("❌ Pas assez de pièces !");
@@ -114,43 +109,35 @@ async function acheterCadreBoutique(id, prix) {
   }
   await acheterCadre(id);
 
-  // 1. Stocke base64 via <canvas>
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
-  img.onload = async () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    const base64 = canvas.toDataURL("image/webp");
-    localStorage.setItem(`cadre_${id}`, base64);
-    localStorage.setItem('lastCadresUpdate', Date.now()); // Patch synchro UI
-
-    // Forcer re-sync cache Supabase
-    await getCadresPossedes(true);
-  };
-
-  // 2. Fallback pour garantir la présence (cas fail)
+  // On charge l’image en base64 et la stocke dans le localStorage, SANS DUPLICATA de fetch
   const url = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;
-  const res = await fetch(url);
-  const blob = await res.blob();
-  await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      localStorage.setItem(`cadre_${id}`, reader.result);
-      resolve();
-    };
-    reader.readAsDataURL(blob);
-  });
+  try {
+    const res = await fetch(url, { cache: "reload" });
+    const blob = await res.blob();
+    await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        localStorage.setItem(`cadre_${id}`, reader.result);
+        resolve();
+      };
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) {
+    console.error("Erreur chargement cadre base64 :", e);
+    alert("Erreur lors de l'enregistrement du cadre. Vérifie ta connexion.");
+    return;
+  }
 
-  localStorage.setItem('lastCadresUpdate', Date.now()); // Patch synchro UI (2)
+  // Marque le moment de la dernière update pour forcer la synchro sur Mes Cadres
+  localStorage.setItem('lastCadresUpdate', Date.now().toString());
+
+  // Force update possession (cloud)
+  await getOwnedFrames(true);
 
   // Ici SEULEMENT tu affiches “Acheté !” ou tu fais le render.
   await updatePointsDisplay();
   alert("✅ Cadre acheté !");
-  await renderBoutique(currentCategory); // ou reload page, etc.
+  await renderBoutique(currentCategory);
 }
 
 // --- Popups et pub ---
@@ -330,7 +317,6 @@ async function fetchCadres(force = false) {
   await setBoutiqueCache(data);
 }
 
-
 async function renderBoutique(categoryKey) {
   const catBarContainer = document.getElementById("boutique-categories");
   const boutiqueContainer = document.getElementById("boutique-container");
@@ -488,16 +474,7 @@ window.watchAd = watchAd;
 window.inviteFriend = inviteFriend;
 window.afficherPhotosSauvegardees = afficherPhotosSauvegardees;
 
-// --- PATCH SYNCHRONISATION POST-ACHAT CADRE ---
 document.addEventListener('DOMContentLoaded', async () => {
-  const lastUpdate = parseInt(localStorage.getItem('lastCadresUpdate') || "0");
-  if (Date.now() - lastUpdate < 5000) {
-    // Forçage de la synchro Supabase juste après un achat
-    await getCadresPossedes(true);
-    localStorage.removeItem('lastCadresUpdate');
-    // Patiente un peu pour que le base64 ait le temps d’être stocké (1 tick)
-    await new Promise(r => setTimeout(r, 100));
-  }
   await fetchCadres();
   await renderBoutique('classique');
   await updatePointsDisplay();
