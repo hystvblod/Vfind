@@ -40,9 +40,12 @@ async function loadUserData(force = false) {
     .single();
 
   if (!data) {
+    // Génère un pseudo aléatoire unique de type VUser_xxxxx
+    const randomPseudo = "VUser_" + Math.random().toString(36).slice(2, 8);
+
     userDataCache = {
       id: userIdCache,
-      pseudo: "Toi",
+      pseudo: randomPseudo,
       points: 100,
       jetons: 3,
       cadres: ["polaroid_01", "polaroid_02"],
@@ -58,7 +61,6 @@ async function loadUserData(force = false) {
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
-      // Si erreur parce que déjà existant, on le récupère (collision rare mais possible en double appel)
       if (insertError.code === '23505' || (insertError.message && insertError.message.includes('duplicate'))) {
         const { data: existing } = await supabase
           .from('users')
@@ -76,6 +78,7 @@ async function loadUserData(force = false) {
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
+
 
 // --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
 function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
