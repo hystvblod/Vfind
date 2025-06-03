@@ -38,22 +38,24 @@ async function loadUserData(force = false) {
     .eq('id', userIdCache)
     .single();
   if (error || !data) {
-    userDataCache = {
-      id: userIdCache,
-      pseudo: "Toi",
-      points: 100,
-      jetons: 3,
-      cadres: ["polaroid_01", "polaroid_02"],
-      cadreActif: "polaroid_01",
-      historique: [],
-      likedPhotos: [],
-      signaledPhotos: [],
-      premium: false,
-      votesConcours: {},
-      hasDownloadedVZone: false,
-      hasDownloadedVBlocks: false,
-      friendsInvited: 0
-    };
+userDataCache = {
+  id: userIdCache,
+  pseudo: "Toi",
+  points: 100,
+  jetons: 3,
+  cadres: ["polaroid_01", "polaroid_02"],
+  cadreActif: "polaroid_01",
+  historique: [],
+  likedPhotos: [],
+  signaledPhotos: [],
+  premium: false,
+  votesConcours: {},
+  hasDownloadedVZone: false,
+  hasDownloadedVBlocks: false,
+  friendsInvited: 0
+};
+await supabase.from('users').insert([userDataCache]);
+
     await supabase.from('users').insert([userDataCache]);
   } else {
     userDataCache = data;
