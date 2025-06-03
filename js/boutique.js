@@ -114,6 +114,7 @@ async function acheterCadreBoutique(id, prix) {
     return;
   }
   await acheterCadre(id);
+   await getCadresPossedes(true);
 
 // Télécharger l’image depuis Supabase Storage (en public)
 const url = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${id}.webp`;

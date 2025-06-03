@@ -34,7 +34,7 @@ async function utiliserCadre(id) {
 async function afficherCadres() {
   const container = document.getElementById("cadres-list");
   // Toujours forcer la synchro cloud au 1er affichage :
-  const cadresPossedes = await getCadresPossedes(true);
+ const cadresPossedes = await getCadresPossedes();
   const cadreActif = await getCadreSelectionne();
 
   container.innerHTML = "";
