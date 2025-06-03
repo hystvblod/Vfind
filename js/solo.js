@@ -146,8 +146,8 @@ function getRandomDefis(n) {
 }
 
 function showGame() {
-  // Masque tout sauf le vrai jeu
-  if (document.getElementById("pre-game")) document.getElementById("pre-game").classList.add("hidden");
+  // PAS de pré-game : tout sauf le vrai jeu est masqué direct
+  if (document.getElementById("pre-game")) document.getElementById("pre-game").remove();
   document.getElementById("end-section").classList.add("hidden");
   document.getElementById("game-section").classList.remove("hidden");
   const soldeContainer = document.getElementById("solde-container");
@@ -264,7 +264,7 @@ window.gererPrisePhoto = function(defiId, index) {
 // ----------- PHOTO DANS CADRE & LOGIQUE PUB/PREMIUM -----------
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
-  let index = defis.findIndex(d => d.id == defiId); // <= égalité lâche pour type (id number ou string)
+  let index = defis.findIndex(d => d.id == defiId); // égalité lâche pour type (id number ou string)
   if (index === -1) {
     alert("Défi introuvable (id: " + defiId + "). Réinitialise la partie.");
     return;
@@ -294,7 +294,6 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
 };
-
 
 async function afficherPhotosSauvegardees(photosMap) {
   const cadreActuel = await getCadreSelectionne();
@@ -331,7 +330,6 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
   const cadre = document.getElementById("cadre-affiche");
   const photo = document.getElementById("photo-affichee");
   if (!cadre || !photo) return;
-  // Utilise la même logique que la miniature : appel asynchrone
   const cadreActuel = await getCadreSelectionne();
   cadre.src = `./assets/cadres/${cadreActuel}.webp`;
   photo.src = dataUrl;
@@ -341,7 +339,6 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
     popup.classList.add("show");
   }
 };
-
 
 // ----------- VALIDATION DÉFI AVEC JETON OU PHOTO -----------
 window.validerDefi = async function(index) {
