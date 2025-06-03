@@ -1,16 +1,18 @@
-// PATCH SOLO.JS - NE RESET PLUS L'ÉTAT EN COURS EN SOLO
-import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud, getDefisFromSupabase } from "./userData.js";
+import { getJetons, addJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
+// Variables globales
 let userData = null;
 let allDefis = [];
 let defiIndexActuel = null;
+let canRetakePhoto = false;
+let retakeDefiId = null;
 
 const DEFIS_CACHE_KEY = "vfind_defis_cache";
 const DEFIS_CACHE_DATE_KEY = "vfind_defis_cache_date";
 const DEFIS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
-// --------- CHARGEMENT DES DEFIS : SUPABASE puis CACHE LOCAL ---------
+// --------- CHARGEMENT DES DEFIS ---------
 async function chargerDefis(lang = "fr") {
   const lastFetch = parseInt(localStorage.getItem(DEFIS_CACHE_DATE_KEY) || "0");
   if (Date.now() - lastFetch < DEFIS_CACHE_TTL) {
@@ -26,7 +28,7 @@ async function chargerDefis(lang = "fr") {
   return allDefis;
 }
 
-// ---------- GESTION DU PROFIL UTILISATEUR ----------
+// ---------- GESTION UTILISATEUR ----------
 async function chargerUserData(forceRefresh = false) {
   if (userData && !forceRefresh) return userData;
   userData = await getUserDataCloud();
@@ -70,65 +72,62 @@ function retirerPhotoAimee(defiId) {
 document.addEventListener("DOMContentLoaded", async () => {
   nettoyerPhotosDefis();
   await chargerUserData(true);
-  if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
-  if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
+  majSolde();
   const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "none";
-});
-
-// ----------- LOGIQUE JEU -------------
-document.addEventListener("DOMContentLoaded", () => {
-  const startBtn = document.getElementById("startBtn");
-  const replayBtn = document.getElementById("replayBtn");
-  const preGame = document.getElementById("pre-game");
-  const gameSection = document.getElementById("game-section");
-  const endSection = document.getElementById("end-section");
-  const timerDisplay = document.getElementById("timer");
-  const defiList = document.getElementById("defi-list");
-  const soldeContainer = document.getElementById("solde-container");
-
   let userLang = navigator.language || navigator.userLanguage;
   userLang = userLang.split("-")[0];
   const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
   const savedLang = localStorage.getItem("langue");
   if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
   if (!supportedLangs.includes(userLang)) userLang = "fr";
-
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
+  await chargerDefis(userLang);
+  init();
+});
 
-  chargerDefis(userLang).then(() => {
-    init();
-  });
-
-  async function init() {
-    await chargerUserData(true);
-    // ATTENTION, ON PATCH ICI : vérifier si une partie solo existe vraiment (défis actifs ET timer toujours valable)
-    if (
-      Array.isArray(userData.defiActifs) &&
-      userData.defiActifs.length > 0 &&
-      userData.defiTimer &&
-      Date.now() < userData.defiTimer
-    ) {
-      showGame();
-    } else if (
-      Array.isArray(userData.defiActifs) &&
-      userData.defiActifs.length > 0 &&
-      userData.defiTimer &&
-      Date.now() >= userData.defiTimer
-    ) {
-      // PATCH : Termine vraiment la partie et réinitialise tout (ne pas relancer une partie !)
-      await window.endGameAuto();
-      showStart();
-    } else {
-      // PATCH : N'affiche “lancer une partie” que si AUCUN défi en cours et timer inexistant
-      showStart();
-    }
-
-    startBtn?.addEventListener("click", startGame);
-replayBtn?.addEventListener("click", showStart);
+function majSolde() {
+  if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
+  if (document.getElementById("jetons")) document.getElementById("jetons").textContent = userData.jetons || 0;
 }
 
-// === AJOUT : Nettoie toutes les anciennes photos solo du localStorage
+// ----------- LOGIQUE JEU -------------
+async function init() {
+  await chargerUserData(true);
+  // Si partie en cours (timer OK et défis non tous faits)
+  if (
+    Array.isArray(userData.defiActifs) &&
+    userData.defiActifs.length > 0 &&
+    userData.defiTimer &&
+    Date.now() < userData.defiTimer &&
+    !tousDefisFaits(userData.defiActifs)
+  ) {
+    showGame();
+    updateTimer();
+    await loadDefis();
+    return;
+  }
+
+  // Si partie FINIE (timer fini OU tous les défis faits)
+  if (
+    (Array.isArray(userData.defiActifs) && userData.defiActifs.length > 0 && userData.defiTimer && Date.now() >= userData.defiTimer) ||
+    tousDefisFaits(userData.defiActifs)
+  ) {
+    // Fin automatique
+    await endGameAuto();
+    return;
+  }
+
+  // Sinon : partie à lancer
+  showStart();
+}
+
+function tousDefisFaits(defis) {
+  if (!defis || !defis.length) return false;
+  return defis.every(d => d.done);
+}
+
+// Nettoie les photos solo AVANT nouvelle partie
 function nettoyerPhotosDefisPartie() {
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("photo_defi_")) {
@@ -144,326 +143,288 @@ async function startGame() {
     Array.isArray(userData.defiActifs) &&
     userData.defiActifs.length > 0 &&
     userData.defiTimer &&
-    Date.now() < userData.defiTimer
+    Date.now() < userData.defiTimer &&
+    !tousDefisFaits(userData.defiActifs)
   ) {
-    // Ne rien faire, une partie existe déjà.
     showGame();
     return;
   }
-
-  // === PATCH : Nettoyage des anciennes photos avant nouvelle partie ===
   nettoyerPhotosDefisPartie();
-
   const newDefis = getRandomDefis(3);
   const endTime = Date.now() + 24 * 60 * 60 * 1000;
   await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
   await chargerUserData(true);
   showGame();
+  updateTimer();
+  await loadDefis();
 }
 
 function getRandomDefis(n) {
   const shuffled = [...allDefis].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n).map(defi => ({ ...defi, done: false }));
+  return shuffled.slice(0, n).map(defi => ({ ...defi, done: false, byJeton: false, canRetake: true }));
 }
 
 function showGame() {
-  preGame.classList.add("hidden");
-  endSection.classList.add("hidden");
-  gameSection.classList.remove("hidden");
+  document.getElementById("pre-game").classList.add("hidden");
+  document.getElementById("end-section").classList.add("hidden");
+  document.getElementById("game-section").classList.remove("hidden");
+  const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "flex";
-  updateTimer();
-  loadDefis();
 }
 
 function showStart() {
-  preGame.classList.remove("hidden");
-  gameSection.classList.add("hidden");
-  endSection.classList.add("hidden");
+  document.getElementById("pre-game").classList.remove("hidden");
+  document.getElementById("game-section").classList.add("hidden");
+  document.getElementById("end-section").classList.add("hidden");
+  const soldeContainer = document.getElementById("solde-container");
   if (soldeContainer) soldeContainer.style.display = "none";
 }
 
-
-  function updateTimer() {
-    const interval = setInterval(async () => {
-      await chargerUserData();
-      const endTime = userData.defiTimer;
-      if (!endTime) return;
-      const now = Date.now();
-      const diff = endTime - now;
-
-      if (diff <= 0) {
-        clearInterval(interval);
-        await window.endGameAuto();
-        return;
-      }
-
-      const h = Math.floor(diff / (1000 * 60 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((diff % (1000 * 60)) / 1000);
-      timerDisplay.textContent = `${h}h ${m}m ${s}s`;
-    }, 1000);
-  }
-
-  async function loadDefis() {
+function updateTimer() {
+  const timerDisplay = document.getElementById("timer");
+  const interval = setInterval(async () => {
     await chargerUserData();
-    let defis = userData.defiActifs || [];
-    if (!defis || !Array.isArray(defis) || defis.length === 0) {
-      defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
+    const endTime = userData.defiTimer;
+    if (!endTime) return;
+    const now = Date.now();
+    const diff = endTime - now;
+    if (diff <= 0) {
+      clearInterval(interval);
+      await endGameAuto();
       return;
     }
-    defiList.innerHTML = '';
-    let photosMap = {};
-    for (let index = 0; index < defis.length; index++) {
-      const defi = defis[index];
-      const li = document.createElement("li");
-      li.className = "defi-item";
-      if (defi.done) li.classList.add("done");
-      li.setAttribute("data-defi-id", defi.id);
+    const h = Math.floor(diff / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+    timerDisplay.textContent = `${h}h ${m}m ${s}s`;
+  }, 1000);
+}
 
-      let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-      photosMap[defi.id] = dataUrl || null;
+// ----------- CHARGEMENT DES DÉFIS À AFFICHER -----------
+async function loadDefis() {
+  await chargerUserData();
+  let defis = userData.defiActifs || [];
+  const defiList = document.getElementById("defi-list");
+  if (!defis || !Array.isArray(defis) || defis.length === 0) {
+    defiList.innerHTML = '<li class="defi-vide">Aucun défi à afficher. Clique sur "Lancer une partie".</li>';
+    return;
+  }
+  defiList.innerHTML = '';
+  let photosMap = {};
+  for (let index = 0; index < defis.length; index++) {
+    const defi = defis[index];
+    const li = document.createElement("li");
+    li.className = "defi-item";
+    if (defi.done) li.classList.add("done");
+    li.setAttribute("data-defi-id", defi.id);
 
-      const hasPhoto = !!dataUrl;
-      const boutonPhoto = `
-        <img
-          src="assets/icons/photo.svg"
-          alt="Prendre une photo"
-          style="width:2.2em;cursor:pointer;display:block;margin:0 auto;"
-          onclick="window.ouvrirCameraPour('${defi.id}')"
-        >
-      `;
+    let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
+    photosMap[defi.id] = dataUrl || null;
 
-      // === SUPPRIME LE COEUR ICI ===
-      li.innerHTML = `
-        <div class="defi-content">
-          <div class="defi-texte">
-            <p>${defi.texte}</p>
-            ${boutonPhoto}
-          </div>
-          <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+    const hasPhoto = !!dataUrl;
+    const boutonPhoto = `
+      <img
+        src="assets/icons/photo.svg"
+        alt="Prendre une photo"
+        style="width:2.2em;cursor:pointer;display:block;margin:0 auto;"
+        onclick="window.ouvrirCameraPour('${defi.id}')"
+      >
+    `;
+
+    let jetonHtml = '';
+    if (!hasPhoto && !defi.done) {
+      jetonHtml = `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`;
+    }
+
+    let retakeBtn = '';
+    if (hasPhoto && !defi.done && !isPremium()) {
+      retakeBtn = `<button class="btn-retake-photo" onclick="window.askRetakePhoto('${defi.id}')">♻️ Reprendre photo</button>`;
+    }
+
+    li.innerHTML = `
+      <div class="defi-content">
+        <div class="defi-texte">
+          <p>${defi.texte}</p>
+          ${boutonPhoto}
+          ${retakeBtn}
         </div>
-        ${!hasPhoto ? `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />` : ''}
-      `;
+        <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+      </div>
+      ${jetonHtml}
+    `;
 
-      defiList.appendChild(li);
-    }
-    await afficherPhotosSauvegardees(photosMap);
+    defiList.appendChild(li);
   }
+  await afficherPhotosSauvegardees(photosMap);
+}
 
-  async function afficherPhotosSauvegardees(photosMap) {
-    const cadreActuel = await getCadreSelectionne();
+// ----------- GESTION PHOTO & REPRISE PREMIUM/REWARD -----------
+window.askRetakePhoto = function(defiId) {
+  // Si premium, on autorise direct
+  if (isPremium()) {
+    canRetakePhoto = true;
+    retakeDefiId = defiId;
+    window.ouvrirCameraPour(defiId);
+    return;
+  }
+  // Si pas premium : pop up choix
+  if (confirm("Cette fonctionnalité est réservée aux premium ou après avoir regardé une pub. Voulez-vous regarder une pub pour reprendre la photo ?")) {
+    canRetakePhoto = true;
+    retakeDefiId = defiId;
+    window.ouvrirCameraPour(defiId);
+    // Le bouton Valider (ci-dessous) devra obliger à regarder la pub AVANT d'enregistrer la nouvelle photo.
+  }
+};
 
-    document.querySelectorAll(".defi-item").forEach(defiEl => {
-      const id = defiEl.getAttribute("data-defi-id");
-      const dataUrl = photosMap[id];
-
-      if (dataUrl) {
-        const containerCadre = document.createElement("div");
-        containerCadre.className = "cadre-item cadre-duel-mini";
-
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-
-        const fond = document.createElement("img");
-        fond.className = "photo-cadre";
-        fond.src = `./assets/cadres/${cadreActuel}.webp`;
-
-        const photo = document.createElement("img");
-        photo.className = "photo-user";
-        photo.src = dataUrl;
-        photo.onclick = () => agrandirPhoto(dataUrl, id);
-
-        preview.appendChild(fond);
-        preview.appendChild(photo);
-        containerCadre.appendChild(preview);
-
-        const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-        if (container) {
-          container.innerHTML = '';
-          container.appendChild(containerCadre);
-          defiEl.classList.add("done");
-        }
-      }
+window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
+  // Si demande de reprise (pub requise), alors la photo n'est enregistrée QUE quand la pub est vue (voir bouton Valider)
+  if (canRetakePhoto && retakeDefiId === defiId && !isPremium()) {
+    // On bloque la sauvegarde, propose de valider après reward
+    window.waitingPhotoToSave = { defiId, dataUrl };
+    alert("Pour valider cette nouvelle photo, regarde d'abord la publicité !");
+    // Cacher le bouton valider tant que pas de pub vue (à adapter si tu veux)
+    showRewardedAd().then(async () => {
+      // On sauvegarde la photo maintenant !
+      localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+      localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
+      canRetakePhoto = false;
+      retakeDefiId = null;
+      await loadDefis();
     });
+    return;
   }
+  // Cas normal (photo prise)
+  localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+  localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
+  canRetakePhoto = false;
+  retakeDefiId = null;
+  await loadDefis();
+};
 
-  async function agrandirPhoto(dataUrl, id) {
-    const cadreActuel = await getCadreSelectionne();
-    document.getElementById("photo-affichee").src = dataUrl;
-    document.getElementById("cadre-affiche").src = `./assets/cadres/${cadreActuel}.webp`;
-
-    const popup = document.getElementById("popup-photo");
-
-    let btnAimer = document.getElementById("btn-aimer-photo");
-    if (!btnAimer) {
-      btnAimer = document.createElement("button");
-      btnAimer.id = "btn-aimer-photo";
-      btnAimer.innerHTML = `<img src="assets/icons/coeur.svg" style="width:2.4em;height:2.4em;filter:drop-shadow(0 2px 6px #ffe04a90);">`;
-      btnAimer.style.display = "block";
-      btnAimer.style.margin = "14px auto 0";
-      btnAimer.style.background = "none";
-      btnAimer.style.border = "none";
-      btnAimer.style.cursor = "pointer";
-      btnAimer.onclick = function() {
-        aimerPhoto(id);
-        btnAimer.disabled = true;
-        btnAimer.style.opacity = "0.55";
-        btnAimer.title = "Photo aimée !";
-        alert("Photo ajoutée à tes photos aimées !");
-      };
-      document.querySelector("#popup-photo .cadre-popup").after(btnAimer);
-    } else {
-      btnAimer.disabled = false;
-      btnAimer.style.opacity = "1";
-      btnAimer.title = "";
-      btnAimer.onclick = function() {
-        aimerPhoto(id);
-        btnAimer.disabled = true;
-        btnAimer.style.opacity = "0.55";
-        btnAimer.title = "Photo aimée !";
-        alert("Photo ajoutée à tes photos aimées !");
-      };
+async function afficherPhotosSauvegardees(photosMap) {
+  const cadreActuel = await getCadreSelectionne();
+  document.querySelectorAll(".defi-item").forEach(defiEl => {
+    const id = defiEl.getAttribute("data-defi-id");
+    const dataUrl = photosMap[id];
+    if (dataUrl) {
+      const containerCadre = document.createElement("div");
+      containerCadre.className = "cadre-item cadre-duel-mini";
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      const fond = document.createElement("img");
+      fond.className = "photo-cadre";
+      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+      const photo = document.createElement("img");
+      photo.className = "photo-user";
+      photo.src = dataUrl;
+      photo.onclick = () => agrandirPhoto(dataUrl, id);
+      preview.appendChild(fond);
+      preview.appendChild(photo);
+      containerCadre.appendChild(preview);
+      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(containerCadre);
+        defiEl.classList.add("done");
+      }
     }
+  });
+}
 
-    let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
-    if (photosAimees.includes(id)) {
-      btnAimer.disabled = true;
-      btnAimer.style.opacity = "0.55";
-      btnAimer.title = "Déjà ajoutée";
-    }
-
-    popup.classList.remove("hidden");
-    popup.classList.add("show");
-  }
-
-  window.validerDefi = async function(index) {
-    await chargerUserData();
-    let defis = userData.defiActifs || [];
-    if (!defis[index].done) {
-      defis[index].done = true;
+// ----------- VALIDATION DÉFI AVEC JETON OU PHOTO -----------
+window.validerDefi = async function(index) {
+  await chargerUserData();
+  let defis = userData.defiActifs || [];
+  let defi = defis[index];
+  if (!defi.done) {
+    // S'il y a une photo : validé normalement
+    if (localStorage.getItem(`photo_defi_${defi.id}`)) {
+      defi.done = true;
       await updateUserData({ defiActifs: defis });
       await chargerUserData(true);
       await loadDefis();
+      // Vérifie si tous les défis sont faits, popup fin auto
+      if (tousDefisFaits(defis)) await endGameAuto();
+      return;
     }
-  };
+    // Sinon, essaye de valider avec un jeton
+    await window.ouvrirPopupJeton(index);
+  }
+};
 
-  window.ouvrirPopupJeton = async function(index) {
-    const jetons = await getJetons();
-    document.getElementById("solde-jeton").textContent = `Jetons disponibles : ${jetons}`;
-    document.getElementById("popup-jeton").classList.remove("hidden");
-    document.getElementById("popup-jeton").classList.add("show");
-    defiIndexActuel = index;
-
-    document.getElementById("valider-jeton-btn").onclick = async () => {
-      const jetons = await getJetons();
-      if (jetons > 0) {
-        const success = await removeJeton();
-        if (success) {
-          if (typeof validerDefi === "function") {
-            validerDefi(defiIndexActuel);
-          }
-          fermerPopupJeton();
-        } else {
-          alert("❌ Erreur lors de la soustraction du jeton.");
-        }
+window.ouvrirPopupJeton = async function(index) {
+  const jetons = await getJetons();
+  if (jetons > 0) {
+    if (confirm("Valider ce défi avec un jeton ?")) {
+      const success = await removeJeton();
+      if (success) {
+        await validerDefiAvecJeton(index);
+        majSolde();
       } else {
-        alert("❌ Pas de jeton disponible.");
+        alert("Erreur lors de la soustraction du jeton.");
       }
-    };
-  };
-
-  window.fermerPopupJeton = function () {
-    document.getElementById("popup-jeton").classList.remove("show");
-    document.getElementById("popup-jeton").classList.add("hidden");
-  };
-
-  window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
-    if (!defiId || !dataUrl) return;
-    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-    localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
-    await loadDefis();
-  };
-
-  window.aimerPhoto = function(defiId) {
-    aimerPhoto(defiId);
-    alert("Photo ajoutée à tes photos aimées !");
-  };
-
-  window.retirerPhotoAimee = function(defiId) {
-    retirerPhotoAimee(defiId);
-    alert("Photo retirée de tes photos aimées.");
-  };
-
-  document.addEventListener("photoAjouteeSolo", async () => {
-    if (typeof loadDefis === "function") {
-      await loadDefis();
-    } else {
-      window.location.reload();
     }
-  });
+  } else {
+    // Pas de jeton : popup Reward pour en gagner 3
+    if (confirm("Plus de jeton disponible. Regarder une pub pour gagner 3 jetons ?")) {
+      await showRewardedAd();
+      await addJetons(3);
+      majSolde();
+      alert("3 jetons crédités !");
+    }
+  }
+};
 
-  // ----------- PATCH FIN DE PARTIE PRO -----------
-  window.endGame = async function() {
-    await chargerUserData();
-    let defis = userData.defiActifs || [];
-    let nbPhotos = 0;
-    defis.forEach(defi => {
-      const photoUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-      if (photoUrl) nbPhotos++;
-    });
-    let gain = nbPhotos * 10;
-    if (nbPhotos === 3) gain = 40;
-
-    const oldPoints = userData.points || 0;
-    const newPoints = oldPoints + gain;
-    const date = new Date().toISOString().slice(0, 10);
-    let historique = userData.historique || [];
-    historique.push({ date, defi: defis.map(d => d.id) });
-
-    await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0, historique });
+async function validerDefiAvecJeton(index) {
+  await chargerUserData();
+  let defis = userData.defiActifs || [];
+  let defi = defis[index];
+  if (!defi.done) {
+    defi.done = true;
+    defi.byJeton = true;
+    // On met la photo “jetonpp.webp” à la place de la photo user
+    localStorage.setItem(`photo_defi_${defi.id}`, "assets/img/jetonpp.webp");
+    await updateUserData({ defiActifs: defis });
     await chargerUserData(true);
+    await loadDefis();
+    if (tousDefisFaits(defis)) await endGameAuto();
+  }
+}
 
-    document.getElementById("gain-message").textContent =
-      `+${gain} pièces (10/photo${nbPhotos === 3 ? " + 10 bonus" : ""})`;
+// ----------- FIN DE PARTIE AUTOMATIQUE -----------
+async function endGameAuto() {
+  await chargerUserData();
+  let defis = userData.defiActifs || [];
+  if (!defis.length) return;
+  let nbFaits = defis.filter(d => d.done).length;
+  let gain = nbFaits * 10;
+  if (nbFaits === 3) gain += 10;
+  const oldPoints = userData.points || 0;
+  const newPoints = oldPoints + gain;
+  const date = new Date().toISOString().slice(0, 10);
+  let historique = userData.historique || [];
+  historique.push({ date, defi: defis.map(d => d.id) });
+  await updateUserData({ points: newPoints, defiActifs: [], defiTimer: 0, historique });
+  await chargerUserData(true);
 
-    document.getElementById("popup-end").classList.remove("hidden");
-    document.getElementById("popup-end").classList.add("show");
+  // Popup fin de partie
+  document.getElementById("end-message").textContent =
+    `Partie terminée ! Tu as validé ${nbFaits}/3 défis.`;
+  document.getElementById("gain-message").textContent =
+    `+${gain} pièces (${nbFaits} défi${nbFaits>1?"s":""} x10${nbFaits===3?" +10 bonus":""})`;
 
-    if (document.getElementById("points")) document.getElementById("points").textContent = newPoints;
-  };
-
-  window.endGameAuto = async function() {
-    await chargerUserData();
-    let defis = userData.defiActifs || [];
-    if (!defis.length) return;
-    const date = new Date().toISOString().slice(0, 10);
-    let historique = userData.historique || [];
-    historique.push({ date, defi: defis.map(d => d.id) });
-    await updateUserData({
-      historique,
-      defiActifs: [],
-      defiTimer: 0
-    });
-
-    document.getElementById("end-message").textContent = "Temps écoulé, partie terminée !";
-    document.getElementById("gain-message").textContent = "+0 pièce (temps écoulé)";
-    document.getElementById("popup-end").classList.remove("hidden");
-    document.getElementById("popup-end").classList.add("show");
-    if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
-  };
-
+  document.getElementById("popup-end").classList.remove("hidden");
+  document.getElementById("popup-end").classList.add("show");
+  majSolde();
   document.getElementById("replayBtnEnd").onclick = async function() {
     document.getElementById("popup-end").classList.add("hidden");
     document.getElementById("popup-end").classList.remove("show");
     await startGame();
   };
-
   document.getElementById("returnBtnEnd").onclick = function() {
-    if (confirm("Quitter la partie ? Tu devras recommencer une nouvelle partie la prochaine fois.")) {
-      window.location.href = "index.html";
-    }
+    window.location.href = "index.html";
   };
-});
+}
 
 // === Ajout : fermeture croix popup + nettoyage du bouton cœur ===
 document.addEventListener("DOMContentLoaded", () => {
@@ -474,9 +435,17 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.classList.add('hidden');
         popup.classList.remove('show');
       }
-      // Nettoie le bouton cœur si existant
       let btnAimer = document.getElementById("btn-aimer-photo");
       if (btnAimer) btnAimer.remove();
     };
   });
 });
+
+// ----------- EXEMPLE : fonction reward à compléter selon ta régie pub -----------
+async function showRewardedAd() {
+  return new Promise((resolve) => {
+    // TODO : remplacer par ton système de pub réel
+    alert("SIMULATION PUB : regarde ta vidéo ici…");
+    setTimeout(() => { resolve(); }, 3200);
+  });
+}

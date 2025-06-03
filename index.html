@@ -100,10 +100,7 @@
 </head>
 <body class="index-page">
 
-  <!-- ANIMATION INTRO LOGO -->
-  <div id="intro-logo">
-    <img src="assets/img/logo.png" alt="Logo VFind" class="logo-img" />
-  </div>
+  <!-- ANIMATION INTRO LOGO : injecté par JS si besoin -->
 
   <div class="page-container">
 
@@ -133,16 +130,19 @@
   </div>
 
   <script>
-    window.addEventListener("load", () => {
-      const intro = document.getElementById("intro-logo");
-      // ✅ Empêche l'intro de se rejouer à chaque retour
+    // Animation logo au premier chargement de la session uniquement
+    window.addEventListener("DOMContentLoaded", () => {
       if (!sessionStorage.getItem("introShown")) {
+        // Crée et injecte l'intro-logo
+        const intro = document.createElement("div");
+        intro.id = "intro-logo";
+        intro.innerHTML = `<img src="assets/img/logo.png" alt="Logo VFind" class="logo-img" />`;
+        document.body.appendChild(intro);
+
         sessionStorage.setItem("introShown", "true");
         setTimeout(() => {
           if (intro) intro.remove();
         }, 3800);
-      } else {
-        if (intro) intro.remove();
       }
     });
   </script>
