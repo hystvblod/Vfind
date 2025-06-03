@@ -40,10 +40,9 @@ async function loadUserData(force = false) {
     .single();
 
   if (!data) {
-    // Utilisateur pas encore créé dans la table : on l'ajoute
+    // NE PAS METTRE pseudo si la colonne n’existe pas !!
     userDataCache = {
-      id: userIdCache,
-      pseudo: "Toi",
+      id: userIdCache,                    // UUID généré par Supabase
       points: 100,
       jetons: 3,
       cadres: ["polaroid_01", "polaroid_02"],
@@ -59,8 +58,8 @@ async function loadUserData(force = false) {
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
-      // Si erreur parce que déjà existant, on le récupère (collision rare mais possible en double appel)
-      if (insertError.code === '23505' || insertError.message.includes('duplicate')) {
+      // Collision possible si déjà existant (rare)
+      if (insertError.code === '23505' || (insertError.message && insertError.message.includes('duplicate'))) {
         const { data: existing } = await supabase
           .from('users')
           .select('*')
@@ -77,6 +76,7 @@ async function loadUserData(force = false) {
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
+
 
 // --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
 function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
