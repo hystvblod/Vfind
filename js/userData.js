@@ -462,6 +462,7 @@ export {
   getConcoursParticipationStatus,
   hasDownloadedVZone,
   getUserId,
+  setCadreSelectionne,
   getUserDataCloud,
   getDefisFromSupabase,
   getOwnedFrames,
