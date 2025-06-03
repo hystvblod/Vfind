@@ -64,5 +64,14 @@ async function afficherCadres() {
 document.addEventListener("DOMContentLoaded", async () => {
   window.zoomCadre = zoomCadre;
   window.utiliserCadre = utiliserCadre;
+
+  // Patch : si la dernière update date de moins de 5 secondes,
+  // force la resynchro cloud une fois (juste après un achat)
+  const lastUpdate = parseInt(localStorage.getItem('lastCadresUpdate') || "0");
+  if (Date.now() - lastUpdate < 5000) {
+    await getCadresPossedes(true);
+    localStorage.removeItem('lastCadresUpdate');
+  }
+
   await afficherCadres();
 });

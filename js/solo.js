@@ -73,18 +73,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   nettoyerPhotosDefis();
   await chargerUserData(true);
   majSolde();
-  const soldeContainer = document.getElementById("solde-container");
-  if (soldeContainer) soldeContainer.style.display = "none";
-  let userLang = navigator.language || navigator.userLanguage;
-  userLang = userLang.split("-")[0];
-  const supportedLangs = ["fr", "en", "es", "de", "it", "nl", "pt", "ar", "ja", "ko"];
-  const savedLang = localStorage.getItem("langue");
-  if (savedLang && supportedLangs.includes(savedLang)) userLang = savedLang;
-  if (!supportedLangs.includes(userLang)) userLang = "fr";
+  // ...détection langue, etc. (ton code)
   window.ouvrirCameraPour = (defiId) => cameraOuvrirCameraPour(defiId, "solo");
   await chargerDefis(userLang);
   init();
+
+  // PATCH ULTRA DEEP : Attache le bouton après tout affichage
+  const btnStart = document.getElementById("startBtn");
+  if (btnStart) btnStart.onclick = startGame;
 });
+
 
 function majSolde() {
   if (document.getElementById("points")) document.getElementById("points").textContent = userData.points || 0;
