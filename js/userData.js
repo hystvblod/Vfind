@@ -1,4 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL = 'https://swmdepiukfginzhbeccz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3bWRlcGl1a2ZnaW56aGJlY2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0MjEyNTksImV4cCI6MjA2Mzk5NzI1OX0.--VONIyPdx1tTi45nd4e-F-ZuKNgbDSY1pP0rXHyJgI';
@@ -40,9 +40,9 @@ async function loadUserData(force = false) {
     .single();
 
   if (!data) {
-    // NE PAS METTRE pseudo si la colonne n’existe pas !!
     userDataCache = {
-      id: userIdCache,                    // UUID généré par Supabase
+      id: userIdCache,
+      pseudo: "Toi",
       points: 100,
       jetons: 3,
       cadres: ["polaroid_01", "polaroid_02"],
@@ -58,7 +58,7 @@ async function loadUserData(force = false) {
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
-      // Collision possible si déjà existant (rare)
+      // Si erreur parce que déjà existant, on le récupère (collision rare mais possible en double appel)
       if (insertError.code === '23505' || (insertError.message && insertError.message.includes('duplicate'))) {
         const { data: existing } = await supabase
           .from('users')
@@ -76,7 +76,6 @@ async function loadUserData(force = false) {
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
-
 
 // --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
 function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
@@ -433,6 +432,8 @@ function getUserId() {
 }
 
 export {
+  getPseudo,
+  setPseudo,
   getPoints,
   addPoints,
   removePoints,
