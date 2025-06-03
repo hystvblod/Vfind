@@ -1,3 +1,4 @@
+// PATCH SOLO.JS - NE RESET PLUS L'ÉTAT EN COURS EN SOLO
 import { getJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud, getDefisFromSupabase } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
@@ -100,10 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function init() {
-    startBtn?.addEventListener("click", startGame);
-    replayBtn?.addEventListener("click", showStart);
     await chargerUserData(true);
-
+    // ATTENTION, ON PATCH ICI : vérifier si une partie solo existe vraiment (défis actifs ET timer toujours valable)
     if (
       Array.isArray(userData.defiActifs) &&
       userData.defiActifs.length > 0 &&
@@ -117,14 +116,31 @@ document.addEventListener("DOMContentLoaded", () => {
       userData.defiTimer &&
       Date.now() >= userData.defiTimer
     ) {
+      // PATCH : Termine vraiment la partie et réinitialise tout (ne pas relancer une partie !)
       await window.endGameAuto();
       showStart();
     } else {
+      // PATCH : N'affiche “lancer une partie” que si AUCUN défi en cours et timer inexistant
       showStart();
     }
+
+    startBtn?.addEventListener("click", startGame);
+    replayBtn?.addEventListener("click", showStart);
   }
 
   async function startGame() {
+    // PATCH ici : on vérifie si une partie existe déjà AVANT de créer !
+    await chargerUserData(true);
+    if (
+      Array.isArray(userData.defiActifs) &&
+      userData.defiActifs.length > 0 &&
+      userData.defiTimer &&
+      Date.now() < userData.defiTimer
+    ) {
+      // Ne rien faire, une partie existe déjà.
+      showGame();
+      return;
+    }
     const newDefis = getRandomDefis(3);
     const endTime = Date.now() + 24 * 60 * 60 * 1000;
     await updateUserData({ defiActifs: newDefis, defiTimer: endTime });
@@ -264,7 +280,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const popup = document.getElementById("popup-photo");
 
-    // Ajout du bouton cœur stylé dans le popup
     let btnAimer = document.getElementById("btn-aimer-photo");
     if (!btnAimer) {
       btnAimer = document.createElement("button");
