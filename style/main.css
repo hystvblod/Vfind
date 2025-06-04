@@ -1781,13 +1781,13 @@ header,
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 1.25em 1.7em;
+  padding: 0.7em 2em;
   background: linear-gradient(90deg, #ffd700 0%, #ffe066 100%);
   border: none;
   border-radius: 100px;
   min-width: 140px;     /* réduis le min si tu veux */
   min-height: 2.4em;
-   font-size: 1.23em;
+  font-size: 1.12rem;
   font-weight: bold;
   box-shadow: 0 2px 8px #2222;
   color: #222;
