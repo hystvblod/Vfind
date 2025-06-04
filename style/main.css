@@ -2288,3 +2288,25 @@ overflow-y: auto;
     padding: 1em 0.5em;
   }
 }
+.btn-boutique-pill-jetonpiece {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0.7em 2em;
+  background: linear-gradient(90deg, #fffbe0 0%, #ffe08a 100%);
+  border: none;
+  border-radius: 100px;
+  min-width: 140px;     /* réduis le min si tu veux */
+  min-height: 2.4em;
+  font-size: 1.12rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px #2222;
+  color: #222;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  /* width: 100%;   <<< SUPPRIME cette ligne ! */
+  flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
+  max-width: 260px;    /* ou 230px si tu veux un max */
+}
