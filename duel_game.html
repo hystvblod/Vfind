@@ -19,33 +19,41 @@
     </div>
   </div>
 
-  <!-- POPUP VALIDATION PAR JETON -->
+  <!-- ✅ Popup validation de défi (Jeton) -->
   <div id="popup-jeton" class="popup hidden">
-    <div class="popup-inner">
-      <p>🎯 Veux-tu valider ce défi avec un jeton ?</p>
-      <p id="solde-jeton">Jetons disponibles : --</p>
-      <button id="valider-jeton-btn">✅ Valider</button>
-      <button onclick="fermerPopupJeton()">❌ Annuler</button>
+    <div class="popup-inner popup-premium-pro">
+      <div class="premium-badge">VALIDER</div>
+      <div class="popup-premium-title">Valider ce défi</div>
+      <div class="popup-premium-price" style="margin-bottom: 18px;">
+        Veux-tu valider ce défi avec un jeton&nbsp;?
+      </div>
+      <div class="premium-list-pro" style="margin-bottom:18px;">
+        <button class="btn-premium-pro" id="valider-jeton-btn">✅ Valider</button>
+      </div>
+      <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">
+        Annuler
+      </button>
+      <div id="solde-jeton" style="margin-top:10px;text-align:center;color:#ffe04a;font-weight:bold;"></div>
     </div>
   </div>
 
-<!-- POPUP PARTIE TERMINÉE ULTRA PRO -->
-<div id="popup-end" class="popup hidden">
-  <div class="popup-inner popup-premium-pro">
-    <div class="premium-badge">FIN DE PARTIE</div>
-    <div class="popup-premium-title">🎉 Partie terminée !</div>
-    <div class="popup-premium-price" id="end-message" style="margin-bottom: 18px;">
-      Félicitations, tu as terminé cette partie !
-    </div>
-    <ul class="premium-list-pro" style="margin-bottom:18px;">
-      <li id="gain-message"></li>
-    </ul>
-    <div class="btn-boutique-inline" style="margin-top: 16px;">
-      <button id="replayBtnEnd" class="btn-boutique-pill">🔁 Rejouer</button>
-      <button id="returnBtnEnd" class="btn-boutique-pill">🏠 Retour</button>
+  <!-- POPUP PARTIE TERMINÉE ULTRA PRO -->
+  <div id="popup-end" class="popup hidden">
+    <div class="popup-inner popup-premium-pro">
+      <div class="premium-badge">FIN DE PARTIE</div>
+      <div class="popup-premium-title">🎉 Partie terminée !</div>
+      <div class="popup-premium-price" id="end-message" style="margin-bottom: 18px;">
+        Félicitations, tu as terminé cette partie !
+      </div>
+      <ul class="premium-list-pro" style="margin-bottom:18px;">
+        <li id="gain-message"></li>
+      </ul>
+      <div class="btn-boutique-inline" style="margin-top: 16px;">
+        <button id="replayBtnEnd" class="btn-boutique-pill">🔁 Rejouer</button>
+        <button id="returnBtnEnd" class="btn-boutique-pill">🏠 Retour</button>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- HEADER AVEC SOLDE PIÈCES/JETONS -->
   <header class="header-solo" style="border-bottom: 5px solid #888;">
@@ -80,7 +88,7 @@
   </header>
 
   <div style="text-align:center; margin-top: 1rem; font-size: 1.2rem;">
-    ⚔️ Contre <strong id="nom-adversaire">...</strong>
+    Contre <strong id="nom-adversaire">...</strong>
   </div>
 
   <div class="timer-box">
