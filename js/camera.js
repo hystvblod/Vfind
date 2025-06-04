@@ -32,6 +32,59 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
     const VIDEO_WIDTH = 500;
     const VIDEO_HEIGHT = 550;
 
+    // ========== ZOOM CAMERA (PINCH/MOLETTE) ==========
+    let camZoom = 1;
+    let lastTouchDist = null;
+
+    function setZoom(scale) {
+      camZoom = Math.max(1, Math.min(scale, 6)); // Limite entre x1 et x6
+      video.style.transform = `scale(${camZoom})`;
+    }
+
+    // Pinch-zoom (mobile)
+    video.addEventListener("touchstart", function (e) {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDist = Math.sqrt(dx * dx + dy * dy);
+      }
+    }, { passive: false });
+
+    video.addEventListener("touchmove", function (e) {
+      if (e.touches.length === 2 && lastTouchDist) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const newDist = Math.sqrt(dx * dx + dy * dy);
+        let scaleChange = newDist / lastTouchDist;
+        setZoom(camZoom * scaleChange);
+        lastTouchDist = newDist;
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    video.addEventListener("touchend", function (e) {
+      if (e.touches.length < 2) lastTouchDist = null;
+    }, { passive: false });
+
+    // Double tap = reset zoom
+    let lastTap = 0;
+    video.addEventListener("touchend", function (e) {
+      const now = Date.now();
+      if (now - lastTap < 300 && e.touches.length === 0) {
+        setZoom(1);
+      }
+      lastTap = now;
+    });
+
+    // Zoom molette (desktop)
+    video.addEventListener("wheel", function (e) {
+      if (e.ctrlKey) return;
+      setZoom(camZoom + (e.deltaY < 0 ? 0.10 : -0.10));
+      e.preventDefault();
+    }, { passive: false });
+
+    // ========== / ZOOM CAMERA ==========
+
     function startCamera() {
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
       navigator.mediaDevices.getUserMedia({

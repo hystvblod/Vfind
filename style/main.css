@@ -2166,6 +2166,7 @@ overflow-y: auto;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  touch-action: none; /* désactive le pinch-zoom navigateur dans la modale */
 }
 .camera-video {
   max-width: 95vw; max-height: 65vh;
@@ -2173,6 +2174,8 @@ overflow-y: auto;
   background: #222;
   box-shadow: 0 8px 28px #0007;
   margin-bottom: 2.5em;
+  transition: transform 0.18s cubic-bezier(.32,.9,.43,1.17);
+  touch-action: none; /* important : le zoom navigateur ne s'active pas sur la vidéo */
 }
 .camera-controls-pro {
   display: flex;
