@@ -350,15 +350,15 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.appendChild(jetonBtn);
 
       // Photo PRO
-      const photoBtn = document.createElement('button');
-      photoBtn.className = 'btn-photo-pro';
-      photoBtn.title = myPhoto ? "Reprendre une photo" : "Prendre une photo";
-      photoBtn.innerHTML = `
-        <img src="assets/icons/camera.svg" class="icon-photo-pro" alt="Photo" />
-        ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
-      `;
-      photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
-      btnRow.appendChild(photoBtn);
+  const photoBtn = document.createElement('button');
+photoBtn.className = 'btn-photo'; // Même classe que solo
+photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+photoBtn.innerHTML = `
+  <img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />
+  ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
+`;
+photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
+btnRow.appendChild(photoBtn);
 
       colJoueur.appendChild(btnRow);
 
