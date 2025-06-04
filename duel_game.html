@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFindz - Duel (Partie)</title>
   <link rel="stylesheet" href="style/main.css" />
+  <style>
+    /* Tu peux placer ça dans ton main.css si tu veux */
+    .duel-joueurs-bar {
+      display: flex;
+      justify-content: space-between;
+      margin: 0 6vw 8px 6vw;
+      font-weight: bold;
+      font-size: 1.13em;
+      color: #22539f;
+      margin-bottom: 6px;
+    }
+    .joueur-label {
+      padding: 2px 10px;
+      border-radius: 8px;
+      background: #ecf4ff;
+      box-shadow: 0 1px 4px #dde6ff;
+      min-width: 80px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body class="duel-container">
 
@@ -88,6 +108,11 @@
   <main>
     <section id="duel-list-section">
       <h2 id="duel-challenge">Défis du duel</h2>
+      <!-- Barre d'affichage des pseudos joueurs (mise à jour en JS) -->
+      <div class="duel-joueurs-bar">
+        <span class="joueur-label"><span id="pseudo-moi">Moi</span></span>
+        <span class="joueur-label"><span id="pseudo-adv">Adversaire</span></span>
+      </div>
       <ul id="duel-defi-list" class="defi-list"></ul>
     </section>
   </main>
@@ -97,7 +122,6 @@
   </footer>
 
   <!-- SCRIPTS SUPABASE UNIQUEMENT -->
-  
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/camera.js"></script>
   <script type="module" src="js/duel.js"></script>
