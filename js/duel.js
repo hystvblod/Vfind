@@ -1,4 +1,4 @@
-// ==== duel.js (SUPABASE + MATCHMAKING FIABLE + PATCH FIREFOX + AFFICHAGE ID CLEAN + FONCTIONS COMPLÈTES) ====
+// ==== duel.js (SUPABASE + BOUTONS IDENTIQUES SOLO, PRO) ====
 
 import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
@@ -54,7 +54,6 @@ const VFindDuelDB = {
     });
   }
 };
-// ================================================================== //
 
 // --------- Fonctions COEURS LOCAUX (photos aimées DUEL) ---------
 function getPhotosAimeesDuel() {
@@ -116,7 +115,6 @@ async function findOrCreateRoom() {
   localStorage.removeItem("duel_is_player1");
   const pseudo = await getCurrentUser();
 
-  // Anti-doublon : tente plusieurs fois de trouver une room existante (évite cache Supabase)
   for (let i = 0; i < 5; i++) {
     let { data: rooms } = await supabase
       .from('duels')
@@ -125,7 +123,6 @@ async function findOrCreateRoom() {
       .neq('player1', pseudo);
 
     if (rooms && rooms.length > 0) {
-      // Rejoint room
       const room = rooms[0];
       await supabase.from('duels').update({
         player2: pseudo,
@@ -135,7 +132,6 @@ async function findOrCreateRoom() {
 
       localStorage.setItem("duel_random_room", room.id);
       localStorage.setItem("duel_is_player1", "0");
-      // PATCH FIREFOX : délai pour garantir la dispo du localStorage avant redirection
       setTimeout(() => {
         window.location.href = `duel_game.html?room=${room.id}`;
       }, 120);
@@ -144,7 +140,6 @@ async function findOrCreateRoom() {
     await new Promise(r => setTimeout(r, 1200));
   }
 
-  // Si aucune room trouvée, crée une nouvelle
   const defis = await getRandomDefis(3);
   const roomObj = {
     player1: pseudo,
@@ -155,8 +150,8 @@ async function findOrCreateRoom() {
     createdat: Date.now(),
     defis: defis,
     starttime: null,
-    photosa: {},
-    photosb: {}
+    photosA: {},
+    photosB: {}
   };
 
   const { data, error } = await supabase.from('duels').insert([roomObj]).select();
@@ -169,7 +164,6 @@ async function findOrCreateRoom() {
   waitRoom(data[0].id);
 }
 
-// Poll jusqu'à ce que la room passe en playing
 function waitRoom(roomId) {
   const poll = async () => {
     try {
@@ -256,7 +250,7 @@ if (path.includes("duel_game.html") && roomId) {
     }, 1000);
   }
 
-  // --------- Affichage des défis + boutons + coeur ---------
+  // --------- Affichage des défis + boutons ---------
   async function renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
@@ -333,7 +327,7 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // ---------- BOUTONS joueur : Jeton + Photo (alignés) ----------
+      // ========== BOUTONS (IDENTIQUES SOLO, SANS TEXTE NI STRUCTURE AUTOUR) ==========
       const btnRow = document.createElement('div');
       btnRow.className = "duel-btnrow-joueur";
       btnRow.style.display = "flex";
@@ -341,7 +335,7 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // Jeton P
+      // --- Jeton (100% SOLO)
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
       jetonBtn.title = "Valider avec un jeton";
@@ -349,14 +343,11 @@ if (path.includes("duel_game.html") && roomId) {
       jetonBtn.onclick = () => ouvrirPopupJeton(idx);
       btnRow.appendChild(jetonBtn);
 
-      // Appareil photo - structure SOLO
-  const photoBtn = document.createElement('button');
-photoBtn.className = 'btn-photo';
-photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo"; // garde le tooltip si tu veux
-photoBtn.innerHTML = `<img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />`;
-photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
-btnRow.appendChild(photoBtn);
-
+      // --- Photo (100% SOLO)
+      const photoBtn = document.createElement('button');
+      photoBtn.className = 'btn-photo';
+      photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+      photoBtn.innerHTML = `<img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />`;
       photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
       btnRow.appendChild(photoBtn);
 
@@ -398,7 +389,7 @@ btnRow.appendChild(photoBtn);
     }
   }
 
-  // ==== Camera, utils, etc... (corrigé avec fallback global) ====
+  // ==== Camera, utils, etc... ====
   window.ouvrirCameraPourDuel = function(idx) {
     let duelId = currentRoomId || window.currentRoomId || roomId;
     if (!duelId) {
