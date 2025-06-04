@@ -113,18 +113,33 @@ if (path.includes("duel_random.html")) {
     } else {
       // Crée nouvelle room
       const defis = await getRandomDefis();
-      const { data, error } = await supabase.from('duels').insert([{
-        player1: pseudo,
-        player2: null,
-        status: 'waiting',
-        createdAt: Date.now(),
-        defis,
-        startTime: null,
-        photosA: {},
-        photosB: {}
-      }]).select();
-      localStorage.setItem("duel_random_room", data[0].id);
-      localStorage.setItem("duel_is_player1", "1");
+const { data, error } = await supabase.from('duels').insert([{
+  player1: pseudo,
+  player2: null,
+  score1: 0,
+  score2: 0,
+  status: 'waiting',
+  createdat: Date.now(),
+  defis: defis, // ou JSON.stringify(defis) si besoin, selon ce que tu vois dans Supabase
+  starttime: null,
+  photosa: {},
+  photosb: {}
+}]).select();
+
+if (error) {
+  console.error("Erreur INSERT DUEL:", error);
+  alert("Erreur création duel : " + error.message);
+  return;
+}
+if (!data || !data[0]) {
+  console.error("Aucune data renvoyée par l'insert duel", data);
+  alert("Erreur technique création duel.");
+  return;
+}
+localStorage.setItem("duel_random_room", data[0].id);
+localStorage.setItem("duel_is_player1", "1");
+// suite du code...
+
       // Attend le 2e joueur en poll toutes les 1.5s (live realtime = + de requêtes = + bande passante !)
       const waitRoom = async () => {
         const { data: r } = await supabase.from('duels').select('*').eq('id', data[0].id).single();
