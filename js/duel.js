@@ -175,6 +175,7 @@ if (path.includes("duel_random.html")) {
 // =============== GAME DUEL ==============
 if (path.includes("duel_game.html") && roomId) {
   currentRoomId = roomId;
+  window.currentRoomId = currentRoomId; // PATCH : globalisation pour tout contexte
 
   (async () => {
     const pseudo = await getCurrentUser();
@@ -380,9 +381,15 @@ if (path.includes("duel_game.html") && roomId) {
     }
   }
 
-  // ==== Camera, utils, etc... (inchangé)
+  // ==== Camera, utils, etc... (corrigé avec fallback global) ====
   window.ouvrirCameraPourDuel = function(idx) {
-    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, currentRoomId);
+    // PATCH : duelId always present, même si scope chelou
+    let duelId = currentRoomId || window.currentRoomId || roomId;
+    if (!duelId) {
+      alert("Erreur critique : identifiant duel introuvable.");
+      return;
+    }
+    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId);
   };
 
   window.savePhotoDuel = async function(idx, dataUrl) {
