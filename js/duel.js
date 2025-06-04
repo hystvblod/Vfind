@@ -112,19 +112,22 @@ if (path.includes("duel_random.html")) {
       window.location.href = `duel_game.html?room=${room.id}`;
     } else {
       // Crée nouvelle room
-      const defis = await getRandomDefis();
-const { data, error } = await supabase.from('duels').insert([{
+   const defis = await getRandomDefis();
+const roomObj = {
   player1: pseudo,
   player2: null,
   score1: 0,
   score2: 0,
   status: 'waiting',
-  createdat: Date.now(),
-  defis: defis, // ou JSON.stringify(defis) si besoin, selon ce que tu vois dans Supabase
+  createdat: Date.now(),          // OK : timestamp int
+  defis: defis,                   // OK : tableau (jsonb attend un tableau)
   starttime: null,
   photosa: {},
   photosb: {}
-}]).select();
+};
+
+const { data, error } = await supabase.from('duels').insert([roomObj]).select();
+
 
 if (error) {
   console.error("Erreur INSERT DUEL:", error);
