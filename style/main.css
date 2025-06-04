@@ -2310,3 +2310,57 @@ overflow-y: auto;
   flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
   max-width: 260px;    /* ou 230px si tu veux un max */
 }
+.btn-photo {
+  background: #3fa9f5;
+  color: #fff;
+  border: none;
+  border-radius: 1.5em;
+  font-size: 1.08em;
+  font-weight: 600;
+  padding: 0.7em 1.6em;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  box-shadow: 0 2px 8px #bce0ff70;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.18s;
+}
+.btn-photo:hover {
+  background: #2286c3;
+  box-shadow: 0 4px 16px #cbeeffb7;
+}
+.icon-photo {
+  width: 1.8em;
+  height: 1.8em;
+  margin-right: 0.4em;
+  vertical-align: middle;
+  filter: drop-shadow(0 2px 4px #81d0ff55);
+}
+.btn-jeton-p {
+  background: #ffd24d;
+  border: none;
+  border-radius: 1.4em;
+  box-shadow: 0 2px 8px #f7d65050;
+  padding: 0.6em 1.2em;
+  font-weight: 600;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  cursor: pointer;
+}
+.btn-jeton-p:hover {
+  background: #ffe87b;
+}
+.jeton-icone {
+  width: 1.7em;
+  height: 1.7em;
+}
+.duel-btnrow-joueur {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}

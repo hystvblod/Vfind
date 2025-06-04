@@ -1,4 +1,4 @@
-// ==== duel.js (SUPABASE + MATCHMAKING FIABLE + AFFICHAGE ID CLEAN + FONCTIONS COMPLÈTES) ====
+// ==== duel.js (SUPABASE + MATCHMAKING FIABLE + PATCH FIREFOX + AFFICHAGE ID CLEAN + FONCTIONS COMPLÈTES) ====
 
 import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
@@ -135,7 +135,10 @@ async function findOrCreateRoom() {
 
       localStorage.setItem("duel_random_room", room.id);
       localStorage.setItem("duel_is_player1", "0");
-      window.location.href = `duel_game.html?room=${room.id}`;
+      // PATCH FIREFOX : délai pour garantir la dispo du localStorage avant redirection
+      setTimeout(() => {
+        window.location.href = `duel_game.html?room=${room.id}`;
+      }, 120);
       return;
     }
     await new Promise(r => setTimeout(r, 1200));
@@ -347,13 +350,13 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.appendChild(jetonBtn);
 
       // Appareil photo - structure SOLO
-      const photoBtn = document.createElement('button');
-      photoBtn.className = 'btn-photo';
-      photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-      photoBtn.innerHTML = `
-        <img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />
-        ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
-      `;
+  const photoBtn = document.createElement('button');
+photoBtn.className = 'btn-photo';
+photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo"; // garde le tooltip si tu veux
+photoBtn.innerHTML = `<img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />`;
+photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
+btnRow.appendChild(photoBtn);
+
       photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
       btnRow.appendChild(photoBtn);
 
