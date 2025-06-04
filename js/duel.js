@@ -315,24 +315,29 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // Boutons
+      // ---------- BOUTONS STYLE PRO ----------
       const btnRow = document.createElement('div');
       btnRow.style.display = "flex";
       btnRow.style.gap = "10px";
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // Jeton P
+      // Jeton PRO
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
-      jetonBtn.textContent = "🅿️";
       jetonBtn.title = "Valider avec un jeton";
-      jetonBtn.onclick = () => alert("Jeton P utilisé !");
+      jetonBtn.innerHTML = `<img src="assets/img/jeton_p.webp" class="icon-jeton-pro" alt="Jeton" />`;
+      jetonBtn.onclick = () => ouvrirPopupJeton(idx); // Mets ta logique ici
       btnRow.appendChild(jetonBtn);
 
-      // Bouton photo
+      // Photo PRO
       const photoBtn = document.createElement('button');
-      photoBtn.textContent = myPhoto ? "📸 Reprendre une photo" : "📸 Prendre une photo";
+      photoBtn.className = 'btn-photo-pro';
+      photoBtn.title = myPhoto ? "Reprendre une photo" : "Prendre une photo";
+      photoBtn.innerHTML = `
+        <img src="assets/icons/camera.svg" class="icon-photo-pro" alt="Photo" />
+        ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
+      `;
       photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
       btnRow.appendChild(photoBtn);
 
@@ -376,10 +381,9 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   // ==== Camera, utils, etc... (inchangé)
-window.ouvrirCameraPourDuel = function(idx) {
-  window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, currentRoomId);
-};
-
+  window.ouvrirCameraPourDuel = function(idx) {
+    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, currentRoomId);
+  };
 
   window.savePhotoDuel = async function(idx, dataUrl) {
     const champ = isPlayer1 ? 'photosA' : 'photosB';
