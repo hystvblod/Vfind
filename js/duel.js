@@ -376,9 +376,10 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   // ==== Camera, utils, etc... (inchangé)
-  window.ouvrirCameraPourDuel = function(idx) {
-    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx);
-  };
+window.ouvrirCameraPourDuel = function(idx) {
+  window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, currentRoomId);
+};
+
 
   window.savePhotoDuel = async function(idx, dataUrl) {
     const champ = isPlayer1 ? 'photosA' : 'photosB';
