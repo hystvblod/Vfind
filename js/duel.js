@@ -1,4 +1,4 @@
-// ==== duel.js (SUPABASE + BOUTONS IDENTIQUES SOLO, PRO) ====
+// ==== duel.js (SUPABASE + BOUTONS IDENTIQUES SOLO, PRO + PATCH FIREFOX) ====
 
 import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
@@ -97,7 +97,10 @@ if (path.includes("duel_random.html")) {
       .single()
       .then(({ data }) => {
         if (data && data.status && data.status !== 'finished') {
-          window.location.href = `duel_game.html?room=${existingRoomId}`;
+          // Ajout d'un petit délai pour Firefox avant redirection
+          setTimeout(() => {
+            window.location.href = `duel_game.html?room=${existingRoomId}`;
+          }, 200);
         } else {
           localStorage.removeItem("duel_random_room");
           localStorage.removeItem("duel_is_player1");
@@ -134,7 +137,7 @@ async function findOrCreateRoom() {
       localStorage.setItem("duel_is_player1", "0");
       setTimeout(() => {
         window.location.href = `duel_game.html?room=${room.id}`;
-      }, 120);
+      }, 200); // PATCH: 200ms
       return;
     }
     await new Promise(r => setTimeout(r, 1200));
@@ -161,7 +164,9 @@ async function findOrCreateRoom() {
   }
   localStorage.setItem("duel_random_room", data[0].id);
   localStorage.setItem("duel_is_player1", "1");
-  waitRoom(data[0].id);
+  setTimeout(() => {
+    waitRoom(data[0].id);
+  }, 200); // PATCH: 200ms
 }
 
 function waitRoom(roomId) {
@@ -173,7 +178,9 @@ function waitRoom(roomId) {
         return;
       }
       if (r && r.status === "playing") {
-        window.location.href = `duel_game.html?room=${roomId}`;
+        setTimeout(() => {
+          window.location.href = `duel_game.html?room=${roomId}`;
+        }, 200); // PATCH: 200ms
       } else if (r && r.status === "waiting") {
         setTimeout(poll, 1500);
       } else {
