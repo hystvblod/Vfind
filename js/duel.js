@@ -1,6 +1,6 @@
 // ==== duel.js (SUPABASE + CACHE OPTIMISÉ + COEUR LOCAL) ====
 
-import { supabase, getCurrentUser } from './supabase.js';
+import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
 // ========== IndexedDB cache ========== //
 const VFindDuelDB = {

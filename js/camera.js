@@ -1,10 +1,12 @@
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
   return new Promise((resolve, reject) => {
-    // UI Camera
+    // UI Camera (avec wrapper pour overflow hidden)
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
     container.innerHTML = `
-      <video autoplay playsinline class="camera-video"></video>
+      <div class="camera-video-wrapper">
+        <video autoplay playsinline class="camera-video"></video>
+      </div>
       <div class="camera-controls camera-controls-pro">
         <button id="switchCamera" title="Changer de caméra" class="camera-btn">
           <span class="cam-ico">&#8635;</span>
@@ -109,7 +111,14 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
       canvas.width = VIDEO_WIDTH;
       canvas.height = VIDEO_HEIGHT;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+      // --- Capture zoomée (ce que tu vois, même zoom) ---
+      const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
+      const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
+      const sWidth = video.videoWidth / camZoom;
+      const sHeight = video.videoHeight / camZoom;
+
+      ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
       const confirmSave = confirm("Souhaites-tu valider cette photo ?");
       if (!confirmSave) return;
