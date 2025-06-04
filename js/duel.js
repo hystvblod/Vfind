@@ -138,12 +138,11 @@ async function findOrCreateRoom() {
       window.location.href = `duel_game.html?room=${room.id}`;
       return;
     }
-    // Attente progressive pour laisser Supabase sync
     await new Promise(r => setTimeout(r, 1200));
   }
 
   // Si aucune room trouvée, crée une nouvelle
-  const defis = await getRandomDefis(3); // ICI : défis randoms Supabase
+  const defis = await getRandomDefis(3);
   const roomObj = {
     player1: pseudo,
     player2: null,
@@ -193,7 +192,7 @@ function waitRoom(roomId) {
 // =============== GAME DUEL ==============
 if (path.includes("duel_game.html") && roomId) {
   currentRoomId = roomId;
-  window.currentRoomId = currentRoomId; // PATCH : globalisation pour tout contexte
+  window.currentRoomId = currentRoomId;
 
   (async () => {
     const pseudo = await getCurrentUser();
@@ -225,16 +224,13 @@ if (path.includes("duel_game.html") && roomId) {
     if (!roomData) return;
     const pseudo = await getCurrentUser();
 
-    // En-tête : affiche l'adversaire (jamais "Toi")
     let advID = isPlayer1 ? roomData.player2 : roomData.player1;
     let myID = isPlayer1 ? roomData.player1 : roomData.player2;
     let headerLabel = advID ? advID : "Adversaire";
 
     if ($("nom-adversaire")) $("nom-adversaire").textContent = headerLabel;
-
     if ($("pseudo-moi")) $("pseudo-moi").textContent = myID ? myID : "Moi";
     if ($("pseudo-adv")) $("pseudo-adv").textContent = advID ? advID : "Adversaire";
-
     if (roomData.starttime && $("timer")) startGlobalTimer(roomData.starttime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
@@ -334,31 +330,32 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // ---------- BOUTONS STYLE PRO ----------
+      // ---------- BOUTONS joueur : Jeton + Photo (alignés) ----------
       const btnRow = document.createElement('div');
+      btnRow.className = "duel-btnrow-joueur";
       btnRow.style.display = "flex";
       btnRow.style.gap = "10px";
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // Jeton PRO
+      // Jeton P
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
       jetonBtn.title = "Valider avec un jeton";
       jetonBtn.innerHTML = `<img src="assets/img/jeton_p.webp" class="jeton-icone" alt="Jeton" />`;
-      jetonBtn.onclick = () => ouvrirPopupJeton(idx); // Mets ta logique ici
+      jetonBtn.onclick = () => ouvrirPopupJeton(idx);
       btnRow.appendChild(jetonBtn);
 
-      // Photo PRO
-  const photoBtn = document.createElement('button');
-photoBtn.className = 'btn-photo'; // Même classe que solo
-photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-photoBtn.innerHTML = `
-  <img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />
-  ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
-`;
-photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
-btnRow.appendChild(photoBtn);
+      // Appareil photo - structure SOLO
+      const photoBtn = document.createElement('button');
+      photoBtn.className = 'btn-photo';
+      photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+      photoBtn.innerHTML = `
+        <img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />
+        ${myPhoto ? "Reprendre la photo" : "Prendre une photo"}
+      `;
+      photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
+      btnRow.appendChild(photoBtn);
 
       colJoueur.appendChild(btnRow);
 
@@ -384,7 +381,6 @@ btnRow.appendChild(photoBtn);
         photoImg.className = "photo-user";
         photoImg.src = advPhoto;
         photoImg.onclick = () => agrandirPhoto(advPhoto, cadreActifAdv);
-
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
         cadreDiv.appendChild(preview);
@@ -401,7 +397,6 @@ btnRow.appendChild(photoBtn);
 
   // ==== Camera, utils, etc... (corrigé avec fallback global) ====
   window.ouvrirCameraPourDuel = function(idx) {
-    // PATCH : duelId always present, même si scope chelou
     let duelId = currentRoomId || window.currentRoomId || roomId;
     if (!duelId) {
       alert("Erreur critique : identifiant duel introuvable.");
@@ -434,7 +429,6 @@ btnRow.appendChild(photoBtn);
 
 // ======== UTILS SUPABASE ==========
 
-// ---- PATCH : Défis tirés au hasard dans la table Supabase ----
 async function getRandomDefis(count = 3) {
   let { data, error } = await supabase
     .from('defis')
@@ -443,7 +437,6 @@ async function getRandomDefis(count = 3) {
     .limit(count);
 
   if (error || !data || data.length < count) {
-    // fallback si jamais la requête échoue
     const backup = [
       "Selfie avec un objet bleu",
       "Photo d'un animal",
