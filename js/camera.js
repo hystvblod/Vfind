@@ -3,26 +3,27 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
     // UI Camera (structure PATCHÉE pro)
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
-    container.innerHTML = `
-      <div class="camera-video-zone">
-        <div class="camera-video-wrapper">
-          <video autoplay playsinline class="camera-video"></video>
-          <div class="camera-controls camera-controls-pro">
-            <button id="switchCamera" title="Changer de caméra" class="camera-btn">
-              <span class="cam-ico">&#8635;</span>
-              <span class="cam-label">Retourner</span>
-            </button>
-            <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
-              <span class="cam-ico cam-ico-big"></span>
-            </button>
-            <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
-              <span class="cam-ico">&#10006;</span>
-              <span class="cam-label">Fermer</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+  container.innerHTML = `
+  <div class="camera-video-zone">
+    <div class="camera-video-wrapper">
+      <video autoplay playsinline class="camera-video"></video>
+    </div>
+    <div class="camera-controls camera-controls-pro">
+      <button id="switchCamera" title="Changer de caméra" class="camera-btn">
+        <span class="cam-ico">&#8635;</span>
+        <span class="cam-label">Retourner</span>
+      </button>
+      <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
+        <span class="cam-ico cam-ico-big">📸</span>
+      </button>
+      <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
+        <span class="cam-ico">&#10006;</span>
+        <span class="cam-label">Fermer</span>
+      </button>
+    </div>
+  </div>
+`;
+
 
     document.body.appendChild(container);
 
@@ -115,6 +116,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
     };
 
     takeBtn.onclick = async () => {
+      if (isPinching) return; // Empêche la prise de photo si tu es en pinch-zoom
       const canvas = document.createElement("canvas");
       canvas.width = VIDEO_WIDTH;
       canvas.height = VIDEO_HEIGHT;

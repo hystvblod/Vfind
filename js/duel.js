@@ -1,8 +1,8 @@
-// ==== duel.js (SUPABASE + BOUTONS IDENTIQUES SOLO, PRO + PATCH FIREFOX) ====
+// ==== duel.js (SUPABASE + BOUTONS STRICTEMENT IDENTIQUES SOLO, PATCH FIREFOX) ====
 
 import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
-// ========== IndexedDB cache (uniquement photos, pas de logique de jeu) ==========
+// ========== IndexedDB cache ==========
 const VFindDuelDB = {
   db: null,
   async init() {
@@ -81,12 +81,12 @@ let timerInterval = null;
 // --------- Utilitaires ---------
 function $(id) { return document.getElementById(id); }
 
-// --------- Matchmaking Duel ultra-fiable ---------
+// --------- Matchmaking Duel ---------
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
-// ======= PATCH : REPRISE DE PARTIE EN COURS SI EXISTE ================
+// PATCH : REPRISE DE PARTIE EN COURS SI EXISTE
 if (path.includes("duel_random.html")) {
   const existingRoomId = localStorage.getItem("duel_random_room");
   if (existingRoomId) {
@@ -97,7 +97,6 @@ if (path.includes("duel_random.html")) {
       .single()
       .then(({ data }) => {
         if (data && data.status && data.status !== 'finished') {
-          // Ajout d'un petit délai pour Firefox avant redirection
           setTimeout(() => {
             window.location.href = `duel_game.html?room=${existingRoomId}`;
           }, 200);
@@ -112,7 +111,7 @@ if (path.includes("duel_random.html")) {
   }
 }
 
-// ======= DUEL RANDOM MATCHMAKING PATCH =========
+// DUEL RANDOM MATCHMAKING PATCH
 async function findOrCreateRoom() {
   localStorage.removeItem("duel_random_room");
   localStorage.removeItem("duel_is_player1");
@@ -137,7 +136,7 @@ async function findOrCreateRoom() {
       localStorage.setItem("duel_is_player1", "0");
       setTimeout(() => {
         window.location.href = `duel_game.html?room=${room.id}`;
-      }, 200); // PATCH: 200ms
+      }, 200);
       return;
     }
     await new Promise(r => setTimeout(r, 1200));
@@ -166,7 +165,7 @@ async function findOrCreateRoom() {
   localStorage.setItem("duel_is_player1", "1");
   setTimeout(() => {
     waitRoom(data[0].id);
-  }, 200); // PATCH: 200ms
+  }, 200);
 }
 
 function waitRoom(roomId) {
@@ -180,7 +179,7 @@ function waitRoom(roomId) {
       if (r && r.status === "playing") {
         setTimeout(() => {
           window.location.href = `duel_game.html?room=${roomId}`;
-        }, 200); // PATCH: 200ms
+        }, 200);
       } else if (r && r.status === "waiting") {
         setTimeout(poll, 1500);
       } else {
@@ -334,7 +333,7 @@ if (path.includes("duel_game.html") && roomId) {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // ========== BOUTONS (IDENTIQUES SOLO, SANS TEXTE NI STRUCTURE AUTOUR) ==========
+      // ========== BOUTONS (JETON + PHOTO STRICTEMENT SOLO) ==========
       const btnRow = document.createElement('div');
       btnRow.className = "duel-btnrow-joueur";
       btnRow.style.display = "flex";
@@ -342,7 +341,7 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // --- Jeton (100% SOLO)
+      // --- Jeton (identique solo)
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
       jetonBtn.title = "Valider avec un jeton";
@@ -350,13 +349,17 @@ if (path.includes("duel_game.html") && roomId) {
       jetonBtn.onclick = () => ouvrirPopupJeton(idx);
       btnRow.appendChild(jetonBtn);
 
-      // --- Photo (100% SOLO)
-      const photoBtn = document.createElement('button');
-      photoBtn.className = 'btn-photo';
-      photoBtn.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-      photoBtn.innerHTML = `<img src="assets/icons/photo.svg" class="icon-photo" alt="Prendre une photo" />`;
-      photoBtn.onclick = () => ouvrirCameraPourDuel(idx);
-      btnRow.appendChild(photoBtn);
+      // --- PHOTO : <img> identique solo (PAS de bouton, style inline)
+      const imgPhoto = document.createElement('img');
+      imgPhoto.src = "assets/icons/photo.svg";
+      imgPhoto.alt = "Prendre une photo";
+      imgPhoto.style.width = "2.2em";
+      imgPhoto.style.cursor = "pointer";
+      imgPhoto.style.display = "block";
+      imgPhoto.style.margin = "0 auto";
+      imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+      imgPhoto.onclick = () => window.gererPrisePhotoDuel(idx);
+      btnRow.appendChild(imgPhoto);
 
       colJoueur.appendChild(btnRow);
 
@@ -397,7 +400,7 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   // ==== Camera, utils, etc... ====
-  window.ouvrirCameraPourDuel = function(idx) {
+  window.gererPrisePhotoDuel = function(idx) {
     let duelId = currentRoomId || window.currentRoomId || roomId;
     if (!duelId) {
       alert("Erreur critique : identifiant duel introuvable.");
