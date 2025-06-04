@@ -1,8 +1,8 @@
-// ==== duel.js (SUPABASE + MATCHMAKING SÉCURISÉ + POLLING LIVE) ====
+// ==== duel.js (SUPABASE + MATCHMAKING FIABLE + AFFICHAGE ID CLEAN + FONCTIONS COMPLÈTES) ====
 
 import { supabase, getPseudo as getCurrentUser } from './userData.js';
 
-// ========== IndexedDB cache (uniquement photos, pas de logique de jeu) ========== //
+// ========== IndexedDB cache (uniquement photos, pas de logique de jeu) ==========
 const VFindDuelDB = {
   db: null,
   async init() {
@@ -56,6 +56,23 @@ const VFindDuelDB = {
 };
 // ================================================================== //
 
+// --------- Fonctions COEURS LOCAUX (photos aimées DUEL) ---------
+function getPhotosAimeesDuel() {
+  return JSON.parse(localStorage.getItem("photos_aimees_duel") || "[]");
+}
+function aimerPhotoDuel(defiId) {
+  let aimes = getPhotosAimeesDuel();
+  if (!aimes.includes(defiId)) {
+    aimes.push(defiId);
+    localStorage.setItem("photos_aimees_duel", JSON.stringify(aimes));
+  }
+}
+function retirerPhotoAimeeDuel(defiId) {
+  let aimes = getPhotosAimeesDuel();
+  aimes = aimes.filter(id => id !== defiId);
+  localStorage.setItem("photos_aimees_duel", JSON.stringify(aimes));
+}
+
 // --------- Variables globales ---------
 let currentRoomId = null;
 let isPlayer1 = false;
@@ -63,38 +80,21 @@ let roomData = null;
 let timerInterval = null;
 
 // --------- Utilitaires ---------
-function $(id) {
-  return document.getElementById(id);
-}
+function $(id) { return document.getElementById(id); }
 
-// --------- Matchmaking Duel (full Supabase) ---------
+// --------- Matchmaking Duel ultra-fiable ---------
 const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
-// =============== DUEL RANDOM ==============
-if (path.includes("duel_random.html")) {
-  (async () => {
-    // Toujours repartir d'une base propre (évite poll sur une ancienne room supprimée)
-    localStorage.removeItem("duel_random_room");
-    localStorage.removeItem("duel_is_player1");
+// ======= DUEL RANDOM MATCHMAKING PATCH =========
+async function findOrCreateRoom() {
+  localStorage.removeItem("duel_random_room");
+  localStorage.removeItem("duel_is_player1");
+  const pseudo = await getCurrentUser();
 
-    const pseudo = await getCurrentUser();
-
-    // Empêche plusieurs rooms par le même pseudo en "waiting"
-    let { data: existing } = await supabase
-      .from('duels')
-      .select('*')
-      .eq('player1', pseudo)
-      .eq('status', 'waiting');
-    if (existing && existing.length > 0) {
-      // Nettoie les vieilles rooms qui traînent
-      for (let r of existing) {
-        await supabase.from('duels').delete().eq('id', r.id);
-      }
-    }
-
-    // Recherche room d'un autre joueur en attente
+  // Anti-doublon : tente plusieurs fois de trouver une room existante (évite cache Supabase)
+  for (let i = 0; i < 5; i++) {
     let { data: rooms } = await supabase
       .from('duels')
       .select('*')
@@ -113,60 +113,63 @@ if (path.includes("duel_random.html")) {
       localStorage.setItem("duel_random_room", room.id);
       localStorage.setItem("duel_is_player1", "0");
       window.location.href = `duel_game.html?room=${room.id}`;
-    } else {
-      // Crée nouvelle room
-      const defis = await getRandomDefis();
-      const roomObj = {
-        player1: pseudo,
-        player2: null,
-        score1: 0,
-        score2: 0,
-        status: 'waiting',
-        createdat: Date.now(),
-        defis: defis,
-        starttime: null,
-        photosa: {},
-        photosb: {}
-      };
-
-      const { data, error } = await supabase.from('duels').insert([roomObj]).select();
-      if (error) {
-        console.error("Erreur INSERT DUEL:", error);
-        alert("Erreur création duel : " + error.message);
-        return;
-      }
-      if (!data || !data[0]) {
-        console.error("Aucune data renvoyée par l'insert duel", data);
-        alert("Erreur technique création duel.");
-        return;
-      }
-      localStorage.setItem("duel_random_room", data[0].id);
-      localStorage.setItem("duel_is_player1", "1");
-
-      // Attend le 2e joueur (poll toutes les 1.5s)
-      const waitRoom = async () => {
-        try {
-          const { data: r, error } = await supabase.from('duels').select('*').eq('id', data[0].id).single();
-          if (error) {
-            console.error("Polling error:", error);
-            setTimeout(waitRoom, 2000);
-            return;
-          }
-          if (r && r.status === "playing") {
-            window.location.href = `duel_game.html?room=${data[0].id}`;
-          } else if (r && r.status === "waiting") {
-            setTimeout(waitRoom, 1500);
-          } else {
-            alert("Room annulée ou supprimée.");
-          }
-        } catch (e) {
-          console.error("Polling exception:", e);
-          setTimeout(waitRoom, 2000);
-        }
-      };
-      waitRoom();
+      return;
     }
-  })();
+    // Attente progressive pour laisser Supabase sync
+    await new Promise(r => setTimeout(r, 1200));
+  }
+
+  // Si aucune room trouvée, crée une nouvelle
+  const defis = await getRandomDefis();
+  const roomObj = {
+    player1: pseudo,
+    player2: null,
+    score1: 0,
+    score2: 0,
+    status: 'waiting',
+    createdat: Date.now(),
+    defis: defis,
+    starttime: null,
+    photosa: {},
+    photosb: {}
+  };
+
+  const { data, error } = await supabase.from('duels').insert([roomObj]).select();
+  if (error) {
+    alert("Erreur création duel : " + error.message);
+    return;
+  }
+  localStorage.setItem("duel_random_room", data[0].id);
+  localStorage.setItem("duel_is_player1", "1");
+  waitRoom(data[0].id);
+}
+
+// Poll jusqu'à ce que la room passe en playing
+function waitRoom(roomId) {
+  const poll = async () => {
+    try {
+      const { data: r, error } = await supabase.from('duels').select('*').eq('id', roomId).single();
+      if (error) {
+        setTimeout(poll, 2000);
+        return;
+      }
+      if (r && r.status === "playing") {
+        window.location.href = `duel_game.html?room=${roomId}`;
+      } else if (r && r.status === "waiting") {
+        setTimeout(poll, 1500);
+      } else {
+        alert("Room annulée ou supprimée.");
+      }
+    } catch (e) {
+      setTimeout(poll, 2000);
+    }
+  };
+  poll();
+}
+
+// Appelle la fonction sur la bonne page
+if (path.includes("duel_random.html")) {
+  findOrCreateRoom();
 }
 
 // =============== GAME DUEL ==============
@@ -175,14 +178,12 @@ if (path.includes("duel_game.html") && roomId) {
 
   (async () => {
     const pseudo = await getCurrentUser();
-    // Charge la room et découvre si player1 ou 2
     const room = await getRoom(roomId);
     isPlayer1 = (room.player1 === pseudo);
     subscribeRoom(roomId, (data) => {
       roomData = data;
       updateDuelUI();
     });
-    // Initial render
     roomData = await getRoom(roomId);
     updateDuelUI();
   })();
@@ -202,17 +203,25 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   async function updateDuelUI() {
-    let advPseudo = "Adversaire";
-    let advID = isPlayer1 ? roomData.player2 : roomData.player1;
+    if (!roomData) return;
+    const pseudo = await getCurrentUser();
 
-    if (advID) advPseudo = advID;
-    if ($("nom-adversaire")) $("nom-adversaire").textContent = advPseudo;
+    // En-tête : affiche l'adversaire (jamais "Toi")
+    let advID = isPlayer1 ? roomData.player2 : roomData.player1;
+    let myID = isPlayer1 ? roomData.player1 : roomData.player2;
+    let headerLabel = advID ? advID : "Adversaire";
+
+    if ($("nom-adversaire")) $("nom-adversaire").textContent = headerLabel;
+
+    if ($("pseudo-moi")) $("pseudo-moi").textContent = myID ? myID : "Moi";
+    if ($("pseudo-adv")) $("pseudo-adv").textContent = advID ? advID : "Adversaire";
+
     if (roomData.starttime && $("timer")) startGlobalTimer(roomData.starttime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
     let cadreActifMoi = "polaroid_01";
     let cadreActifAdv = "polaroid_01";
-    renderDefis({ cadreActifMoi, cadreActifAdv });
+    renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID });
   }
 
   function startGlobalTimer(startTime) {
@@ -230,7 +239,7 @@ if (path.includes("duel_game.html") && roomId) {
   }
 
   // --------- Affichage des défis + boutons + coeur ---------
-  async function renderDefis({ cadreActifMoi, cadreActifAdv }) {
+  async function renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
       if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
@@ -264,7 +273,7 @@ if (path.includes("duel_game.html") && roomId) {
 
       const titreJoueur = document.createElement('div');
       titreJoueur.className = 'col-title';
-      titreJoueur.textContent = "Toi";
+      titreJoueur.textContent = myID ? myID : "Moi";
       colJoueur.appendChild(titreJoueur);
 
       // Photo joueur (cache optimisé)
@@ -299,11 +308,9 @@ if (path.includes("duel_game.html") && roomId) {
           } else {
             aimerPhotoDuel(`${roomId}_${myChamp}_${idxStr}`);
           }
-          renderDefis({ cadreActifMoi, cadreActifAdv }); // MAJ UI
+          renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID });
         };
         preview.appendChild(coeurBtn);
-        // ----------------------------------------
-
         cadreDiv.appendChild(preview);
         colJoueur.appendChild(cadreDiv);
       }
@@ -336,7 +343,7 @@ if (path.includes("duel_game.html") && roomId) {
       colAdv.className = 'adversaire-col';
       const titreAdv = document.createElement('div');
       titreAdv.className = 'col-title';
-      titreAdv.textContent = "Adversaire";
+      titreAdv.textContent = advID ? advID : "Adversaire";
       colAdv.appendChild(titreAdv);
 
       // Photo adversaire (cache optimisé)
@@ -368,7 +375,7 @@ if (path.includes("duel_game.html") && roomId) {
     }
   }
 
-  // ==== Camera ==== //
+  // ==== Camera, utils, etc... (inchangé)
   window.ouvrirCameraPourDuel = function(idx) {
     window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx);
   };
@@ -395,7 +402,7 @@ if (path.includes("duel_game.html") && roomId) {
   };
 }
 
-// ======== UTILS SUPABASE ========== //
+// ======== UTILS SUPABASE ==========
 async function getRoom(roomId) {
   const { data } = await supabase.from('duels').select('*').eq('id', roomId).single();
   return data;
