@@ -2294,7 +2294,7 @@ overflow-y: auto;
   justify-content: center;
   gap: 0;
   padding: 0.7em 2em;
-  background: linear-gradient(90deg, #fffbe0 0%, #ffe08a 100%);
+  background: linear-gradient(90deg, #fffbe0 0%, #ffd700 100%);
   border: none;
   border-radius: 100px;
   min-width: 140px;     /* réduis le min si tu veux */
