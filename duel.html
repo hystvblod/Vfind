@@ -3,24 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFind - Choix Duel</title>
+  <title>VFindz - Choix Duel</title>
   <link rel="stylesheet" href="style/main.css" />
 </head>
 <body class="duel-container">
-  <header class="header-boutique">
-    <a href="index.html" class="back-btn" title="Retour">
-      <img src="assets/icons/arrow_back.svg" alt="Retour" />
-    </a>
-    <h1 class="titre-centre">Duel</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">
-        <img src="assets/icons/user.svg" alt="Profil" />
+
+  <!-- HEADER STYLE SOLO/DUEL -->
+  <header class="header-solo" style="border-bottom: 5px solid #888;">
+    <div class="header-row">
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
       </a>
-      <a href="parametres.html" class="btn-icon">
-        <img src="assets/icons/settings.svg" alt="Paramètres" />
-      </a>
+      <h1>Duel</h1>
+   <main>
+  <div class="duel-choice-box">
+    <a href="duel_random.html" class="duel-choice-btn">Jouer contre un adversaire aléatoire</a>
+    <a href="duel_amis.html" class="duel-choice-btn">Jouer contre un ami</a>
+  </div>
+</main>
+    </div>
+    <div class="solde-container solde-solo" id="solde-container">
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
+          <span id="points"></span>
+        </div>
+      </div>
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
+          <span id="jetons"></span>
+        </div>
+      </div>
     </div>
   </header>
+
   <main>
     <div class="main-buttons" style="margin-top:2.5rem;">
       <a href="duel_random.html" class="main-button">Jouer contre un adversaire aléatoire</a>
@@ -28,7 +45,10 @@
     </div>
   </main>
   <footer>
-    <p>&copy; 2025 VFind</p>
+    <p>&copy; 2025 VFindz</p>
   </footer>
+
+  <!-- CHARGE LE SCRIPT QUI MET À JOUR LE SOLDE SI BESOIN -->
+  <script type="module" src="js/userData.js"></script>
 </body>
 </html>

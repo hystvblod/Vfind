@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Duel Aléatoire - VFind</title>
+  <title>Duel Aléatoire - VFindz</title>
   <link rel="stylesheet" href="style/main.css" />
   <style>
     .searching-box {
@@ -32,20 +32,39 @@
   </style>
 </head>
 <body class="duel-container">
-  <header class="header-boutique">
-    <a href="index.html" class="back-btn" title="Retour">
-      <img src="assets/icons/arrow_back.svg" alt="Retour" />
-    </a>
-    <h1 class="titre-centre">Duel aléatoire</h1>
-    <div class="top-buttons">
-      <a href="profil.html" class="btn-icon">
-        <img src="assets/icons/user.svg" alt="Profil" />
+
+  <!-- HEADER STYLE SOLO/DUEL -->
+  <header class="header-solo" style="border-bottom: 5px solid #888;">
+    <div class="header-row">
+      <a href="index.html" class="back-btn" title="Retour">
+        <img src="assets/icons/arrow_back.svg" alt="Retour" />
       </a>
-      <a href="parametres.html" class="btn-icon">
-        <img src="assets/icons/settings.svg" alt="Paramètres" />
-      </a>
+      <h1>Duel aléatoire</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
+        <a href="parametres.html" class="btn-icon">
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
+      </div>
+    </div>
+    <div class="solde-container solde-solo" id="solde-container">
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/vcoin.webp" class="icon-solo-piece" alt="Pièces" />
+          <span id="points"></span>
+        </div>
+      </div>
+      <div class="solde-item">
+        <div class="solde-ligne">
+          <img src="assets/img/jeton_p.webp" class="icon-solo-jeton" alt="Jetons" />
+          <span id="jetons"></span>
+        </div>
+      </div>
     </div>
   </header>
+
   <main>
     <div id="searching-adversary" class="searching-box">
       <img src="assets/img/logo.png" alt="Logo VFind" class="spin-logo"/>
@@ -60,7 +79,7 @@
     <p style="text-align:center;color:#ccc;">Un adversaire va être sélectionné automatiquement.</p>
   </main>
   <footer>
-    <p>&copy; 2025 VFind</p>
+    <p>&copy; 2025 VFindz</p>
   </footer>
   <!-- SUPABASE UNIQUEMENT -->
   <script type="module" src="js/supabase.js"></script>
