@@ -54,15 +54,25 @@
   <footer>
     <p>&copy; 2025 VFindz</p>
   </footer>
+
+  <!-- Le script ci-dessous doit être ADAPTÉ si jamais la structure change dans userData.js -->
   <script type="module">
-    import { supabase, getCurrentUser, getProfile, updateProfile } from "./js/supabase.js";
-    // ...reste de ton script inchangé...
+    import { supabase, getPseudo, loadUserData, updateUserData } from "./js/userData.js";
+
     let pseudoPublic = null;
     let profil = null;
 
+    // Charge le profil utilisateur
+    async function loadProfil() {
+      await loadUserData();
+      pseudoPublic = await getPseudo();
+      // Récupère l'utilisateur depuis Supabase
+      const { data, error } = await supabase.from('users').select('*').eq('pseudo', pseudoPublic).single();
+      profil = data;
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
-      pseudoPublic = await getCurrentUser();
-      profil = await getProfile(pseudoPublic);
+      await loadProfil();
       afficherAmis();
       afficherDemandesDuel();
     });
@@ -87,23 +97,25 @@
     }
 
     async function inviterDuel(amiPseudo) {
-      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudo", amiPseudo).single();
       if (!ami) {
         alert("Ami introuvable.");
         return;
       }
+      // Ajoute pseudo à la liste des demandes reçues de l'ami
       const demandesRecues = new Set([...(ami.demandesDuelRecues || []), pseudoPublic]);
       await supabase.from("users").update({
         demandesDuelRecues: Array.from(demandesRecues)
-      }).eq("pseudoPublic", amiPseudo);
+      }).eq("pseudo", amiPseudo);
 
+      // Ajoute l'ami à la liste des demandes envoyées de l'utilisateur
       const demandesEnvoyees = new Set([...(profil.demandesDuelEnvoyees || []), amiPseudo]);
       await supabase.from("users").update({
         demandesDuelEnvoyees: Array.from(demandesEnvoyees)
-      }).eq("pseudoPublic", pseudoPublic);
+      }).eq("pseudo", pseudoPublic);
 
       alert("Invitation envoyée !");
-      profil = await getProfile(pseudoPublic);
+      await loadProfil();
       afficherDemandesDuel();
     }
 
@@ -149,16 +161,17 @@
         photosB: {}
       }]).select();
 
+      // Retire la demande des deux côtés
       await supabase.from("users").update({
         demandesDuelRecues: (profil.demandesDuelRecues || []).filter(p => p !== amiPseudo)
-      }).eq("pseudoPublic", pseudoPublic);
+      }).eq("pseudo", pseudoPublic);
 
-      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudo", amiPseudo).single();
       await supabase.from("users").update({
         demandesDuelEnvoyees: (ami.demandesDuelEnvoyees || []).filter(p => p !== pseudoPublic)
-      }).eq("pseudoPublic", amiPseudo);
+      }).eq("pseudo", amiPseudo);
 
-      profil = await getProfile(pseudoPublic);
+      await loadProfil();
       afficherDemandesDuel();
 
       if (data && data.length) {
@@ -169,14 +182,14 @@
     async function refuserDuel(amiPseudo) {
       await supabase.from("users").update({
         demandesDuelRecues: (profil.demandesDuelRecues || []).filter(p => p !== amiPseudo)
-      }).eq("pseudoPublic", pseudoPublic);
+      }).eq("pseudo", pseudoPublic);
 
-      const { data: ami } = await supabase.from("users").select("*").eq("pseudoPublic", amiPseudo).single();
+      const { data: ami } = await supabase.from("users").select("*").eq("pseudo", amiPseudo).single();
       await supabase.from("users").update({
         demandesDuelEnvoyees: (ami.demandesDuelEnvoyees || []).filter(p => p !== pseudoPublic)
-      }).eq("pseudoPublic", amiPseudo);
+      }).eq("pseudo", amiPseudo);
 
-      profil = await getProfile(pseudoPublic);
+      await loadProfil();
       afficherDemandesDuel();
     }
 
