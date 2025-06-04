@@ -345,7 +345,7 @@ if (path.includes("duel_game.html") && roomId) {
       const jetonBtn = document.createElement('button');
       jetonBtn.className = 'btn-jeton-p';
       jetonBtn.title = "Valider avec un jeton";
-      jetonBtn.innerHTML = `<img src="assets/img/jeton_p.webp" class="icon-jeton-pro" alt="Jeton" />`;
+      jetonBtn.innerHTML = `<img src="assets/img/jeton_p.webp" class="jeton-icone" alt="Jeton" />`;
       jetonBtn.onclick = () => ouvrirPopupJeton(idx); // Mets ta logique ici
       btnRow.appendChild(jetonBtn);
 
