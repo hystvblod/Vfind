@@ -87,6 +87,29 @@ const params = new URLSearchParams(window.location.search);
 const roomId = params.get("room");
 const path = window.location.pathname;
 
+// ======= PATCH : REPRISE DE PARTIE EN COURS SI EXISTE ================
+if (path.includes("duel_random.html")) {
+  const existingRoomId = localStorage.getItem("duel_random_room");
+  if (existingRoomId) {
+    supabase
+      .from('duels')
+      .select('id, status')
+      .eq('id', existingRoomId)
+      .single()
+      .then(({ data }) => {
+        if (data && data.status && data.status !== 'finished') {
+          window.location.href = `duel_game.html?room=${existingRoomId}`;
+        } else {
+          localStorage.removeItem("duel_random_room");
+          localStorage.removeItem("duel_is_player1");
+          findOrCreateRoom();
+        }
+      });
+  } else {
+    findOrCreateRoom();
+  }
+}
+
 // ======= DUEL RANDOM MATCHMAKING PATCH =========
 async function findOrCreateRoom() {
   localStorage.removeItem("duel_random_room");
@@ -120,7 +143,7 @@ async function findOrCreateRoom() {
   }
 
   // Si aucune room trouvée, crée une nouvelle
-  const defis = await getRandomDefis();
+  const defis = await getRandomDefis(3); // ICI : défis randoms Supabase
   const roomObj = {
     player1: pseudo,
     player2: null,
@@ -165,11 +188,6 @@ function waitRoom(roomId) {
     }
   };
   poll();
-}
-
-// Appelle la fonction sur la bonne page
-if (path.includes("duel_random.html")) {
-  findOrCreateRoom();
 }
 
 // =============== GAME DUEL ==============
@@ -415,6 +433,27 @@ if (path.includes("duel_game.html") && roomId) {
 }
 
 // ======== UTILS SUPABASE ==========
+
+// ---- PATCH : Défis tirés au hasard dans la table Supabase ----
+async function getRandomDefis(count = 3) {
+  let { data, error } = await supabase
+    .from('defis')
+    .select('texte')
+    .order('random()')
+    .limit(count);
+
+  if (error || !data || data.length < count) {
+    // fallback si jamais la requête échoue
+    const backup = [
+      "Selfie avec un objet bleu",
+      "Photo d'un animal",
+      "Photo d'une ombre"
+    ];
+    return backup.sort(() => 0.5 - Math.random()).slice(0, count);
+  }
+  return data.map(x => x.texte);
+}
+
 async function getRoom(roomId) {
   const { data } = await supabase.from('duels').select('*').eq('id', roomId).single();
   return data;
@@ -428,14 +467,6 @@ async function getPhotoDuel(roomId, champ, idx) {
   dataUrl = room && room[champ] && room[champ][idx];
   if (dataUrl) await VFindDuelDB.set(cacheKey, dataUrl);
   return dataUrl;
-}
-
-async function getRandomDefis(count = 3) {
-  return [
-    "Selfie avec un objet bleu",
-    "Photo d'un animal",
-    "Photo d'une ombre"
-  ].sort(() => 0.5 - Math.random()).slice(0, count);
 }
 
 // Fermer la popup (bouton croix, général)
