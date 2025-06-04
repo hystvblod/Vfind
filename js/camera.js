@@ -135,14 +135,18 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const supa = await import('./js/supabase.js');
-            const urlPhoto = await supa.uploadPhotoDuelWebp(dataUrl, duelId);
-            localStorage.setItem(`photo_duel_${duelId}_${supa.getUserId()}`, urlPhoto);
-            if (window.savePhotoDuel) {
-              await window.savePhotoDuel(defiId, urlPhoto);
+            // Utilise la méthode globale exposée par userData.js
+            if (window.uploadPhotoDuelWebp && window.getUserId) {
+              const urlPhoto = await window.uploadPhotoDuelWebp(dataUrl, duelId);
+              localStorage.setItem(`photo_duel_${duelId}_${window.getUserId()}`, urlPhoto);
+              if (window.savePhotoDuel) {
+                await window.savePhotoDuel(defiId, urlPhoto);
+              }
+            } else {
+              alert("Fonction d'upload duel non trouvée !");
             }
           } catch (err) {
-            alert("Erreur upload Supabase : " + err.message);
+            alert("Erreur upload duel : " + err.message);
           }
           if (videoStream) videoStream.getTracks().forEach(track => track.stop());
           container.remove();
@@ -162,14 +166,17 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            const supa = await import('./js/supabase.js');
-            const urlPhoto = await supa.uploadPhotoConcoursWebp(dataUrl, defiId);
-            localStorage.setItem(`photo_concours_${defiId}_${supa.getUserId()}`, urlPhoto);
-            if (window.savePhotoConcours) {
-              await window.savePhotoConcours(defiId, urlPhoto);
+            if (window.uploadPhotoConcoursWebp && window.getUserId) {
+              const urlPhoto = await window.uploadPhotoConcoursWebp(dataUrl, defiId);
+              localStorage.setItem(`photo_concours_${defiId}_${window.getUserId()}`, urlPhoto);
+              if (window.savePhotoConcours) {
+                await window.savePhotoConcours(defiId, urlPhoto);
+              }
+            } else {
+              alert("Fonction d'upload concours non trouvée !");
             }
           } catch (err) {
-            alert("Erreur upload Supabase : " + err.message);
+            alert("Erreur upload concours : " + err.message);
           }
           if (videoStream) videoStream.getTracks().forEach(track => track.stop());
           container.remove();
