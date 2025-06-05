@@ -2,7 +2,7 @@ import { uploadPhotoDuelWebp, savePhotoDuel } from "./duel.js";
 import { getUserId, getCadreSelectionne } from "./userData.js";
 
 // Fonctions d'ouverture (compat global, mais ES6 only)
-export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
+export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cadreId = null) {
   return new Promise((resolve, reject) => {
     // ... (tout ton code HTML + DOM identique) ...
     const container = document.createElement("div");
@@ -17,9 +17,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
             <span class="cam-ico">&#8635;</span>
             <span class="cam-label">Retourner</span>
           </button>
-       <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
-  <span class="cam-ico-big"></span>
-</button>
+          <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
+            <span class="cam-ico-big"></span>
+          </button>
           <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
             <span class="cam-ico">&#10006;</span>
             <span class="cam-label">Fermer</span>
@@ -124,41 +124,42 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
       if (!confirmSave) return;
 
       // --- DUEL ---
-if (mode === "duel") {
-  if (!duelId) {
-    alert("Erreur interne : duelId manquant.");
-    return;
-  }
+      if (mode === "duel") {
+        if (!duelId) {
+          alert("Erreur interne : duelId manquant.");
+          return;
+        }
+        if (!cadreId) cadreId = "polaroid_01"; // Fallback si jamais cadreId n'est pas fourni
 
-  const cadreImg = new Image();
-cadreImg.src = `./assets/cadres/${cadreId}.webp`;
+        const cadreImg = new Image();
+        cadreImg.src = `./assets/cadres/${cadreId}.webp`;
 
-  cadreImg.onload = async () => {
-    // ✅ D'abord le cadre en fond
-    ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+        cadreImg.onload = async () => {
+          // ✅ D'abord le cadre en fond
+          ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
-    // ✅ Puis la photo capturée par-dessus (comme en solo)
-    ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+          // ✅ Puis la photo capturée par-dessus (comme en solo)
+          ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
-    const dataUrl = canvas.toDataURL("image/webp", 0.85);
+          const dataUrl = canvas.toDataURL("image/webp", 0.85);
 
-    try {
-      const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId);
-      const userId = await getUserId();
-      localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-      await savePhotoDuel(defiId, urlPhoto);
-      resolve(urlPhoto);
-    } catch (err) {
-      alert("Erreur upload duel : " + err.message);
-      reject(err);
-    }
+          try {
+            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId, cadreId);
+            const userId = await getUserId();
+            localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+            await savePhotoDuel(defiId, urlPhoto, cadreId);
+            resolve(urlPhoto);
+          } catch (err) {
+            alert("Erreur upload duel : " + err.message);
+            reject(err);
+          }
 
-    if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-    container.remove();
-  };
+          if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+          container.remove();
+        };
 
-  cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
-}
+        cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
+      }
 
       // --- CONCOURS ---
       else if (mode === "concours") {
@@ -196,8 +197,8 @@ cadreImg.src = `./assets/cadres/${cadreId}.webp`;
 
 // Pour compatibilité, si tu veux garder le window pour les vieux appels, ajoute :
 window.ouvrirCameraPour = ouvrirCameraPour;
-window.cameraOuvrirCameraPourDuel = function(idx, duelId) {
-  ouvrirCameraPour(idx, "duel", duelId);
+window.cameraOuvrirCameraPourDuel = function(idx, duelId, cadreId) {
+  ouvrirCameraPour(idx, "duel", duelId, cadreId);
 };
 window.cameraOuvrirCameraPourConcours = function(concoursId) {
   ouvrirCameraPour(concoursId, "concours");
