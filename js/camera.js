@@ -41,10 +41,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 }
 .camera-video-wrapper {
   position: relative;
-  width: 98vw;
-  max-width: 500px;
-  height: 55vw;
-  max-height: 65vh;
+  width: min(90vw, 90vh, 500px);
+  height: min(90vw, 90vh, 500px);
+  aspect-ratio: 1/1;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 30px;
@@ -54,16 +53,19 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
   align-items: center;
   justify-content: center;
 }
+
 .camera-video-wrapper video {
-  width: 100vw !important;
+  width: 100% !important;
   height: 100% !important;
   object-fit: cover;
+  border-radius: 30px;
   transition: transform 0.12s cubic-bezier(.46,1.48,.45,.89);
   will-change: transform;
   display: block;
   position: relative;
   z-index: 1;
 }
+
 .camera-controls-pro {
   margin-top: 22px;
   display: flex;
