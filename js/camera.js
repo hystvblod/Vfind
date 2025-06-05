@@ -4,7 +4,7 @@ import { getUserId, getCadreSelectionne } from "./userData.js";
 // Fonctions d'ouverture (compat global, mais ES6 only)
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cadreId = null) {
   return new Promise((resolve, reject) => {
-    // ... (tout ton code HTML + DOM identique) ...
+    // HTML UI
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
     container.innerHTML = `
@@ -29,6 +29,60 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     `;
     document.body.appendChild(container);
 
+    // --- CSS PATCH pour le zoom et la zone vidéo ---
+    // Tu peux intégrer ce CSS dans ta feuille principale si tu préfères
+    const style = document.createElement('style');
+    style.innerHTML = `
+.camera-video-zone {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.camera-video-wrapper {
+  position: relative;
+  width: 98vw;
+  max-width: 500px;
+  height: 55vw;
+  max-height: 65vh;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 30px;
+  background: #111;
+  box-shadow: 0 8px 32px #0005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-video-wrapper video {
+  width: 100vw !important;
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: cover;
+  transition: transform 0.12s cubic-bezier(.46,1.48,.45,.89);
+  will-change: transform;
+  display: block;
+}
+.camera-controls-pro {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+}
+.camera-photo-preview {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(20,22,32,0.97);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    `;
+    document.head.appendChild(style);
+
     const video = container.querySelector("video");
     const switchBtn = container.querySelector("#switchCamera");
     const takeBtn = container.querySelector("#takePhoto");
@@ -39,7 +93,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     const VIDEO_WIDTH = 500;
     const VIDEO_HEIGHT = 550;
 
-    // ZOOM PATCHS (identique à toi)
+    // --- ZOOM PATCHS ---
     let camZoom = 1;
     let lastTouchDist = null;
     let isPinching = false;
@@ -106,88 +160,98 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       startCamera();
     };
 
-   takeBtn.onclick = async () => {
-  if (isPinching) return;
-  // Capture la frame courante
-  const canvas = document.createElement("canvas");
-  canvas.width = VIDEO_WIDTH;
-  canvas.height = VIDEO_HEIGHT;
-  const ctx = canvas.getContext("2d");
+    // === PATCH PRINCIPAL : prise de photo = freeze + preview + valider/reprendre ===
+    takeBtn.onclick = async () => {
+      if (isPinching) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = VIDEO_WIDTH;
+      canvas.height = VIDEO_HEIGHT;
+      const ctx = canvas.getContext("2d");
 
-  const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
-  const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
-  const sWidth = video.videoWidth / camZoom;
-  const sHeight = video.videoHeight / camZoom;
-  ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      // Capture zoomée
+      const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
+      const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
+      const sWidth = video.videoWidth / camZoom;
+      const sHeight = video.videoHeight / camZoom;
+      ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
-  // Stoppe la caméra immédiatement (plus de mouvement)
-  if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-  video.srcObject = null;
+      // STOP caméra immédiatement
+      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
 
-  // Affiche un aperçu de la photo figée avec boutons
-  const previewDiv = document.createElement("div");
-  previewDiv.className = "camera-photo-preview";
-  previewDiv.innerHTML = `
-    <div style="text-align:center;">
-      <img src="${canvas.toDataURL('image/webp', 0.85)}" style="width:90%;max-width:400px;border-radius:14px;box-shadow:0 2px 18px #0007;"/>
-      <div style="margin-top:18px;display:flex;gap:16px;justify-content:center;">
-        <button class="camera-btn" id="validerPhoto">✅ Valider</button>
-        <button class="camera-btn camera-btn-close" id="retakePhoto">↩️ Reprendre</button>
-      </div>
-    </div>
-  `;
-  container.querySelector(".camera-video-zone").style.display = "none";
-  container.appendChild(previewDiv);
+      // Affiche un preview figé avec 2 boutons
+      const previewDiv = document.createElement("div");
+      previewDiv.className = "camera-photo-preview";
+      previewDiv.innerHTML = `
+        <div style="text-align:center;">
+          <img src="${canvas.toDataURL('image/webp', 0.85)}" style="width:90%;max-width:400px;border-radius:14px;box-shadow:0 2px 18px #0007;"/>
+          <div style="margin-top:18px;display:flex;gap:16px;justify-content:center;">
+            <button class="camera-btn" id="validerPhoto">✅ Valider</button>
+            <button class="camera-btn camera-btn-close" id="retakePhoto">↩️ Reprendre</button>
+          </div>
+        </div>
+      `;
+      container.querySelector(".camera-video-zone").style.display = "none";
+      container.appendChild(previewDiv);
 
-  // Si valide la photo
-  previewDiv.querySelector("#validerPhoto").onclick = async () => {
-    const dataUrl = canvas.toDataURL("image/webp", 0.85);
-
-    if (mode === "duel") {
-      if (!duelId) return alert("Erreur interne : duelId manquant.");
-      if (!cadreId) cadreId = "polaroid_01";
-      const cadreImg = new Image();
-      cadreImg.src = `./assets/cadres/${cadreId}.webp`;
-      cadreImg.onload = async () => {
-        ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-        ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT); // On superpose (si besoin)
+      // === Valider : on continue l'enregistrement normal ===
+      previewDiv.querySelector("#validerPhoto").onclick = async () => {
         const dataUrl = canvas.toDataURL("image/webp", 0.85);
-        try {
-          const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId, cadreId);
-          const userId = await getUserId();
-          localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-          await savePhotoDuel(defiId, urlPhoto, cadreId);
-          resolve(urlPhoto);
-        } catch (err) {
-          alert("Erreur upload duel : " + err.message);
-          reject(err);
+
+        if (mode === "duel") {
+          if (!duelId) return alert("Erreur interne : duelId manquant.");
+          if (!cadreId) cadreId = "polaroid_01";
+          const cadreImg = new Image();
+          cadreImg.src = `./assets/cadres/${cadreId}.webp`;
+          cadreImg.onload = async () => {
+            ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT); // on superpose si besoin
+            const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
+            try {
+              const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
+              const userId = await getUserId();
+              localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+              await savePhotoDuel(defiId, urlPhoto, cadreId);
+              resolve(urlPhoto);
+            } catch (err) {
+              alert("Erreur upload duel : " + err.message);
+              reject(err);
+            }
+            container.remove();
+          };
+          cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
+        } else if (mode === "solo") {
+          localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+          if (window.afficherPhotoDansCadreSolo) {
+            window.afficherPhotoDansCadreSolo(defiId, dataUrl);
+          }
+          container.remove();
+          resolve(dataUrl);
+        } else if (mode === "base64") {
+          container.remove();
+          resolve(dataUrl);
         }
-        container.remove();
       };
-      cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
-    } else if (mode === "solo") {
-      localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-      if (window.afficherPhotoDansCadreSolo) {
-        window.afficherPhotoDansCadreSolo(defiId, dataUrl);
-      }
-      container.remove();
-      resolve(dataUrl);
-    } else if (mode === "base64") {
-      container.remove();
-      resolve(dataUrl);
-    }
-  };
 
-  // Si l'utilisateur veut reprendre la photo : on relance la caméra !
-  previewDiv.querySelector("#retakePhoto").onclick = () => {
-    previewDiv.remove();
-    container.querySelector(".camera-video-zone").style.display = "";
+      // === Reprendre : on relance la caméra ===
+      previewDiv.querySelector("#retakePhoto").onclick = () => {
+        previewDiv.remove();
+        container.querySelector(".camera-video-zone").style.display = "";
+        startCamera();
+      };
+    };
+
+    closeBtn.onclick = () => {
+      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+      container.remove();
+      reject("fermé");
+    };
+
     startCamera();
-  };
-};
+  });
+}
 
-
-// Pour compatibilité, si tu veux garder le window pour les vieux appels, ajoute :
+// Pour compatibilité
 window.ouvrirCameraPour = ouvrirCameraPour;
 window.cameraOuvrirCameraPourDuel = function(idx, duelId, cadreId) {
   ouvrirCameraPour(idx, "duel", duelId, cadreId);
