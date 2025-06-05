@@ -190,8 +190,12 @@ async function loadDefis() {
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
 
-    let dataUrl = localStorage.getItem(`photo_defi_${defi.id}`);
-    photosMap[defi.id] = dataUrl || null;
+    // On récupère l'objet photo {photo, cadre}
+    let photoData = null;
+    try {
+      photoData = JSON.parse(localStorage.getItem(`photo_defi_${defi.id}`));
+    } catch (e) {}
+    photosMap[defi.id] = photoData || null;
 
     // UN SEUL bouton photo, centralise toute la logique prise/reprise
     const boutonPhoto = `
@@ -204,7 +208,7 @@ async function loadDefis() {
     `;
 
     let jetonHtml = '';
-    if (!dataUrl && !defi.done) {
+    if (!photoData && !defi.done) {
       jetonHtml = `<img src="assets/img/jeton_p.webp" alt="Jeton" class="jeton-icone" onclick="ouvrirPopupJeton(${index})" />`;
     }
 
@@ -285,14 +289,15 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defi = defis[index];
   defi.photoCount = (defi.photoCount || 0) + 1;
 
-  // On enregistre la photo prise dans le cache (toujours, premium ou non)
+  // Enregistre la photo prise dans le cache (toujours, premium ou non)
+  const cadreId = await getCadreSelectionne();
   const data = {
-  photo: dataUrl,
-  cadre: cadreId  // cadre actif au moment de la prise (récupéré par getCadreSelectionne ou localStorage)
-};
-localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(data));
-
+    photo: dataUrl,
+    cadre: cadreId // cadre actif au moment de la prise
+  };
+  localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(data));
   localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
+
   canRetakePhoto = false;
   retakeDefiId = null;
   defis[index] = defi;
@@ -307,22 +312,36 @@ localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(data));
 };
 
 async function afficherPhotosSauvegardees(photosMap) {
-  const cadreActuel = await getCadreSelectionne();
   document.querySelectorAll(".defi-item").forEach(defiEl => {
     const id = defiEl.getAttribute("data-defi-id");
-    const dataUrl = photosMap[id];
-    if (dataUrl) {
+    const photoData = photosMap[id];
+    if (photoData && photoData.photo) {
       const containerCadre = document.createElement("div");
       containerCadre.className = "cadre-item cadre-duel-mini";
       const preview = document.createElement("div");
       preview.className = "cadre-preview";
       const fond = document.createElement("img");
       fond.className = "photo-cadre";
-      fond.src = `./assets/cadres/${cadreActuel}.webp`;
+      fond.src = `./assets/cadres/${photoData.cadre || "polaroid_01"}.webp`;
       const photo = document.createElement("img");
       photo.className = "photo-user";
-      photo.src = dataUrl;
-      photo.onclick = () => agrandirPhoto(dataUrl, id);
+      photo.src = photoData.photo;
+      // ----------- Ajout du long press pour changer le cadre individuel -----------
+      let pressTimer;
+      photo.onmousedown = (e) => {
+        pressTimer = setTimeout(() => {
+          window.location.href = `choix_cadre_photo.html?defi=${id}`;
+        }, 600);
+      };
+      photo.onmouseup = photo.onmouseleave = () => clearTimeout(pressTimer);
+      photo.ontouchstart = (e) => {
+        pressTimer = setTimeout(() => {
+          window.location.href = `choix_cadre_photo.html?defi=${id}`;
+        }, 600);
+      };
+      photo.ontouchend = photo.ontouchcancel = () => clearTimeout(pressTimer);
+      // ----------------------------------------------------------
+      photo.onclick = () => agrandirPhoto(photoData.photo, id);
       preview.appendChild(fond);
       preview.appendChild(photo);
       containerCadre.appendChild(preview);
@@ -341,7 +360,12 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
   const cadre = document.getElementById("cadre-affiche");
   const photo = document.getElementById("photo-affichee");
   if (!cadre || !photo) return;
-  const cadreActuel = await getCadreSelectionne();
+  // Affiche le cadre de la photo si dispo, sinon le cadre global
+  let photoData = null;
+  try {
+    photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
+  } catch (e) {}
+  const cadreActuel = photoData?.cadre || await getCadreSelectionne();
   cadre.src = `./assets/cadres/${cadreActuel}.webp`;
   photo.src = dataUrl;
   const popup = document.getElementById("popup-photo");
