@@ -1,5 +1,4 @@
-import { supabase,getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique } from './userData.js';
-
+import { supabase, getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique } from './userData.js';
 
 // ========== IndexedDB cache ==========
 const VFindDuelDB = {
@@ -481,11 +480,16 @@ window.ouvrirPopupValiderJeton = function(idx) {
 document.addEventListener("DOMContentLoaded", () => {
   const btnValider = document.getElementById("btn-confirm-jeton");
   const btnCancel = document.getElementById("btn-cancel-jeton");
-  if(btnValider) btnValider.onclick = function() {
+  if(btnValider) btnValider.onclick = async function() {
     const idx = window._idxJetonToValidate;
     if(typeof ouvrirPopupJeton === "function") ouvrirPopupJeton(idx);
     document.getElementById("popup-jeton-valider").classList.add("hidden");
     window._idxJetonToValidate = null;
+    // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    // !! Si tu retires un jeton ici, fais bien :
+    // await removeJeton();
+    // await afficherSolde();
+    // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
   };
   if(btnCancel) btnCancel.onclick = function() {
     document.getElementById("popup-jeton-valider").classList.add("hidden");
@@ -495,12 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------------- RESTE DU FICHIER INCHANGÉ ---------------------
 
-// ... (Le reste identique à ta version plus haut, inchangé)
-
-
-// Changement de cadre après la photo (popup simple via prompt)
 window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
-  // Récupère les cadres possédés
   const cadres = (await import('./userData.js')).getCadresPossedes ? await (await import('./userData.js')).getCadresPossedes() : ["polaroid_01"];
   const actuel = getCadreDuel(duelId, idx);
   let choix = prompt(
@@ -516,7 +515,6 @@ window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
     if (photos[idx] && typeof photos[idx] === "object") {
       photos[idx].cadre = choix;
     } else if (typeof photos[idx] === "string") {
-      // Cas migration (ancien format)
       photos[idx] = { url: photos[idx], cadre: choix };
     }
     await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
@@ -614,77 +612,6 @@ document.addEventListener("DOMContentLoaded", () => {
 if (window.location.pathname.includes("duel_game.html")) {
   initDuelGame();
 }
-// Popup graphique de choix de cadre (remplace le prompt)
-window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
-  // Récupère les cadres possédés
-  let cadres = [];
-  try {
-    cadres = (await import('./userData.js')).getCadresPossedes
-      ? await (await import('./userData.js')).getCadresPossedes()
-      : ["polaroid_01"];
-  } catch(e) { cadres = ["polaroid_01"]; }
-
-  const actuel = getCadreDuel(duelId, idx);
-  const list = document.getElementById("list-cadres-popup");
-  list.innerHTML = "";
-  cadres.forEach(cadre => {
-    let el = document.createElement("img");
-    el.src = "./assets/cadres/" + cadre + ".webp";
-    el.style.width = "72px";
-    el.style.cursor = "pointer";
-    el.style.borderRadius = "12px";
-    el.style.boxShadow = "0 0 7px #0006";
-    el.style.border = cadre === actuel ? "3px solid #FFD900" : "3px solid transparent";
-    el.title = cadre;
-    el.onclick = async () => {
-      setCadreDuel(duelId, idx, cadre);
-      // Mise à jour cloud (Supabase)
-      const { data: room } = await supabase.from('duels').select('*').eq('id', duelId).single();
-      let photos = (room && room[champ]) ? room[champ] : {};
-      if (photos[idx] && typeof photos[idx] === "object") {
-        photos[idx].cadre = cadre;
-      } else if (typeof photos[idx] === "string") {
-        photos[idx] = { url: photos[idx], cadre: cadre };
-      }
-      await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
-      await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, { url: photos[idx].url, cadre: cadre });
-      fermerPopupCadreChoix();
-      location.reload();
-    };
-    list.appendChild(el);
-  });
-  document.getElementById("popup-cadre-choix").classList.remove("hidden");
-};
-
-window.fermerPopupCadreChoix = function() {
-  document.getElementById("popup-cadre-choix").classList.add("hidden");
-};
-export async function deleteDuelPhotosFromSupabase(roomId) {
-  // On récupère les infos du duel pour choper toutes les URLs à supprimer
-  const { data: room, error } = await supabase.from('duels').select('*').eq('id', roomId).single();
-  if (error || !room) return;
-
-  const champs = ['photosa', 'photosb'];
-  let filesToDelete = [];
-  champs.forEach(champ => {
-    const photos = room[champ] || {};
-    Object.values(photos).forEach(photoObj => {
-      if (photoObj && photoObj.url) {
-        // Récupère le chemin du fichier dans le bucket "photosduel"
-        const parts = photoObj.url.split('/photosduel/');
-        if (parts.length === 2) {
-          filesToDelete.push("duel_photos/" + parts[1]);
-        }
-      }
-    });
-  });
-
-  if (filesToDelete.length) {
-    await supabase.storage.from('photosduel').remove(filesToDelete);
-    // Tu peux log ou notifier ici si tu veux
-  }
-}
-
 
 // Fonction pour afficher à jour le solde dans le header
 export async function afficherSolde() {
@@ -695,7 +622,6 @@ export async function afficherSolde() {
   if (pointsSpan) pointsSpan.textContent = points ?? 0;
   if (jetonsSpan) jetonsSpan.textContent = jetons ?? 0;
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
   afficherSolde();
