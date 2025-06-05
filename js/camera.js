@@ -1,7 +1,6 @@
 import { uploadPhotoDuelWebp, savePhotoDuel } from "./duel.js";
 import { getUserId, getCadreSelectionne } from "./userData.js";
 
-// Fonctions d'ouverture (compat global, mais ES6 only)
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cadreId = null) {
   return new Promise((resolve, reject) => {
     const container = document.createElement("div");
@@ -28,60 +27,57 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     `;
     document.body.appendChild(container);
 
-    // === PATCH ZOOM + LAYERS ===
     const style = document.createElement("style");
     style.innerHTML = `
 .camera-video-zone {
   position: relative;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  background: #000;
+  overflow: hidden;
 }
 .camera-video-wrapper {
   position: relative;
-  width: 98vw;
-  max-width: 500px;
-  height: 55vw;
-  max-height: 65vh;
-  margin: 0 auto;
-  overflow: hidden;
+  width: 90vmin;
+  height: 90vmin;
   border-radius: 30px;
   background: #111;
   box-shadow: 0 8px 32px #0005;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .camera-video-wrapper video {
-  width: 100vw !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  transition: transform 0.12s cubic-bezier(.46,1.48,.45,.89);
-  will-change: transform;
-  display: block;
-  position: relative;
+  transform: scale(1);
+  transition: transform 0.12s ease-out;
   z-index: 1;
 }
 .camera-controls-pro {
-  margin-top: 22px;
+  margin-top: 16px;
   display: flex;
   justify-content: center;
-  gap: 28px;
+  gap: 24px;
   z-index: 2;
   position: relative;
 }
 .camera-photo-preview {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
-  background: rgba(20,22,32,0.97);
+  background: rgba(0,0,0,0.95);
   z-index: 10;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-    `;
+}`;
     document.head.appendChild(style);
 
     const video = container.querySelector("video");
@@ -91,10 +87,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 
     let videoStream = null;
     let useFrontCamera = false;
-    const VIDEO_WIDTH = 500;
-    const VIDEO_HEIGHT = 550;
+    const VIDEO_SIZE = 500;
 
-    // === GESTION ZOOM
     let camZoom = 1;
     let lastTouchDist = null;
     let isPinching = false;
@@ -102,6 +96,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       camZoom = Math.max(1, Math.min(scale, 6));
       video.style.transform = `scale(${camZoom})`;
     }
+
     video.addEventListener("touchstart", e => {
       if (e.touches.length === 2) {
         isPinching = true;
@@ -161,17 +156,17 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     takeBtn.onclick = async () => {
       if (isPinching) return;
       const canvas = document.createElement("canvas");
-      canvas.width = VIDEO_WIDTH;
-      canvas.height = VIDEO_HEIGHT;
+      canvas.width = VIDEO_SIZE;
+      canvas.height = VIDEO_SIZE;
       const ctx = canvas.getContext("2d");
 
-      const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
-      const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
-      const sWidth = video.videoWidth / camZoom;
-      const sHeight = video.videoHeight / camZoom;
-      ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      const side = Math.min(vw, vh);
+      const sx = (vw - side) / 2;
+      const sy = (vh - side) / 2;
+      ctx.drawImage(video, sx, sy, side, side, 0, 0, VIDEO_SIZE, VIDEO_SIZE);
 
-      // ✅ Patch visuel : cacher la vidéo immédiatement
       video.style.display = "none";
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
       video.srcObject = null;
@@ -198,8 +193,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
           const cadreImg = new Image();
           cadreImg.src = `./assets/cadres/${cadreId}.webp`;
           cadreImg.onload = async () => {
-            ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+            ctx.drawImage(cadreImg, 0, 0, VIDEO_SIZE, VIDEO_SIZE);
+            ctx.drawImage(canvas, 0, 0, VIDEO_SIZE, VIDEO_SIZE);
             const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
             try {
               const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
@@ -246,9 +241,5 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 }
 
 window.ouvrirCameraPour = ouvrirCameraPour;
-window.cameraOuvrirCameraPourDuel = (idx, duelId, cadreId) => {
-  ouvrirCameraPour(idx, "duel", duelId, cadreId);
-};
-window.cameraOuvrirCameraPourConcours = (concoursId) => {
-  ouvrirCameraPour(concoursId, "concours");
-};
+window.cameraOuvrirCameraPourDuel = (idx, duelId, cadreId) => ouvrirCameraPour(idx, "duel", duelId, cadreId);
+window.cameraOuvrirCameraPourConcours = (id) => ouvrirCameraPour(id, "concours");
