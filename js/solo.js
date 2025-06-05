@@ -1,5 +1,22 @@
 import { getJetons, addJetons, removeJeton, getCadreSelectionne, getCadresPossedes, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
+// MIGRATION AUTO : patche les anciennes photos solo non JSON
+(function corrigeAnciennesPhotosSolo() {
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("photo_defi_") && !key.endsWith("_date")) {
+      let value = localStorage.getItem(key);
+      if (typeof value === "string" && value.startsWith("data:image")) {
+        // PATCH : convertit en nouvel objet {photo, cadre}
+        const cadre = "polaroid_01";
+        localStorage.setItem(key, JSON.stringify({ photo: value, cadre }));
+      }
+      // Patch jeton, qui peut avoir l’ancienne image string aussi
+      if (typeof value === "string" && value.endsWith("jetonpp.webp")) {
+        localStorage.setItem(key, JSON.stringify({ photo: value, cadre: "polaroid_01" }));
+      }
+    }
+  });
+})();
 
 // Variables globales
 let userData = null;
