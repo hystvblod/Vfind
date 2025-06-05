@@ -583,7 +583,7 @@ async function getDefisDuelFromSupabase(count = 3) {
 
   if (error || !data || data.length < count) {
     const backup = [
-      "Selfie avec un objet bleu",
+      "Un escagort ",
       "Photo d'un animal",
       "Photo d'une ombre"
     ];
