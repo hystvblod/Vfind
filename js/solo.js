@@ -1,4 +1,4 @@
-import { getJetons, addJetons, removeJeton, getCadreSelectionne, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
+import { getJetons, addJetons, removeJeton, getCadreSelectionne, getCadresPossedes, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 
 // Variables globales
@@ -141,12 +141,11 @@ function getRandomDefis(n) {
     done: false,
     byJeton: false,
     canRetake: true,
-    photoCount: 0 // compteur de photos prises pour logique premium/pub
+    photoCount: 0
   }));
 }
 
 function showGame() {
-  // PAS de pré-game : tout sauf le vrai jeu est masqué direct
   if (document.getElementById("pre-game")) document.getElementById("pre-game").remove();
   document.getElementById("end-section").classList.add("hidden");
   document.getElementById("game-section").classList.remove("hidden");
@@ -190,14 +189,12 @@ async function loadDefis() {
     if (defi.done) li.classList.add("done");
     li.setAttribute("data-defi-id", defi.id);
 
-    // On récupère l'objet photo {photo, cadre}
     let photoData = null;
     try {
       photoData = JSON.parse(localStorage.getItem(`photo_defi_${defi.id}`));
     } catch (e) {}
     photosMap[defi.id] = photoData || null;
 
-    // UN SEUL bouton photo, centralise toute la logique prise/reprise
     const boutonPhoto = `
       <img
         src="assets/icons/photo.svg"
@@ -218,7 +215,7 @@ async function loadDefis() {
           <p>${defi.texte}</p>
           ${boutonPhoto}
         </div>
-        <div class="defi-photo-container" data-photo-id="${defi.id}"></div>
+        <div class="defi-photo-container" data-photo-id="${defi.id}" id="photo-defi-container-${defi.id}"></div>
       </div>
       ${jetonHtml}
     `;
@@ -248,21 +245,17 @@ window.gererPrisePhoto = function(defiId, index) {
     return;
   }
 
-  // PAS PREMIUM, on propose la pub
   if (defi.photoCount >= 1) {
     const popup = document.getElementById("popup-premium-photo");
     popup.classList.remove("hidden");
     popup.classList.add("show");
 
-    // Clique PUB = autorise prise puis PUB juste après
     document.getElementById("btnPubReprise").onclick = function() {
       popup.classList.add("hidden");
       popup.classList.remove("show");
       canRetakePhoto = true;
       retakeDefiId = defiId;
       window.ouvrirCameraPour(defiId);
-
-      // Marque qu’on attend la pub après la photo
       window.pubAfterPhoto = true;
     };
     document.getElementById("btnAnnulerReprise").onclick = function() {
@@ -289,11 +282,12 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defi = defis[index];
   defi.photoCount = (defi.photoCount || 0) + 1;
 
-  // Enregistre la photo prise dans le cache (toujours, premium ou non)
-  const cadreId = await getCadreSelectionne();
+  const cadreGlobal = await getCadreSelectionne();
+  const oldData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`) || "{}");
+  const cadreId = oldData.cadre || cadreGlobal || "polaroid_01";
   const data = {
     photo: dataUrl,
-    cadre: cadreId // cadre actif au moment de la prise
+    cadre: cadreId
   };
   localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(data));
   localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
@@ -304,68 +298,112 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
   await loadDefis();
 
-  // Si on attend une pub (mode non premium, reprise), on l'affiche ici
   if (window.pubAfterPhoto) {
     window.pubAfterPhoto = false;
-    await showRewardedAd(); // ou ta vraie régie pub
+    await showRewardedAd();
   }
 };
 
 async function afficherPhotosSauvegardees(photosMap) {
-  document.querySelectorAll(".defi-item").forEach(defiEl => {
-    const id = defiEl.getAttribute("data-defi-id");
-    const photoData = photosMap[id];
-    if (photoData && photoData.photo) {
-      const containerCadre = document.createElement("div");
-      containerCadre.className = "cadre-item cadre-duel-mini";
-      const preview = document.createElement("div");
-      preview.className = "cadre-preview";
-      const fond = document.createElement("img");
-      fond.className = "photo-cadre";
-      fond.src = `./assets/cadres/${photoData.cadre || "polaroid_01"}.webp`;
-      const photo = document.createElement("img");
-      photo.className = "photo-user";
-      photo.src = photoData.photo;
-      // ----------- Ajout du long press pour changer le cadre individuel -----------
-      let pressTimer;
-      photo.onmousedown = (e) => {
-        pressTimer = setTimeout(() => {
-          window.location.href = `choix_cadre_photo.html?defi=${id}`;
-        }, 600);
-      };
-      photo.onmouseup = photo.onmouseleave = () => clearTimeout(pressTimer);
-      photo.ontouchstart = (e) => {
-        pressTimer = setTimeout(() => {
-          window.location.href = `choix_cadre_photo.html?defi=${id}`;
-        }, 600);
-      };
-      photo.ontouchend = photo.ontouchcancel = () => clearTimeout(pressTimer);
-      // ----------------------------------------------------------
-      photo.onclick = () => agrandirPhoto(photoData.photo, id);
-      preview.appendChild(fond);
-      preview.appendChild(photo);
-      containerCadre.appendChild(preview);
-      const container = defiEl.querySelector(`[data-photo-id="${id}"]`);
-      if (container) {
-        container.innerHTML = '';
-        container.appendChild(containerCadre);
-        defiEl.classList.add("done");
-      }
-    }
-  });
+  for (const id in photosMap) {
+    window.renderPhotoCadreSolo(id);
+  }
 }
+
+// ----------- RENDU MINIATURES + CHANGEMENT DE CADRE SOLO -----------
+window.renderPhotoCadreSolo = async function(defiId) {
+  const container = document.getElementById(`photo-defi-container-${defiId}`);
+  if (!container) return;
+  let photoData = {};
+  try {
+    photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
+  } catch (e) {}
+  const cadreId = photoData?.cadre || (await getCadreSelectionne()) || "polaroid_01";
+  const photoUrl = photoData?.photo || "";
+
+  if (photoUrl) {
+    container.innerHTML = `
+      <div class="cadre-item cadre-duel-mini">
+        <div class="cadre-preview">
+          <img class="photo-cadre" src="./assets/cadres/${cadreId}.webp">
+          <img class="photo-user" src="${photoUrl}">
+        </div>
+      </div>
+    `;
+    const photoImg = container.querySelector('.photo-user');
+    photoImg.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupChoixCadreSolo(defiId); };
+    photoImg.ontouchstart = function() {
+      this._touchTimer = setTimeout(() => { ouvrirPopupChoixCadreSolo(defiId); }, 500);
+    };
+    photoImg.ontouchend = function() { clearTimeout(this._touchTimer); };
+    photoImg.onclick = () => agrandirPhoto(photoUrl, defiId);
+  } else {
+    container.innerHTML = "";
+  }
+};
+
+// ----------- CHANGEMENT DE CADRE SOLO (POPUP OU PROMPT) -----------
+window.ouvrirPopupChoixCadreSolo = async function(defiId) {
+  let cadres = [];
+  try {
+    cadres = await getCadresPossedes();
+  } catch { cadres = ["polaroid_01"]; }
+  let photoData = {};
+  try {
+    photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
+  } catch (e) {}
+  const actuel = photoData?.cadre || (await getCadreSelectionne()) || "polaroid_01";
+
+  const list = document.getElementById("list-cadres-popup-solo");
+  if (!list) {
+    let choix = prompt(
+      "ID du cadre à appliquer (ex: polaroid_01) :\n" +
+      cadres.map(c => (c === actuel ? `[${c}]` : c)).join('\n'),
+      actuel
+    );
+    if (choix && cadres.includes(choix)) {
+      photoData.cadre = choix;
+      localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
+      alert("✅ Nouveau cadre appliqué !");
+      window.renderPhotoCadreSolo(defiId);
+    }
+    return;
+  }
+  list.innerHTML = "";
+  cadres.forEach(cadre => {
+    let el = document.createElement("img");
+    el.src = "./assets/cadres/" + cadre + ".webp";
+    el.style.width = "72px";
+    el.style.cursor = "pointer";
+    el.style.borderRadius = "12px";
+    el.style.boxShadow = "0 0 7px #0006";
+    el.style.border = cadre === actuel ? "3px solid #FFD900" : "3px solid transparent";
+    el.title = cadre;
+    el.onclick = () => {
+      photoData.cadre = cadre;
+      localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
+      fermerPopupCadreSolo();
+      window.renderPhotoCadreSolo(defiId);
+    };
+    list.appendChild(el);
+  });
+  document.getElementById("popup-cadre-solo").classList.remove("hidden");
+};
+
+window.fermerPopupCadreSolo = function() {
+  document.getElementById("popup-cadre-solo").classList.add("hidden");
+};
 
 // ----------- ZOOM PHOTO / POPUP -----------
 window.agrandirPhoto = async function(dataUrl, defiId) {
   const cadre = document.getElementById("cadre-affiche");
   const photo = document.getElementById("photo-affichee");
   if (!cadre || !photo) return;
-  // Affiche le cadre de la photo si dispo, sinon le cadre global
   let photoData = null;
   try {
     photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
   } catch (e) {}
-  const cadreActuel = photoData?.cadre || await getCadreSelectionne();
+  const cadreActuel = photoData?.cadre || (await getCadreSelectionne());
   cadre.src = `./assets/cadres/${cadreActuel}.webp`;
   photo.src = dataUrl;
   const popup = document.getElementById("popup-photo");
