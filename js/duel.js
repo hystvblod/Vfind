@@ -1,6 +1,6 @@
-// ==== duel.js (SUPABASE + BOUTONS STRICTEMENT IDENTIQUES SOLO, PATCH FIREFOX) ====
+// ==== duel.js (SUPABASE + STORAGE + BOUTONS STRICTEMENT IDENTIQUES SOLO, PATCH FIREFOX) ====
 
-import { supabase, getPseudo as getCurrentUser } from './userData.js';
+import { supabase, getPseudo as getCurrentUser, getUserId } from './userData.js';
 
 // ========== IndexedDB cache ==========
 const VFindDuelDB = {
@@ -18,11 +18,11 @@ const VFindDuelDB = {
       open.onerror = reject;
     });
   },
-  async set(key, dataUrl) {
+  async set(key, url) {
     await this.init();
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('photos', 'readwrite');
-      tx.objectStore('photos').put({ key, dataUrl });
+      tx.objectStore('photos').put({ key, dataUrl: url });
       tx.oncomplete = resolve;
       tx.onerror = reject;
     });
@@ -53,6 +53,43 @@ const VFindDuelDB = {
       tx.onerror = reject;
     });
   }
+};
+
+// ========= UPLOAD PRO : PHOTO → SUPABASE STORAGE + URL DANS LA TABLE =========
+window.uploadPhotoDuelWebp = async function(dataUrl, duelId, idx) {
+  function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--) u8arr[n] = bstr.charCodeAt(n);
+    return new Blob([u8arr], {type:mime});
+  }
+  const userId = getUserId ? getUserId() : (await getCurrentUser());
+  const blob = dataURLtoBlob(dataUrl);
+  const filePath = `duel_photos/${duelId}_${idx}_${userId}_${Date.now()}.webp`;
+
+  // Upload photo dans le storage
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('photosduel')
+    .upload(filePath, blob, { upsert: true, contentType: "image/webp" });
+  if (uploadError) throw new Error("Erreur upload storage : " + uploadError.message);
+
+  // Génère l’URL publique
+  const { data: urlData } = supabase.storage.from('photosduel').getPublicUrl(filePath);
+  const url = urlData.publicUrl;
+
+  // Mets l’URL dans la table duels
+  const { data: room, error: roomError } = await supabase.from('duels').select('*').eq('id', duelId).single();
+  if (roomError || !room) throw new Error("Room introuvable");
+  const pseudo = await getCurrentUser();
+  const champ = (room.player1 === pseudo) ? 'photosA' : 'photosB';
+  let photos = room[champ] || {};
+  photos[idx] = url;
+  await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
+
+  // Mets l’URL dans le cache local
+  await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, url);
+
+  return url;
 };
 
 // --------- Fonctions COEURS LOCAUX (photos aimées DUEL) ---------
@@ -142,7 +179,7 @@ async function findOrCreateRoom() {
     await new Promise(r => setTimeout(r, 1200));
   }
 
-  const defis = await getRandomDefis(3);
+const defis = await getDefisDuelFromSupabase(3);
   const roomObj = {
     player1: pseudo,
     player2: null,
@@ -342,12 +379,14 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.style.marginTop = "10px";
 
       // --- Jeton (identique solo)
-  const jetonBtn = document.createElement('button');
-jetonBtn.className = 'btn-jeton-p';
-jetonBtn.title = "Valider avec un jeton";
-jetonBtn.textContent = "Valider"; // ou laisse vide si tu ne veux même pas de texte
-jetonBtn.onclick = () => ouvrirPopupJeton(idx);
-btnRow.appendChild(jetonBtn);
+    const jetonImg = document.createElement('img');
+jetonImg.src = "assets/img/jeton_p.webp";
+jetonImg.alt = "Valider avec un jeton";
+jetonImg.className = "jeton-icone btn-jeton-p"; // pour compat solo
+jetonImg.title = "Valider avec un jeton";
+jetonImg.style.cursor = "pointer";
+jetonImg.onclick = () => ouvrirPopupJeton(idx);
+btnRow.appendChild(jetonImg);
 
 
       // --- PHOTO : <img> identique solo (PAS de bouton, style inline)
@@ -404,23 +443,23 @@ btnRow.appendChild(jetonBtn);
   window.gererPrisePhotoDuel = function(idx) {
     let duelId = currentRoomId || window.currentRoomId || roomId;
     if (!duelId) {
-      alert("Erreur critique : identifiant duel introuvable.");
+      alert("Erreur critique : identifiant duel introuvable.");
       return;
     }
     window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId);
   };
 
-  window.savePhotoDuel = async function(idx, dataUrl) {
+  window.savePhotoDuel = async function(idx, url) {
     const champ = isPlayer1 ? 'photosA' : 'photosB';
     const room = await getRoom(roomId);
     let photos = room[champ] || {};
-    photos[idx] = dataUrl;
+    photos[idx] = url;
     await supabase.from('duels').update({ [champ]: photos }).eq('id', roomId);
-    await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, dataUrl);
+    await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, url);
   };
 
-  window.agrandirPhoto = function(dataUrl, cadre) {
-    $("photo-affichee").src = dataUrl;
+  window.agrandirPhoto = function(url, cadre) {
+    $("photo-affichee").src = url;
     $("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
     const popup = $("popup-photo");
     popup.classList.remove("hidden");
@@ -459,12 +498,12 @@ async function getRoom(roomId) {
 
 async function getPhotoDuel(roomId, champ, idx) {
   const cacheKey = `${roomId}_${champ}_${idx}`;
-  let dataUrl = await VFindDuelDB.get(cacheKey);
-  if (dataUrl) return dataUrl;
+  let url = await VFindDuelDB.get(cacheKey);
+  if (url) return url;
   const room = await getRoom(roomId);
-  dataUrl = room && room[champ] && room[champ][idx];
-  if (dataUrl) await VFindDuelDB.set(cacheKey, dataUrl);
-  return dataUrl;
+  url = room && room[champ] && room[champ][idx];
+  if (url) await VFindDuelDB.set(cacheKey, url);
+  return url;
 }
 
 // Fermer la popup (bouton croix, général)
