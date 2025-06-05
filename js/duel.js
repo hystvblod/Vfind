@@ -93,7 +93,7 @@ export async function uploadPhotoDuelWebp(dataUrl, duelId, idx, cadreId) {
   const { data: room, error: roomError } = await supabase.from('duels').select('*').eq('id', duelId).single();
   if (roomError || !room) throw new Error("Room introuvable");
   const pseudo = await getCurrentUser();
-  const champ = (room.player1 === pseudo) ? 'photosA' : 'photosB';
+  const champ = (room.player1 === pseudo) ? 'photosa' : 'photosb';
   let photos = room[champ] || {};
   photos[idx] = { url, cadre: cadreId };
   await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
@@ -204,8 +204,8 @@ export async function findOrCreateRoom() {
     createdat: Date.now(),
     defis: defis,
     starttime: null,
-    photosA: {},
-    photosB: {}
+    photosa: {},
+    photosb: {}
   };
 
   const { data, error } = await supabase.from('duels').insert([roomObj]).select();
@@ -312,8 +312,8 @@ export async function initDuelGame() {
       return;
     }
 
-    const myChamp = isPlayer1 ? 'photosA' : 'photosB';
-    const advChamp = isPlayer1 ? 'photosB' : 'photosA';
+    const myChamp = isPlayer1 ? 'photosa' : 'photosb';
+    const advChamp = isPlayer1 ? 'photosb' : 'photosa';
     const photosAimees = getPhotosAimeesDuel();
 
     ul.innerHTML = '';
@@ -504,7 +504,7 @@ window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
 };
 
 export async function savePhotoDuel(idx, url, cadreId = null) {
-  const champ = isPlayer1 ? 'photosA' : 'photosB';
+  const champ = isPlayer1 ? 'photosa' : 'photosb';
   if (!cadreId) cadreId = getCadreDuel(roomId, idx);
   const room = await getRoom(roomId);
   let photos = room[champ] || {};
@@ -591,3 +591,48 @@ document.addEventListener("DOMContentLoaded", () => {
 if (window.location.pathname.includes("duel_game.html")) {
   initDuelGame();
 }
+// Popup graphique de choix de cadre (remplace le prompt)
+window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
+  // Récupère les cadres possédés
+  let cadres = [];
+  try {
+    cadres = (await import('./userData.js')).getCadresPossedes
+      ? await (await import('./userData.js')).getCadresPossedes()
+      : ["polaroid_01"];
+  } catch(e) { cadres = ["polaroid_01"]; }
+
+  const actuel = getCadreDuel(duelId, idx);
+  const list = document.getElementById("list-cadres-popup");
+  list.innerHTML = "";
+  cadres.forEach(cadre => {
+    let el = document.createElement("img");
+    el.src = "./assets/cadres/" + cadre + ".webp";
+    el.style.width = "72px";
+    el.style.cursor = "pointer";
+    el.style.borderRadius = "12px";
+    el.style.boxShadow = "0 0 7px #0006";
+    el.style.border = cadre === actuel ? "3px solid #FFD900" : "3px solid transparent";
+    el.title = cadre;
+    el.onclick = async () => {
+      setCadreDuel(duelId, idx, cadre);
+      // Mise à jour cloud (Supabase)
+      const { data: room } = await supabase.from('duels').select('*').eq('id', duelId).single();
+      let photos = (room && room[champ]) ? room[champ] : {};
+      if (photos[idx] && typeof photos[idx] === "object") {
+        photos[idx].cadre = cadre;
+      } else if (typeof photos[idx] === "string") {
+        photos[idx] = { url: photos[idx], cadre: cadre };
+      }
+      await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
+      await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, { url: photos[idx].url, cadre: cadre });
+      fermerPopupCadreChoix();
+      location.reload();
+    };
+    list.appendChild(el);
+  });
+  document.getElementById("popup-cadre-choix").classList.remove("hidden");
+};
+
+window.fermerPopupCadreChoix = function() {
+  document.getElementById("popup-cadre-choix").classList.add("hidden");
+};
