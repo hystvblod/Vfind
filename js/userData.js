@@ -43,24 +43,24 @@ async function loadUserData(force = false) {
     // Génère un pseudo aléatoire unique de type VUser_xxxxx
     const randomPseudo = "VUser_" + Math.random().toString(36).slice(2, 8);
 
-userDataCache = {
-  id: userIdCache,
-  pseudo: randomPseudo,
-  points: 100,
-  jetons: 3,
-  cadres: ["polaroid_01", "polaroid_02"],
-  cadreActif: "polaroid_01",
-  historique: [],
-  likedPhotos: [],
-  signaledPhotos: [],
-  premium: false,
-  votesConcours: {},
-  hasDownloadedVZone: false,
-  hasDownloadedVBlocks: false,
-  friendsInvited: 0,
-  // AJOUT POUR MODE SOLO
-  defiActifs: [],
-  defiTimer: 0
+    userDataCache = {
+      id: userIdCache,
+      pseudo: randomPseudo,
+      points: 100,
+      jetons: 3,
+      cadres: ["polaroid_01", "polaroid_02"],
+      cadreActif: "polaroid_01",
+      historique: [],
+      likedPhotos: [],
+      signaledPhotos: [],
+      premium: false,
+      votesConcours: {},
+      hasDownloadedVZone: false,
+      hasDownloadedVBlocks: false,
+      friendsInvited: 0,
+      // AJOUT POUR MODE SOLO
+      defiActifs: [],
+      defiTimer: 0
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
@@ -81,7 +81,6 @@ userDataCache = {
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
 }
-
 
 // --------- FONCTIONS LECTURE ÉCLAIR (accès cache) ----------
 function getPseudoCached()        { return userDataCache?.pseudo ?? "Toi"; }
@@ -440,6 +439,54 @@ async function getOwnedFrames(force = false) {
 // Permet de récupérer l'ID utilisateur
 function getUserId() {
   return userIdCache;
+}
+
+// ========== AJOUT DEFIS DANS HISTORIQUE ==========
+/**
+ * Ajoute un défi à l'historique (solo, duel_random, duel_amis)
+ * @param {Object} param0 
+ * @param {string} param0.defi     Le nom ou identifiant du défi
+ * @param {string} param0.type     Le type de défi: solo, duel_random, duel_amis
+ * @param {string} [param0.date]   Date (YYYY-MM-DD), défaut = aujourd'hui
+ */
+export async function ajouterDefiHistorique({ defi, type = 'solo', date = null }) {
+  await loadUserData();
+  const userId = getUserId();
+  if (!userId) throw new Error("Utilisateur non connecté");
+
+  // Récupère l'historique actuel
+  const { data, error } = await supabase
+    .from('users')
+    .select('historique')
+    .eq('id', userId)
+    .single();
+
+  let historique = Array.isArray(data?.historique) ? data.historique : [];
+
+  // Date du jour au format YYYY-MM-DD si non précisé
+  const dateISO = date || (new Date()).toISOString().slice(0, 10);
+
+  // Cherche si une entrée existe déjà pour ce jour ET ce type
+  let entry = historique.find(e => e.date === dateISO && e.type === type);
+  if (entry) {
+    // Ajoute le défi S'IL N'EST PAS déjà dedans (pour éviter doublons)
+    if (!entry.defis.includes(defi)) entry.defis.push(defi);
+  } else {
+    // Sinon crée une nouvelle entrée pour ce jour/type
+    historique.push({
+      date: dateISO,
+      defis: [defi],
+      type: type
+    });
+  }
+
+  // Réécris l'historique à jour dans Supabase
+  const { error: updateError } = await supabase
+    .from('users')
+    .update({ historique })
+    .eq('id', userId);
+
+  if (updateError) throw updateError;
 }
 
 export {
