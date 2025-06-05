@@ -370,32 +370,25 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
     photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
   } catch (e) {}
   const actuel = photoData?.cadre || (await getCadreSelectionne()) || "polaroid_01";
+  const photoUrl = photoData?.photo || "";
 
   const list = document.getElementById("list-cadres-popup-solo");
-  if (!list) {
-    let choix = prompt(
-      "ID du cadre à appliquer (ex: polaroid_01) :\n" +
-      cadres.map(c => (c === actuel ? `[${c}]` : c)).join('\n'),
-      actuel
-    );
-    if (choix && cadres.includes(choix)) {
-      photoData.cadre = choix;
-      localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
-      alert("✅ Nouveau cadre appliqué !");
-      window.renderPhotoCadreSolo(defiId);
-    }
-    return;
-  }
+  if (!list) return;
+
   list.innerHTML = "";
   cadres.forEach(cadre => {
-    let el = document.createElement("img");
-    el.src = "./assets/cadres/" + cadre + ".webp";
-    el.style.width = "72px";
+    // Affiche la photo du défi dans CHAQUE cadre
+    let el = document.createElement("div");
+    el.className = "cadre-item cadre-duel-mini";
     el.style.cursor = "pointer";
-    el.style.borderRadius = "12px";
-    el.style.boxShadow = "0 0 7px #0006";
-    el.style.border = cadre === actuel ? "3px solid #FFD900" : "3px solid transparent";
-    el.title = cadre;
+    el.innerHTML = `
+      <div class="cadre-preview" style="width:70px;height:70px;position:relative;">
+        <img class="photo-cadre" src="./assets/cadres/${cadre}.webp" style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;">
+        <img class="photo-user" src="${photoUrl}" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;z-index:1;">
+      </div>
+    `;
+    if (cadre === actuel) el.style.border = "3px solid #FFD900";
+    else el.style.border = "3px solid transparent";
     el.onclick = () => {
       photoData.cadre = cadre;
       localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
@@ -404,8 +397,10 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
     };
     list.appendChild(el);
   });
+
   document.getElementById("popup-cadre-solo").classList.remove("hidden");
 };
+
 
 window.fermerPopupCadreSolo = function() {
   document.getElementById("popup-cadre-solo").classList.add("hidden");
