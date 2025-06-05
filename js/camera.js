@@ -4,7 +4,6 @@ import { getUserId, getCadreSelectionne } from "./userData.js";
 // Fonctions d'ouverture (compat global, mais ES6 only)
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cadreId = null) {
   return new Promise((resolve, reject) => {
-    // HTML UI
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
     container.innerHTML = `
@@ -29,9 +28,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     `;
     document.body.appendChild(container);
 
-    // --- CSS PATCH pour le zoom et la zone vidéo ---
-    // Tu peux intégrer ce CSS dans ta feuille principale si tu préfères
-    const style = document.createElement('style');
+    // === PATCH ZOOM + LAYERS ===
+    const style = document.createElement("style");
     style.innerHTML = `
 .camera-video-zone {
   position: relative;
@@ -58,24 +56,27 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 }
 .camera-video-wrapper video {
   width: 100vw !important;
-  max-width: none !important;
   height: 100% !important;
   object-fit: cover;
   transition: transform 0.12s cubic-bezier(.46,1.48,.45,.89);
   will-change: transform;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 .camera-controls-pro {
   margin-top: 22px;
   display: flex;
   justify-content: center;
   gap: 28px;
+  z-index: 2;
+  position: relative;
 }
 .camera-photo-preview {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
   background: rgba(20,22,32,0.97);
-  z-index: 100;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,7 +94,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     const VIDEO_WIDTH = 500;
     const VIDEO_HEIGHT = 550;
 
-    // --- ZOOM PATCHS ---
+    // === GESTION ZOOM
     let camZoom = 1;
     let lastTouchDist = null;
     let isPinching = false;
@@ -101,7 +102,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       camZoom = Math.max(1, Math.min(scale, 6));
       video.style.transform = `scale(${camZoom})`;
     }
-    video.addEventListener("touchstart", function (e) {
+    video.addEventListener("touchstart", e => {
       if (e.touches.length === 2) {
         isPinching = true;
         const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -109,35 +110,34 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
         lastTouchDist = Math.sqrt(dx * dx + dy * dy);
       }
     }, { passive: false });
-    video.addEventListener("touchmove", function (e) {
+    video.addEventListener("touchmove", e => {
       if (e.touches.length === 2 && lastTouchDist) {
         isPinching = true;
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const newDist = Math.sqrt(dx * dx + dy * dy);
-        let scaleChange = newDist / lastTouchDist;
-        setZoom(camZoom * scaleChange);
+        setZoom(camZoom * (newDist / lastTouchDist));
         lastTouchDist = newDist;
         e.preventDefault();
       }
     }, { passive: false });
-    video.addEventListener("touchend", function (e) {
+    video.addEventListener("touchend", e => {
       if (e.touches.length < 2) {
         lastTouchDist = null;
         setTimeout(() => { isPinching = false; }, 50);
       }
     }, { passive: false });
     let lastTap = 0;
-    video.addEventListener("touchend", function (e) {
+    video.addEventListener("touchend", e => {
       const now = Date.now();
       if (!isPinching && e.touches.length === 0 && now - lastTap < 300) {
         setZoom(1);
       }
       lastTap = now;
     });
-    video.addEventListener("wheel", function (e) {
+    video.addEventListener("wheel", e => {
       if (e.ctrlKey) return;
-      setZoom(camZoom + (e.deltaY < 0 ? 0.10 : -0.10));
+      setZoom(camZoom + (e.deltaY < 0 ? 0.1 : -0.1));
       e.preventDefault();
     }, { passive: false });
 
@@ -145,12 +145,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
       navigator.mediaDevices.getUserMedia({
         video: { facingMode: useFrontCamera ? "user" : "environment" }
-      })
-      .then(stream => {
+      }).then(stream => {
         videoStream = stream;
         video.srcObject = stream;
-      })
-      .catch(err => {
+      }).catch(err => {
         alert("Erreur d’accès à la caméra : " + err);
       });
     }
@@ -160,7 +158,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       startCamera();
     };
 
-    // === PATCH PRINCIPAL : prise de photo = freeze + preview + valider/reprendre ===
     takeBtn.onclick = async () => {
       if (isPinching) return;
       const canvas = document.createElement("canvas");
@@ -168,18 +165,17 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       canvas.height = VIDEO_HEIGHT;
       const ctx = canvas.getContext("2d");
 
-      // Capture zoomée
       const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
       const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
       const sWidth = video.videoWidth / camZoom;
       const sHeight = video.videoHeight / camZoom;
       ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
-      // STOP caméra immédiatement
+      // ✅ Patch visuel : cacher la vidéo immédiatement
+      video.style.display = "none";
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
       video.srcObject = null;
 
-      // Affiche un preview figé avec 2 boutons
       const previewDiv = document.createElement("div");
       previewDiv.className = "camera-photo-preview";
       previewDiv.innerHTML = `
@@ -194,10 +190,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       container.querySelector(".camera-video-zone").style.display = "none";
       container.appendChild(previewDiv);
 
-      // === Valider : on continue l'enregistrement normal ===
       previewDiv.querySelector("#validerPhoto").onclick = async () => {
         const dataUrl = canvas.toDataURL("image/webp", 0.85);
-
         if (mode === "duel") {
           if (!duelId) return alert("Erreur interne : duelId manquant.");
           if (!cadreId) cadreId = "polaroid_01";
@@ -205,7 +199,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
           cadreImg.src = `./assets/cadres/${cadreId}.webp`;
           cadreImg.onload = async () => {
             ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT); // on superpose si besoin
+            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
             const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
             try {
               const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
@@ -233,9 +227,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
         }
       };
 
-      // === Reprendre : on relance la caméra ===
       previewDiv.querySelector("#retakePhoto").onclick = () => {
         previewDiv.remove();
+        video.style.display = "";
         container.querySelector(".camera-video-zone").style.display = "";
         startCamera();
       };
@@ -251,11 +245,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
   });
 }
 
-// Pour compatibilité
 window.ouvrirCameraPour = ouvrirCameraPour;
-window.cameraOuvrirCameraPourDuel = function(idx, duelId, cadreId) {
+window.cameraOuvrirCameraPourDuel = (idx, duelId, cadreId) => {
   ouvrirCameraPour(idx, "duel", duelId, cadreId);
 };
-window.cameraOuvrirCameraPourConcours = function(concoursId) {
+window.cameraOuvrirCameraPourConcours = (concoursId) => {
   ouvrirCameraPour(concoursId, "concours");
 };
