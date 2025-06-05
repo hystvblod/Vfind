@@ -132,7 +132,8 @@ if (mode === "duel") {
   }
 
   const cadreImg = new Image();
-  cadreImg.src = `./assets/cadres/polaroid_01.webp`;
+  cadreImg.src = `./assets/cadres/polaroid_01.webp`;const cadreId = await getCadreSelectionne(); // vient de userData.js
+cadreImg.src = `./assets/cadres/${cadreId}.webp`;
 
   cadreImg.onload = async () => {
     // ✅ D'abord le cadre en fond
