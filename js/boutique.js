@@ -246,7 +246,7 @@ document.addEventListener("click", function (e) {
 // ----- Gestion catégories -----
 const CATEGORIES = [
   { key: 'classique', nom: 'Classique' },
-  { key: 'deluxe', nom: 'Deluxe' },
+  { key: 'Prestige', nom: 'Prestige' },
   { key: 'premium', nom: 'Premium' },
   { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
 ];
@@ -254,7 +254,7 @@ const CATEGORIES = [
 function getCategorie(id) {
   const num = parseInt(id.replace('polaroid_', ''));
   if (num >= 1 && num <= 10) return 'classique';
-  if (num >= 11 && num <= 100) return 'deluxe';
+  if (num >= 11 && num <= 100) return 'prestique';
   if (num >= 101 && num <= 200) return 'premium';
   if (num >= 900 && num <= 1000) return 'bloque';
   return 'autre';
