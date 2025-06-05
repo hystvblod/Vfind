@@ -636,3 +636,28 @@ window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
 window.fermerPopupCadreChoix = function() {
   document.getElementById("popup-cadre-choix").classList.add("hidden");
 };
+export async function deleteDuelPhotosFromSupabase(roomId) {
+  // On récupère les infos du duel pour choper toutes les URLs à supprimer
+  const { data: room, error } = await supabase.from('duels').select('*').eq('id', roomId).single();
+  if (error || !room) return;
+
+  const champs = ['photosa', 'photosb'];
+  let filesToDelete = [];
+  champs.forEach(champ => {
+    const photos = room[champ] || {};
+    Object.values(photos).forEach(photoObj => {
+      if (photoObj && photoObj.url) {
+        // Récupère le chemin du fichier dans le bucket "photosduel"
+        const parts = photoObj.url.split('/photosduel/');
+        if (parts.length === 2) {
+          filesToDelete.push("duel_photos/" + parts[1]);
+        }
+      }
+    });
+  });
+
+  if (filesToDelete.length) {
+    await supabase.storage.from('photosduel').remove(filesToDelete);
+    // Tu peux log ou notifier ici si tu veux
+  }
+}
