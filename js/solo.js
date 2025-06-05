@@ -377,6 +377,7 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
 
   list.innerHTML = "";
   cadres.forEach(cadre => {
+    // Container carré
     let el = document.createElement("div");
     el.style.position = "relative";
     el.style.width = "72px";
@@ -389,14 +390,8 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
     el.style.overflow = "hidden";
     el.style.border = cadre === actuel ? "3px solid #FFD900" : "3px solid transparent";
     el.title = cadre;
-    el.onclick = () => {
-      photoData.cadre = cadre;
-      localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
-      fermerPopupCadreSolo();
-      window.renderPhotoCadreSolo(defiId);
-    };
 
-    // Ajoute le cadre en fond
+    // Cadre plein (dessous)
     const cadreImg = document.createElement("img");
     cadreImg.src = "./assets/cadres/" + cadre + ".webp";
     cadreImg.style.width = "100%";
@@ -408,30 +403,62 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
     cadreImg.style.left = "0";
     cadreImg.style.top = "0";
     cadreImg.style.zIndex = "1";
-
     el.appendChild(cadreImg);
 
-    // Ajoute la photo utilisateur centrée (si elle existe)
+    // Photo user, carrée et centrée (mêmes dimensions/effet que "mes cadres")
     if (photoUrl) {
       const photoImg = document.createElement("img");
       photoImg.src = photoUrl;
-      photoImg.style.width = "36px";
-      photoImg.style.height = "36px";
+      photoImg.style.width = "38px";
+      photoImg.style.height = "38px";
       photoImg.style.objectFit = "cover";
-      photoImg.style.borderRadius = "50%";
+      photoImg.style.borderRadius = "8px"; // léger arrondi pro, mais PAS rond !
       photoImg.style.position = "absolute";
       photoImg.style.left = "50%";
       photoImg.style.top = "50%";
       photoImg.style.transform = "translate(-50%, -50%)";
       photoImg.style.zIndex = "2";
-      photoImg.style.boxShadow = "0 0 0 2px #fff9, 0 2px 8px #0004";
+      photoImg.style.boxShadow = "0 1px 4px #0004";
       el.appendChild(photoImg);
     }
 
+    // Changement de cadre : met à jour en live MAIS ne ferme pas la popup
+    el.onclick = () => {
+      photoData.cadre = cadre;
+      localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(photoData));
+      window.ouvrirPopupChoixCadreSolo(defiId); // Rerender pour voir le cadre sélectionné
+      window.renderPhotoCadreSolo(defiId); // Optionnel si tu veux le retour visuel direct ailleurs
+    };
+
     list.appendChild(el);
   });
+
+  // Met à jour le bouton "Retour"
+  let btnRetour = document.getElementById("btn-cadre-retour");
+  if (!btnRetour) {
+    btnRetour = document.createElement("button");
+    btnRetour.id = "btn-cadre-retour";
+    btnRetour.textContent = "Retour";
+    btnRetour.style.display = "block";
+    btnRetour.style.margin = "14px auto 0 auto";
+    btnRetour.style.background = "#FFD900";
+    btnRetour.style.color = "#222";
+    btnRetour.style.border = "none";
+    btnRetour.style.fontWeight = "bold";
+    btnRetour.style.fontSize = "1.18em";
+    btnRetour.style.borderRadius = "10px";
+    btnRetour.style.padding = "11px 0";
+    btnRetour.style.width = "94%";
+    btnRetour.onclick = fermerPopupCadreSolo;
+    list.parentElement.appendChild(btnRetour);
+  }
   document.getElementById("popup-cadre-solo").classList.remove("hidden");
 };
+
+window.fermerPopupCadreSolo = function() {
+  document.getElementById("popup-cadre-solo").classList.add("hidden");
+};
+
 
 
 window.fermerPopupCadreSolo = function() {
