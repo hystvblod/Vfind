@@ -1,92 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VFindz - FAQ & Confidentialité</title>
-  <link rel="stylesheet" href="style/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Nunito', sans-serif;
-      background: #1e2738;
-      color: #fff;
-    }
-    .header-solo {
-      border-bottom: 5px solid #888;
-      background: #232f45;
-      padding: 0 0 8px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.85em 1em 0.75em 1em;
-    }
-    .back-btn img {
-      width: 28px;
-      height: 28px;
-      filter: invert(1);
-      vertical-align: middle;
-    }
-    .header-row h1 {
-      flex: 1;
-      text-align: center;
-      font-size: 1.38em;
-      font-weight: 800;
-      letter-spacing: 0.01em;
-      margin: 0;
-      color: #ffe04a;
-    }
-    .top-buttons {
-      display: flex;
-      align-items: center;
-    }
-    .btn-icon img {
-      width: 26px;
-      height: 26px;
-      filter: invert(1);
-    }
-    /* Responsive */
-    @media (max-width: 600px) {
-      .faq {
-        padding: 1.5rem 0.8rem 1rem 0.8rem;
-      }
-      .header-row h1 {
-        font-size: 1.02em;
-      }
-    }
-    /* Styles FAQ */
-    .faq {
-      max-width: 700px;
-      margin: 2.5rem auto;
-      background: rgba(255,255,255,0.03);
-      border-radius: 16px;
-      padding: 2.5rem 2rem 2rem 2rem;
-      box-shadow: 0 6px 24px rgba(40,40,60,0.08);
-    }
-    .faq h2 {
-      margin-top: 2.4em;
-      margin-bottom: 0.5em;
-      color: #47b6ff;
-      font-size: 1.25em;
-    }
-    .faq p, .faq ul {
-      margin-bottom: 1.5em;
-      line-height: 1.7;
-    }
-    .faq ul {
-      padding-left: 2em;
-    }
-  </style>
+  <title>VFind - FAQ & Confidentialité</title>
+  <link rel="stylesheet" href="style/main.css"/>
 </head>
-<body class="vfind-bg">
+<body class="page-container">
 
-  <!-- HEADER PRO -->
   <header class="header-solo">
     <div class="header-row">
       <a href="index.html" class="back-btn" title="Retour">
@@ -94,6 +15,9 @@
       </a>
       <h1>FAQ & Confidentialité</h1>
       <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
         <a href="parametres.html" class="btn-icon">
           <img src="assets/icons/settings.svg" alt="Paramètres" />
         </a>
@@ -102,49 +26,144 @@
   </header>
 
   <main>
-    <section class="faq">
-      <h2>📷 Comment fonctionne VFind ?</h2>
-      <p>
-        Chaque jour, tu reçois des défis photo amusants.<br>
-        Il te suffit de prendre une photo correspondant à chaque défi pour gagner des pièces virtuelles (Vcoins).
-      </p>
-      <h2>⚔️ Et le mode Duel ?</h2>
-      <p>
-        Le mode Duel te met en compétition directe avec un autre joueur ou un ami.<br>
-        Les photos sont automatiquement envoyées pour être comparées.
-      </p>
-      <h2>📤 Est-ce que mes photos sont envoyées ?</h2>
-      <p>
-        <strong>En mode normal</strong> : tes photos restent enregistrées sur ton appareil.<br>
-        <strong>En mode Duel</strong> : les photos sont <strong>obligatoirement envoyées</strong> pour permettre la comparaison.<br>
-      </p>
-      <h2>⏳ Combien de temps les photos sont-elles conservées ?</h2>
-      <p>
-        Toutes les photos envoyées sont supprimées à la fin de la partie<strong>
-      </p>
-      <h2>🔒 Est-ce que VFind collecte mes données ?</h2>
-      <p>
-        <strong>Non.</strong> VFind ne demande aucune inscription et ne collecte pas d’informations personnelles.
-      </p>
-      <h2>📧 J’ai un problème, qui contacter ?</h2>
-      <p>
-        Tu peux nous écrire à : <strong>helpvfind@gmail.com</strong>
-      </p>
-      <h2>🔐 Dois-je créer un compte pour utiliser VFindz ?</h2>
-      <p>
-        Oui. L'application nécessite une connexion avec un compte Google (Android) ou Apple (iOS) pour participer aux défis, sauvegarder les scores et accéder au mode Duel.
-      </p>
-      <h2>📄 Politique de confidentialité (résumé)</h2>
-      <ul>
-        <li>Les photos en mode normal sont locales et privées</li>
-        <li>Les photos du mode Duel sont envoyées temporairement pour comparaison</li>
-        <li>Toutes les données envoyées sont supprimées à la fin de la partie</li>
-      </ul>
+    <section class="faq-section">
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/photo.svg" alt="Photo" />
+        </span>
+        <div>
+          <h2>Comment fonctionne VFind ?</h2>
+          <p>Chaque jour, tu reçois des défis photo amusants. Il te suffit de prendre une photo correspondant à chaque défi pour gagner des pièces virtuelles (Vcoins).</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/duel.svg" alt="Duel" />
+        </span>
+        <div>
+          <h2>Et le mode Duel ?</h2>
+          <p>Le mode Duel te met en compétition directe avec un autre joueur ou un ami. Les photos sont automatiquement envoyées pour être comparées.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/upload.svg" alt="Upload" />
+        </span>
+        <div>
+          <h2>Est-ce que mes photos sont envoyées ?</h2>
+          <p>
+            <strong>En mode normal</strong> : tes photos restent enregistrées sur ton appareil.<br>
+            <strong>En mode Duel</strong> : les photos sont <strong>obligatoirement envoyées</strong> pour permettre la comparaison.
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/time.svg" alt="Durée" />
+        </span>
+        <div>
+          <h2>Combien de temps les photos sont-elles conservées ?</h2>
+          <p>Toutes les photos envoyées sont supprimées à la fin de la partie.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/shield.svg" alt="Confidentialité" />
+        </span>
+        <div>
+          <h2>VFind collecte-t-il mes données ?</h2>
+          <p><strong>Non.</strong> VFind ne demande aucune inscription et ne collecte pas d’informations personnelles.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/help.svg" alt="Aide" />
+        </span>
+        <div>
+          <h2>J’ai un problème, qui contacter ?</h2>
+          <p>Tu peux nous écrire à : <strong>helpvfind@gmail.com</strong></p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/account.svg" alt="Compte" />
+        </span>
+        <div>
+          <h2>Dois-je créer un compte ?</h2>
+          <p>Oui. L'application nécessite une connexion avec un compte Google (Android) ou Apple (iOS) pour participer aux défis, sauvegarder les scores et accéder au mode Duel.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/policy.svg" alt="Politique" />
+        </span>
+        <div>
+          <h2>Politique de confidentialité (résumé)</h2>
+          <ul>
+            <li>Les photos en mode normal sont locales et privées</li>
+            <li>Les photos du mode Duel sont envoyées temporairement pour comparaison</li>
+            <li>Toutes les données envoyées sont supprimées à la fin de la partie</li>
+          </ul>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 VFindz</p>
+    <p>© 2025 VFind</p>
   </footer>
+  <style>
+    .faq-section {
+      max-width: 750px;
+      margin: 36px auto 32px auto;
+      background: rgba(255,255,255,0.04);
+      border-radius: 22px;
+      padding: 36px 18px 28px 18px;
+      box-shadow: 0 6px 24px rgba(40,40,60,0.12);
+    }
+    .faq-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      margin-bottom: 32px;
+      background: rgba(33,39,50,0.96);
+      border-radius: 18px;
+      padding: 19px 22px 15px 18px;
+      box-shadow: 0 1px 10px 0 rgba(42,38,48,0.05);
+    }
+    .faq-icone img {
+      width: 38px;
+      height: 38px;
+      margin-top: 3px;
+      filter: drop-shadow(0 2px 4px #0003);
+      background: #24272e;
+      border-radius: 14px;
+      padding: 5px;
+      border: 2px solid #ffe04a33;
+    }
+    .faq-item h2 {
+      margin: 0 0 0.3em 0;
+      color: #ffe04a;
+      font-size: 1.17em;
+      font-weight: 800;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+    }
+    .faq-item p, .faq-item ul {
+      margin: 0 0 0.5em 0;
+      line-height: 1.65;
+      color: #fff;
+    }
+    .faq-item ul {
+      padding-left: 1.25em;
+      margin-bottom: 0;
+    }
+    @media (max-width: 600px) {
+      .faq-section { padding: 18px 4px 12px 4px; }
+      .faq-item { flex-direction: column; gap: 9px; padding: 13px 7px 11px 7px; }
+      .faq-item h2 { font-size: 1em; }
+      .faq-icone img { width: 30px; height: 30px; }
+    }
+  </style>
 </body>
 </html>

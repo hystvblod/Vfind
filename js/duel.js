@@ -428,6 +428,21 @@ export async function initDuelGame() {
 
       // Photo adversaire (cache optimisé)
       const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
+      // On force la mise à jour du cache si cadre changé côté serveur
+if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
+  let obj = roomData[advChamp][idxStr];
+  let url, cadre;
+  if (typeof obj === "object") {
+    url = obj.url;
+    cadre = obj.cadre;
+  } else {
+    url = obj;
+    cadre = "polaroid_01";
+  }
+  // On rafraîchit l'entrée cache même si déjà présente
+  await VFindDuelDB.set(`${roomId}_${advChamp}_${idxStr}`, { url, cadre });
+}
+
       const advPhoto = advPhotoObj ? advPhotoObj.url : null;
       const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
 
@@ -672,4 +687,16 @@ export async function afficherSolde() {
 
 document.addEventListener("DOMContentLoaded", () => {
   afficherSolde();
+});
+// Handler pour valider un défi AVEC jeton (DUEL)
+document.addEventListener("DOMContentLoaded", () => {
+  const btnValiderJeton = document.getElementById("valider-jeton-btn");
+  if (btnValiderJeton) {
+    btnValiderJeton.onclick = async function() {
+      // On retire un jeton et on valide le défi DUEL côté BDD/cache/UI
+      await validerDefiAvecJeton(window._idxJetonToValidate);
+      // On nettoie l'index stocké pour la popup
+      window._idxJetonToValidate = null;
+    };
+  }
 });

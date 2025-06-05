@@ -6,54 +6,105 @@
   <title>VFind - Règlement</title>
   <link rel="stylesheet" href="style/main.css" />
 </head>
-<body class="vfind-bg">
-  <header>
-    <h1>📜 Règlement du Jeu</h1>
-    <nav>
+<body class="page-container">
+  <header class="header-solo">
+    <div class="header-row">
       <a href="index.html" class="back-btn" title="Retour">
         <img src="assets/icons/arrow_back.svg" alt="Retour" />
       </a>
-      <a href="profil.html">👤 Profil</a>
-    </nav>
+      <h1>Règlement du Jeu</h1>
+      <div class="top-buttons">
+        <a href="profil.html" class="btn-icon">
+          <img src="assets/icons/user.svg" alt="Profil" />
+        </a>
+        <a href="parametres.html" class="btn-icon">
+          <img src="assets/icons/settings.svg" alt="Paramètres" />
+        </a>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="rules">
-      <h2>🎯 Objectif</h2>
-      <p>Prends des photos correspondant aux défis proposés. Utilise ta créativité et respecte les consignes !</p>
-
-      <h2>🕹️ Fonctionnement</h2>
-      <ul>
-        <li>Chaque défi demande de photographier un objet ou une scène spécifique</li>
-        <li>Tu gagnes des pièces si la photo est jugée correcte (via IA locale)</li>
-        <li>Les pièces te permettent d’acheter des cadres Polaroïd</li>
-      </ul>
-
-      <h2>🔞 Contenus interdits</h2>
-      <p>Pour garantir un environnement sûr et respectueux, il est <strong>strictement interdit</strong> de prendre ou d’enregistrer des photos contenant :</p>
-      <ul>
-        <li>❌ Des scènes violentes ou sanglantes</li>
-        <li>❌ Des armes (feu, blanches, fictives ou réelles)</li>
-        <li>❌ Des enfants (même floutés ou de loin)</li>
-        <li>❌ Des images à caractère sexuel ou suggestif</li>
-        <li>❌ Des drogues, de l’alcool ou tout produit illicite</li>
-        <li>❌ Toute forme de contenu choquant ou inapproprié</li>
-      </ul>
-      <p>Les photos signalées pourront être masquées automatiquement.</p>
-
-      <h2>🔒 Données</h2>
-      <p>Toutes les données (photos, points, pseudo) sont stockées localement sur ton appareil. Rien n’est envoyé à un serveur.</p>
-      <h2>🔐 Compte et connexion</h2>
-      <p>
-        L'application nécessite une connexion avec un compte Google ou Apple pour pouvoir accéder aux fonctionnalités de jeu, de classement et de sauvegarde des données (défis, photos, scores, etc.).<br>
-        Aucune autre donnée personnelle n'est collectée en dehors de l'identifiant de compte nécessaire à l'accès sécurisé.
-      </p>
-
-      <h2>⚠️ Signalement</h2>
-      <p>Tu peux signaler une photo inappropriée dans les duels. Les photos signalées seront automatiquement masquées si besoin.</p>
-
-      <h2>💰 Publicité</h2>
-      <p>Tu peux voir des pubs simulées pour gagner des pièces ou lancer un duel. Aucun vrai service publicitaire n’est utilisé.</p>
+    <section class="faq-section">
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/target.svg" alt="Objectif" />
+        </span>
+        <div>
+          <h2>Objectif</h2>
+          <p>Prends des photos correspondant aux défis proposés. Utilise ta créativité et respecte les consignes !</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/game.svg" alt="Fonctionnement" />
+        </span>
+        <div>
+          <h2>Fonctionnement</h2>
+          <ul>
+            <li>Chaque défi demande de photographier un objet ou une scène spécifique</li>
+            <li>Tu gagnes des pièces si la photo est jugée correcte (via IA locale)</li>
+            <li>Les pièces te permettent d’acheter des cadres Polaroïd</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/block.svg" alt="Interdits" />
+        </span>
+        <div>
+          <h2>Contenus interdits</h2>
+          <p>Pour garantir un environnement sûr et respectueux, il est <strong>strictement interdit</strong> de prendre ou d’enregistrer des photos contenant :</p>
+          <ul>
+            <li>Des scènes violentes ou sanglantes</li>
+            <li>Des armes (feu, blanches, fictives ou réelles)</li>
+            <li>Des enfants (même floutés ou de loin)</li>
+            <li>Des images à caractère sexuel ou suggestif</li>
+            <li>Des drogues, de l’alcool ou tout produit illicite</li>
+            <li>Toute forme de contenu choquant ou inapproprié</li>
+          </ul>
+          <p>Les photos signalées pourront être masquées automatiquement.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/shield.svg" alt="Données" />
+        </span>
+        <div>
+          <h2>Données</h2>
+          <p>Toutes les données (photos, points, pseudo) sont stockées localement sur ton appareil. Rien n’est envoyé à un serveur.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/account.svg" alt="Compte" />
+        </span>
+        <div>
+          <h2>Compte et connexion</h2>
+          <p>
+            L'application nécessite une connexion avec un compte Google ou Apple pour pouvoir accéder aux fonctionnalités de jeu, de classement et de sauvegarde des données (défis, photos, scores, etc.).<br>
+            Aucune autre donnée personnelle n'est collectée en dehors de l'identifiant de compte nécessaire à l'accès sécurisé.
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/report.svg" alt="Signalement" />
+        </span>
+        <div>
+          <h2>Signalement</h2>
+          <p>Tu peux signaler une photo inappropriée dans les duels. Les photos signalées seront automatiquement masquées si besoin.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <span class="faq-icone">
+          <img src="assets/icons/ads.svg" alt="Publicité" />
+        </span>
+        <div>
+          <h2>Publicité</h2>
+          <p>Tu peux voir des pubs simulées pour gagner des pièces ou lancer un duel. Aucun vrai service publicitaire n’est utilisé.</p>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -61,10 +112,58 @@
     <p>&copy; 2025 VFind</p>
   </footer>
 
-<!-- ... (tout ton code au-dessus) ... -->
-
-  <!-- === FIREBASE CONNECTION === -->
-  <script type="module" src="js/firebase.js"></script>
+  <style>
+    .faq-section {
+      max-width: 750px;
+      margin: 36px auto 32px auto;
+      background: rgba(255,255,255,0.04);
+      border-radius: 22px;
+      padding: 36px 18px 28px 18px;
+      box-shadow: 0 6px 24px rgba(40,40,60,0.12);
+    }
+    .faq-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      margin-bottom: 32px;
+      background: rgba(33,39,50,0.96);
+      border-radius: 18px;
+      padding: 19px 22px 15px 18px;
+      box-shadow: 0 1px 10px 0 rgba(42,38,48,0.05);
+    }
+    .faq-icone img {
+      width: 38px;
+      height: 38px;
+      margin-top: 3px;
+      filter: drop-shadow(0 2px 4px #0003);
+      background: #24272e;
+      border-radius: 14px;
+      padding: 5px;
+      border: 2px solid #ffe04a33;
+    }
+    .faq-item h2 {
+      margin: 0 0 0.3em 0;
+      color: #ffe04a;
+      font-size: 1.17em;
+      font-weight: 800;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+    }
+    .faq-item p, .faq-item ul {
+      margin: 0 0 0.5em 0;
+      line-height: 1.65;
+      color: #fff;
+    }
+    .faq-item ul {
+      padding-left: 1.25em;
+      margin-bottom: 0;
+    }
+    @media (max-width: 600px) {
+      .faq-section { padding: 18px 4px 12px 4px; }
+      .faq-item { flex-direction: column; gap: 9px; padding: 13px 7px 11px 7px; }
+      .faq-item h2 { font-size: 1em; }
+      .faq-icone img { width: 30px; height: 30px; }
+    }
+  </style>
 </body>
 </html>
-
