@@ -13,9 +13,9 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
             <span class="cam-ico">&#8635;</span>
             <span class="cam-label">Retourner</span>
           </button>
-          <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
-            <span class="cam-label">Prendre une photo</span>
-          </button>
+       <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
+  <span class="cam-ico-big"></span>
+</button>
           <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
             <span class="cam-ico">&#10006;</span>
             <span class="cam-label">Fermer</span>
