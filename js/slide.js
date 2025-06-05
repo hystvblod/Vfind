@@ -1,4 +1,3 @@
-// onboardingSlides.js
 export function initOnboardingSlides() {
   if (!localStorage.getItem("onboardingSeen")) {
     document.getElementById("onboarding-modal").style.display = "flex";
@@ -25,7 +24,6 @@ export function initOnboardingSlides() {
       localStorage.setItem("onboardingSeen", "yes");
     };
 
-    // (optionnel) clic sur les dots pour naviguer
     dots.forEach((dot, i) => {
       dot.onclick = () => { curr = i; showSlide(curr); };
     });
