@@ -513,3 +513,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 });
+
+// =========== PATCH ULTRA IMPORTANT =============
+// Appelle automatiquement l'init Duel sur la bonne page
+if (window.location.pathname.includes("duel_game.html")) {
+  initDuelGame();
+}
