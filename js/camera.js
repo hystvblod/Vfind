@@ -1,37 +1,36 @@
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
   return new Promise((resolve, reject) => {
-    // UI Camera (structure PATCHÉE pro)
+    // Structure HTML ultra clean :
     const container = document.createElement("div");
     container.className = "camera-container-fullscreen";
-  container.innerHTML = `
-  <div class="camera-video-zone">
-    <div class="camera-video-wrapper">
-      <video autoplay playsinline class="camera-video"></video>
-    </div>
-    <div class="camera-controls camera-controls-pro">
-      <button id="switchCamera" title="Changer de caméra" class="camera-btn">
-        <span class="cam-ico">&#8635;</span>
-        <span class="cam-label">Retourner</span>
-      </button>
-      <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
-        <span class="cam-ico cam-ico-big">📸</span>
-      </button>
-      <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
-        <span class="cam-ico">&#10006;</span>
-        <span class="cam-label">Fermer</span>
-      </button>
-    </div>
-  </div>
-`;
-
-
+    container.innerHTML = `
+      <div class="camera-video-zone">
+        <div class="camera-video-wrapper">
+          <video autoplay playsinline class="camera-video"></video>
+        </div>
+        <div class="camera-controls camera-controls-pro">
+          <button id="switchCamera" title="Changer de caméra" class="camera-btn">
+            <span class="cam-ico">&#8635;</span>
+            <span class="cam-label">Retourner</span>
+          </button>
+          <button id="takePhoto" class="camera-btn btn-capture" title="Prendre la photo">
+            <span class="cam-label">Prendre une photo</span>
+          </button>
+          <button id="closeCamera" title="Fermer" class="camera-btn camera-btn-close">
+            <span class="cam-ico">&#10006;</span>
+            <span class="cam-label">Fermer</span>
+          </button>
+        </div>
+      </div>
+    `;
     document.body.appendChild(container);
 
-    // --- SELECTEURS PATCHÉS ---
+    // Selecteurs
     const video = container.querySelector("video");
     const switchBtn = container.querySelector("#switchCamera");
     const takeBtn = container.querySelector("#takePhoto");
-    const closeBtn = container.querySelector("#closeCamera");
+    const closeBtn = container.querySelector
+
 
     let videoStream = null;
     let useFrontCamera = false;
