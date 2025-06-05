@@ -96,11 +96,115 @@
         pointer-events: none;
       }
     }
+
+    /* -------- SLIDES ONBOARDING -------- */
+    .onboarding-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(32,34,39, 0.98);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.5s;
+    }
+    .onboarding-content {
+      background: #fff;
+      color: #333;
+      border-radius: 2em;
+      box-shadow: 0 10px 48px #0017;
+      padding: 2.8em 2em 2.5em 2em;
+      width: 94vw;
+      max-width: 370px;
+      min-height: 390px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .onboarding-slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.45s;
+    }
+    .onboarding-slide.active { display: flex; }
+    .onboarding-img {
+      max-width: 85%;
+      margin: 18px auto 8px auto;
+      border-radius: 1.1em;
+      box-shadow: 0 3px 22px #0001;
+    }
+    .onboarding-controls {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 1.3em;
+    }
+    .onboarding-controls button {
+      background: #22539f;
+      color: #fff;
+      border: none;
+      border-radius: 1em;
+      padding: 0.65em 1.7em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.16s;
+    }
+    .onboarding-controls button:active { background: #17417c; }
+    .onboarding-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.7em;
+      margin-top: 1.2em;
+    }
+    .dot {
+      width: 13px;
+      height: 13px;
+      background: #d5dbea;
+      border-radius: 50%;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .dot.active { background: #22539f; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body class="index-page">
 
   <!-- ANIMATION INTRO LOGO : injecté par JS si besoin -->
+
+  <!-- -------- SLIDES ONBOARDING -------- -->
+  <div id="onboarding-modal" class="onboarding-modal" style="display:none;">
+    <div class="onboarding-content">
+      <div class="onboarding-slide active">
+        <h2>Bienvenue sur VFind !</h2>
+        <p>Participe chaque jour à des défis photo fun et créatifs. 🎉</p>
+        <img src="assets/img/slide1.jpg" alt="Défi Photo" class="onboarding-img">
+      </div>
+      <div class="onboarding-slide">
+        <h2>Débloque des cadres uniques</h2>
+        <p>Gagne des cadres en jouant, en votant, ou en invitant des amis.</p>
+        <img src="assets/img/slide2.jpg" alt="Cadres à débloquer" class="onboarding-img">
+      </div>
+      <div class="onboarding-slide">
+        <h2>Vote & Gagne</h2>
+        <p>Vote pour tes photos préférées, grimpe au classement et tente de gagner des cadeaux !</p>
+        <img src="assets/img/slide3.jpg" alt="Votes et concours" class="onboarding-img">
+      </div>
+      <div class="onboarding-controls">
+        <button id="onboarding-prev" style="display:none;">Précédent</button>
+        <button id="onboarding-next">Suivant</button>
+        <button id="onboarding-close" style="display:none;">C'est parti !</button>
+      </div>
+      <div class="onboarding-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+  <!-- -------- FIN SLIDES ONBOARDING -------- -->
 
   <div class="page-container">
 
@@ -143,6 +247,42 @@
         setTimeout(() => {
           if (intro) intro.remove();
         }, 3800);
+      }
+    });
+
+    // Slides onboarding - affiche uniquement à la première ouverture
+    document.addEventListener("DOMContentLoaded", function() {
+      if (!localStorage.getItem("onboardingSeen")) {
+        document.getElementById("onboarding-modal").style.display = "flex";
+        let slides = document.querySelectorAll(".onboarding-slide");
+        let dots = document.querySelectorAll(".dot");
+        let curr = 0;
+
+        const showSlide = (idx) => {
+          slides.forEach((slide, i) => slide.classList.toggle("active", i === idx));
+          dots.forEach((dot, i) => dot.classList.toggle("active", i === idx));
+          document.getElementById("onboarding-prev").style.display = idx === 0 ? "none" : "inline-block";
+          document.getElementById("onboarding-next").style.display = idx === slides.length - 1 ? "none" : "inline-block";
+          document.getElementById("onboarding-close").style.display = idx === slides.length - 1 ? "inline-block" : "none";
+        };
+
+        document.getElementById("onboarding-next").onclick = () => {
+          if (curr < slides.length - 1) { curr++; showSlide(curr); }
+        };
+        document.getElementById("onboarding-prev").onclick = () => {
+          if (curr > 0) { curr--; showSlide(curr); }
+        };
+        document.getElementById("onboarding-close").onclick = () => {
+          document.getElementById("onboarding-modal").style.display = "none";
+          localStorage.setItem("onboardingSeen", "yes");
+        };
+
+        // (optionnel) clic sur les dots pour naviguer
+        dots.forEach((dot, i) => {
+          dot.onclick = () => { curr = i; showSlide(curr); };
+        });
+
+        showSlide(curr);
       }
     });
   </script>
