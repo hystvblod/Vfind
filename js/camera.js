@@ -144,15 +144,17 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
           const dataUrl = canvas.toDataURL("image/webp", 0.85);
           try {
-            if (window.uploadPhotoDuelWebp && window.getUserId) {
-              const urlPhoto = await window.uploadPhotoDuelWebp(dataUrl, duelId);
-              localStorage.setItem(`photo_duel_${duelId}_${window.getUserId()}`, urlPhoto);
-              if (window.savePhotoDuel) {
-                await window.savePhotoDuel(defiId, urlPhoto);
-              }
-            } else {
-              alert("Fonction d'upload duel non trouvée !");
-            }
+  if (window.uploadPhotoDuelWebp && window.getUserId) {
+  // il FAUT passer l’index comme 3e argument !
+  const urlPhoto = await window.uploadPhotoDuelWebp(dataUrl, duelId, defiId);
+  localStorage.setItem(`photo_duel_${duelId}_${window.getUserId()}`, urlPhoto);
+  if (window.savePhotoDuel) {
+    await window.savePhotoDuel(defiId, urlPhoto);
+  }
+} else {
+  alert("Fonction d'upload duel non trouvée !");
+}
+
           } catch (err) {
             alert("Erreur upload duel : " + err.message);
           }
