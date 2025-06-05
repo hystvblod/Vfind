@@ -342,12 +342,13 @@ if (path.includes("duel_game.html") && roomId) {
       btnRow.style.marginTop = "10px";
 
       // --- Jeton (identique solo)
-      const jetonBtn = document.createElement('button');
-      jetonBtn.className = 'btn-jeton-p';
-      jetonBtn.title = "Valider avec un jeton";
-      jetonBtn.innerHTML = `<img src="assets/img/jeton_p.webp" class="jeton-icone" alt="Jeton" />`;
-      jetonBtn.onclick = () => ouvrirPopupJeton(idx);
-      btnRow.appendChild(jetonBtn);
+  const jetonBtn = document.createElement('button');
+jetonBtn.className = 'btn-jeton-p';
+jetonBtn.title = "Valider avec un jeton";
+jetonBtn.textContent = "Valider"; // ou laisse vide si tu ne veux même pas de texte
+jetonBtn.onclick = () => ouvrirPopupJeton(idx);
+btnRow.appendChild(jetonBtn);
+
 
       // --- PHOTO : <img> identique solo (PAS de bouton, style inline)
       const imgPhoto = document.createElement('img');
