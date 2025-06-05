@@ -191,41 +191,59 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       container.appendChild(previewDiv);
 
       previewDiv.querySelector("#validerPhoto").onclick = async () => {
-        const dataUrl = canvas.toDataURL("image/webp", 0.85);
-        if (mode === "duel") {
-          if (!duelId) return alert("Erreur interne : duelId manquant.");
-          if (!cadreId) cadreId = "polaroid_01";
-          const cadreImg = new Image();
-          cadreImg.src = `./assets/cadres/${cadreId}.webp`;
-          cadreImg.onload = async () => {
-            ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-            const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
-            try {
-              const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
-              const userId = await getUserId();
-              localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-              await savePhotoDuel(defiId, urlPhoto, cadreId);
-              resolve(urlPhoto);
-            } catch (err) {
-              alert("Erreur upload duel : " + err.message);
-              reject(err);
-            }
-            container.remove();
-          };
-          cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
-        } else if (mode === "solo") {
-          localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-          if (window.afficherPhotoDansCadreSolo) {
-            window.afficherPhotoDansCadreSolo(defiId, dataUrl);
-          }
-          container.remove();
-          resolve(dataUrl);
-        } else if (mode === "base64") {
-          container.remove();
-          resolve(dataUrl);
+  const dataUrl = canvas.toDataURL("image/webp", 0.85);
+  if (mode === "duel") {
+    if (!duelId) return alert("Erreur interne : duelId manquant.");
+    if (!cadreId) cadreId = "polaroid_01";
+    const cadreImg = new Image();
+    cadreImg.src = `./assets/cadres/${cadreId}.webp`;
+    cadreImg.onload = async () => {
+      // Canvas de fusion
+      const fusionCanvas = document.createElement("canvas");
+      fusionCanvas.width = VIDEO_WIDTH;
+      fusionCanvas.height = VIDEO_HEIGHT;
+      const fusionCtx = fusionCanvas.getContext("2d");
+
+      // 1. DESSINE LE CADRE/FOND D’ABORD
+      fusionCtx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+      // 2. DESSINE LA PHOTO PAR-DESSUS
+      const photoImg = new Image();
+      photoImg.src = dataUrl;
+      photoImg.onload = async () => {
+        fusionCtx.drawImage(photoImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+        const dataUrl2 = fusionCanvas.toDataURL("image/webp", 0.85);
+        try {
+          const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
+          const userId = await getUserId();
+          localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+          await savePhotoDuel(defiId, urlPhoto, cadreId);
+          resolve(urlPhoto);
+        } catch (err) {
+          alert("Erreur upload duel : " + err.message);
+          reject(err);
         }
+        container.remove();
       };
+      photoImg.onerror = () => alert("Erreur de chargement de la photo !");
+    };
+    cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
+  }
+  // (solo et base64 inchangés)
+  else if (mode === "solo") {
+    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+    if (window.afficherPhotoDansCadreSolo) {
+      window.afficherPhotoDansCadreSolo(defiId, dataUrl);
+    }
+    container.remove();
+    resolve(dataUrl);
+  } else if (mode === "base64") {
+    container.remove();
+    resolve(dataUrl);
+  }
+};
+
 
       previewDiv.querySelector("#retakePhoto").onclick = () => {
         previewDiv.remove();
