@@ -198,13 +198,21 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     if (!duelId) return alert("Erreur interne : duelId manquant.");
     if (!cadreId) cadreId = "polaroid_01";
     try {
-      // Pas de fusion, upload direct de la photo brute !
+      // Upload direct de la photo brute
       const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId, cadreId);
       const userId = await getUserId();
       localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
       await savePhotoDuel(defiId, urlPhoto, cadreId);
+
+      // MAJ DU CACHE LOCAL pour affichage instantané (si VFindDuelDB existe)
+      const champ = (window.isPlayer1) ? 'photosa' : 'photosb';
+      if (window.VFindDuelDB && window.currentRoomId) {
+        await window.VFindDuelDB.set(`${duelId}_${champ}_${defiId}`, { url: urlPhoto, cadre: cadreId });
+      }
+
+      // Rafraîchit direct l’UI
       if (window.updateDuelUI) window.updateDuelUI();
-        setTimeout(() => window.updateDuelUI(), 600); // ou 800 ms
+
       resolve(urlPhoto);
     } catch (err) {
       alert("Erreur upload duel : " + err.message);
@@ -212,7 +220,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     }
     container.remove();
   }
-  // (solo et base64 inchangés)
+  // ...le reste (solo/base64) inchangé...
   else if (mode === "solo") {
     localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
     if (window.afficherPhotoDansCadreSolo) {
@@ -225,8 +233,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     resolve(dataUrl);
   }
 };
-
-
 
       previewDiv.querySelector("#retakePhoto").onclick = () => {
         previewDiv.remove();
