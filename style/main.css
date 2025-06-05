@@ -2305,20 +2305,3 @@ overflow-y: auto;
   flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
   max-width: 260px;    /* ou 230px si tu veux un max */
 }
-/* Enlève l’espace entre header et “Contre ...” */
-.header-solo + div[style*="text-align:center"] {
-  margin-top: 0.2rem !important;
-  margin-bottom: 0 !important;
-}
-
-/* Resserre le timer avec le reste */
-.timer-box {
-  margin-top: 0.2rem !important;
-  margin-bottom: 0.5rem !important;
-}
-
-/* Enlève l’espace en haut du main */
-main {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
