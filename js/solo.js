@@ -286,7 +286,12 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   defi.photoCount = (defi.photoCount || 0) + 1;
 
   // On enregistre la photo prise dans le cache (toujours, premium ou non)
-  localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
+  const data = {
+  photo: dataUrl,
+  cadre: cadreId  // cadre actif au moment de la prise (récupéré par getCadreSelectionne ou localStorage)
+};
+localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(data));
+
   localStorage.setItem(`photo_defi_${defiId}_date`, Date.now().toString());
   canRetakePhoto = false;
   retakeDefiId = null;
@@ -300,8 +305,6 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
     await showRewardedAd(); // ou ta vraie régie pub
   }
 };
-
-
 
 async function afficherPhotosSauvegardees(photosMap) {
   const cadreActuel = await getCadreSelectionne();
