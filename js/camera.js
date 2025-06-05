@@ -194,7 +194,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
           cadreImg.src = `./assets/cadres/${cadreId}.webp`;
           cadreImg.onload = async () => {
             ctx.drawImage(cadreImg, 0, 0, VIDEO_SIZE, VIDEO_SIZE);
-            ctx.drawImage(canvas, 0, 0, VIDEO_SIZE, VIDEO_SIZE);
             const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
             try {
               const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
