@@ -1,4 +1,4 @@
-import { getJetons, addJetons, removeJeton, getCadreSelectionne, getCadresPossedes, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
+import { getJetons, addJetons, ajouterDefiHistorique, removeJeton, getCadreSelectionne, getCadresPossedes, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
 // MIGRATION AUTO : patche les anciennes photos solo non JSON
 (function corrigeAnciennesPhotosSolo() {
