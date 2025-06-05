@@ -125,32 +125,42 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
       if (!confirmSave) return;
 
       // --- DUEL ---
-      if (mode === "duel") {
-        if (!duelId) {
-          alert("Erreur interne : duelId manquant.");
-          return;
-        }
-        const cadreImg = new Image();
-        cadreImg.src = `./assets/cadres/polaroid_01.webp`;
-        cadreImg.onload = async () => {
-          ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-          const dataUrl = canvas.toDataURL("image/webp", 0.85);
-          try {
-            // Version 100% module, plus de window :
-            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId);
-            const userId = await getUserId();
-localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-            await savePhotoDuel(defiId, urlPhoto);
-            resolve(urlPhoto);
-          } catch (err) {
-            alert("Erreur upload duel : " + err.message);
-            reject(err);
-          }
-          if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-          container.remove();
-        };
-        cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
-      }
+if (mode === "duel") {
+  if (!duelId) {
+    alert("Erreur interne : duelId manquant.");
+    return;
+  }
+
+  const cadreImg = new Image();
+  cadreImg.src = `./assets/cadres/polaroid_01.webp`;
+
+  cadreImg.onload = async () => {
+    // ✅ D'abord le cadre en fond
+    ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+    // ✅ Puis la photo capturée par-dessus (comme en solo)
+    ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+    const dataUrl = canvas.toDataURL("image/webp", 0.85);
+
+    try {
+      const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId);
+      const userId = await getUserId();
+      localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+      await savePhotoDuel(defiId, urlPhoto);
+      resolve(urlPhoto);
+    } catch (err) {
+      alert("Erreur upload duel : " + err.message);
+      reject(err);
+    }
+
+    if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+    container.remove();
+  };
+
+  cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
+}
+
       // --- CONCOURS ---
       else if (mode === "concours") {
         // ... (à adapter, tu peux faire de même que ci-dessus) ...
