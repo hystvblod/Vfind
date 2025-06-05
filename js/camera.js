@@ -136,7 +136,8 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
           try {
             // Version 100% module, plus de window :
             const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId);
-            localStorage.setItem(`photo_duel_${duelId}_${getUserId()}`, urlPhoto);
+            const userId = await getUserId();
+localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
             await savePhotoDuel(defiId, urlPhoto);
             resolve(urlPhoto);
           } catch (err) {
