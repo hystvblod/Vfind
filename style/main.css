@@ -2305,30 +2305,20 @@ overflow-y: auto;
   flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
   max-width: 260px;    /* ou 230px si tu veux un max */
 }
-/* Resserre les espaces entre tous les blocs */
-main,
-section,
-#duel-list-section {
-  margin-top: 0 !important;
+/* Enlève l’espace entre header et “Contre ...” */
+.header-solo + div[style*="text-align:center"] {
+  margin-top: 0.2rem !important;
   margin-bottom: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
 }
 
-/* La liste des défis */
-.defi-list {
-  margin: 0 !important;
-  padding: 0 !important;
-  list-style: none;
-}
-
-/* Chaque défi (li) */
-.defi-list > li {
-  margin-top: 0 !important;
-  margin-bottom: 10px !important; /* ou 0 si tu veux vraiment rien */
-  padding: 0 !important;
-}
+/* Resserre le timer avec le reste */
 .timer-box {
-  margin-top: 4px !important;
-  margin-bottom: 8px !important;
+  margin-top: 0.2rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Enlève l’espace en haut du main */
+main {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
