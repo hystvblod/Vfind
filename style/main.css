@@ -2305,3 +2305,11 @@ overflow-y: auto;
   flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
   max-width: 260px;    /* ou 230px si tu veux un max */
 }
+/* Place le jeton bien à gauche dans la colonne joueur du duel */
+.jeton-gauche {
+  align-self: flex-start !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  position: relative !important;
+  left: 0 !important;
+}
