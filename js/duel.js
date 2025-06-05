@@ -1,4 +1,4 @@
-import { supabase, getPseudo as getCurrentUser, getUserId } from './userData.js';
+import { supabase, getPseudo as getCurrentUser, getUserId, getCadreSelectionne } from './userData.js';
 
 // ========== IndexedDB cache ==========
 const VFindDuelDB = {
@@ -16,11 +16,11 @@ const VFindDuelDB = {
       open.onerror = reject;
     });
   },
-  async set(key, url) {
+  async set(key, data) {
     await this.init();
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('photos', 'readwrite');
-      tx.objectStore('photos').put({ key, dataUrl: url });
+      tx.objectStore('photos').put({ key, dataUrl: data.url, cadre: data.cadre });
       tx.oncomplete = resolve;
       tx.onerror = reject;
     });
@@ -30,7 +30,7 @@ const VFindDuelDB = {
     return new Promise((resolve, reject) => {
       const tx = this.db.transaction('photos', 'readonly');
       const req = tx.objectStore('photos').get(key);
-      req.onsuccess = () => resolve(req.result ? req.result.dataUrl : null);
+      req.onsuccess = () => resolve(req.result ? { url: req.result.dataUrl, cadre: req.result.cadre } : null);
       req.onerror = reject;
     });
   },
@@ -53,8 +53,22 @@ const VFindDuelDB = {
   }
 };
 
-// ========= UPLOAD PRO : PHOTO → SUPABASE STORAGE + URL DANS LA TABLE =========
-export async function uploadPhotoDuelWebp(dataUrl, duelId, idx) {
+// Cadre spécifique pour chaque photo (stocké en localStorage : duel_cadres_specifiques)
+function getCadreDuel(duelId, idx) {
+  const data = JSON.parse(localStorage.getItem("duel_cadres_specifiques") || "{}");
+  if (data[duelId] && data[duelId][idx]) return data[duelId][idx];
+  // Par défaut : cadre sélectionné dans Mes cadres
+  return window.getCadreSelectionneCached ? getCadreSelectionneCached() : "polaroid_01";
+}
+function setCadreDuel(duelId, idx, cadreId) {
+  const data = JSON.parse(localStorage.getItem("duel_cadres_specifiques") || "{}");
+  if (!data[duelId]) data[duelId] = {};
+  data[duelId][idx] = cadreId;
+  localStorage.setItem("duel_cadres_specifiques", JSON.stringify(data));
+}
+
+// ========= UPLOAD PRO : PHOTO → SUPABASE STORAGE + URL+CADRE DANS LA TABLE =========
+export async function uploadPhotoDuelWebp(dataUrl, duelId, idx, cadreId) {
   function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -75,17 +89,20 @@ export async function uploadPhotoDuelWebp(dataUrl, duelId, idx) {
   const { data: urlData } = supabase.storage.from('photosduel').getPublicUrl(filePath);
   const url = urlData.publicUrl;
 
-  // Mets l’URL dans la table duels
+  // Mets l’URL et le cadre dans la table duels
   const { data: room, error: roomError } = await supabase.from('duels').select('*').eq('id', duelId).single();
   if (roomError || !room) throw new Error("Room introuvable");
   const pseudo = await getCurrentUser();
   const champ = (room.player1 === pseudo) ? 'photosA' : 'photosB';
   let photos = room[champ] || {};
-  photos[idx] = url;
+  photos[idx] = { url, cadre: cadreId };
   await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
 
-  // Mets l’URL dans le cache local
-  await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, url);
+  // Mets l’URL+cadre dans le cache local
+  await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, { url, cadre: cadreId });
+
+  // Mets le cadre en localStorage spécifique
+  setCadreDuel(duelId, idx, cadreId);
 
   return url;
 }
@@ -271,9 +288,7 @@ export async function initDuelGame() {
     if (roomData.starttime && $("timer")) startGlobalTimer(roomData.starttime);
     else if ($("timer")) $("timer").textContent = "--:--:--";
 
-    let cadreActifMoi = "polaroid_01";
-    let cadreActifAdv = "polaroid_01";
-    renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID });
+    renderDefis({ myID, advID });
   }
 
   function startGlobalTimer(startTime) {
@@ -290,7 +305,7 @@ export async function initDuelGame() {
     }, 1000);
   }
 
-  async function renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID }) {
+  async function renderDefis({ myID, advID }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
       if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
@@ -328,7 +343,10 @@ export async function initDuelGame() {
       colJoueur.appendChild(titreJoueur);
 
       // Photo joueur (cache optimisé)
-      const myPhoto = await getPhotoDuel(roomId, myChamp, idxStr);
+      const myPhotoObj = await getPhotoDuel(roomId, myChamp, idxStr);
+      const myPhoto = myPhotoObj ? myPhotoObj.url : null;
+      const myCadre = myPhotoObj && myPhotoObj.cadre ? myPhotoObj.cadre : getCadreDuel(roomId, idxStr);
+
       if (myPhoto) {
         const cadreDiv = document.createElement("div");
         cadreDiv.className = "cadre-item cadre-duel-mini";
@@ -336,11 +354,17 @@ export async function initDuelGame() {
         preview.className = "cadre-preview";
         const cadreImg = document.createElement("img");
         cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + cadreActifMoi + ".webp";
+        cadreImg.src = "./assets/cadres/" + myCadre + ".webp";
         const photoImg = document.createElement("img");
         photoImg.className = "photo-user";
         photoImg.src = myPhoto;
-        photoImg.onclick = () => agrandirPhoto(myPhoto, cadreActifMoi);
+        photoImg.onclick = () => agrandirPhoto(myPhoto, myCadre);
+        // --- Appui long/chgt cadre ---
+        photoImg.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupChoixCadre(roomId, idxStr, myChamp); };
+        photoImg.ontouchstart = function(e) {
+          this._touchTimer = setTimeout(() => { ouvrirPopupChoixCadre(roomId, idxStr, myChamp); }, 500);
+        };
+        photoImg.ontouchend = function() { clearTimeout(this._touchTimer); };
 
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
@@ -359,14 +383,14 @@ export async function initDuelGame() {
           } else {
             aimerPhotoDuel(`${roomId}_${myChamp}_${idxStr}`);
           }
-          renderDefis({ cadreActifMoi, cadreActifAdv, myID, advID });
+          renderDefis({ myID, advID });
         };
         preview.appendChild(coeurBtn);
         cadreDiv.appendChild(preview);
         colJoueur.appendChild(cadreDiv);
       }
 
-      // ========== BOUTONS (JETON + PHOTO STRICTEMENT SOLO) ==========
+      // ========== BOUTONS (JETON + PHOTO) ==========
       const btnRow = document.createElement('div');
       btnRow.className = "duel-btnrow-joueur";
       btnRow.style.display = "flex";
@@ -374,17 +398,17 @@ export async function initDuelGame() {
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
 
-      // --- Jeton (identique solo)
+      // --- Jeton
       const jetonImg = document.createElement('img');
       jetonImg.src = "assets/img/jeton_p.webp";
       jetonImg.alt = "Valider avec un jeton";
-      jetonImg.className = "jeton-icone btn-jeton-p"; // pour compat solo
+      jetonImg.className = "jeton-icone btn-jeton-p";
       jetonImg.title = "Valider avec un jeton";
       jetonImg.style.cursor = "pointer";
       jetonImg.onclick = () => ouvrirPopupJeton(idx);
       btnRow.appendChild(jetonImg);
 
-      // --- PHOTO : <img> identique solo (PAS de bouton, style inline)
+      // --- PHOTO
       const imgPhoto = document.createElement('img');
       imgPhoto.src = "assets/icons/photo.svg";
       imgPhoto.alt = "Prendre une photo";
@@ -393,7 +417,7 @@ export async function initDuelGame() {
       imgPhoto.style.display = "block";
       imgPhoto.style.margin = "0 auto";
       imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-      imgPhoto.onclick = () => gererPrisePhotoDuel(idx);
+      imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
       btnRow.appendChild(imgPhoto);
 
       colJoueur.appendChild(btnRow);
@@ -407,7 +431,10 @@ export async function initDuelGame() {
       colAdv.appendChild(titreAdv);
 
       // Photo adversaire (cache optimisé)
-      const advPhoto = await getPhotoDuel(roomId, advChamp, idxStr);
+      const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
+      const advPhoto = advPhotoObj ? advPhotoObj.url : null;
+      const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
+
       if (advPhoto) {
         const cadreDiv = document.createElement("div");
         cadreDiv.className = "cadre-item cadre-duel-mini";
@@ -415,11 +442,11 @@ export async function initDuelGame() {
         preview.className = "cadre-preview";
         const cadreImg = document.createElement("img");
         cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + cadreActifAdv + ".webp";
+        cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
         const photoImg = document.createElement("img");
         photoImg.className = "photo-user";
         photoImg.src = advPhoto;
-        photoImg.onclick = () => agrandirPhoto(advPhoto, cadreActifAdv);
+        photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
         preview.appendChild(cadreImg);
         preview.appendChild(photoImg);
         cadreDiv.appendChild(preview);
@@ -436,30 +463,63 @@ export async function initDuelGame() {
 }
 
 // ==== Fonctions Camera/Popup à exporter pour camera.js ====
-export function gererPrisePhotoDuel(idx) {
+// -> Appelle caméra avec cadre par défaut ou spécifique
+export function gererPrisePhotoDuel(idx, cadreId = null) {
   let duelId = currentRoomId || window.currentRoomId || roomId;
   if (!duelId) {
     alert("Erreur critique : identifiant duel introuvable.");
     return;
   }
-  window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId);
+  // Si pas précisé, prend le cadre par défaut pour ce duel/photo
+  if (!cadreId) cadreId = getCadreDuel(duelId, idx);
+  window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
 }
 
-export async function savePhotoDuel(idx, url) {
+// Changement de cadre après la photo (popup simple via prompt)
+window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
+  // Récupère les cadres possédés
+  const cadres = (await import('./userData.js')).getCadresPossedes ? await (await import('./userData.js')).getCadresPossedes() : ["polaroid_01"];
+  const actuel = getCadreDuel(duelId, idx);
+  let choix = prompt(
+    "ID du cadre à appliquer (ex: polaroid_01) :\n" +
+    cadres.map(c => (c === actuel ? `[${c}]` : c)).join('\n'),
+    actuel
+  );
+  if (choix && cadres.includes(choix)) {
+    setCadreDuel(duelId, idx, choix);
+    // Mise à jour cloud pour joueur/adversaire
+    const { data: room } = await supabase.from('duels').select('*').eq('id', duelId).single();
+    let photos = (room && room[champ]) ? room[champ] : {};
+    if (photos[idx] && typeof photos[idx] === "object") {
+      photos[idx].cadre = choix;
+    } else if (typeof photos[idx] === "string") {
+      // Cas migration (ancien format)
+      photos[idx] = { url: photos[idx], cadre: choix };
+    }
+    await supabase.from('duels').update({ [champ]: photos }).eq('id', duelId);
+    await VFindDuelDB.set(`${duelId}_${champ}_${idx}`, { url: photos[idx].url, cadre: choix });
+    alert("✅ Nouveau cadre appliqué !");
+    location.reload();
+  }
+};
+
+export async function savePhotoDuel(idx, url, cadreId = null) {
   const champ = isPlayer1 ? 'photosA' : 'photosB';
+  if (!cadreId) cadreId = getCadreDuel(roomId, idx);
   const room = await getRoom(roomId);
   let photos = room[champ] || {};
-  photos[idx] = url;
+  photos[idx] = { url, cadre: cadreId };
   await supabase.from('duels').update({ [champ]: photos }).eq('id', roomId);
-  await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, url);
+  await VFindDuelDB.set(`${roomId}_${champ}_${idx}`, { url, cadre: cadreId });
+  setCadreDuel(roomId, idx, cadreId);
 }
 
 export function agrandirPhoto(url, cadre) {
   $("photo-affichee").src = url;
   $("cadre-affiche").src = `./assets/cadres/${cadre}.webp`;
   const popup = $("popup-photo");
-  popup.classList.remove("hidden");
-  popup.classList.add("show");
+  popup.classList.remove('hidden');
+  popup.classList.add('show');
 }
 
 export async function cleanupDuelPhotos() {
@@ -493,12 +553,24 @@ async function getRoom(roomId) {
 
 async function getPhotoDuel(roomId, champ, idx) {
   const cacheKey = `${roomId}_${champ}_${idx}`;
-  let url = await VFindDuelDB.get(cacheKey);
-  if (url) return url;
+  let obj = await VFindDuelDB.get(cacheKey);
+  if (obj && obj.url) return obj;
   const room = await getRoom(roomId);
-  url = room && room[champ] && room[champ][idx];
-  if (url) await VFindDuelDB.set(cacheKey, url);
-  return url;
+  let url, cadre;
+  if (room && room[champ] && room[champ][idx]) {
+    if (typeof room[champ][idx] === "object") {
+      url = room[champ][idx].url;
+      cadre = room[champ][idx].cadre;
+    } else {
+      url = room[champ][idx];
+      cadre = "polaroid_01";
+    }
+  }
+  if (url) {
+    await VFindDuelDB.set(cacheKey, { url, cadre });
+    return { url, cadre };
+  }
+  return null;
 }
 
 // Fermer la popup (bouton croix, général)
