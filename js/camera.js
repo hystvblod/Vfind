@@ -1,4 +1,6 @@
-import { uploadPhotoDuelWebp, savePhotoDuel, getUserId } from "./duel.js";
+import { uploadPhotoDuelWebp, savePhotoDuel } from "./duel.js";
+import { getUserId } from "./userData.js";
+
 
 // Fonctions d'ouverture (compat global, mais ES6 only)
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null) {
