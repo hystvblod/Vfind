@@ -402,7 +402,7 @@ export async function initDuelGame() {
       const jetonImg = document.createElement('img');
       jetonImg.src = "assets/img/jeton_p.webp";
       jetonImg.alt = "Valider avec un jeton";
-      jetonImg.className = "jeton-icone btn-jeton-p jeton-gauche";
+      jetonImg.className = "jeton-icone btn-jeton-p";
       jetonImg.title = "Valider avec un jeton";
       jetonImg.style.cursor = "pointer";
       jetonImg.onclick = () => ouvrirPopupJeton(idx);
