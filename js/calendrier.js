@@ -1,92 +1,55 @@
-import { db, auth, initFirebaseUser } from './firebase.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { supabase, getUserId, loadUserData } from './userData.js'; // fichier déjà optimisé Supabase fourni dans ta dernière version
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   let dateCourante = new Date();
   let moisAffiche = dateCourante.getMonth();
   let anneeAffichee = dateCourante.getFullYear();
   let historique = [];
   let dateInscription = null;
-
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
+  // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE (méga light) ----
   async function chargerHistoriqueEtInscription() {
-    await initFirebaseUser();
-    const user = auth.currentUser;
-    if (!user) return;
+    await loadUserData(); // Auth automatique
+    const userId = getUserId();
+    if (!userId) return;
+    // Récupère l'utilisateur (historique stocké dans le champ "historique" du user)
+    const { data, error } = await supabase
+      .from('users')
+      .select('historique, dateInscription')
+      .eq('id', userId)
+      .single();
 
-    try {
-      const ref = doc(db, "users", user.uid);
-      const snap = await getDoc(ref);
+    if (!data) return;
+    dateInscription = data.dateInscription ? new Date(data.dateInscription) : null;
+    historique = (data.historique || []).map(e => ({
+      date: e.date,
+      defis: e.defis || e.defi || [], // compatibilité ancien format
+      type: e.type || "solo"
+    }));
 
-      if (snap.exists()) {
-        const data = snap.data();
-
-        dateInscription = data.dateInscription ? new Date(data.dateInscription) : null;
-
-        historique = [];
-
-        // Historique solo
-        (data.historique || []).forEach(e => {
-          historique.push({
-            date: e.date,
-            defis: e.defi ? (Array.isArray(e.defi) ? e.defi : [e.defi]) : [],
-            type: "solo"
-          });
-        });
-
-        // Historique duel
-        (data.historiqueDuel || []).forEach(e => {
-          if (e.defis_duel && Array.isArray(e.defis_duel)) {
-            let parts = e.date.split(',')[0].split('/');
-            let dateISO = parts.length === 3 ?
-              `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : e.date;
-            let type = e.type === 'amis' ? 'duel_amis' : 'duel_random';
-            historique.push({
-              date: dateISO,
-              defis: e.defis_duel,
-              type: type
-            });
-          }
-        });
-
-        // Si pas de date inscription, prendre la plus ancienne date historique
-        if (!dateInscription && historique.length) {
-          let minDate = historique
-            .map(e => new Date(e.date))
-            .sort((a, b) => a - b)[0];
-          dateInscription = minDate || new Date();
-        }
-      }
-    } catch (err) {
-      console.error("Erreur lors du chargement de l'historique :", err);
+    // Si pas de date inscription, prend la plus ancienne date
+    if (!dateInscription && historique.length) {
+      let minDate = historique
+        .map(e => new Date(e.date))
+        .sort((a, b) => a - b)[0];
+      dateInscription = minDate || new Date();
     }
-
     afficherCalendrier();
   }
 
   function afficherCalendrier() {
     document.getElementById('titre-mois').textContent = moisFr[moisAffiche] + ' ' + anneeAffichee;
-
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
-    // Regroupe les défis par jour et par type
-    const soloParJour = {};
-    const duelRandomParJour = {};
-    const duelAmisParJour = {};
-
+    // Regroupe par jour et par type
+    const soloParJour = {}, duelRandomParJour = {}, duelAmisParJour = {};
     historique.forEach(entree => {
       let dateISO = entree.date && entree.date.length === 10 ? entree.date : (entree.date || '').slice(0, 10);
-      if (entree.type === "solo") {
-        soloParJour[dateISO] = (soloParJour[dateISO] || []).concat(entree.defis || []);
-      }
-      if (entree.type === "duel_random") {
-        duelRandomParJour[dateISO] = (duelRandomParJour[dateISO] || []).concat(entree.defis || []);
-      }
-      if (entree.type === "duel_amis") {
-        duelAmisParJour[dateISO] = (duelAmisParJour[dateISO] || []).concat(entree.defis || []);
-      }
+      if (entree.type === "solo") soloParJour[dateISO] = (soloParJour[dateISO] || []).concat(entree.defis || []);
+      if (entree.type === "duel_random") duelRandomParJour[dateISO] = (duelRandomParJour[dateISO] || []).concat(entree.defis || []);
+      if (entree.type === "duel_amis") duelAmisParJour[dateISO] = (duelAmisParJour[dateISO] || []).concat(entree.defis || []);
     });
 
     let html = '<div class="calendrier">';
@@ -94,8 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const decal = (premierJour.getDay() + 6) % 7;
     for (let i = 0; i < decal; i++) html += '<div class="jour vide"></div>';
 
-    let totalDefisMois = 0;
-    let totalDefisTous = 0;
+    let totalDefisMois = 0, totalDefisTous = 0;
     Object.values(soloParJour).forEach(list => totalDefisTous += list.length);
     Object.values(duelRandomParJour).forEach(list => totalDefisTous += list.length);
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
@@ -104,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const d = new Date(anneeAffichee, moisAffiche, j);
       const dstr = d.toISOString().slice(0, 10);
       let color = "#fff";
-
       let soloCount = soloParJour[dstr]?.length || 0;
       let duelRandCount = duelRandomParJour[dstr]?.length || 0;
       let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
@@ -131,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     html += '</div>';
-
     document.getElementById('calendrier-container').innerHTML = html;
     document.getElementById('stats-calendrier').innerHTML =
       "Nombre de défis réalisés ce mois : <b>" + totalDefisMois + "</b><br>" +
@@ -140,21 +100,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("mois-prec").onclick = () => {
     moisAffiche--;
-    if (moisAffiche < 0) {
-      moisAffiche = 11;
-      anneeAffichee--;
-    }
+    if (moisAffiche < 0) { moisAffiche = 11; anneeAffichee--; }
     afficherCalendrier();
   };
   document.getElementById("mois-suiv").onclick = () => {
     moisAffiche++;
-    if (moisAffiche > 11) {
-      moisAffiche = 0;
-      anneeAffichee++;
-    }
+    if (moisAffiche > 11) { moisAffiche = 0; anneeAffichee++; }
     afficherCalendrier();
   };
 
+  // Style auto inclus pour le calendrier (à déplacer en CSS si besoin)
   const style = document.createElement('style');
   style.textContent = `
     .calendrier {
@@ -186,5 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 
-  chargerHistoriqueEtInscription();
+  // Chargement initial (1 seule requête !)
+  await chargerHistoriqueEtInscription();
 });

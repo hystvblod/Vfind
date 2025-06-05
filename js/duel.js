@@ -390,23 +390,12 @@ export async function initDuelGame() {
         colJoueur.appendChild(cadreDiv);
       }
 
-      // ========== BOUTONS (JETON + PHOTO) ==========
+      // ========== BOUTON PHOTO UNIQUEMENT ==========
       const btnRow = document.createElement('div');
       btnRow.className = "duel-btnrow-joueur";
       btnRow.style.display = "flex";
-      btnRow.style.gap = "10px";
       btnRow.style.justifyContent = "center";
       btnRow.style.marginTop = "10px";
-
-      // --- Jeton
-      const jetonImg = document.createElement('img');
-      jetonImg.src = "assets/img/jeton_p.webp";
-      jetonImg.alt = "Valider avec un jeton";
-      jetonImg.className = "jeton-icone btn-jeton-p";
-      jetonImg.title = "Valider avec un jeton";
-      jetonImg.style.cursor = "pointer";
-      jetonImg.onclick = () => ouvrirPopupJeton(idx);
-      btnRow.appendChild(jetonImg);
 
       // --- PHOTO
       const imgPhoto = document.createElement('img');
@@ -418,6 +407,14 @@ export async function initDuelGame() {
       imgPhoto.style.margin = "0 auto";
       imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
       imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
+
+      // Appui long/clic droit → popup jeton
+      imgPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
+      imgPhoto.ontouchstart = function(e) {
+        this._touchTimer = setTimeout(() => { ouvrirPopupValiderJeton(idxStr); }, 500);
+      };
+      imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
+
       btnRow.appendChild(imgPhoto);
 
       colJoueur.appendChild(btnRow);
@@ -474,6 +471,31 @@ export function gererPrisePhotoDuel(idx, cadreId = null) {
   if (!cadreId) cadreId = getCadreDuel(duelId, idx);
   window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
 }
+
+// -------- POPUP VALIDER AVEC JETON (à ajouter dans ton HTML aussi !) --------
+window.ouvrirPopupValiderJeton = function(idx) {
+  window._idxJetonToValidate = idx;
+  document.getElementById("popup-jeton-valider").classList.remove("hidden");
+};
+document.addEventListener("DOMContentLoaded", () => {
+  const btnValider = document.getElementById("btn-confirm-jeton");
+  const btnCancel = document.getElementById("btn-cancel-jeton");
+  if(btnValider) btnValider.onclick = function() {
+    const idx = window._idxJetonToValidate;
+    if(typeof ouvrirPopupJeton === "function") ouvrirPopupJeton(idx);
+    document.getElementById("popup-jeton-valider").classList.add("hidden");
+    window._idxJetonToValidate = null;
+  };
+  if(btnCancel) btnCancel.onclick = function() {
+    document.getElementById("popup-jeton-valider").classList.add("hidden");
+    window._idxJetonToValidate = null;
+  };
+});
+
+// ---------------- RESTE DU FICHIER INCHANGÉ ---------------------
+
+// ... (Le reste identique à ta version plus haut, inchangé)
+
 
 // Changement de cadre après la photo (popup simple via prompt)
 window.ouvrirPopupChoixCadre = async function(duelId, idx, champ) {
