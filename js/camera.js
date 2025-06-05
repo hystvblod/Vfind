@@ -204,6 +204,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
       await savePhotoDuel(defiId, urlPhoto, cadreId);
       if (window.updateDuelUI) window.updateDuelUI();
+        setTimeout(() => window.updateDuelUI(), 600); // ou 800 ms
       resolve(urlPhoto);
     } catch (err) {
       alert("Erreur upload duel : " + err.message);
