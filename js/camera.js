@@ -41,9 +41,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 }
 .camera-video-wrapper {
   position: relative;
-  width: min(90vw, 90vh, 500px);
-  height: min(90vw, 90vh, 500px);
-  aspect-ratio: 1/1;
+  width: 98vw;
+  max-width: 500px;
+  height: 55vw;
+  max-height: 65vh;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 30px;
@@ -53,12 +54,10 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
   align-items: center;
   justify-content: center;
 }
-
 .camera-video-wrapper video {
-  width: 100% !important;
+  width: 100vw !important;
   height: 100% !important;
   object-fit: cover;
-  border-radius: 30px;
   transition: transform 0.12s cubic-bezier(.46,1.48,.45,.89);
   will-change: transform;
   display: block;
@@ -192,42 +191,29 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       container.appendChild(previewDiv);
 
       previewDiv.querySelector("#validerPhoto").onclick = async () => {
-  const dataUrl = canvas.toDataURL("image/webp", 0.85);
-  if (mode === "duel") {
-    if (!duelId) return alert("Erreur interne : duelId manquant.");
-    if (!cadreId) cadreId = "polaroid_01";
-    const cadreImg = new Image();
-    cadreImg.src = `./assets/cadres/${cadreId}.webp`;
-    cadreImg.onload = async () => {
-      // On fusionne dans un NOUVEAU canvas (ne réutilise pas le même)
-      const fusionCanvas = document.createElement("canvas");
-      fusionCanvas.width = VIDEO_WIDTH;
-      fusionCanvas.height = VIDEO_HEIGHT;
-      const fusionCtx = fusionCanvas.getContext("2d");
-
-      // 1. Le cadre EN DESSOUS
-      fusionCtx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-      // 2. La photo au DESSUS
-      const photoImg = new Image();
-      photoImg.src = dataUrl;
-      photoImg.onload = async () => {
-        fusionCtx.drawImage(photoImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-        const dataUrl2 = fusionCanvas.toDataURL("image/webp", 0.85);
-        try {
-          const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
-          const userId = await getUserId();
-          localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-          await savePhotoDuel(defiId, urlPhoto, cadreId);
-          if (window.updateDuelUI) window.updateDuelUI();
-          resolve(urlPhoto);
-        } catch (err) {
-          alert("Erreur upload duel : " + err.message);
-          reject(err);
-        }
-        container.remove();
-      };
-    };
-    cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
+        const dataUrl = canvas.toDataURL("image/webp", 0.85);
+        if (mode === "duel") {
+          if (!duelId) return alert("Erreur interne : duelId manquant.");
+          if (!cadreId) cadreId = "polaroid_01";
+          const cadreImg = new Image();
+          cadreImg.src = `./assets/cadres/${cadreId}.webp`;
+          cadreImg.onload = async () => {
+            ctx.drawImage(cadreImg, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+            ctx.drawImage(canvas, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+            const dataUrl2 = canvas.toDataURL("image/webp", 0.85);
+            try {
+              const urlPhoto = await uploadPhotoDuelWebp(dataUrl2, duelId, defiId, cadreId);
+              const userId = await getUserId();
+              localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+              await savePhotoDuel(defiId, urlPhoto, cadreId);
+              resolve(urlPhoto);
+            } catch (err) {
+              alert("Erreur upload duel : " + err.message);
+              reject(err);
+            }
+            container.remove();
+          };
+          cadreImg.onerror = () => alert("Erreur de chargement du cadre.");
         } else if (mode === "solo") {
           localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
           if (window.afficherPhotoDansCadreSolo) {
