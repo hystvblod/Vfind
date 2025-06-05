@@ -1,4 +1,4 @@
-import { supabase, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique } from './userData.js';
+import { supabase,getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique } from './userData.js';
 
 
 // ========== IndexedDB cache ==========
@@ -684,19 +684,19 @@ export async function deleteDuelPhotosFromSupabase(roomId) {
     // Tu peux log ou notifier ici si tu veux
   }
 }
-import { getJetons, getPoints } from './userData.js';
+
 
 // Fonction pour afficher à jour le solde dans le header
 export async function afficherSolde() {
   const points = await getPoints();
   const jetons = await getJetons();
-
-  // Affiche dans le header (tu peux adapter les id si besoin)
   const pointsSpan = document.getElementById('points');
   const jetonsSpan = document.getElementById('jetons');
   if (pointsSpan) pointsSpan.textContent = points ?? 0;
   if (jetonsSpan) jetonsSpan.textContent = jetons ?? 0;
 }
+
+
 document.addEventListener("DOMContentLoaded", () => {
   afficherSolde();
 });
