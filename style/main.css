@@ -2378,3 +2378,9 @@ overflow-y: auto;
 .btn-photo-icon.active {
   background-color: #ffe4e4;
 }
+.cal-gris, .legende-gris         { background: #f1f1f1; }
+.cal-jaune, .legende-jaune       { background: #ffe04a; border: 2px solid #ffe04a; }
+.cal-vert-clair, .legende-vert-clair { background: #baffc7; }
+.cal-vert-fonce, .legende-vert-fonce { background: #16b46a; }
+.cal-rouge, .legende-rouge       { background: #ff2c2c; }
+.cal-blanc, .legende-blanc       { background: #fff; border: 1px solid #e0e0e0; }

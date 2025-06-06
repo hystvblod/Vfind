@@ -72,7 +72,12 @@ async function afficherListesAmis(data) {
 window.envoyerDemandeAmi = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi || pseudoAmi === userPseudo) return toast("Tu ne peux pas t'ajouter toi-même !", "#b93f3f");
 
-  const { data: ami, error } = await supabase.from("users").select("id, demandesRecues, amis, demandesEnvoyees").eq("pseudo", pseudoAmi).maybeSingle();
+  const { data: ami, error } = await supabase
+    .from("users")
+    .select("id, demandesRecues, amis, demandesEnvoyees")
+    .ilike("pseudo", pseudoAmi)
+    .maybeSingle();
+
   if (error || !ami) return toast("Aucun utilisateur trouvé.", "#b93f3f");
 
   userProfile = await getUserDataCloud();
@@ -84,7 +89,7 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
   const newEnv = [...(userProfile.demandesEnvoyees || []), pseudoAmi];
   const newRec = [...(ami.demandesRecues || []), userPseudo];
 
-  await supabase.from("users").update({ demandesEnvoyees: newEnv }).eq("pseudo", userPseudo);
+  await supabase.from("users").update({ demandesEnvoyees: newEnv }).ilike("pseudo", userPseudo);
   await supabase.from("users").update({ demandesRecues: newRec }).eq("id", ami.id);
 
   toast("Demande envoyée à " + pseudoAmi + " !");
@@ -95,7 +100,12 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
 window.accepterDemande = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
 
-  const { data: ami } = await supabase.from("users").select("id, amis, demandesEnvoyees").eq("pseudo", pseudoAmi).maybeSingle();
+  const { data: ami } = await supabase
+    .from("users")
+    .select("id, amis, demandesEnvoyees")
+    .ilike("pseudo", pseudoAmi)
+    .maybeSingle();
+
   if (!ami) return;
 
   userProfile = await getUserDataCloud();
@@ -106,7 +116,7 @@ window.accepterDemande = async function(pseudoAmi) {
   await supabase.from("users").update({
     amis: newAmis,
     demandesRecues: newDemandes
-  }).eq("pseudo", userPseudo);
+  }).ilike("pseudo", userPseudo);
 
   await supabase.from("users").update({
     amis: [...(ami.amis || []), userPseudo],
@@ -122,14 +132,19 @@ window.accepterDemande = async function(pseudoAmi) {
 window.refuserDemande = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
 
-  const { data: ami } = await supabase.from("users").select("id, demandesEnvoyees").eq("pseudo", pseudoAmi).maybeSingle();
+  const { data: ami } = await supabase
+    .from("users")
+    .select("id, demandesEnvoyees")
+    .ilike("pseudo", pseudoAmi)
+    .maybeSingle();
+
   if (!ami) return;
 
   userProfile = await getUserDataCloud();
 
   await supabase.from("users").update({
     demandesRecues: (userProfile.demandesRecues || []).filter(p => p !== pseudoAmi)
-  }).eq("pseudo", userPseudo);
+  }).ilike("pseudo", userPseudo);
 
   await supabase.from("users").update({
     demandesEnvoyees: (ami.demandesEnvoyees || []).filter(p => p !== userPseudo)
@@ -143,14 +158,19 @@ window.refuserDemande = async function(pseudoAmi) {
 window.supprimerAmi = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
 
-  const { data: ami } = await supabase.from("users").select("id, amis").eq("pseudo", pseudoAmi).maybeSingle();
+  const { data: ami } = await supabase
+    .from("users")
+    .select("id, amis")
+    .ilike("pseudo", pseudoAmi)
+    .maybeSingle();
+
   if (!ami) return;
 
   userProfile = await getUserDataCloud();
 
   await supabase.from("users").update({
     amis: (userProfile.amis || []).filter(p => p !== pseudoAmi)
-  }).eq("pseudo", userPseudo);
+  }).ilike("pseudo", userPseudo);
 
   await supabase.from("users").update({
     amis: (ami.amis || []).filter(p => p !== userPseudo)
