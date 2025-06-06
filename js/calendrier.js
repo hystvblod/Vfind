@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   let dateInscription = null;
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
+  // --- Compare avec des YYYY-MM-DD pour éviter tous les bugs de date JS ---
+  function formatYMD(d) {
+    return d.toISOString().slice(0, 10);
+  }
+
   // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE ----
   async function chargerHistoriqueEtInscription() {
     await loadUserData(); // Auth automatique
@@ -65,54 +70,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     const today = new Date();
     today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
 
-for (let j = 1; j <= nbJours; j++) {
-  const d = new Date(anneeAffichee, moisAffiche, j);
-  const dstr = d.toISOString().slice(0, 10);
-  let color = "#fff";
-  let textColor = "#222"; // noir par défaut
-  let soloCount = soloParJour[dstr]?.length || 0;
-  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = "jour";
+    // --- PATCH pour "avant inscription" fiable partout ---
+    const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
 
-  // 1. AVANT INSCRIPTION = GRIS
-  if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
-    color = "#f1f1f1";   // gris
-    textColor = "#222";  // chiffre noir sur fond gris
-    classes += " jour-grise";
-  }
-  // 2. JOURS À VENIR (après aujourd'hui) = BLANC
-  else if (d > today) {
-    color = "#fff";
-    textColor = "#222"; // chiffre noir sur fond blanc
-    classes += " jour-futur";
-  }
-  // 3. JOUR INSCRIPTION = JAUNE
-  else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
-    color = "#ffe04a";
-    textColor = "#fff"; // blanc sur fond jaune
-    classes += " jour-inscription";
-  }
-  // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
-  else {
-    const totalJour = soloCount + duelRandCount + duelAmisCount;
-    if (totalJour === 0) {
-      color = "#ff2c2c";    // rouge
-      textColor = "#fff";   // chiffre blanc sur rouge
-    } else if (
-      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-    ) {
-      color = "#16b46a";    // vert foncé
-      textColor = "#fff";   // chiffre blanc sur vert foncé
-    } else {
-      color = "#baffc7";    // vert clair
-      textColor = "#222";   // chiffre noir sur vert clair
+    for (let j = 1; j <= nbJours; j++) {
+      const d = new Date(anneeAffichee, moisAffiche, j);
+      const dstr = formatYMD(d);
+      let color = "#fff";
+      let textColor = "#222"; // noir par défaut
+      let soloCount = soloParJour[dstr]?.length || 0;
+      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+      let classes = "jour";
+
+      // 1. AVANT INSCRIPTION = GRIS (patch string)
+      if (!inscriptionYMD || dstr < inscriptionYMD) {
+        color = "#f1f1f1";
+        textColor = "#222";
+        classes += " jour-grise";
+      }
+      // 2. JOURS À VENIR (après aujourd'hui) = BLANC
+      else if (d > today) {
+        color = "#fff";
+        textColor = "#222";
+        classes += " jour-futur";
+      }
+      // 3. JOUR INSCRIPTION = JAUNE
+      else if (inscriptionYMD && dstr === inscriptionYMD) {
+        color = "#ffe04a";
+        textColor = "#fff"; // blanc sur fond jaune
+        classes += " jour-inscription";
+      }
+      // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
+      else {
+        const totalJour = soloCount + duelRandCount + duelAmisCount;
+        if (totalJour === 0) {
+          color = "#ff2c2c";    // rouge
+          textColor = "#fff";   // chiffre blanc sur rouge
+        } else if (
+          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+        ) {
+          color = "#16b46a";    // vert foncé
+          textColor = "#fff";   // chiffre blanc sur vert foncé
+        } else {
+          color = "#baffc7";    // vert clair
+          textColor = "#222";   // chiffre noir sur vert clair
+        }
+        totalDefisMois += totalJour;
+      }
+
+      html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
     }
-    totalDefisMois += totalJour;
-  }
-
-  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
-}
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
