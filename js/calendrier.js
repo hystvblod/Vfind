@@ -1,4 +1,4 @@
-import { supabase, getUserId, loadUserData } from './userData.js'; // Optimisé Supabase fourni dans ta dernière version
+import { supabase, getUserId, loadUserData } from './userData.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   let dateCourante = new Date();
@@ -8,17 +8,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   let dateInscription = null;
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
-  // --- Compare avec des YYYY-MM-DD pour éviter tous les bugs de date JS ---
+  // Ajoute une fonction utilitaire pour le format date YMD
   function formatYMD(d) {
-    return d.toISOString().slice(0, 10);
+    return d ? d.toISOString().slice(0, 10) : null;
   }
 
   // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE ----
   async function chargerHistoriqueEtInscription() {
-    await loadUserData(); // Auth automatique
+    await loadUserData();
     const userId = getUserId();
     if (!userId) return;
-    // Récupère l'utilisateur
+
     const { data, error } = await supabase
       .from('users')
       .select('historique, dateInscription')
@@ -68,20 +68,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
     const today = new Date();
-    today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
+    today.setHours(0,0,0,0);
 
-    // --- PATCH pour "avant inscription" fiable partout ---
-    const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
+    // PATCH DEBUG : print toutes les valeurs au début
+    console.log('=== DEBUG CALENDRIER ===');
+    console.log('dateInscription:', dateInscription);
+    const inscriptionYMD = formatYMD(dateInscription);
+    console.log('inscriptionYMD:', inscriptionYMD);
 
     for (let j = 1; j <= nbJours; j++) {
       const d = new Date(anneeAffichee, moisAffiche, j);
       const dstr = formatYMD(d);
       let color = "#fff";
-      let textColor = "#222"; // noir par défaut
+      let textColor = "#222";
       let soloCount = soloParJour[dstr]?.length || 0;
       let duelRandCount = duelRandomParJour[dstr]?.length || 0;
       let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
       let classes = "jour";
+
+      // PATCH DEBUG dans la boucle
+      console.log('jour:', j, '| dstr:', dstr, '| inscriptionYMD:', inscriptionYMD, '| dstr < inscriptionYMD ?', dstr < inscriptionYMD);
 
       // 1. AVANT INSCRIPTION = GRIS (patch string)
       if (!inscriptionYMD || dstr < inscriptionYMD) {
@@ -98,23 +104,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       // 3. JOUR INSCRIPTION = JAUNE
       else if (inscriptionYMD && dstr === inscriptionYMD) {
         color = "#ffe04a";
-        textColor = "#fff"; // blanc sur fond jaune
+        textColor = "#fff";
         classes += " jour-inscription";
       }
       // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
       else {
         const totalJour = soloCount + duelRandCount + duelAmisCount;
         if (totalJour === 0) {
-          color = "#ff2c2c";    // rouge
-          textColor = "#fff";   // chiffre blanc sur rouge
+          color = "#ff2c2c";
+          textColor = "#fff";
         } else if (
           soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
         ) {
-          color = "#16b46a";    // vert foncé
-          textColor = "#fff";   // chiffre blanc sur vert foncé
+          color = "#16b46a";
+          textColor = "#fff";
         } else {
-          color = "#baffc7";    // vert clair
-          textColor = "#222";   // chiffre noir sur vert clair
+          color = "#baffc7";
+          textColor = "#222";
         }
         totalDefisMois += totalJour;
       }
@@ -178,6 +184,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   `;
   document.head.appendChild(style);
 
-  // Chargement initial (1 seule requête !)
   await chargerHistoriqueEtInscription();
 });
