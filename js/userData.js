@@ -513,5 +513,6 @@ export {
   getUserDataCloud,
   getDefisFromSupabase,
   getOwnedFrames,
-  loadUserData
+  loadUserData,
+  incrementFriendsInvited
 };
