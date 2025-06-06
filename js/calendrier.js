@@ -87,35 +87,40 @@ for (let j = 1; j <= nbJours; j++) {
   let soloCount = soloParJour[dstr]?.length || 0;
   let duelRandCount = duelRandomParJour[dstr]?.length || 0;
   let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = ["jour"];  // <= TABLEAU DE CLASSES
+  let classes = ["jour"];
 
-  if (d > today) {
-    color = "#fff";
-    textColor = "#222";
-    classes.push("jour-futur");
-  }
-  else if (!inscriptionYMD || dstr < inscriptionYMD) {
+  // === LOGIQUE CENTRALE CORRECTE ===
+  if (!inscriptionYMD || dstr < inscriptionYMD) {
+    // ➜ Avant inscription → gris
     color = "#f1f1f1";
     textColor = "#222";
     classes.push("jour-grise");
   }
-  else if (inscriptionYMD && dstr === inscriptionYMD) {
+  else if (d > today) {
+    // ➜ Après aujourd’hui → blanc
+    color = "#fff";
+    textColor = "#222";
+    classes.push("jour-futur");
+  }
+  else if (dstr === inscriptionYMD) {
+    // ➜ Jour exact d'inscription → jaune
     color = "#ffe04a";
     textColor = "#fff";
     classes.push("jour-inscription");
   }
   else {
+    // ➜ Jours passés depuis inscription → vert/rouge selon activité
     const totalJour = soloCount + duelRandCount + duelAmisCount;
     if (totalJour === 0) {
-      color = "#ff2c2c";
+      color = "#ff2c2c"; // rouge : aucun défi
       textColor = "#fff";
     } else if (
       soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
     ) {
-      color = "#16b46a";
+      color = "#16b46a"; // vert foncé : partie terminée
       textColor = "#fff";
     } else {
-      color = "#baffc7";
+      color = "#baffc7"; // vert clair : 1 ou 2 défis
       textColor = "#222";
     }
     totalDefisMois += totalJour;
