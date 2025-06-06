@@ -254,7 +254,7 @@ const CATEGORIES = [
 function getCategorie(id) {
   const num = parseInt(id.replace('polaroid_', ''));
   if (num >= 1 && num <= 10) return 'classique';
-  if (num >= 11 && num <= 100) return 'prestique';
+  if (num >= 11 && num <= 100) return 'prestigue';
   if (num >= 101 && num <= 200) return 'premium';
   if (num >= 900 && num <= 1000) return 'bloque';
   return 'autre';
