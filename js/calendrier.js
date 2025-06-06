@@ -66,49 +66,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
 
     for (let j = 1; j <= nbJours; j++) {
-      const d = new Date(anneeAffichee, moisAffiche, j);
-      const dstr = formatYMD(d);
-      let color = "#fff";
-      let textColor = "#222";
-      let soloCount = soloParJour[dstr]?.length || 0;
-      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-      let classes = ["jour"];
-        console.log("===", dstr, "| inscription:", inscriptionYMD, "| today:", formatYMD(today));
+  const d = new Date(anneeAffichee, moisAffiche, j);
+  const dstr = formatYMD(d);
+  let color = "#fff";
+  let textColor = "#222";
+  let soloCount = soloParJour[dstr]?.length || 0;
+  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+  let classes = ["jour"];
 
-      if (!inscriptionYMD || dstr < inscriptionYMD) {
-        color = "#f1f1f1"; // avant inscription
-        textColor = "#222";
-        classes.push("jour-grise");
-      }
-      else if (dstr > formatYMD(today)) {
-        color = "#fff"; // jour futur
-        textColor = "#222";
-        classes.push("jour-futur");
-      }
-      else if (dstr === inscriptionYMD) {
-        color = "#ffe04a"; // jour inscription
-        textColor = "#fff";
-        classes.push("jour-inscription");
-      }
-      else {
-        const totalJour = soloCount + duelRandCount + duelAmisCount;
-        if (totalJour === 0) {
-          color = "#ff2c2c"; // rouge
-          textColor = "#fff";
-        } else if (
-          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-        ) {
-          color = "#16b46a"; // vert foncé
-          textColor = "#fff";
-        } else {
-          color = "#baffc7"; // vert clair
-          textColor = "#222";
-        }
-        totalDefisMois += totalJour;
-      }
+  // --- VRAIE LOGIQUE FIXÉE ---
+  if (inscriptionYMD && dstr < inscriptionYMD) {
+    color = "#f1f1f1";
+    textColor = "#222";
+    classes.push("jour-grise");
+  }
+  else if (dstr === inscriptionYMD) {
+    color = "#ffe04a";
+    textColor = "#fff";
+    classes.push("jour-inscription");
+  }
+  else if (dstr > formatYMD(today)) {
+    color = "#fff";
+    textColor = "#222";
+    classes.push("jour-futur");
+  }
+  else {
+    const totalJour = soloCount + duelRandCount + duelAmisCount;
+    if (totalJour === 0) {
+      color = "#ff2c2c";
+      textColor = "#fff";
+    } else if (
+      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+    ) {
+      color = "#16b46a";
+      textColor = "#fff";
+    } else {
+      color = "#baffc7";
+      textColor = "#222";
+    }
+    totalDefisMois += totalJour;
+  }
 
-      html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
+  html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
+
     }
 
     html += '</div>';
