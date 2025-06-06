@@ -221,17 +221,17 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     container.remove();
   }
   // ...le reste (solo/base64) inchangé...
-  else if (mode === "solo") {
-    localStorage.setItem(`photo_defi_${defiId}`, dataUrl);
-    if (window.afficherPhotoDansCadreSolo) {
-      window.afficherPhotoDansCadreSolo(defiId, dataUrl);
-    }
-    container.remove();
-    resolve(dataUrl);
-  } else if (mode === "base64") {
-    container.remove();
-    resolve(dataUrl);
+else if (mode === "solo") {
+  const cadre = (await getCadreSelectionne?.()) || "polaroid_01";
+  const obj = { photo: dataUrl, cadre };
+  localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(obj));
+  if (window.afficherPhotoDansCadreSolo) {
+    window.afficherPhotoDansCadreSolo(defiId, dataUrl);
   }
+  container.remove();
+  resolve(dataUrl);
+}
+
 };
 
       previewDiv.querySelector("#retakePhoto").onclick = () => {
