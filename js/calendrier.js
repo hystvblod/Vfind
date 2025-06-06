@@ -62,34 +62,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelRandomParJour).forEach(list => totalDefisTous += list.length);
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
-    for (let j = 1; j <= nbJours; j++) {
-      const d = new Date(anneeAffichee, moisAffiche, j);
-      const dstr = d.toISOString().slice(0, 10);
-      let color = "#fff";
-      let soloCount = soloParJour[dstr]?.length || 0;
-      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+for (let j = 1; j <= nbJours; j++) {
+  const d = new Date(anneeAffichee, moisAffiche, j);
+  const dstr = d.toISOString().slice(0, 10);
+  let color = "#fff";
+  let textColor = "#000";
+  let soloCount = soloParJour[dstr]?.length || 0;
+  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+  let classes = "jour";
 
-      if (!dateInscription || d < dateInscription) {
-        color = "#fff";
-      } else if (d > new Date()) {
-        color = "#fff";
-      } else {
-        const totalJour = soloCount + duelRandCount + duelAmisCount;
-        if (totalJour === 0) {
-          color = "#ff2c2c"; // rouge
-        } else if (
-          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-        ) {
-          color = "#089e29"; // vert foncé
-        } else {
-          color = "#baffc7"; // vert clair
-        }
-        totalDefisMois += totalJour;
-      }
-
-      html += `<div class="jour" style="background:${color}; color:${color === '#fff' ? '#000' : '#fff'}">${j}</div>`;
+  if (!dateInscription || d < dateInscription) {
+    color = "#f1f1f1";
+    textColor = "#bbb";
+    classes += " jour-grise";
+  } else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
+    color = "#ffe04a"; // jaune pastel jour inscription
+    textColor = "#222";
+    classes += " jour-inscription";
+  } else if (d > new Date()) {
+    color = "#fff";
+    textColor = "#bbb";
+    classes += " jour-grise";
+  } else {
+    const totalJour = soloCount + duelRandCount + duelAmisCount;
+    if (totalJour === 0) {
+      color = "#ff2c2c"; // rouge
+      textColor = "#fff";
+    } else if (
+      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+    ) {
+      color = "#089e29"; // vert foncé
+      textColor = "#fff";
+    } else {
+      color = "#baffc7"; // vert clair
+      textColor = "#222";
     }
+    totalDefisMois += totalJour;
+  }
+
+  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+}
+
+
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
