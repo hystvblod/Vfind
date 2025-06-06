@@ -91,13 +91,13 @@ for (let j = 1; j <= nbJours; j++) {
 
   // 1. AVANT INSCRIPTION = GRIS
   if (!inscriptionYMD || dstr < inscriptionYMD) {
-    color = "#fff";
+    color = "#f1f1f1";
     textColor = "#222";
     classes += " jour-grise";
   }
   // 2. JOURS À VENIR (après aujourd'hui) = BLANC
   else if (d > today) {
-    color = "#f1f1f1";
+    color = "#fff";
     textColor = "#222";
     classes += " jour-futur";
   }
