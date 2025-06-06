@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         textColor = "#222";
         classes.push("jour-grise");
       }
-      else if (d > today) {
+      else if (dstr > formatYMD(today)) {
         color = "#fff"; // jour futur
         textColor = "#222";
         classes.push("jour-futur");
