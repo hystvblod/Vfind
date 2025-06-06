@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userId = getUserId();
     if (!userId) return;
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('historique, dateInscription')
       .eq('id', userId)
@@ -66,60 +66,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
 
     for (let j = 1; j <= nbJours; j++) {
-  const d = new Date(anneeAffichee, moisAffiche, j);
-  const dstr = formatYMD(d);
-  let color = "#fff";
-  let textColor = "#222";
-  let soloCount = soloParJour[dstr]?.length || 0;
-  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = ["jour"];
+      const d = new Date(anneeAffichee, moisAffiche, j);
+      const dstr = formatYMD(d);
+      let classes = ["jour"];
+      let color = "#fff";
+      let textColor = "#222";
 
-  // --- VRAIE LOGIQUE FIXÉE ---
-  if (inscriptionYMD && dstr < inscriptionYMD) {
-    color = "#f1f1f1";
-    textColor = "#222";
-    classes.push("jour-grise");
-  }
-  else if (dstr === inscriptionYMD) {
-    color = "#ffe04a";
-    textColor = "#fff";
-    classes.push("jour-inscription");
-  }
-  if (dstr > formatYMD(today)) {
-  color = "#fff";
-  textColor = "#222";
-  classes.push("jour-futur");
-}
-else if (!inscriptionYMD || dstr < inscriptionYMD) {
-  color = "#f1f1f1";
-  textColor = "#222";
-  classes.push("jour-grise");
-}
-else if (dstr === inscriptionYMD) {
-  color = "#ffe04a";
-  textColor = "#fff";
-  classes.push("jour-inscription");
-}
-else {
-  const totalJour = soloCount + duelRandCount + duelAmisCount;
-  if (totalJour === 0) {
-    color = "#ff2c2c";
-    textColor = "#fff";
-  } else if (
-    soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-  ) {
-    color = "#16b46a";
-    textColor = "#fff";
-  } else {
-    color = "#baffc7";
-    textColor = "#222";
-  }
-  totalDefisMois += totalJour;
-}
+      const soloCount = soloParJour[dstr]?.length || 0;
+      const duelRandCount = duelRandomParJour[dstr]?.length || 0;
+      const duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+      const totalJour = soloCount + duelRandCount + duelAmisCount;
 
-  html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
+      if (inscriptionYMD && dstr < inscriptionYMD) {
+        classes.push("jour-grise");
+        color = "#f1f1f1";
+      } else if (dstr === inscriptionYMD) {
+        classes.push("jour-inscription");
+        color = "#ffe04a";
+        textColor = "#fff";
+      } else if (dstr > formatYMD(today)) {
+        classes.push("jour-futur");
+        color = "#fff";
+      } else if (totalJour === 0) {
+        color = "#ff2c2c";
+        textColor = "#fff";
+      } else if (soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3) {
+        color = "#16b46a";
+        textColor = "#fff";
+      } else {
+        color = "#baffc7";
+        textColor = "#222";
+      }
 
+      if (dstr <= formatYMD(today)) totalDefisMois += totalJour;
+
+      html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
     }
 
     html += '</div>';
