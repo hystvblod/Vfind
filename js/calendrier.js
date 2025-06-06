@@ -75,17 +75,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
   let classes = "jour";
 
-  // 1. JOURS À VENIR (après aujourd'hui) = BLANC
-  if (d > today) {
+  // 1. AVANT INSCRIPTION = GRIS (DOIT ÊTRE TESTÉ EN PREMIER)
+  if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
+    color = "#f1f1f1";   // gris
+    textColor = "#bbb";
+    classes += " jour-grise";
+  }
+  // 2. JOURS À VENIR (après aujourd'hui) = BLANC
+  else if (d > today) {
     color = "#fff";
     textColor = "#bbb";
     classes += " jour-futur";
-  }
-  // 2. AVANT INSCRIPTION = GRIS
-  else if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
-    color = "#f1f1f1";
-    textColor = "#bbb";
-    classes += " jour-grise";
   }
   // 3. JOUR INSCRIPTION = JAUNE
   else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
