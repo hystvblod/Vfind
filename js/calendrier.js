@@ -62,6 +62,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelRandomParJour).forEach(list => totalDefisTous += list.length);
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
+    const today = new Date();
+    today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
+
     for (let j = 1; j <= nbJours; j++) {
       const d = new Date(anneeAffichee, moisAffiche, j);
       const dstr = d.toISOString().slice(0, 10);
@@ -72,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
       let classes = "jour";
 
-      // AVANT inscription (gris clair)
+      // AVANT inscription = GRIS
       if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
         color = "#f1f1f1";
         textColor = "#bbb";
@@ -84,12 +87,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         textColor = "#222";
         classes += " jour-inscription";
       }
-      // APRES inscription (couleurs selon les défis)
-      else if (d > new Date()) {
+      // JOURS À VENIR (BLANC, après inscription)
+      else if (d > today) {
         color = "#fff";
         textColor = "#bbb";
         classes += " jour-futur";
       } else {
+        // Jours après inscription, mais passés (hors jour d'inscription)
         const totalJour = soloCount + duelRandCount + duelAmisCount;
         if (totalJour === 0) {
           color = "#ff2c2c"; // rouge
@@ -97,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else if (
           soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
         ) {
-          color = "#089e29"; // vert foncé
+          color = "#16b46a"; // vert foncé
           textColor = "#fff";
         } else {
           color = "#baffc7"; // vert clair

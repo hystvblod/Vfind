@@ -58,9 +58,12 @@ async function loadUserData(force = false) {
       hasDownloadedVZone: false,
       hasDownloadedVBlocks: false,
       friendsInvited: 0,
-      // AJOUT POUR MODE SOLO
       defiActifs: [],
-      defiTimer: 0
+      defiTimer: 0,
+      // PATCH AMIS - AJOUT DÉFINITIF !
+      amis: [],
+      demandesRecues: [],
+      demandesEnvoyees: []
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
@@ -76,7 +79,16 @@ async function loadUserData(force = false) {
       }
     }
   } else {
-    userDataCache = data;
+    // PATCH sécurité : on garantit les tableaux sur tous les users anciens
+    userDataCache = {
+      amis: [],
+      demandesRecues: [],
+      demandesEnvoyees: [],
+      ...data
+    };
+    userDataCache.amis = Array.isArray(userDataCache.amis) ? userDataCache.amis : [];
+    userDataCache.demandesRecues = Array.isArray(userDataCache.demandesRecues) ? userDataCache.demandesRecues : [];
+    userDataCache.demandesEnvoyees = Array.isArray(userDataCache.demandesEnvoyees) ? userDataCache.demandesEnvoyees : [];
   }
   setCachedOwnedFrames(userDataCache.cadres || []);
   return userDataCache;
@@ -400,7 +412,12 @@ async function resetUserData() {
     votesConcours: {},
     hasDownloadedVZone: false,
     hasDownloadedVBlocks: false,
-    friendsInvited: 0
+    friendsInvited: 0,
+    defiActifs: [],
+    defiTimer: 0,
+    amis: [],
+    demandesRecues: [],
+    demandesEnvoyees: []
   };
 
   await supabase.from('users').upsert([userDataCache]);
