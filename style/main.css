@@ -2340,3 +2340,38 @@ overflow-y: auto;
   vertical-align:middle;
   border:1.5px solid #e0e0e0;
 }
+.photo-popup-buttons {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+.btn-photo-icon {
+  background: #fff;
+  border-radius: 50%;
+  border: none;
+  padding: 7px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.btn-photo-icon:hover {
+  transform: scale(1.1);
+}
+
+.btn-photo-icon img {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.btn-photo-icon.active {
+  background-color: #ffe4e4;
+}

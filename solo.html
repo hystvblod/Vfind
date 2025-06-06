@@ -8,16 +8,25 @@
 </head>
 <body>
 
-  <!-- POPUP PHOTO -->
-  <div id="popup-photo" class="popup hidden">
-    <div class="popup-inner">
-      <button id="close-popup" class="close-btn">❌</button>
-      <div class="cadre-preview cadre-popup boutique-style">
-        <img id="cadre-affiche" class="photo-cadre" src="" />
-        <img id="photo-affichee" class="photo-user" src="" />
-      </div>
+<div id="popup-photo" class="popup hidden">
+  <div class="popup-inner">
+    <!-- Boutons flottants -->
+    <div class="photo-popup-buttons">
+      <button id="close-popup" class="btn-photo-icon">
+        <img src="assets/icons/croixnoir.svg" alt="Fermer" width="24" height="24" />
+      </button>
+      <button id="btn-aimer-photo" class="btn-photo-icon">
+        <img src="assets/icons/coeurnoir.svg" alt="Aimer" width="24" height="24" />
+      </button>
+    </div>
+    <!-- Contenu -->
+    <div class="cadre-preview cadre-popup boutique-style">
+      <img id="cadre-affiche" class="photo-cadre" src="" />
+      <img id="photo-affichee" class="photo-user" src="" />
     </div>
   </div>
+</div>
+
 
   <!-- ✅ Popup validation de défi -->
   <div id="popup-jeton" class="popup hidden">

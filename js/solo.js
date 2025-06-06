@@ -417,19 +417,48 @@ window.agrandirPhoto = async function(dataUrl, defiId) {
   const cadre = document.getElementById("cadre-affiche");
   const photo = document.getElementById("photo-affichee");
   if (!cadre || !photo) return;
+
   let photoData = null;
   try {
     photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
   } catch (e) {}
+
   const cadreActuel = photoData?.cadre || (await getCadreSelectionne());
   cadre.src = `./assets/cadres/${cadreActuel}.webp`;
   photo.src = dataUrl;
+
   const popup = document.getElementById("popup-photo");
   if (popup) {
     popup.classList.remove("hidden");
     popup.classList.add("show");
   }
+
+  // === BOUTON CŒUR ===
+  const btnAimer = document.getElementById("btn-aimer-photo");
+  if (btnAimer) {
+    btnAimer.onclick = () => {
+      let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+      if (!photosAimees.includes(defiId)) {
+        photosAimees.push(defiId);
+        localStorage.setItem("photos_aimees", JSON.stringify(photosAimees));
+        btnAimer.classList.add("active");
+      } else {
+        photosAimees = photosAimees.filter(id => id !== defiId);
+        localStorage.setItem("photos_aimees", JSON.stringify(photosAimees));
+        btnAimer.classList.remove("active");
+      }
+    };
+
+    // Affiche l’état aimé
+    let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+    if (photosAimees.includes(defiId)) {
+      btnAimer.classList.add("active");
+    } else {
+      btnAimer.classList.remove("active");
+    }
+  }
 };
+
 
 // ----------- VALIDATION DÉFI AVEC JETON OU PHOTO -----------
 window.validerDefi = async function(index) {
@@ -549,3 +578,4 @@ async function showRewardedAd() {
     setTimeout(() => { resolve(); }, 3200);
   });
 }
+
