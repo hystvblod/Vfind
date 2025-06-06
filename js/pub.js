@@ -16,6 +16,17 @@ export async function showAd(type) {
     return;
   }
 
+  // Vérifie le consentement RGPD/publicités avant de lancer la pub réelle
+  const consent = window.userConsent || localStorage.getItem("rgpdConsent");
+  if (consent !== "accept") {
+    alert("⚠️ Tu dois accepter les publicités personnalisées dans les paramètres pour profiter de cette fonctionnalité.");
+    return;
+  }
+
+  // PUB RÉELLE (AppLovin/Lovapp/AdMob) À INTÉGRER ICI si besoin :
+  // if (type === "rewarded") { showRealRewardedAd(); ... }
+
+  // Simulé pour l'instant :
   if (type === "rewarded") {
     alert("🎁 Pub vue ! Tu gagnes 100 pièces.");
     await addPoints(100);

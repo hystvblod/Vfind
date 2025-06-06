@@ -21,16 +21,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadUserData();
   userProfile = await getUserDataCloud();
 
-  // Affiche la liste
   await afficherListesAmis(userProfile);
 
-  // Ajout par pseudo
   document.getElementById("btn-ajouter-ami")?.addEventListener("click", async () => {
     const pseudoAmi = document.getElementById("pseudo-ami").value.trim();
     if (pseudoAmi) envoyerDemandeAmi(pseudoAmi);
   });
 
-  // Générer le lien d'invit
   document.getElementById("btn-lien-invit")?.addEventListener("click", () => {
     const base = window.location.origin + window.location.pathname;
     document.getElementById("lien-invit-output").value = `${base}?add=${userPseudo}`;
@@ -44,7 +41,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // --- Affichage pro des listes d'amis ---
 async function afficherListesAmis(data) {
-  // Amis
   const ulAmis = document.getElementById("liste-amis");
   ulAmis.innerHTML = "";
   if (!data.amis?.length) {
@@ -61,7 +57,6 @@ async function afficherListesAmis(data) {
     });
   }
 
-  // Demandes reçues
   const ulRecues = document.getElementById("demandes-recue");
   ulRecues.innerHTML = "";
   if (!data.demandesRecues?.length) {
@@ -78,7 +73,6 @@ async function afficherListesAmis(data) {
     });
   }
 
-  // Demandes envoyées
   const ulEnvoyees = document.getElementById("demandes-envoyees");
   ulEnvoyees.innerHTML = "";
   if (!data.demandesEnvoyees?.length) {
@@ -99,22 +93,19 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
   if (pseudoAmi === userPseudo) return toast("Tu ne peux pas t'ajouter toi-même !", "#b93f3f");
 
-  // Cherche l'utilisateur par pseudo
-  const { data: ami } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).single();
-  if (!ami) return toast("Aucun utilisateur trouvé.", "#b93f3f");
+  const { data: ami, error } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).maybeSingle();
+  if (error || !ami) return toast("Aucun utilisateur trouvé.", "#b93f3f");
 
   userProfile = await getUserDataCloud();
 
-  if ((userProfile.amis||[]).includes(pseudoAmi)) return toast("Vous êtes déjà amis !");
-  if ((userProfile.demandesEnvoyees||[]).includes(pseudoAmi)) return toast("Demande déjà envoyée.");
-  if ((userProfile.demandesRecues||[]).includes(pseudoAmi)) return toast("Cette personne t'a déjà envoyé une demande !");
+  if ((userProfile.amis || []).includes(pseudoAmi)) return toast("Vous êtes déjà amis !");
+  if ((userProfile.demandesEnvoyees || []).includes(pseudoAmi)) return toast("Demande déjà envoyée.");
+  if ((userProfile.demandesRecues || []).includes(pseudoAmi)) return toast("Cette personne t'a déjà envoyé une demande !");
 
-  // Ajoute la demande envoyée à toi-même
   await supabase.from("users").update({
     demandesEnvoyees: [ ...(userProfile.demandesEnvoyees || []), pseudoAmi ]
   }).eq("pseudo", userPseudo);
 
-  // Ajoute la demande reçue à l'autre
   await supabase.from("users").update({
     demandesRecues: [ ...(ami.demandesRecues || []), userPseudo ]
   }).eq("pseudo", pseudoAmi);
@@ -124,14 +115,12 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
   await afficherListesAmis(userProfile);
 };
 
-// Accepter une demande d'ami
 window.accepterDemande = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
-  const { data: ami } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).single();
-  if (!ami) return;
+  const { data: ami, error } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).maybeSingle();
+  if (error || !ami) return;
   userProfile = await getUserDataCloud();
 
-  // Ajoute chacun dans la liste d'amis de l'autre
   await supabase.from("users").update({
     amis: [ ...(userProfile.amis||[]), pseudoAmi ],
     demandesRecues: (userProfile.demandesRecues||[]).filter(x => x !== pseudoAmi)
@@ -142,17 +131,16 @@ window.accepterDemande = async function(pseudoAmi) {
     demandesEnvoyees: (ami.demandesEnvoyees||[]).filter(x => x !== userPseudo)
   }).eq("pseudo", pseudoAmi);
 
-  await incrementFriendsInvited(); // Incrémente le compteur (cadres, récompenses...)
+  await incrementFriendsInvited();
   toast("Vous êtes maintenant amis !");
   userProfile = await getUserDataCloud();
   await afficherListesAmis(userProfile);
 };
 
-// Refuser une demande d'ami
 window.refuserDemande = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
-  const { data: ami } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).single();
-  if (!ami) return;
+  const { data: ami, error } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).maybeSingle();
+  if (error || !ami) return;
   userProfile = await getUserDataCloud();
 
   await supabase.from("users").update({
@@ -168,11 +156,10 @@ window.refuserDemande = async function(pseudoAmi) {
   await afficherListesAmis(userProfile);
 };
 
-// Supprimer un ami
 window.supprimerAmi = async function(pseudoAmi) {
   if (!userPseudo || !pseudoAmi) return;
-  const { data: ami } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).single();
-  if (!ami) return;
+  const { data: ami, error } = await supabase.from("users").select("*").eq("pseudo", pseudoAmi).maybeSingle();
+  if (error || !ami) return;
   userProfile = await getUserDataCloud();
 
   await supabase.from("users").update({
@@ -188,12 +175,10 @@ window.supprimerAmi = async function(pseudoAmi) {
   await afficherListesAmis(userProfile);
 };
 
-// Défier un ami
 window.defierAmi = function(pseudoAmi) {
   window.location.href = `duel.html?ami=${pseudoAmi}`;
 };
 
-// --- Détection ajout ami via lien d’invitation ?add=... ---
 function detecterInvitationParLien() {
   const params = new URLSearchParams(window.location.search);
   const toAdd = params.get("add");
