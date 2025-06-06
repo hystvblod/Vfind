@@ -65,55 +65,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     const today = new Date();
     today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
 
-    for (let j = 1; j <= nbJours; j++) {
+for (let j = 1; j <= nbJours; j++) {
   const d = new Date(anneeAffichee, moisAffiche, j);
   const dstr = d.toISOString().slice(0, 10);
   let color = "#fff";
-  let textColor = "#222";
+  let textColor = "#222"; // noir par défaut
   let soloCount = soloParJour[dstr]?.length || 0;
   let duelRandCount = duelRandomParJour[dstr]?.length || 0;
   let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
   let classes = "jour";
 
-  // 1. AVANT INSCRIPTION = GRIS (DOIT ÊTRE TESTÉ EN PREMIER)
+  // 1. AVANT INSCRIPTION = GRIS
   if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
     color = "#f1f1f1";   // gris
-    textColor = "#bbb";
+    textColor = "#222";  // chiffre noir sur fond gris
     classes += " jour-grise";
   }
   // 2. JOURS À VENIR (après aujourd'hui) = BLANC
   else if (d > today) {
     color = "#fff";
-    textColor = "#bbb";
+    textColor = "#222"; // chiffre noir sur fond blanc
     classes += " jour-futur";
   }
   // 3. JOUR INSCRIPTION = JAUNE
   else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
     color = "#ffe04a";
-    textColor = "#222";
+    textColor = "#fff"; // blanc sur fond jaune
     classes += " jour-inscription";
   }
   // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
   else {
     const totalJour = soloCount + duelRandCount + duelAmisCount;
     if (totalJour === 0) {
-      color = "#ff2c2c"; // rouge
-      textColor = "#fff";
+      color = "#ff2c2c";    // rouge
+      textColor = "#fff";   // chiffre blanc sur rouge
     } else if (
       soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
     ) {
-      color = "#16b46a"; // vert foncé
-      textColor = "#fff";
+      color = "#16b46a";    // vert foncé
+      textColor = "#fff";   // chiffre blanc sur vert foncé
     } else {
-      color = "#baffc7"; // vert clair
-      textColor = "#222";
+      color = "#baffc7";    // vert clair
+      textColor = "#222";   // chiffre noir sur vert clair
     }
     totalDefisMois += totalJour;
   }
 
   html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
 }
-
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
