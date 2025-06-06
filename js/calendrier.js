@@ -87,28 +87,23 @@ for (let j = 1; j <= nbJours; j++) {
   let soloCount = soloParJour[dstr]?.length || 0;
   let duelRandCount = duelRandomParJour[dstr]?.length || 0;
   let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = "jour";
+  let classes = ["jour"];  // <= TABLEAU DE CLASSES
 
-  // 1. JOURS À VENIR (après aujourd'hui) = BLANC
-if (d > today) {
-  color = "#fff";
-  textColor = "#222";
-  classes += " jour-futur";
-}
-// 2. AVANT INSCRIPTION = GRIS
-else if (!inscriptionYMD || dstr < inscriptionYMD) {
-  color = "#f1f1f1";
-  textColor = "#222";
-  classes += " jour-grise";
-}
-
-  // 3. JOUR INSCRIPTION = JAUNE
+  if (d > today) {
+    color = "#fff";
+    textColor = "#222";
+    classes.push("jour-futur");
+  }
+  else if (!inscriptionYMD || dstr < inscriptionYMD) {
+    color = "#f1f1f1";
+    textColor = "#222";
+    classes.push("jour-grise");
+  }
   else if (inscriptionYMD && dstr === inscriptionYMD) {
     color = "#ffe04a";
     textColor = "#fff";
-    classes += " jour-inscription";
+    classes.push("jour-inscription");
   }
-  // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
   else {
     const totalJour = soloCount + duelRandCount + duelAmisCount;
     if (totalJour === 0) {
@@ -126,7 +121,7 @@ else if (!inscriptionYMD || dstr < inscriptionYMD) {
     totalDefisMois += totalJour;
   }
 
-  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+  html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
 }
 
     html += '</div>';
