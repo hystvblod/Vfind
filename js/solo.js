@@ -311,9 +311,19 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
 
   canRetakePhoto = false;
   retakeDefiId = null;
-  defis[index] = defi;
-  localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
+
+  // ------ Ajout automatique de la validation ------
+  if (!defi.done) {
+    defi.done = true;
+    defis[index] = defi;
+    localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
+  }
+  // ------------------------------------------------
+
   await loadDefis();
+
+  // Fin de partie auto si tous les défis sont validés
+  if (tousDefisFaits(defis)) await endGameAuto();
 
   if (window.pubAfterPhoto) {
     window.pubAfterPhoto = false;
@@ -321,11 +331,6 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   }
 };
 
-async function afficherPhotosSauvegardees(photosMap) {
-  for (const id in photosMap) {
-    window.renderPhotoCadreSolo(id);
-  }
-}
 
 // ----------- RENDU MINIATURES + CHANGEMENT DE CADRE SOLO -----------
 window.renderPhotoCadreSolo = async function(defiId) {

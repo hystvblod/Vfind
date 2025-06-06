@@ -6,70 +6,128 @@
   <title>VFind - Amis</title>
   <link rel="stylesheet" href="style/main.css" />
   <style>
+    body {
+      background: #313142 !important;
+      color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+    }
     .main-buttons {
-      margin: 2.5rem auto;
-      max-width: 420px;
-      background: #fffef6;
+      margin: 2.2rem auto;
+      max-width: 430px;
+      background: rgba(44,50,62,0.92);
       border-radius: 1.5rem;
-      box-shadow: 0 8px 32px #0001, 0 1.5px 0 #ffe56a;
+      box-shadow: 0 8px 32px #0003, 0 1.5px 0 #24263a;
       padding: 2.2rem 1.4rem 2rem 1.4rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      color: #fff;
     }
     input.main-button, button.main-button {
       width: 100%;
       padding: 0.9em 1.2em;
       margin-bottom: 0.6em;
-      font-size: 1.15em;
+      font-size: 1.08em;
       border-radius: 1.1em;
       border: none;
-      background: #fff8d8;
-      color: #232323;
+      background: #24263a;
+      color: #fff;
       font-family: inherit;
       box-shadow: 0 2px 8px #0002;
       transition: background 0.2s;
     }
     button.main-button {
-      background: linear-gradient(92deg, #ffe04a 60%, #ffc947 100%);
-      color: #222;
+      background: #fffef6;
+      color: #3a3a9f;
       font-weight: 700;
       cursor: pointer;
       margin-bottom: 1.1em;
+      border: 1.5px solid #3a3a9f2c;
     }
-    button.main-button:hover { background: #fff16b; }
-    .txt-empty { color: #c4c4b8; font-style: italic; padding: 0.7em 0; text-align:center; }
+    button.main-button:hover {
+      background: #ffe04a;
+      color: #313142;
+    }
+    .txt-empty {
+      color: #babada;
+      font-style: italic;
+      padding: 0.7em 0;
+      text-align:center;
+    }
     .amis-li {
       display: flex; align-items: center;
-      gap: 0.9em; padding: 0.55em 0;
-      border-bottom: 1px solid #fff3b2;
+      gap: 0.8em;
+      margin-bottom: 9px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 14px;
+      box-shadow: 0 1.5px 6px #0002;
+      color: #fff;
+      padding: 0.66em 0.8em;
     }
     .ami-avatar {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center; justify-content: center;
       width: 2.2em; height: 2.2em;
       background: #ffe04a;
       border-radius: 50%;
-      color: #333;
+      color: #313142;
       font-weight: bold;
-      text-align: center; line-height: 2.2em;
       font-size: 1.08em;
-      border: 2.5px solid #fffbe0;
+      border: 2.5px solid #fff6;
+      margin-right: 4px;
       box-shadow: 0 2px 5px #0001;
+      text-align: center;
     }
     .ami-nom { flex: 1; font-size: 1.08em; }
     .btn-small {
-      background: #fff8d8; color: #232323; border: none;
-      padding: 0.28em 1em; border-radius: 1.2em; font-size: 0.97em;
-      margin-left: 0.1em; cursor: pointer; font-weight:600;
-      transition: background 0.15s, color 0.13s;
+      background: #fff;
+      color: #3a3a9f;
+      border: none;
+      padding: 0.29em 1.1em;
+      border-radius: 1.3em;
+      font-size: 1em;
+      font-weight: 600;
+      margin-left: 0.13em;
+      cursor: pointer;
       box-shadow: 0 1px 3px #0001;
+      transition: background 0.13s, color 0.13s;
     }
-    .btn-defi { background: #b9e5ff; }
-    .btn-suppr { background: #ffe3e3; color:#a10000;}
-    .btn-accept { background: #e4ffe6; color: #1f922c; }
-    .btn-refuse { background: #ffe3e3; color: #b03c3c; }
-    .btn-small:hover { background: #ffe04a; color: #1f1f1f;}
-    h3 { margin-top: 2em; margin-bottom: 0.7em; font-size:1.2em;}
+    .btn-small:hover {
+      background: #e0e0e0;
+      color: #3a3a9f;
+    }
+    .btn-accept {
+      background: #3a3a9f;
+      color: #fff;
+    }
+    .btn-accept:hover {
+      background: #ffe04a;
+      color: #313142;
+    }
+    .btn-defi {
+      background: #23233a;
+      color: #ffe04a;
+    }
+    .btn-defi:hover {
+      background: #3a3a9f;
+      color: #fff;
+    }
+    .btn-refuse, .btn-suppr {
+      background: #44454e;
+      color: #eee;
+    }
+    .btn-refuse:hover, .btn-suppr:hover {
+      background: #b94b4b;
+      color: #fff;
+    }
+    h3 {
+      margin-top: 2em;
+      margin-bottom: 0.7em;
+      font-size:1.15em;
+      color: #ffe04a;
+      letter-spacing: .5px;
+    }
     ul { list-style: none; margin: 0; padding: 0;}
     .toast-msg {
       position: fixed; left: 50%; bottom: 2.6rem; transform: translateX(-50%);
@@ -83,7 +141,7 @@
     }
   </style>
 </head>
-<body class="duel-container" style="background:linear-gradient(110deg,#fff7ce,#ffe16a 60%,#ffd96a 100%); min-height:100vh;">
+<body style="background:#313142;min-height:100vh;">
   <header class="header-boutique">
     <a href="profil.html" class="back-btn" title="Retour">
       <img src="assets/icons/arrow_back.svg" alt="Retour" />
@@ -105,11 +163,11 @@
       
       <!-- Ajout par lien d'invitation -->
       <div style="width:100%;margin-top:1.3em;">
-        <button class="main-button" id="btn-lien-invit" style="background:#ffe04a;color:#232323;">Générer mon lien d’invitation</button>
+        <button class="main-button" id="btn-lien-invit" style="background:#3a3a9f;color:#fff;">Générer mon lien d’invitation</button>
         <input id="lien-invit-output" readonly style="width:100%;margin-top:6px;text-align:center;font-size:0.98em;" onclick="this.select();" />
       </div>
 
-      <hr style="margin:2em 0 1em 0; border: 0; border-top: 1.5px dashed #ffe16a;">
+      <hr style="margin:2em 0 1em 0; border: 0; border-top: 1.5px dashed #444;">
 
       <h3>Mes amis</h3>
       <ul id="liste-amis"></ul>
