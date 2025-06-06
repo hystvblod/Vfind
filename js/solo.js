@@ -113,13 +113,13 @@ async function init() {
     return;
   }
 
-  if (
-    (defiActifs.length > 0 && defiTimer && Date.now() >= defiTimer) ||
-    tousDefisFaits(defiActifs)
-  ) {
-    await endGameAuto();
-    return;
-  }
+if (
+  (defiActifs.length > 0 && defiTimer && Date.now() >= defiTimer)
+) {
+  await endGameAuto();
+  return;
+}
+
 
   // Pas de partie → LANCE DIRECT une nouvelle partie
   await startGame();
@@ -470,11 +470,11 @@ window.validerDefi = async function(index) {
       defis[index] = defi;
       localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
       await loadDefis();
-      if (tousDefisFaits(defis)) await endGameAuto();
       return;
     }
     await window.ouvrirPopupJeton(index);
   }
+
 };
 
 window.ouvrirPopupJeton = async function(index) {
@@ -509,9 +509,10 @@ async function validerDefiAvecJeton(index) {
     localStorage.setItem(`photo_defi_${defi.id}`, JSON.stringify({ photo: "assets/img/jetonpp.webp", cadre: "polaroid_01" }));
     localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
     await loadDefis();
-    if (tousDefisFaits(defis)) await endGameAuto();
+ 
   }
 }
+
 
 // ----------- FIN DE PARTIE AUTOMATIQUE -----------
 async function endGameAuto() {
