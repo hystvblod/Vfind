@@ -1,4 +1,4 @@
-import { supabase, getUserId, loadUserData } from './userData.js';
+import { supabase, getUserId, loadUserData } from './userData.js'; // Optimisé Supabase fourni dans ta dernière version
 
 document.addEventListener("DOMContentLoaded", async () => {
   let dateCourante = new Date();
@@ -8,17 +8,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   let dateInscription = null;
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
-  // Ajoute une fonction utilitaire pour le format date YMD
+  // --- Compare avec des YYYY-MM-DD pour éviter tous les bugs de date JS ---
   function formatYMD(d) {
-    return d ? d.toISOString().slice(0, 10) : null;
+    return d.toISOString().slice(0, 10);
   }
 
   // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE ----
   async function chargerHistoriqueEtInscription() {
-    await loadUserData();
+    await loadUserData(); // Auth automatique
     const userId = getUserId();
     if (!userId) return;
-
+    // Récupère l'utilisateur
     const { data, error } = await supabase
       .from('users')
       .select('historique, dateInscription')
@@ -68,65 +68,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
 
-    // PATCH DEBUG : print toutes les valeurs au début
-    console.log('=== DEBUG CALENDRIER ===');
-    console.log('dateInscription:', dateInscription);
-    const inscriptionYMD = formatYMD(dateInscription);
-    console.log('inscriptionYMD:', inscriptionYMD);
+    // --- PATCH pour "avant inscription" fiable partout ---
+    
+    const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
 
-    for (let j = 1; j <= nbJours; j++) {
-      const d = new Date(anneeAffichee, moisAffiche, j);
-      const dstr = formatYMD(d);
-      let color = "#fff";
-      let textColor = "#222";
-      let soloCount = soloParJour[dstr]?.length || 0;
-      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-      let classes = "jour";
+   
 
-      // PATCH DEBUG dans la boucle
-      console.log('jour:', j, '| dstr:', dstr, '| inscriptionYMD:', inscriptionYMD, '| dstr < inscriptionYMD ?', dstr < inscriptionYMD);
 
-      // 1. AVANT INSCRIPTION = GRIS (patch string)
-      if (!inscriptionYMD || dstr < inscriptionYMD) {
-        color = "#f1f1f1";
-        textColor = "#222";
-        classes += " jour-grise";
-      }
-      // 2. JOURS À VENIR (après aujourd'hui) = BLANC
-      else if (d > today) {
-        color = "#fff";
-        textColor = "#222";
-        classes += " jour-futur";
-      }
-      // 3. JOUR INSCRIPTION = JAUNE
-      else if (inscriptionYMD && dstr === inscriptionYMD) {
-        color = "#ffe04a";
-        textColor = "#fff";
-        classes += " jour-inscription";
-      }
-      // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
-      else {
-        const totalJour = soloCount + duelRandCount + duelAmisCount;
-        if (totalJour === 0) {
-          color = "#ff2c2c";
-          textColor = "#fff";
-        } else if (
-          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-        ) {
-          color = "#16b46a";
-          textColor = "#fff";
-        } else {
-          color = "#baffc7";
-          textColor = "#222";
-        }
-        totalDefisMois += totalJour;
-      }
+// Puis dans ta boucle :
+for (let j = 1; j <= nbJours; j++) {
+  const d = new Date(anneeAffichee, moisAffiche, j);
+  const dstr = formatYMD(d);
+  let color = "#fff";
+  let textColor = "#222";
+  let soloCount = soloParJour[dstr]?.length || 0;
+  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+  let classes = "jour";
 
-      html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+  // 1. AVANT INSCRIPTION = GRIS
+  if (!inscriptionYMD || dstr < inscriptionYMD) {
+    color = "#f1f1f1";
+    textColor = "#222";
+    classes += " jour-grise";
+  }
+  // 2. JOURS À VENIR (après aujourd'hui) = BLANC
+  else if (d > today) {
+    color = "#fff";
+    textColor = "#222";
+    classes += " jour-futur";
+  }
+  // 3. JOUR INSCRIPTION = JAUNE
+  else if (inscriptionYMD && dstr === inscriptionYMD) {
+    color = "#ffe04a";
+    textColor = "#fff";
+    classes += " jour-inscription";
+  }
+  // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
+  else {
+    const totalJour = soloCount + duelRandCount + duelAmisCount;
+    if (totalJour === 0) {
+      color = "#ff2c2c";
+      textColor = "#fff";
+    } else if (
+      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+    ) {
+      color = "#16b46a";
+      textColor = "#fff";
+    } else {
+      color = "#baffc7";
+      textColor = "#222";
     }
+    totalDefisMois += totalJour;
+  }
+
+  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+}
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
@@ -184,5 +183,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   `;
   document.head.appendChild(style);
 
+  // Chargement initial (1 seule requête !)
   await chargerHistoriqueEtInscription();
 });
