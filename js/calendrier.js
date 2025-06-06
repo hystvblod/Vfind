@@ -66,53 +66,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
 
     for (let j = 1; j <= nbJours; j++) {
-      const d = new Date(anneeAffichee, moisAffiche, j);
-      const dstr = d.toISOString().slice(0, 10);
-      let color = "#fff";
-      let textColor = "#222";
-      let soloCount = soloParJour[dstr]?.length || 0;
-      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-      let classes = "jour";
+  const d = new Date(anneeAffichee, moisAffiche, j);
+  const dstr = d.toISOString().slice(0, 10);
+  let color = "#fff";
+  let textColor = "#222";
+  let soloCount = soloParJour[dstr]?.length || 0;
+  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+  let classes = "jour";
 
-      // 1. AVANT INSCRIPTION = GRIS
-      if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
-        color = "#f1f1f1";
-        textColor = "#bbb";
-        classes += " jour-grise";
-      }
-      // 2. JOUR INSCRIPTION = JAUNE
-      else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
-        color = "#ffe04a";
-        textColor = "#222";
-        classes += " jour-inscription";
-      }
-      // 3. JOURS À VENIR (après aujourd'hui) = BLANC
-      else if (d > today) {
-        color = "#fff";
-        textColor = "#bbb";
-        classes += " jour-futur";
-      }
-      // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
-      else {
-        const totalJour = soloCount + duelRandCount + duelAmisCount;
-        if (totalJour === 0) {
-          color = "#ff2c2c"; // rouge
-          textColor = "#fff";
-        } else if (
-          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-        ) {
-          color = "#16b46a"; // vert foncé
-          textColor = "#fff";
-        } else {
-          color = "#baffc7"; // vert clair
-          textColor = "#222";
-        }
-        totalDefisMois += totalJour;
-      }
-
-      html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+  // 1. JOURS À VENIR (après aujourd'hui) = BLANC
+  if (d > today) {
+    color = "#fff";
+    textColor = "#bbb";
+    classes += " jour-futur";
+  }
+  // 2. AVANT INSCRIPTION = GRIS
+  else if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
+    color = "#f1f1f1";
+    textColor = "#bbb";
+    classes += " jour-grise";
+  }
+  // 3. JOUR INSCRIPTION = JAUNE
+  else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
+    color = "#ffe04a";
+    textColor = "#222";
+    classes += " jour-inscription";
+  }
+  // 4. APRÈS INSCRIPTION ET JOUR PASSÉ
+  else {
+    const totalJour = soloCount + duelRandCount + duelAmisCount;
+    if (totalJour === 0) {
+      color = "#ff2c2c"; // rouge
+      textColor = "#fff";
+    } else if (
+      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+    ) {
+      color = "#16b46a"; // vert foncé
+      textColor = "#fff";
+    } else {
+      color = "#baffc7"; // vert clair
+      textColor = "#222";
     }
+    totalDefisMois += totalJour;
+  }
+
+  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
+}
+
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
