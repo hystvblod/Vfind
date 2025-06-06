@@ -98,16 +98,22 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
 
   userProfile = await getUserDataCloud();
 
-  if ((userProfile.amis || []).includes(pseudoAmi)) return toast("Vous êtes déjà amis !");
-  if ((userProfile.demandesEnvoyees || []).includes(pseudoAmi)) return toast("Demande déjà envoyée.");
-  if ((userProfile.demandesRecues || []).includes(pseudoAmi)) return toast("Cette personne t'a déjà envoyé une demande !");
+  const demandesEnv = userProfile.demandesEnvoyees || [];
+  const demandesRec = ami.demandesRecues || [];
+
+  if (userProfile.amis?.includes(pseudoAmi)) return toast("Vous êtes déjà amis !");
+  if (demandesEnv.includes(pseudoAmi)) return toast("Demande déjà envoyée.");
+  if (userProfile.demandesRecues?.includes(pseudoAmi)) return toast("Cette personne t'a déjà envoyé une demande !");
+
+  demandesEnv.push(pseudoAmi);
+  demandesRec.push(userPseudo);
 
   await supabase.from("users").update({
-    demandesEnvoyees: [ ...(userProfile.demandesEnvoyees || []), pseudoAmi ]
+    demandesEnvoyees: demandesEnv
   }).eq("pseudo", userPseudo);
 
   await supabase.from("users").update({
-    demandesRecues: [ ...(ami.demandesRecues || []), userPseudo ]
+    demandesRecues: demandesRec
   }).eq("pseudo", pseudoAmi);
 
   toast("Demande envoyée à " + pseudoAmi + " !");

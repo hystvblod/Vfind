@@ -241,12 +241,14 @@ async function loadDefis() {
     defiList.appendChild(li);
   }
 
-  // === Affichage photos existantes (corrige le bug de disparition) ===
-  for (const defiId in photosMap) {
-    if (photosMap[defiId]) {
-      await window.renderPhotoCadreSolo(defiId);
+  // --- PATCH : forcer affichage photos après le DOM (fix tous navigateurs) ---
+  setTimeout(() => {
+    for (const defiId in photosMap) {
+      if (photosMap[defiId]) {
+        window.renderPhotoCadreSolo(defiId);
+      }
     }
-  }
+  }, 15);
 }
 
 // ----------- PRISE/REPRISE PHOTO CENTRALISÉE -----------
@@ -328,7 +330,7 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
 
   await loadDefis();
 
-  // PAS de fin de partie ici : le timer gère la fin !
+  // PAS de fin de partie ici : le timer gère la fin !
 
   if (window.pubAfterPhoto) {
     window.pubAfterPhoto = false;
@@ -475,7 +477,7 @@ async function validerDefiAvecJeton(index) {
     defi.done = true;
     defi.byJeton = true;
     defis[index] = defi;
-    localStorage.setItem(`photo_defi_${defi.id}`, "assets/img/jetonpp.webp");
+    localStorage.setItem(`photo_defi_${defi.id}`, JSON.stringify({ photo: "assets/img/jetonpp.webp", cadre: "polaroid_01" }));
     localStorage.setItem(SOLO_DEFIS_KEY, JSON.stringify(defis));
     await loadDefis();
     if (tousDefisFaits(defis)) await endGameAuto();
