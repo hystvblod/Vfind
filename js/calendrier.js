@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       let duelRandCount = duelRandomParJour[dstr]?.length || 0;
       let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
       let classes = ["jour"];
+        console.log("===", dstr, "| inscription:", inscriptionYMD, "| today:", formatYMD(today));
 
       if (!inscriptionYMD || dstr < inscriptionYMD) {
         color = "#f1f1f1"; // avant inscription
