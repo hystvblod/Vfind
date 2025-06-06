@@ -565,8 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.classList.add('hidden');
         popup.classList.remove('show');
       }
-      let btnAimer = document.getElementById("btn-aimer-photo");
-      if (btnAimer) btnAimer.remove();
+
     };
   });
 });
