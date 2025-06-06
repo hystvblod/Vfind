@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         .sort((a, b) => a - b)[0];
       dateInscription = minDate || new Date();
     }
+    console.log("dateInscription brute:", dateInscription);
+console.log("inscriptionYMD:", inscriptionYMD);
+
     afficherCalendrier();
   }
 
