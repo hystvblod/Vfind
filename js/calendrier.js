@@ -40,8 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         .sort((a, b) => a - b)[0];
       dateInscription = minDate || new Date();
     }
-    console.log("dateInscription brute:", dateInscription);
-console.log("inscriptionYMD:", inscriptionYMD);
 
     afficherCalendrier();
   }
@@ -93,13 +91,13 @@ for (let j = 1; j <= nbJours; j++) {
 
   // 1. AVANT INSCRIPTION = GRIS
   if (!inscriptionYMD || dstr < inscriptionYMD) {
-    color = "#f1f1f1";
+    color = "#fff";
     textColor = "#222";
     classes += " jour-grise";
   }
   // 2. JOURS À VENIR (après aujourd'hui) = BLANC
   else if (d > today) {
-    color = "#fff";
+    color = "#f1f1f1";
     textColor = "#222";
     classes += " jour-futur";
   }
