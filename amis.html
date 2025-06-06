@@ -5,8 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VFind - Amis</title>
   <link rel="stylesheet" href="style/main.css" />
+  <style>
+    .main-buttons {
+      margin: 2.5rem auto;
+      max-width: 420px;
+      background: #fffef6;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px #0001, 0 1.5px 0 #ffe56a;
+      padding: 2.2rem 1.4rem 2rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input.main-button, button.main-button {
+      width: 100%;
+      padding: 0.9em 1.2em;
+      margin-bottom: 0.6em;
+      font-size: 1.15em;
+      border-radius: 1.1em;
+      border: none;
+      background: #fff8d8;
+      color: #232323;
+      font-family: inherit;
+      box-shadow: 0 2px 8px #0002;
+      transition: background 0.2s;
+    }
+    button.main-button {
+      background: linear-gradient(92deg, #ffe04a 60%, #ffc947 100%);
+      color: #222;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 1.1em;
+    }
+    button.main-button:hover { background: #fff16b; }
+    .txt-empty { color: #c4c4b8; font-style: italic; padding: 0.7em 0; text-align:center; }
+    .amis-li {
+      display: flex; align-items: center;
+      gap: 0.9em; padding: 0.55em 0;
+      border-bottom: 1px solid #fff3b2;
+    }
+    .ami-avatar {
+      display: inline-block;
+      width: 2.2em; height: 2.2em;
+      background: #ffe04a;
+      border-radius: 50%;
+      color: #333;
+      font-weight: bold;
+      text-align: center; line-height: 2.2em;
+      font-size: 1.08em;
+      border: 2.5px solid #fffbe0;
+      box-shadow: 0 2px 5px #0001;
+    }
+    .ami-nom { flex: 1; font-size: 1.08em; }
+    .btn-small {
+      background: #fff8d8; color: #232323; border: none;
+      padding: 0.28em 1em; border-radius: 1.2em; font-size: 0.97em;
+      margin-left: 0.1em; cursor: pointer; font-weight:600;
+      transition: background 0.15s, color 0.13s;
+      box-shadow: 0 1px 3px #0001;
+    }
+    .btn-defi { background: #b9e5ff; }
+    .btn-suppr { background: #ffe3e3; color:#a10000;}
+    .btn-accept { background: #e4ffe6; color: #1f922c; }
+    .btn-refuse { background: #ffe3e3; color: #b03c3c; }
+    .btn-small:hover { background: #ffe04a; color: #1f1f1f;}
+    h3 { margin-top: 2em; margin-bottom: 0.7em; font-size:1.2em;}
+    ul { list-style: none; margin: 0; padding: 0;}
+    .toast-msg {
+      position: fixed; left: 50%; bottom: 2.6rem; transform: translateX(-50%);
+      background: #222; color: #fff; padding: 0.8em 1.6em; border-radius: 2em;
+      font-size: 1.02em; opacity: 0; z-index: 20; transition: opacity 0.4s;
+      pointer-events: none; box-shadow: 0 8px 32px #0003;
+    }
+    .toast-msg.show { opacity: 1; }
+    @media (max-width: 540px) {
+      .main-buttons { max-width:98vw; border-radius:1em; padding: 1.5rem 0.5rem; }
+    }
+  </style>
 </head>
-<body class="duel-container">
+<body class="duel-container" style="background:linear-gradient(110deg,#fff7ce,#ffe16a 60%,#ffd96a 100%); min-height:100vh;">
   <header class="header-boutique">
     <a href="profil.html" class="back-btn" title="Retour">
       <img src="assets/icons/arrow_back.svg" alt="Retour" />
@@ -20,19 +97,19 @@
   </header>
 
   <main>
-    <div class="main-buttons" style="margin-top:2rem;max-width:600px;margin-left:auto;margin-right:auto;">
+    <div class="main-buttons">
 
       <!-- Ajout par pseudo -->
-      <input id="pseudo-ami" type="text" placeholder="Pseudo public de l'ami" class="main-button" style="margin-bottom:1rem;" />
+      <input id="pseudo-ami" type="text" placeholder="Pseudo public de l'ami" class="main-button" autocomplete="off"/>
       <button class="main-button" id="btn-ajouter-ami">Ajouter un ami</button>
       
       <!-- Ajout par lien d'invitation -->
-      <div style="margin-top:1em;">
+      <div style="width:100%;margin-top:1.3em;">
         <button class="main-button" id="btn-lien-invit" style="background:#ffe04a;color:#232323;">Générer mon lien d’invitation</button>
-        <input id="lien-invit-output" readonly style="width:98%;margin-top:6px;text-align:center;font-size:0.98em;" onclick="this.select();" />
+        <input id="lien-invit-output" readonly style="width:100%;margin-top:6px;text-align:center;font-size:0.98em;" onclick="this.select();" />
       </div>
 
-      <hr style="margin:2em 0 1em 0;">
+      <hr style="margin:2em 0 1em 0; border: 0; border-top: 1.5px dashed #ffe16a;">
 
       <h3>Mes amis</h3>
       <ul id="liste-amis"></ul>
@@ -44,10 +121,10 @@
       <ul id="demandes-envoyees"></ul>
     </div>
   </main>
-  <footer>
+  <footer style="text-align:center;margin-top:2.8em;color:#aaa;">
     <p>&copy; 2025 VFind</p>
   </footer>
-  <script src="js/amis.js"></script>
-<script type="module" src="js/supabase.js"></script>
+  <script type="module" src="js/amis.js"></script>
+  <script type="module" src="js/userData.js"></script>
 </body>
 </html>

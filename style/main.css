@@ -2305,3 +2305,9 @@ overflow-y: auto;
   flex: 1 1 0;         /* AJOUTE ça pour occuper la place équitablement */
   max-width: 260px;    /* ou 230px si tu veux un max */
 }
+#btnAmis.attention {
+  background: #ff5959 !important;  /* rouge clair */
+  color: #fff !important;
+  font-weight: bold;
+  transition: background .2s, color .2s;
+}

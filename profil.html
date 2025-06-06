@@ -152,7 +152,7 @@
 <main class="profil-container">
   <section class="profil-sections">
     <button onclick="location.href='cadres.html'">Mes cadres</button>
-    <button onclick="location.href='amis.html'">Mes amis</button>
+    <button id="btnAmis" onclick="location.href='amis.html'">Mes amis</button>
     <button onclick="location.href='calendrier.html'">Mon calendrier</button>
     <button onclick="location.href='photos_aimees.html'">Photos aimées</button>
     <button onclick="location.href='faq.html'">FAQ</button>
@@ -246,6 +246,20 @@ async function setupProfile() {
   };
 }
 setupProfile();
+import { loadUserData, getUserDataCloud } from './js/userData.js';
+
+async function checkPendingFriendRequests() {
+  await loadUserData();
+  const profil = await getUserDataCloud();
+  const btn = document.getElementById("btnAmis");
+  if (profil.demandesRecues && profil.demandesRecues.length > 0) {
+    btn.classList.add("attention");
+  } else {
+    btn.classList.remove("attention");
+  }
+}
+checkPendingFriendRequests();
+
 </script>
 </body>
 </html>
