@@ -1,4 +1,4 @@
-import { supabase, getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique, addJetons, removeJeton, addPoints, removePoints } from './userData.js';
+import { supabase, getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique, addJetons, removeJeton, addPoints, removePoints, isPremium } from './userData.js';
 
 // ========== IndexedDB cache ==========
 const VFindDuelDB = {
@@ -429,19 +429,19 @@ export async function initDuelGame() {
       // Photo adversaire (cache optimisé)
       const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
       // On force la mise à jour du cache si cadre changé côté serveur
-if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
-  let obj = roomData[advChamp][idxStr];
-  let url, cadre;
-  if (typeof obj === "object") {
-    url = obj.url;
-    cadre = obj.cadre;
-  } else {
-    url = obj;
-    cadre = "polaroid_01";
-  }
-  // On rafraîchit l'entrée cache même si déjà présente
-  await VFindDuelDB.set(`${roomId}_${advChamp}_${idxStr}`, { url, cadre });
-}
+      if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
+        let obj = roomData[advChamp][idxStr];
+        let url, cadre;
+        if (typeof obj === "object") {
+          url = obj.url;
+          cadre = obj.cadre;
+        } else {
+          url = obj;
+          cadre = "polaroid_01";
+        }
+        // On rafraîchit l'entrée cache même si déjà présente
+        await VFindDuelDB.set(`${roomId}_${advChamp}_${idxStr}`, { url, cadre });
+      }
 
       const advPhoto = advPhotoObj ? advPhotoObj.url : null;
       const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
@@ -474,15 +474,68 @@ if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
 }
 
 // ==== Fonctions Camera/Popup à exporter pour camera.js ====
-// -> Appelle caméra avec cadre par défaut ou spécifique
-export function gererPrisePhotoDuel(idx, cadreId = null) {
+
+// POPUP PUB/PREMIUM
+function ouvrirPopupRepriseDuel(onPub) {
+  const popup = document.getElementById("popup-reprise-photo-duel");
+  popup.classList.remove("hidden");
+  popup.classList.add("show");
+  document.getElementById("btnReprisePremiumDuel").onclick = function() {
+    // Lien premium, à adapter selon tes stores
+    window.open("https://play.google.com/store/apps/details?id=TON_APP_ID", "_blank");
+  };
+  document.getElementById("btnReprisePubDuel").onclick = function() {
+    popup.classList.add("hidden");
+    popup.classList.remove("show");
+    onPub && onPub();
+  };
+  document.getElementById("btnAnnulerRepriseDuel").onclick = function() {
+    popup.classList.add("hidden");
+    popup.classList.remove("show");
+  };
+}
+
+export async function gererPrisePhotoDuel(idx, cadreId = null) {
   let duelId = currentRoomId || window.currentRoomId || roomId;
   if (!duelId) {
     alert("Erreur critique : identifiant duel introuvable.");
     return;
   }
   if (!cadreId) cadreId = getCadreDuel(duelId, idx);
-  window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
+
+  // Vérifie si une photo existe déjà (donc demande de reprise)
+  const cacheKey = `${duelId}_${isPlayer1 ? 'photosa' : 'photosb'}_${idx}`;
+  const dejaPhoto = await VFindDuelDB.get(cacheKey);
+
+  const premium = await isPremium();
+  const repriseKey = `reprise_duel_${duelId}_${idx}`;
+  let reprises = parseInt(localStorage.getItem(repriseKey) || "0");
+
+  // Première photo : OK, aucune restriction
+  if (!dejaPhoto) {
+    localStorage.setItem(repriseKey, "0");
+    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
+    return;
+  }
+
+  // PREMIUM : illimité
+  if (premium) {
+    window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
+    return;
+  }
+
+  // NON PREMIUM : max 1 pub possible par photo
+  if (reprises === 0) {
+    ouvrirPopupRepriseDuel(() => {
+      localStorage.setItem(repriseKey, "1");
+      window.cameraOuvrirCameraPourDuel && window.cameraOuvrirCameraPourDuel(idx, duelId, cadreId);
+      window.pubAfterPhoto = true;
+    });
+    return;
+  } else {
+    alert("Pour reprendre encore la photo, passe en Premium !");
+    return;
+  }
 }
 
 // -------- POPUP VALIDER AVEC JETON (à ajouter dans ton HTML aussi !) --------
@@ -506,7 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 });
 
-// HANDLER : Quand tu retires un jeton (ex : valider défi)
+// HANDLER : Quand tu retires un jeton (ex : valider défi)
 export async function validerDefiAvecJeton(idx) {
   await removeJeton();
   await afficherSolde();
@@ -694,9 +747,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnValiderJeton = document.getElementById("valider-jeton-btn");
   if (btnValiderJeton) {
     btnValiderJeton.onclick = async function() {
-      // On retire un jeton et on valide le défi DUEL côté BDD/cache/UI
       await validerDefiAvecJeton(window._idxJetonToValidate);
-      // On nettoie l'index stocké pour la popup
       window._idxJetonToValidate = null;
     };
   }

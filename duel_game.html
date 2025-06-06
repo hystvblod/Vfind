@@ -112,27 +112,38 @@
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/duel.js"></script>
   <script type="module" src="js/camera.js"></script>
- 
+
   <!-- POPUP CHOIX DE CADRE -->
-  
-<div id="popup-cadre-choix" class="popup hidden">
-  <div class="popup-inner">
-    <h3>Choisir un cadre pour cette photo</h3>
-    <div id="list-cadres-popup" style="display:flex; gap:14px; flex-wrap:wrap"></div>
-    <button onclick="fermerPopupCadreChoix()" class="btn-premium-pro" style="margin-top:18px;">Annuler</button>
-  </div>
-</div>
-<!-- POPUP VALIDER AVEC UN JETON SUR L'APPAREIL PHOTO -->
-<div id="popup-jeton-valider" class="popup hidden">
-  <div class="popup-inner popup-premium-pro">
-    <div class="premium-badge">JETON</div>
-    <div class="popup-premium-title">Valider avec un jeton ?</div>
-    <div class="premium-list-pro popup-btns-center">
-      <button class="btn-premium-pro" id="btn-confirm-jeton">✅ Oui, valider</button>
-      <button class="btn-annuler-premium-pro" id="btn-cancel-jeton">Annuler</button>
+  <div id="popup-cadre-choix" class="popup hidden">
+    <div class="popup-inner">
+      <h3>Choisir un cadre pour cette photo</h3>
+      <div id="list-cadres-popup" style="display:flex; gap:14px; flex-wrap:wrap"></div>
+      <button onclick="fermerPopupCadreChoix()" class="btn-premium-pro" style="margin-top:18px;">Annuler</button>
     </div>
   </div>
-</div>
+  <!-- POPUP VALIDER AVEC UN JETON SUR L'APPAREIL PHOTO -->
+  <div id="popup-jeton-valider" class="popup hidden">
+    <div class="popup-inner popup-premium-pro">
+      <div class="premium-badge">JETON</div>
+      <div class="popup-premium-title">Valider avec un jeton ?</div>
+      <div class="premium-list-pro popup-btns-center">
+        <button class="btn-premium-pro" id="btn-confirm-jeton">✅ Oui, valider</button>
+        <button class="btn-annuler-premium-pro" id="btn-cancel-jeton">Annuler</button>
+      </div>
+    </div>
+  </div>
+  <!-- POPUP PUB/PREMIUM POUR REPRISE PHOTO DUEL -->
+  <div id="popup-reprise-photo-duel" class="popup hidden">
+    <div class="popup-inner">
+      <p>
+        <b>Reprendre une photo est réservé aux Premium.</b><br>
+        <small>Tu peux regarder une pub (1 fois par défi) pour reprendre la photo.</small>
+      </p>
+      <button id="btnReprisePremiumDuel" class="main-button">Passer Premium</button>
+      <button id="btnReprisePubDuel" class="main-button">Regarder une pub</button>
+      <button id="btnAnnulerRepriseDuel" class="main-button">Annuler</button>
+    </div>
+  </div>
 
 </body>
 </html>
