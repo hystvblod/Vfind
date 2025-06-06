@@ -2343,9 +2343,12 @@ overflow-y: auto;
 .photo-popup-buttons {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 0;
+  right: 0;
+  width: 100%;
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 0 16px;
   z-index: 20;
 }
 
