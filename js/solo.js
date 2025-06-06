@@ -239,7 +239,6 @@ async function loadDefis() {
 
     defiList.appendChild(li);
   }
-  await afficherPhotosSauvegardees(photosMap);
 }
 
 // ----------- PRISE/REPRISE PHOTO CENTRALISÉE -----------
@@ -322,8 +321,7 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
 
   await loadDefis();
 
-  // Fin de partie auto si tous les défis sont validés
-  if (tousDefisFaits(defis)) await endGameAuto();
+ 
 
   if (window.pubAfterPhoto) {
     window.pubAfterPhoto = false;
