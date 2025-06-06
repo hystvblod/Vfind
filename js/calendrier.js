@@ -76,39 +76,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       let classes = "jour";
 
       // AVANT inscription = GRIS
-      if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
-        color = "#f1f1f1";
-        textColor = "#bbb";
-        classes += " jour-grise";
-      }
-      // JOUR INSCRIPTION (jaune)
-      else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
-        color = "#ffe04a";
-        textColor = "#222";
-        classes += " jour-inscription";
-      }
-      // JOURS À VENIR (BLANC, après inscription)
-      else if (d > today) {
-        color = "#fff";
-        textColor = "#bbb";
-        classes += " jour-futur";
-      } else {
-        // Jours après inscription, mais passés (hors jour d'inscription)
-        const totalJour = soloCount + duelRandCount + duelAmisCount;
-        if (totalJour === 0) {
-          color = "#ff2c2c"; // rouge
-          textColor = "#fff";
-        } else if (
-          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-        ) {
-          color = "#16b46a"; // vert foncé
-          textColor = "#fff";
-        } else {
-          color = "#baffc7"; // vert clair
-          textColor = "#222";
-        }
-        totalDefisMois += totalJour;
-      }
+     // JOURS À VENIR (BLANC, après inscription)
+if (d > today) {
+  color = "#fff";
+  textColor = "#bbb";
+  classes += " jour-futur";
+}
+// AVANT inscription = GRIS
+else if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
+  color = "#f1f1f1";
+  textColor = "#bbb";
+  classes += " jour-grise";
+}
+// JOUR INSCRIPTION (jaune)
+else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
+  color = "#ffe04a";
+  textColor = "#222";
+  classes += " jour-inscription";
+}
+else {
+  // Jours après inscription, mais passés (hors jour d'inscription)
+  const totalJour = soloCount + duelRandCount + duelAmisCount;
+  if (totalJour === 0) {
+    color = "#ff2c2c"; // rouge
+    textColor = "#fff";
+  } else if (
+    soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+  ) {
+    color = "#16b46a"; // vert foncé
+    textColor = "#fff";
+  } else {
+    color = "#baffc7"; // vert clair
+    textColor = "#222";
+  }
+  totalDefisMois += totalJour;
+}
+
 
       html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
     }
