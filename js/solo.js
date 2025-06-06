@@ -578,3 +578,39 @@ async function showRewardedAd() {
   });
 }
 
+// Affiche toutes les photos aimées dans le container #photos-aimees-list
+window.afficherPhotosAimees = async function() {
+  const container = document.getElementById("photos-aimees-list");
+  if (!container) return;
+  container.innerHTML = "";
+
+  let photosAimees = JSON.parse(localStorage.getItem("photos_aimees") || "[]");
+  if (photosAimees.length === 0) {
+    container.innerHTML = "<p>Aucune photo aimée pour l’instant.</p>";
+    return;
+  }
+
+  for (let defiId of photosAimees) {
+    // Essaie de trouver la photo en solo
+    let photoData = null;
+    try {
+      photoData = JSON.parse(localStorage.getItem(`photo_defi_${defiId}`));
+    } catch (e) {}
+
+    // Ajoute une miniature seulement si elle existe
+    if (photoData && photoData.photo) {
+      let cadre = photoData.cadre || "polaroid_01";
+      let el = document.createElement("div");
+      el.className = "cadre-item cadre-duel-mini";
+      el.innerHTML = `
+        <div class="cadre-preview">
+          <img class="photo-cadre" src="./assets/cadres/${cadre}.webp">
+          <img class="photo-user" src="${photoData.photo}">
+        </div>
+      `;
+      // Au clic, on peut agrandir (si tu veux)
+      el.onclick = () => window.agrandirPhoto(photoData.photo, defiId);
+      container.appendChild(el);
+    }
+  }
+};
