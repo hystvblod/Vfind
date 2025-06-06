@@ -1,6 +1,7 @@
 import { getJetons, addJetons, ajouterDefiHistorique, removeJeton, getCadreSelectionne, getCadresPossedes, updateUserData, getUserDataCloud, getDefisFromSupabase, isPremium } from "./userData.js";
 import { ouvrirCameraPour as cameraOuvrirCameraPour } from "./camera.js";
-// MIGRATION AUTO : patche les anciennes photos solo non JSON
+
+// MIGRATION AUTO : patche les anciennes photos solo non JSON
 (function corrigeAnciennesPhotosSolo() {
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("photo_defi_") && !key.endsWith("_date")) {
@@ -239,6 +240,13 @@ async function loadDefis() {
 
     defiList.appendChild(li);
   }
+
+  // === Affichage photos existantes (corrige le bug de disparition) ===
+  for (const defiId in photosMap) {
+    if (photosMap[defiId]) {
+      await window.renderPhotoCadreSolo(defiId);
+    }
+  }
 }
 
 // ----------- PRISE/REPRISE PHOTO CENTRALISÉE -----------
@@ -286,7 +294,6 @@ window.gererPrisePhoto = function(defiId, index) {
   }
 };
 
-
 // ----------- PHOTO DANS CADRE & LOGIQUE PUB/PREMIUM -----------
 window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
   let defis = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
@@ -321,14 +328,13 @@ window.afficherPhotoDansCadreSolo = async function(defiId, dataUrl) {
 
   await loadDefis();
 
- 
+  // PAS de fin de partie ici : le timer gère la fin !
 
   if (window.pubAfterPhoto) {
     window.pubAfterPhoto = false;
     await showRewardedAd();
   }
 };
-
 
 // ----------- RENDU MINIATURES + CHANGEMENT DE CADRE SOLO -----------
 window.renderPhotoCadreSolo = async function(defiId) {
@@ -399,8 +405,6 @@ window.ouvrirPopupChoixCadreSolo = async function(defiId) {
 
   document.getElementById("popup-cadre-solo").classList.remove("hidden");
 };
-
-
 
 window.fermerPopupCadreSolo = function() {
   document.getElementById("popup-cadre-solo").classList.add("hidden");
