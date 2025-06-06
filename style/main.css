@@ -2320,3 +2320,23 @@ overflow-y: auto;
   border: 2px solid #ffe04a;
   box-shadow: 0 0 0 2.5px #fffbe0;
 }
+.legende-calendrier {
+  margin: 1em auto 1.4em auto !important;
+  text-align: center;
+  font-size: 1em;
+  color: #313142;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 13px 18px;
+}
+.legende-calendrier span {
+  display:inline-block;
+  width:20px;
+  height:20px;
+  border-radius:5px;
+  margin-right:7px;
+  vertical-align:middle;
+  border:1.5px solid #e0e0e0;
+}

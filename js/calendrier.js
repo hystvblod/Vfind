@@ -1,4 +1,4 @@
-import { supabase, getUserId, loadUserData } from './userData.js'; // fichier déjà optimisé Supabase fourni dans ta dernière version
+import { supabase, getUserId, loadUserData } from './userData.js'; // Optimisé Supabase fourni dans ta dernière version
 
 document.addEventListener("DOMContentLoaded", async () => {
   let dateCourante = new Date();
@@ -8,12 +8,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   let dateInscription = null;
   const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 
-  // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE (méga light) ----
+  // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE ----
   async function chargerHistoriqueEtInscription() {
     await loadUserData(); // Auth automatique
     const userId = getUserId();
     if (!userId) return;
-    // Récupère l'utilisateur (historique stocké dans le champ "historique" du user)
+    // Récupère l'utilisateur
     const { data, error } = await supabase
       .from('users')
       .select('historique, dateInscription')
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     dateInscription = data.dateInscription ? new Date(data.dateInscription) : null;
     historique = (data.historique || []).map(e => ({
       date: e.date,
-      defis: e.defis || e.defi || [], // compatibilité ancien format
+      defis: e.defis || e.defi || [],
       type: e.type || "solo"
     }));
 
@@ -62,55 +62,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelRandomParJour).forEach(list => totalDefisTous += list.length);
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
-for (let j = 1; j <= nbJours; j++) {
-  const d = new Date(anneeAffichee, moisAffiche, j);
-  const dstr = d.toISOString().slice(0, 10);
-  let color = "#fff";
-  let textColor = "#000";
-  let soloCount = soloParJour[dstr]?.length || 0;
-  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = "jour";
+    for (let j = 1; j <= nbJours; j++) {
+      const d = new Date(anneeAffichee, moisAffiche, j);
+      const dstr = d.toISOString().slice(0, 10);
+      let color = "#fff";
+      let textColor = "#222";
+      let soloCount = soloParJour[dstr]?.length || 0;
+      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+      let classes = "jour";
 
-  if (!dateInscription || d < dateInscription) {
-    color = "#f1f1f1";
-    textColor = "#bbb";
-    classes += " jour-grise";
-  } else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
-    color = "#ffe04a"; // jaune pastel jour inscription
-    textColor = "#222";
-    classes += " jour-inscription";
-  } else if (d > new Date()) {
-    color = "#fff";
-    textColor = "#bbb";
-    classes += " jour-grise";
-  } else {
-    const totalJour = soloCount + duelRandCount + duelAmisCount;
-    if (totalJour === 0) {
-      color = "#ff2c2c"; // rouge
-      textColor = "#fff";
-    } else if (
-      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-    ) {
-      color = "#089e29"; // vert foncé
-      textColor = "#fff";
-    } else {
-      color = "#baffc7"; // vert clair
-      textColor = "#222";
+      // AVANT inscription (gris clair)
+      if (!dateInscription || d < new Date(dateInscription.getFullYear(), dateInscription.getMonth(), dateInscription.getDate())) {
+        color = "#f1f1f1";
+        textColor = "#bbb";
+        classes += " jour-grise";
+      }
+      // JOUR INSCRIPTION (jaune)
+      else if (dateInscription && d.toDateString() === dateInscription.toDateString()) {
+        color = "#ffe04a";
+        textColor = "#222";
+        classes += " jour-inscription";
+      }
+      // APRES inscription (couleurs selon les défis)
+      else if (d > new Date()) {
+        color = "#fff";
+        textColor = "#bbb";
+        classes += " jour-futur";
+      } else {
+        const totalJour = soloCount + duelRandCount + duelAmisCount;
+        if (totalJour === 0) {
+          color = "#ff2c2c"; // rouge
+          textColor = "#fff";
+        } else if (
+          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+        ) {
+          color = "#089e29"; // vert foncé
+          textColor = "#fff";
+        } else {
+          color = "#baffc7"; // vert clair
+          textColor = "#222";
+        }
+        totalDefisMois += totalJour;
+      }
+
+      html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
     }
-    totalDefisMois += totalJour;
-  }
-
-  html += `<div class="${classes}" style="background:${color}; color:${textColor}">${j}</div>`;
-}
-
-
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
     document.getElementById('stats-calendrier').innerHTML =
-      "Nombre de défis réalisés ce mois : <b>" + totalDefisMois + "</b><br>" +
-      "Nombre de défis réalisés depuis le début : <b>" + totalDefisTous + "</b>";
+      "Défis ce mois : <b>" + totalDefisMois + "</b> &nbsp;·&nbsp; Depuis le début : <b>" + totalDefisTous + "</b>";
   }
 
   document.getElementById("mois-prec").onclick = () => {
@@ -124,14 +126,14 @@ for (let j = 1; j <= nbJours; j++) {
     afficherCalendrier();
   };
 
-  // Style auto inclus pour le calendrier (à déplacer en CSS si besoin)
+  // Ajout style auto inclus pour le calendrier (à déplacer en CSS si besoin)
   const style = document.createElement('style');
   style.textContent = `
     .calendrier {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin: 1em auto;
+      gap: 7px;
+      margin: 1.2em auto 1.5em;
       max-width: 420px;
     }
     .jour, .sem {
@@ -140,19 +142,26 @@ for (let j = 1; j <= nbJours; j++) {
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      font-size: 1.09rem;
+      border-radius: 9px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.13);
+      transition: background .16s;
+      cursor: default;
     }
     .sem {
       background: none;
-      color: #ccc;
+      color: #aaa;
       box-shadow: none;
+      font-size: 0.97em;
+      font-weight: 600;
     }
     .jour.vide {
       background: none;
       box-shadow: none;
     }
+    .jour-grise { opacity: 1 !important; }
+    .jour-inscription { border:2.5px solid #ffe04a; box-shadow:0 0 6px #ffe04a77; }
+    .jour-futur { opacity:0.75; }
   `;
   document.head.appendChild(style);
 

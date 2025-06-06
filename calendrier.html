@@ -5,32 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VFind - Calendrier</title>
   <link rel="stylesheet" href="style/main.css">
-  <style>
-    .legende-calendrier {
-      margin: 1.3em 0 0.8em 0;
-      text-align: center;
-      font-size: 0.99em;
-      color: #313142;
-      font-weight: 500;
-    }
-    .legende-calendrier span {
-      display:inline-block;
-      width:18px;
-      height:18px;
-      border-radius:4px;
-      margin-right:4px;
-      vertical-align:middle;
-      border:1px solid #e0e0e0;
-    }
-    .legende-jaune { background: #ffe04a; border: 2px solid #ffe04a;}
-    .legende-grise { background: #f1f1f1;}
-    .legende-vert { background: #baffc7;}
-    .legende-rouge { background: #ff2c2c;}
-    @media (max-width: 530px) {
-      .legende-calendrier { font-size:0.93em; }
-      .legende-calendrier span { width:14px;height:14px; }
-    }
-  </style>
 </head>
 <body class="vfind-bg">
 
@@ -59,10 +33,10 @@
 
   <!-- LÉGENDE CALENDRIER -->
   <div class="legende-calendrier">
-    <span class="legende-jaune"></span> Jour d'inscription
-    <span class="legende-grise" style="margin-left:18px;"></span> Avant inscription
-    <span class="legende-vert" style="margin-left:18px;"></span> Défis réalisés
-    <span class="legende-rouge" style="margin-left:18px;"></span> Aucun défi
+    <span class="legende-jaune"></span> <b>Jour d'inscription</b>
+    <span class="legende-grise"></span> <b>Avant inscription</b>
+    <span class="legende-vert"></span> <b>Défis réalisés</b>
+    <span class="legende-rouge"></span> <b>Aucun défi</b>
   </div>
 
   <div id="stats-calendrier" style="margin:1em 0 2em;text-align:center;font-size:1.08em;font-weight:500;"></div>
