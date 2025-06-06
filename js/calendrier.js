@@ -1,4 +1,4 @@
-import { supabase, getUserId, loadUserData } from './userData.js'; // Optimisé Supabase fourni dans ta dernière version
+import { supabase, getUserId, loadUserData } from './userData.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   let dateCourante = new Date();
@@ -6,19 +6,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   let anneeAffichee = dateCourante.getFullYear();
   let historique = [];
   let dateInscription = null;
-  const moisFr = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+  const moisFr = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-  // --- Compare avec des YYYY-MM-DD pour éviter tous les bugs de date JS ---
   function formatYMD(d) {
     return d.toISOString().slice(0, 10);
   }
 
-  // ---- CHARGEMENT HISTORIQUE EN 1 REQUÊTE ----
   async function chargerHistoriqueEtInscription() {
-    await loadUserData(); // Auth automatique
+    await loadUserData();
     const userId = getUserId();
     if (!userId) return;
-    // Récupère l'utilisateur
+
     const { data, error } = await supabase
       .from('users')
       .select('historique, dateInscription')
@@ -33,12 +31,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       type: e.type || "solo"
     }));
 
-    // Si pas de date inscription, prend la plus ancienne date
     if (!dateInscription && historique.length) {
-      let minDate = historique
-        .map(e => new Date(e.date))
-        .sort((a, b) => a - b)[0];
-      dateInscription = minDate || new Date();
+      dateInscription = new Date(historique.map(e => new Date(e.date)).sort((a, b) => a - b)[0]);
     }
 
     afficherCalendrier();
@@ -49,10 +43,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const premierJour = new Date(anneeAffichee, moisAffiche, 1);
     const nbJours = new Date(anneeAffichee, moisAffiche + 1, 0).getDate();
 
-    // Regroupe par jour et par type
     const soloParJour = {}, duelRandomParJour = {}, duelAmisParJour = {};
     historique.forEach(entree => {
-      let dateISO = entree.date && entree.date.length === 10 ? entree.date : (entree.date || '').slice(0, 10);
+      let dateISO = (entree.date || '').slice(0, 10);
       if (entree.type === "solo") soloParJour[dateISO] = (soloParJour[dateISO] || []).concat(entree.defis || []);
       if (entree.type === "duel_random") duelRandomParJour[dateISO] = (duelRandomParJour[dateISO] || []).concat(entree.defis || []);
       if (entree.type === "duel_amis") duelAmisParJour[dateISO] = (duelAmisParJour[dateISO] || []).concat(entree.defis || []);
@@ -69,70 +62,58 @@ document.addEventListener("DOMContentLoaded", async () => {
     Object.values(duelAmisParJour).forEach(list => totalDefisTous += list.length);
 
     const today = new Date();
-    today.setHours(0,0,0,0); // pour comparer les jours sans l'heure
-
-    // --- PATCH pour "avant inscription" fiable partout ---
-    
+    today.setHours(0, 0, 0, 0);
     const inscriptionYMD = dateInscription ? formatYMD(dateInscription) : null;
 
-   
+    for (let j = 1; j <= nbJours; j++) {
+      const d = new Date(anneeAffichee, moisAffiche, j);
+      const dstr = formatYMD(d);
+      let color = "#fff";
+      let textColor = "#222";
+      let soloCount = soloParJour[dstr]?.length || 0;
+      let duelRandCount = duelRandomParJour[dstr]?.length || 0;
+      let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
+      let classes = ["jour"];
 
+      if (!inscriptionYMD || dstr < inscriptionYMD) {
+        color = "#f1f1f1"; // avant inscription
+        textColor = "#222";
+        classes.push("jour-grise");
+      }
+      else if (d > today) {
+        color = "#fff"; // jour futur
+        textColor = "#222";
+        classes.push("jour-futur");
+      }
+      else if (dstr === inscriptionYMD) {
+        color = "#ffe04a"; // jour inscription
+        textColor = "#fff";
+        classes.push("jour-inscription");
+      }
+      else {
+        const totalJour = soloCount + duelRandCount + duelAmisCount;
+        if (totalJour === 0) {
+          color = "#ff2c2c"; // rouge
+          textColor = "#fff";
+        } else if (
+          soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
+        ) {
+          color = "#16b46a"; // vert foncé
+          textColor = "#fff";
+        } else {
+          color = "#baffc7"; // vert clair
+          textColor = "#222";
+        }
+        totalDefisMois += totalJour;
+      }
 
-// Puis dans ta boucle :
-for (let j = 1; j <= nbJours; j++) {
-  const d = new Date(anneeAffichee, moisAffiche, j);
-  const dstr = formatYMD(d);
-  let color = "#fff";
-  let textColor = "#222";
-  let soloCount = soloParJour[dstr]?.length || 0;
-  let duelRandCount = duelRandomParJour[dstr]?.length || 0;
-  let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
-  let classes = ["jour"];
-
-  // === LOGIQUE CENTRALE CORRECTE ===
-  if (!inscriptionYMD || dstr < inscriptionYMD) {
-    // ➜ Avant inscription → gris
-    color = "#f1f1f1";
-    textColor = "#222";
-    classes.push("jour-grise");
-  }
-  else if (d > today) {
-    // ➜ Après aujourd’hui → blanc
-    color = "#fff";
-    textColor = "#222";
-    classes.push("jour-futur");
-  }
-  else if (dstr === inscriptionYMD) {
-    // ➜ Jour exact d'inscription → jaune
-    color = "#ffe04a";
-    textColor = "#fff";
-    classes.push("jour-inscription");
-  }
-  else {
-    // ➜ Jours passés depuis inscription → vert/rouge selon activité
-    const totalJour = soloCount + duelRandCount + duelAmisCount;
-    if (totalJour === 0) {
-      color = "#ff2c2c"; // rouge : aucun défi
-      textColor = "#fff";
-    } else if (
-      soloCount === 3 || duelRandCount === 3 || duelAmisCount === 3
-    ) {
-      color = "#16b46a"; // vert foncé : partie terminée
-      textColor = "#fff";
-    } else {
-      color = "#baffc7"; // vert clair : 1 ou 2 défis
-      textColor = "#222";
+      html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
     }
-    totalDefisMois += totalJour;
-  }
-
-  html += `<div class="${classes.join(' ')}" style="background:${color}; color:${textColor}">${j}</div>`;
-}
 
     html += '</div>';
     document.getElementById('calendrier-container').innerHTML = html;
     document.getElementById('stats-calendrier').innerHTML =
-      "Défis ce mois : <b>" + totalDefisMois + "</b> &nbsp;·&nbsp; Depuis le début : <b>" + totalDefisTous + "</b>";
+      `Défis ce mois : <b>${totalDefisMois}</b> &nbsp;·&nbsp; Depuis le début : <b>${totalDefisTous}</b>`;
   }
 
   document.getElementById("mois-prec").onclick = () => {
@@ -140,13 +121,13 @@ for (let j = 1; j <= nbJours; j++) {
     if (moisAffiche < 0) { moisAffiche = 11; anneeAffichee--; }
     afficherCalendrier();
   };
+
   document.getElementById("mois-suiv").onclick = () => {
     moisAffiche++;
     if (moisAffiche > 11) { moisAffiche = 0; anneeAffichee++; }
     afficherCalendrier();
   };
 
-  // Ajout style auto inclus pour le calendrier (à déplacer en CSS si besoin)
   const style = document.createElement('style');
   style.textContent = `
     .calendrier {
@@ -185,6 +166,5 @@ for (let j = 1; j <= nbJours; j++) {
   `;
   document.head.appendChild(style);
 
-  // Chargement initial (1 seule requête !)
   await chargerHistoriqueEtInscription();
 });
