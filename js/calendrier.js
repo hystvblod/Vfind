@@ -153,9 +153,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       background: none;
       box-shadow: none;
     }
-    .jour-grise { opacity: 1 !important; }
+    .jour-grise { opacity: 0
     .jour-inscription { border:2.5px solid #ffe04a; box-shadow:0 0 6px #ffe04a77; }
-    .jour-futur { opacity:0.75; }
+    .jour-futur { opacity:0 }
   `;
   document.head.appendChild(style);
 
