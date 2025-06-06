@@ -89,18 +89,19 @@ for (let j = 1; j <= nbJours; j++) {
   let duelAmisCount = duelAmisParJour[dstr]?.length || 0;
   let classes = "jour";
 
-  // 1. AVANT INSCRIPTION = GRIS
-  if (!inscriptionYMD || dstr < inscriptionYMD) {
-    color = "#f1f1f1";
-    textColor = "#222";
-    classes += " jour-grise";
-  }
-  // 2. JOURS À VENIR (après aujourd'hui) = BLANC
-  else if (d > today) {
-    color = "#fff";
-    textColor = "#222";
-    classes += " jour-futur";
-  }
+  // 1. JOURS À VENIR (après aujourd'hui) = BLANC
+if (d > today) {
+  color = "#fff";
+  textColor = "#222";
+  classes += " jour-futur";
+}
+// 2. AVANT INSCRIPTION = GRIS
+else if (!inscriptionYMD || dstr < inscriptionYMD) {
+  color = "#f1f1f1";
+  textColor = "#222";
+  classes += " jour-grise";
+}
+
   // 3. JOUR INSCRIPTION = JAUNE
   else if (inscriptionYMD && dstr === inscriptionYMD) {
     color = "#ffe04a";
