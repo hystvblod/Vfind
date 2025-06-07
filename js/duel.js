@@ -1,6 +1,7 @@
 import { supabase, getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique, addJetons, removeJeton, addPoints, removePoints, isPremium } from './userData.js';
 
 // ========== IndexedDB cache ==========
+
 const VFindDuelDB = {
   db: null,
   async init() {
@@ -252,12 +253,15 @@ export async function initDuelGame() {
   const pseudo = await getCurrentUser();
   const room = await getRoom(roomId);
   isPlayer1 = (room.player1 === pseudo);
+
   subscribeRoom(roomId, (data) => {
     roomData = data;
     updateDuelUI();
+    checkFinDuel();
   });
   roomData = await getRoom(roomId);
   updateDuelUI();
+  await checkFinDuel();
 
   function subscribeRoom(roomId, callback) {
     supabase
@@ -289,303 +293,6 @@ export async function initDuelGame() {
 
     renderDefis({ myID, advID });
   }
-// ============ LOGIQUE FIN DE DUEL + POPUP ==============
-
-// Appelle ça après chaque updateDuelUI OU dans subscribeRoom
-async function checkFinDuel() {
-  if (!roomData) return;
-  // 1. Timer fini ?
-  const start = roomData.starttime;
-  const duration = 24 * 60 * 60 * 1000;
-  if (start && (Date.now() > start + duration)) {
-    await finirDuel();
-    return;
-  }
-  // 2. Tous les défis faits des deux côtés
-  const nbDefis = (roomData.defis || []).length;
-  const okA = Object.values(roomData.photosa || {}).filter(x => x && x.url).length === nbDefis;
-  const okB = Object.values(roomData.photosb || {}).filter(x => x && x.url).length === nbDefis;
-  if (okA && okB) await finirDuel();
-}
-
-async function finirDuel() {
-  // Mets le status à finished
-  if (roomData.status !== 'finished') {
-    await supabase.from('duels').update({ status: 'finished' }).eq('id', roomData.id);
-  }
-  // Affiche la popup de fin
-  afficherPopupFinDuel(roomData);
-}
-
-async function afficherPopupFinDuel(room) {
-  // Récupère le pseudo courant et adversaire
-  const pseudo = await getCurrentUser();
-  const isP1 = room.player1 === pseudo;
-  const myChamp = isP1 ? 'photosa' : 'photosb';
-  const advChamp = isP1 ? 'photosb' : 'photosa';
-  const myID = isP1 ? room.player1 : room.player2;
-  const advID = isP1 ? room.player2 : room.player1;
-
-  // Statut des défis
-  const nbDefis = (room.defis || []).length;
-  const photosMy = room[myChamp] || {};
-  const photosAdv = room[advChamp] || {};
-
-  // Liste défis avec statut
-  let html = '<table class="fin-defis-table"><tr><th>Défi</th><th>Moi</th><th>' + (advID || "Adversaire") + '</th></tr>';
-  for (let i = 0; i < nbDefis; i++) {
-    const defi = room.defis[i] || "-";
-    const okMe = photosMy[i] && photosMy[i].url ? "✅" : "❌";
-    const okAdv = photosAdv[i] && photosAdv[i].url ? "✅" : "❌";
-    html += `<tr><td>${defi}</td><td style="text-align:center">${okMe}</td><td style="text-align:center">${okAdv}</td></tr>`;
-  }
-  html += '</table>';
-
-  // Face à face
-  $("fin-faceaface").innerHTML = `
-    <div class="fin-faceaface-row">
-      <span><b>${myID || "Moi"}</b> (toi)</span>
-      <span>vs</span>
-      <span><b>${advID || "Adversaire"}</b></span>
-    </div>
-  `;
-
-  $("fin-details").innerHTML = html;
-
-  // --- Gain pièces ---
-  // 10 par défi fait, +10 si 3/3
-  let nbFaits = Object.values(photosMy).filter(p => p && p.url).length;
-  let gain = nbFaits * 10;
-  if (nbFaits === nbDefis) gain += 10;
-
-  // MAJ pièces : créditer 1 seule fois ! Utilise un flag localStorage
-  let gainFlag = "gain_duel_" + room.id + "_" + myID;
-  if (!localStorage.getItem(gainFlag)) {
-    await addPoints(gain);
-    localStorage.setItem(gainFlag, "1");
-  }
-
-  $("fin-gain").innerHTML =
-    `+${gain} pièces (${nbFaits} défi${nbFaits > 1 ? "s" : ""} x10${nbFaits === 3 ? " +10 bonus" : ""})`;
-
-  // Popup titre
-  $("fin-titre").textContent = "Fin du duel";
-
-  // Affiche la popup
-  $("popup-fin-duel").classList.remove("hidden");
-  $("popup-fin-duel").classList.add("show");
-
-  // Boutons
-  $("fin-btn-replay").onclick = function () {
-    // Recharge une nouvelle room ou renvoie sur l'accueil duel
-    window.location.href = "duel_random.html";
-  };
-  $("fin-btn-retour").onclick = function () {
-    window.location.href = "index.html";
-  };
-  $("close-popup-fin").onclick = function () {
-    $("popup-fin-duel").classList.add("hidden");
-    $("popup-fin-duel").classList.remove("show");
-  };
-}
-
-// ============ LOGIQUE FIN DE DUEL + POPUP ==============
-
-// Appelle ça après chaque updateDuelUI OU dans subscribeRoom
-async function checkFinDuel() {
-  if (!roomData) return;
-  // 1. Timer fini ?
-  const start = roomData.starttime;
-  const duration = 24 * 60 * 60 * 1000;
-  if (start && (Date.now() > start + duration)) {
-    await finirDuel();
-    return;
-  }
-  // 2. Tous les défis faits des deux côtés
-  const nbDefis = (roomData.defis || []).length;
-  const okA = Object.values(roomData.photosa || {}).filter(x => x && x.url).length === nbDefis;
-  const okB = Object.values(roomData.photosb || {}).filter(x => x && x.url).length === nbDefis;
-  if (okA && okB) await finirDuel();
-}
-
-async function finirDuel() {
-  // Mets le status à finished
-  if (roomData.status !== 'finished') {
-    await supabase.from('duels').update({ status: 'finished' }).eq('id', roomData.id);
-  }
-  // Affiche la popup de fin
-  afficherPopupFinDuel(roomData);
-}
-
-async function afficherPopupFinDuel(room) {
-  // Récupère le pseudo courant et adversaire
-  const pseudo = await getCurrentUser();
-  const isP1 = room.player1 === pseudo;
-  const myChamp = isP1 ? 'photosa' : 'photosb';
-  const advChamp = isP1 ? 'photosb' : 'photosa';
-  const myID = isP1 ? room.player1 : room.player2;
-  const advID = isP1 ? room.player2 : room.player1;
-
-  // Statut des défis
-  const nbDefis = (room.defis || []).length;
-  const photosMy = room[myChamp] || {};
-  const photosAdv = room[advChamp] || {};
-
-  // Liste défis avec statut
-  let html = '<table class="fin-defis-table"><tr><th>Défi</th><th>Moi</th><th>' + (advID || "Adversaire") + '</th></tr>';
-  for (let i = 0; i < nbDefis; i++) {
-    const defi = room.defis[i] || "-";
-    const okMe = photosMy[i] && photosMy[i].url ? "✅" : "❌";
-    const okAdv = photosAdv[i] && photosAdv[i].url ? "✅" : "❌";
-    html += `<tr><td>${defi}</td><td style="text-align:center">${okMe}</td><td style="text-align:center">${okAdv}</td></tr>`;
-  }
-  html += '</table>';
-
-  // Face à face
-  $("fin-faceaface").innerHTML = `
-    <div class="fin-faceaface-row">
-      <span><b>${myID || "Moi"}</b> (toi)</span>
-      <span>vs</span>
-      <span><b>${advID || "Adversaire"}</b></span>
-    </div>
-  `;
-
-  $("fin-details").innerHTML = html;
-
-  // --- Gain pièces ---
-  // 10 par défi fait, +10 si 3/3
-  let nbFaits = Object.values(photosMy).filter(p => p && p.url).length;
-  let gain = nbFaits * 10;
-  if (nbFaits === nbDefis) gain += 10;
-
-  // MAJ pièces : créditer 1 seule fois ! Utilise un flag localStorage
-  let gainFlag = "gain_duel_" + room.id + "_" + myID;
-  if (!localStorage.getItem(gainFlag)) {
-    await addPoints(gain);
-    localStorage.setItem(gainFlag, "1");
-  }
-
-  $("fin-gain").innerHTML =
-    `+${gain} pièces (${nbFaits} défi${nbFaits > 1 ? "s" : ""} x10${nbFaits === 3 ? " +10 bonus" : ""})`;
-
-  // Popup titre
-  $("fin-titre").textContent = "Fin du duel";
-
-  // Affiche la popup
-  $("popup-fin-duel").classList.remove("hidden");
-  $("popup-fin-duel").classList.add("show");
-
-  // Boutons
-  $("fin-btn-replay").onclick = function () {
-    // Recharge une nouvelle room ou renvoie sur l'accueil duel
-    window.location.href = "duel_random.html";
-  };
-  $("fin-btn-retour").onclick = function () {
-    window.location.href = "index.html";
-  };
-  $("close-popup-fin").onclick = function () {
-    $("popup-fin-duel").classList.add("hidden");
-    $("popup-fin-duel").classList.remove("show");
-  };
-}
-
-// --- Ajoute ce check dans la callback de ta room ---
-async function checkFinDuel() {
-  if (!roomData) return;
-  // 1. Timer fini ?
-  const start = roomData.starttime;
-  const duration = 24 * 60 * 60 * 1000;
-  if (start && (Date.now() > start + duration)) {
-    await finirDuel();
-    return;
-  }
-  // 2. Tous les défis faits des deux côtés
-  const nbDefis = (roomData.defis || []).length;
-  const okA = Object.values(roomData.photosa || {}).filter(x => x && x.url).length === nbDefis;
-  const okB = Object.values(roomData.photosb || {}).filter(x => x && x.url).length === nbDefis;
-  if (okA && okB) await finirDuel();
-}
-
-async function finirDuel() {
-  // Mets le status à finished
-  if (roomData.status !== 'finished') {
-    await supabase.from('duels').update({ status: 'finished' }).eq('id', roomData.id);
-  }
-  // Affiche la popup de fin
-  afficherPopupFinDuel(roomData);
-}
-
-async function afficherPopupFinDuel(room) {
-  // Récupère le pseudo courant et adversaire
-  const pseudo = await getCurrentUser();
-  const isP1 = room.player1 === pseudo;
-  const myChamp = isP1 ? 'photosa' : 'photosb';
-  const advChamp = isP1 ? 'photosb' : 'photosa';
-  const myID = isP1 ? room.player1 : room.player2;
-  const advID = isP1 ? room.player2 : room.player1;
-
-  // Statut des défis
-  const nbDefis = (room.defis || []).length;
-  const photosMy = room[myChamp] || {};
-  const photosAdv = room[advChamp] || {};
-
-  // Liste défis avec statut
-  let html = '<table class="fin-defis-table"><tr><th>Défi</th><th>Moi</th><th>' + (advID || "Adversaire") + '</th></tr>';
-  for (let i = 0; i < nbDefis; i++) {
-    const defi = room.defis[i] || "-";
-    const okMe = photosMy[i] && photosMy[i].url ? "✅" : "❌";
-    const okAdv = photosAdv[i] && photosAdv[i].url ? "✅" : "❌";
-    html += `<tr><td>${defi}</td><td style="text-align:center">${okMe}</td><td style="text-align:center">${okAdv}</td></tr>`;
-  }
-  html += '</table>';
-
-  // Face à face
-  $("fin-faceaface").innerHTML = `
-    <div class="fin-faceaface-row">
-      <span><b>${myID || "Moi"}</b> (toi)</span>
-      <span>vs</span>
-      <span><b>${advID || "Adversaire"}</b></span>
-    </div>
-  `;
-
-  $("fin-details").innerHTML = html;
-
-  // --- Gain pièces ---
-  // 10 par défi fait, +10 si 3/3
-  let nbFaits = Object.values(photosMy).filter(p => p && p.url).length;
-  let gain = nbFaits * 10;
-  if (nbFaits === nbDefis) gain += 10;
-
-  // MAJ pièces : créditer 1 seule fois ! Utilise un flag localStorage
-  let gainFlag = "gain_duel_" + room.id + "_" + myID;
-  if (!localStorage.getItem(gainFlag)) {
-    await addPoints(gain);
-    localStorage.setItem(gainFlag, "1");
-  }
-
-  $("fin-gain").innerHTML =
-    `+${gain} pièces (${nbFaits} défi${nbFaits > 1 ? "s" : ""} x10${nbFaits === 3 ? " +10 bonus" : ""})`;
-
-  // Popup titre
-  $("fin-titre").textContent = "Fin du duel";
-
-  // Affiche la popup
-  $("popup-fin-duel").classList.remove("hidden");
-  $("popup-fin-duel").classList.add("show");
-
-  // Boutons
-  $("fin-btn-replay").onclick = function () {
-    // Recharge une nouvelle room ou renvoie sur l'accueil duel
-    window.location.href = "duel_random.html";
-  };
-  $("fin-btn-retour").onclick = function () {
-    window.location.href = "index.html";
-  };
-  $("close-popup-fin").onclick = function () {
-    $("popup-fin-duel").classList.add("hidden");
-    $("popup-fin-duel").classList.remove("show");
-  };
-}
 
   function startGlobalTimer(startTime) {
     clearInterval(timerInterval);
@@ -769,6 +476,91 @@ async function afficherPopupFinDuel(room) {
     }
   }
 }
+
+// =================== POPUP FIN DE DUEL ===================
+async function afficherPopupFinDuel(room) {
+  const pseudo = await getCurrentUser();
+  const isP1 = room.player1 === pseudo;
+  const myChamp = isP1 ? 'photosa' : 'photosb';
+  const advChamp = isP1 ? 'photosb' : 'photosa';
+  const myID = isP1 ? room.player1 : room.player2;
+  const advID = isP1 ? room.player2 : room.player1;
+
+  const nbDefis = (room.defis || []).length;
+  const photosMy = room[myChamp] || {};
+  const photosAdv = room[advChamp] || {};
+
+  let html = '<table class="fin-defis-table"><tr><th>Défi</th><th>Moi</th><th>' + (advID || "Adversaire") + '</th></tr>';
+  for (let i = 0; i < nbDefis; i++) {
+    const defi = room.defis[i] || "-";
+    const okMe = photosMy[i] && photosMy[i].url ? "✅" : "❌";
+    const okAdv = photosAdv[i] && photosAdv[i].url ? "✅" : "❌";
+    html += `<tr><td>${defi}</td><td style="text-align:center">${okMe}</td><td style="text-align:center">${okAdv}</td></tr>`;
+  }
+  html += '</table>';
+
+  $("fin-faceaface").innerHTML = `
+    <div class="fin-faceaface-row">
+      <span><b>${myID || "Moi"}</b> (toi)</span>
+      <span>vs</span>
+      <span><b>${advID || "Adversaire"}</b></span>
+    </div>
+  `;
+  $("fin-details").innerHTML = html;
+
+  let nbFaits = Object.values(photosMy).filter(p => p && p.url).length;
+  let gain = nbFaits * 10;
+  if (nbFaits === nbDefis) gain += 10;
+
+  let gainFlag = "gain_duel_" + room.id + "_" + myID;
+  if (!localStorage.getItem(gainFlag)) {
+    await addPoints(gain);
+    localStorage.setItem(gainFlag, "1");
+  }
+
+  $("fin-gain").innerHTML =
+    `+${gain} pièces (${nbFaits} défi${nbFaits > 1 ? "s" : ""} x10${nbFaits === 3 ? " +10 bonus" : ""})`;
+
+  $("fin-titre").textContent = "Fin du duel";
+  $("popup-fin-duel").classList.remove("hidden");
+  $("popup-fin-duel").classList.add("show");
+
+  $("fin-btn-replay").onclick = function () {
+    window.location.href = "duel_random.html";
+  };
+  $("fin-btn-retour").onclick = function () {
+    window.location.href = "index.html";
+  };
+  $("close-popup-fin").onclick = function () {
+    $("popup-fin-duel").classList.add("hidden");
+    $("popup-fin-duel").classList.remove("show");
+  };
+}
+
+// ============ LOGIQUE FIN DE DUEL + POPUP ==============
+async function checkFinDuel() {
+  if (!roomData) return;
+  // 1. Timer fini ?
+  const start = roomData.starttime;
+  const duration = 24 * 60 * 60 * 1000;
+  if (start && (Date.now() > start + duration)) {
+    await finirDuel();
+    return;
+  }
+  // 2. Tous les défis faits des deux côtés
+  const nbDefis = (roomData.defis || []).length;
+  const okA = Object.values(roomData.photosa || {}).filter(x => x && x.url).length === nbDefis;
+  const okB = Object.values(roomData.photosb || {}).filter(x => x && x.url).length === nbDefis;
+  if (okA && okB) await finirDuel();
+}
+async function finirDuel() {
+  if (roomData.status !== 'finished') {
+    await supabase.from('duels').update({ status: 'finished' }).eq('id', roomData.id);
+  }
+  afficherPopupFinDuel(roomData);
+}
+
+// ... (tout le reste de tes fonctions inchangées)
 
 // ==== Fonctions Camera/Popup à exporter pour camera.js ====
 

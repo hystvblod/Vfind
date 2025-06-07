@@ -37,23 +37,21 @@
     </div>
   </div>
 
-  <!-- POPUP PARTIE TERMINÉE ULTRA PRO -->
-  <div id="popup-end" class="popup hidden">
-    <div class="popup-inner popup-premium-pro">
-      <div class="premium-badge">FIN DE PARTIE</div>
-      <div class="popup-premium-title">🎉 Partie terminée !</div>
-      <div class="popup-premium-price" id="end-message" style="margin-bottom: 18px;">
-        Félicitations, tu as terminé cette partie !
-      </div>
-      <ul class="premium-list-pro" style="margin-bottom:18px;">
-        <li id="gain-message"></li>
-      </ul>
-      <div class="btn-boutique-inline" style="margin-top: 16px;">
-        <button id="replayBtnEnd" class="btn-boutique-pill">🔁 Rejouer</button>
-        <button id="returnBtnEnd" class="btn-boutique-pill">🏠 Retour</button>
+  <!-- ================= POPUP FIN DE DUEL =================== -->
+  <div id="popup-fin-duel" class="popup hidden">
+    <div class="popup-inner">
+      <button id="close-popup-fin" class="close-btn">❌</button>
+      <div id="fin-titre" class="popup-title"></div>
+      <div id="fin-faceaface"></div>
+      <div id="fin-details" style="margin:1.2em 0;"></div>
+      <div id="fin-gain" style="font-weight:bold; color:#f2a900; font-size:1.22em; margin-bottom:1em;"></div>
+      <div class="popup-buttons" style="display:flex; gap: 1em; justify-content:center;">
+        <button id="fin-btn-replay" class="main-btn">Rejouer</button>
+        <button id="fin-btn-retour" class="main-btn">Retour</button>
       </div>
     </div>
   </div>
+  <!-- ================= FIN POPUP FIN DE DUEL =================== -->
 
   <!-- HEADER AVEC SOLDE PIÈCES/JETONS -->
   <header class="header-solo" style="border-bottom: 5px solid #888;">
