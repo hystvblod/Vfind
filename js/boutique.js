@@ -246,7 +246,7 @@ document.addEventListener("click", function (e) {
 // ----- Gestion catégories -----
 const CATEGORIES = [
   { key: 'classique', nom: 'Classique' },
-  { key: 'Prestige', nom: 'Prestige' },
+  { key: 'prestige', nom: 'Prestige' },
   { key: 'premium', nom: 'Premium' },
   { key: 'bloque', nom: 'Défi / Spéciaux 🔒' }
 ];
