@@ -97,15 +97,14 @@ function majSolde() {
 async function init() {
   await chargerUserData(true);
 
-  // PAS de pré-game, on démarre direct si aucune partie solo
   let defiActifs = JSON.parse(localStorage.getItem(SOLO_DEFIS_KEY) || "[]");
   let defiTimer = parseInt(localStorage.getItem(SOLO_TIMER_KEY) || "0");
 
+  // Cas : Partie en cours (défis non terminés OU terminés mais timer pas fini)
   if (
     defiActifs.length > 0 &&
     defiTimer &&
-    Date.now() < defiTimer &&
-    !tousDefisFaits(defiActifs)
+    Date.now() < defiTimer
   ) {
     showGame();
     updateTimer();
@@ -113,17 +112,20 @@ async function init() {
     return;
   }
 
-if (
-  (defiActifs.length > 0 && defiTimer && Date.now() >= defiTimer)
-) {
-  await endGameAuto();
-  return;
-}
+  // Cas : Timer terminé (fin de partie, popup)
+  if (
+    defiActifs.length > 0 &&
+    defiTimer &&
+    Date.now() >= defiTimer
+  ) {
+    await endGameAuto();
+    return;
+  }
 
-
-  // Pas de partie → LANCE DIRECT une nouvelle partie
+  // Sinon, pas de partie active → nouvelle partie
   await startGame();
 }
+
 
 function tousDefisFaits(defis) {
   if (!defis || !defis.length) return false;
