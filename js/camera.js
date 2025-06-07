@@ -1,7 +1,6 @@
 import { uploadPhotoDuelWebp, savePhotoDuel } from "./duel.js";
 import { getUserId, getCadreSelectionne } from "./userData.js";
 
-// Fonctions d'ouverture (compat global, mais ES6 only)
 export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cadreId = null) {
   return new Promise((resolve, reject) => {
     const container = document.createElement("div");
@@ -28,7 +27,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     `;
     document.body.appendChild(container);
 
-    // === PATCH ZOOM + LAYERS ===
     const style = document.createElement("style");
     style.innerHTML = `
 .camera-video-zone {
@@ -53,7 +51,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
   align-items: center;
   justify-content: center;
 }
-
 .camera-video-wrapper video {
   width: 100% !important;
   height: 100% !important;
@@ -65,7 +62,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
   position: relative;
   z-index: 1;
 }
-
 .camera-controls-pro {
   margin-top: 22px;
   display: flex;
@@ -96,7 +92,6 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
     const VIDEO_WIDTH = 500;
     const VIDEO_HEIGHT = 550;
 
-    // === GESTION ZOOM
     let camZoom = 1;
     let lastTouchDist = null;
     let isPinching = false;
@@ -104,6 +99,7 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       camZoom = Math.max(1, Math.min(scale, 6));
       video.style.transform = `scale(${camZoom})`;
     }
+
     video.addEventListener("touchstart", e => {
       if (e.touches.length === 2) {
         isPinching = true;
@@ -143,18 +139,21 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       e.preventDefault();
     }, { passive: false });
 
-function startCamera() {
-  if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: useFrontCamera ? "user" : "environment" }
-  }).then(stream => {
-    videoStream = stream;
-    video.srcObject = stream;
-  }).catch(err => {
-    alert("Erreur d’accès à la caméra : " + err);
-  });
-}
-
+    function startCamera() {
+      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: useFrontCamera ? "user" : "environment",
+          width: { ideal: 1920 },
+          height: { ideal: 2112 }
+        }
+      }).then(stream => {
+        videoStream = stream;
+        video.srcObject = stream;
+      }).catch(err => {
+        alert("Erreur d’accès à la caméra : " + err);
+      });
+    }
 
     switchBtn.onclick = () => {
       useFrontCamera = !useFrontCamera;
@@ -168,13 +167,21 @@ function startCamera() {
       canvas.height = VIDEO_HEIGHT;
       const ctx = canvas.getContext("2d");
 
-      const sx = (video.videoWidth - video.videoWidth / camZoom) / 2;
-      const sy = (video.videoHeight - video.videoHeight / camZoom) / 2;
-      const sWidth = video.videoWidth / camZoom;
-      const sHeight = video.videoHeight / camZoom;
+      // Recadrage propre centré sur le ratio 500/550
+      const ratioTarget = VIDEO_WIDTH / VIDEO_HEIGHT;
+      const sourceRatio = video.videoWidth / video.videoHeight;
+
+      let sx = 0, sy = 0, sWidth = video.videoWidth, sHeight = video.videoHeight;
+      if (sourceRatio > ratioTarget) {
+        sWidth = video.videoHeight * ratioTarget;
+        sx = (video.videoWidth - sWidth) / 2;
+      } else {
+        sHeight = video.videoWidth / ratioTarget;
+        sy = (video.videoHeight - sHeight) / 2;
+      }
+
       ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
-      // ✅ Patch visuel : cacher la vidéo immédiatement
       video.style.display = "none";
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
       video.srcObject = null;
@@ -194,46 +201,37 @@ function startCamera() {
       container.appendChild(previewDiv);
 
       previewDiv.querySelector("#validerPhoto").onclick = async () => {
-  const dataUrl = canvas.toDataURL("image/webp", 0.85);
-  if (mode === "duel") {
-    if (!duelId) return alert("Erreur interne : duelId manquant.");
-    if (!cadreId) cadreId = "polaroid_01";
-    try {
-      // Upload direct de la photo brute
-      const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId, cadreId);
-      const userId = await getUserId();
-      localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
-      await savePhotoDuel(defiId, urlPhoto, cadreId);
-
-      // MAJ DU CACHE LOCAL pour affichage instantané (si VFindDuelDB existe)
-      const champ = (window.isPlayer1) ? 'photosa' : 'photosb';
-      if (window.VFindDuelDB && window.currentRoomId) {
-        await window.VFindDuelDB.set(`${duelId}_${champ}_${defiId}`, { url: urlPhoto, cadre: cadreId });
-      }
-
-      // Rafraîchit direct l’UI
-      if (window.updateDuelUI) window.updateDuelUI();
-
-      resolve(urlPhoto);
-    } catch (err) {
-      alert("Erreur upload duel : " + err.message);
-      reject(err);
-    }
-    container.remove();
-  }
-  // ...le reste (solo/base64) inchangé...
-else if (mode === "solo") {
-  const cadre = (await getCadreSelectionne?.()) || "polaroid_01";
-  const obj = { photo: dataUrl, cadre };
-  localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(obj));
-  if (window.afficherPhotoDansCadreSolo) {
-    window.afficherPhotoDansCadreSolo(defiId, dataUrl);
-  }
-  container.remove();
-  resolve(dataUrl);
-}
-
-};
+        const dataUrl = canvas.toDataURL("image/webp", 0.85);
+        if (mode === "duel") {
+          if (!duelId) return alert("Erreur interne : duelId manquant.");
+          if (!cadreId) cadreId = "polaroid_01";
+          try {
+            const urlPhoto = await uploadPhotoDuelWebp(dataUrl, duelId, defiId, cadreId);
+            const userId = await getUserId();
+            localStorage.setItem(`photo_duel_${duelId}_${userId}`, urlPhoto);
+            await savePhotoDuel(defiId, urlPhoto, cadreId);
+            const champ = (window.isPlayer1) ? 'photosa' : 'photosb';
+            if (window.VFindDuelDB && window.currentRoomId) {
+              await window.VFindDuelDB.set(`${duelId}_${champ}_${defiId}`, { url: urlPhoto, cadre: cadreId });
+            }
+            if (window.updateDuelUI) window.updateDuelUI();
+            resolve(urlPhoto);
+          } catch (err) {
+            alert("Erreur upload duel : " + err.message);
+            reject(err);
+          }
+          container.remove();
+        } else if (mode === "solo") {
+          const cadre = (await getCadreSelectionne?.()) || "polaroid_01";
+          const obj = { photo: dataUrl, cadre };
+          localStorage.setItem(`photo_defi_${defiId}`, JSON.stringify(obj));
+          if (window.afficherPhotoDansCadreSolo) {
+            window.afficherPhotoDansCadreSolo(defiId, dataUrl);
+          }
+          container.remove();
+          resolve(dataUrl);
+        }
+      };
 
       previewDiv.querySelector("#retakePhoto").onclick = () => {
         previewDiv.remove();
@@ -260,5 +258,3 @@ window.cameraOuvrirCameraPourDuel = (idx, duelId, cadreId) => {
 window.cameraOuvrirCameraPourConcours = (concoursId) => {
   ouvrirCameraPour(concoursId, "concours");
 };
-
-
