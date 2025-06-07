@@ -143,17 +143,22 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       e.preventDefault();
     }, { passive: false });
 
-    function startCamera() {
-      if (videoStream) videoStream.getTracks().forEach(track => track.stop());
-      navigator.mediaDevices.getUserMedia({
-        video: { facingMode: useFrontCamera ? "user" : "environment" }
-      }).then(stream => {
-        videoStream = stream;
-        video.srcObject = stream;
-      }).catch(err => {
-        alert("Erreur d’accès à la caméra : " + err);
-      });
+ function startCamera() {
+  if (videoStream) videoStream.getTracks().forEach(track => track.stop());
+  navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: useFrontCamera ? "user" : "environment",
+      width: { ideal: 1920 },
+      height: { ideal: 1080 }
     }
+  }).then(stream => {
+    videoStream = stream;
+    video.srcObject = stream;
+  }).catch(err => {
+    alert("Erreur d’accès à la caméra : " + err);
+  });
+}
+
 
     switchBtn.onclick = () => {
       useFrontCamera = !useFrontCamera;
