@@ -167,20 +167,27 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
       canvas.height = VIDEO_HEIGHT;
       const ctx = canvas.getContext("2d");
 
-      // Recadrage propre centré sur le ratio 500/550
-      const ratioTarget = VIDEO_WIDTH / VIDEO_HEIGHT;
-      const sourceRatio = video.videoWidth / video.videoHeight;
+      // --- Recadrage ZOOM fidèle à l'aperçu ---
+      const sourceW = video.videoWidth;
+      const sourceH = video.videoHeight;
+      const targetW = VIDEO_WIDTH;
+      const targetH = VIDEO_HEIGHT;
+      const ratioTarget = targetW / targetH;
+      const sourceRatio = sourceW / sourceH;
 
-      let sx = 0, sy = 0, sWidth = video.videoWidth, sHeight = video.videoHeight;
+      let cropW, cropH;
       if (sourceRatio > ratioTarget) {
-        sWidth = video.videoHeight * ratioTarget;
-        sx = (video.videoWidth - sWidth) / 2;
+        cropH = sourceH / camZoom;
+        cropW = cropH * ratioTarget;
       } else {
-        sHeight = video.videoWidth / ratioTarget;
-        sy = (video.videoHeight - sHeight) / 2;
+        cropW = sourceW / camZoom;
+        cropH = cropW / ratioTarget;
       }
+      // Centrage
+      const sx = (sourceW - cropW) / 2;
+      const sy = (sourceH - cropH) / 2;
 
-      ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      ctx.drawImage(video, sx, sy, cropW, cropH, 0, 0, targetW, targetH);
 
       video.style.display = "none";
       if (videoStream) videoStream.getTracks().forEach(track => track.stop());
