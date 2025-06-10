@@ -1,8 +1,75 @@
-import { db, auth } from './firebase.js';
-import { collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { supabase } from './userData.js'; // Doit être initialisé dans userData.js (standard projet)
 import { ouvrirCameraPour } from "./camera.js";
 
-// Utilitaire : concoursId de la semaine (ex : "22-2025")
+// ----------- PARAMÈTRES DYNAMIQUES -----------
+const URL_CONCOURS = "https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/concours//concours.json";
+
+// ----------- INFOS CONCOURS DYNAMIQUES -----------
+async function chargerInfosConcours() {
+  try {
+    const res = await fetch(URL_CONCOURS + "?t=" + Date.now());
+    const data = await res.json();
+
+    // Titre concours
+    const titreElt = document.querySelector('.titre-concours');
+    if (titreElt && data.titre) titreElt.textContent = data.titre;
+
+    // Lot à gagner
+    const lotElt = document.getElementById('lot-concours');
+    if (lotElt && data.lot) lotElt.textContent = data.lot;
+
+    // Timer
+    if (data.timer_fin) {
+      majTimerConcours(data.timer_fin);
+    }
+  } catch (e) {
+    console.error("Erreur chargement infos concours", e);
+  }
+}
+
+// ----------- TIMER DYNAMIQUE -----------
+function majTimerConcours(finIso) {
+  let timerElt = document.getElementById("timer-concours");
+  if (!timerElt) {
+    timerElt = document.createElement("div");
+    timerElt.id = "timer-concours";
+    timerElt.style = "text-align:center;font-size:1.13em;color:#fff;padding:7px 0;font-weight:600;";
+    const main = document.querySelector("main");
+    main.insertBefore(timerElt, main.children[2]);
+  }
+
+  function update() {
+    const now = new Date();
+    const fin = new Date(finIso);
+    let diff = Math.floor((fin - now) / 1000);
+
+    if (diff < 0) {
+      timerElt.textContent = "Concours terminé !";
+      clearInterval(timerElt._timer);
+      return;
+    }
+
+    const jours = Math.floor(diff / 86400);
+    diff -= jours * 86400;
+    const heures = Math.floor(diff / 3600);
+    diff -= heures * 3600;
+    const minutes = Math.floor(diff / 60);
+    const secondes = diff % 60;
+
+    timerElt.textContent =
+      "Fin dans " +
+      (jours > 0 ? jours + "j " : "") +
+      (heures < 10 ? "0" : "") + heures + "h " +
+      (minutes < 10 ? "0" : "") + minutes + "m " +
+      (secondes < 10 ? "0" : "") + secondes + "s";
+  }
+
+  update();
+  timerElt._timer && clearInterval(timerElt._timer);
+  timerElt._timer = setInterval(update, 1000);
+}
+
+// ----------- ID DE CONCOURS (par semaine) -----------
 function getConcoursId() {
   const now = new Date();
   const year = now.getFullYear();
@@ -12,18 +79,19 @@ function getConcoursId() {
   return `${week}-${year}`;
 }
 
-// -- VOTES ET SESSION
+// ----------- VOTES ET SESSION -----------
 let votesToday = 0;
 let maxVotes = 0;
 let dejaVotees = [];
 
+// ----------- INIT AU CHARGEMENT -----------
 document.addEventListener("DOMContentLoaded", async () => {
+  await chargerInfosConcours();
   await majVotesRestants();
 
   const participerBtn = document.getElementById("participerBtn");
   if (participerBtn) {
     participerBtn.addEventListener("click", async () => {
-      // Prends la photo et récupère le base64
       const base64 = await ouvrirCameraPour("concours", "base64");
       if (base64 && typeof base64 === "string" && base64.trim().length > 5) {
         await ajouterPhotoConcours(base64);
@@ -37,43 +105,53 @@ document.addEventListener("DOMContentLoaded", async () => {
   afficherGalerieConcours();
 });
 
-// Ajoute la photo dans la bonne sous-collection Firestore
+// ----------- AJOUTER UNE PHOTO DANS SUPABASE -----------
 export async function ajouterPhotoConcours(base64Image) {
   if (!base64Image || typeof base64Image !== "string" || base64Image.trim().length < 5) return;
 
   const concoursId = getConcoursId();
-  const user = auth.currentUser;
-  const userName = user.displayName || user.email || user.uid;
+  // Récupère le userId et pseudo depuis userData.js (tu peux adapter selon ton auth)
+  const user = await supabase.auth.getUser();
+  const userId = user.data?.user?.id || "Inconnu";
+  const userName = user.data?.user?.user_metadata?.pseudo || userId;
 
+  // Ajoute la photo dans la table "photosconcours"
   try {
-    const photosRef = collection(db, "concours", concoursId, "photos");
-    await addDoc(photosRef, {
-      photoBase64: base64Image,
-      user: userName,
-      votesTotal: 0
-    });
+    let { error } = await supabase
+      .from('photosconcours')
+      .insert([
+        {
+          concours_id: concoursId,
+          photo_base64: base64Image,
+          user: userName,
+          votes_total: 0
+        }
+      ]);
+    if (error) throw error;
   } catch (e) {
     alert("Erreur lors de l'ajout de la photo au concours.");
     console.error(e);
   }
 }
 
-// Récupère toutes les photos du concours courant (TOP 9 + autres)
+// ----------- RÉCUPÉRER LES PHOTOS DANS SUPABASE -----------
 export async function getPhotosConcours() {
   const concoursId = getConcoursId();
-  const photosRef = collection(db, "concours", concoursId, "photos");
   try {
-    const snap = await getDocs(photosRef);
-    let photos = [];
-    snap.forEach(docSnap => {
-      const d = docSnap.data();
-      photos.push({
-        id: docSnap.id,
-        url: d.url || d.photoBase64, // Fallback pour migration future
-        user: d.user || "Inconnu",
-        votesTotal: d.votesTotal || 0
-      });
-    });
+    let { data, error } = await supabase
+      .from('photosconcours')
+      .select('*')
+      .eq('concours_id', concoursId);
+
+    if (error) throw error;
+    if (!data) return [];
+
+    let photos = data.map(d => ({
+      id: d.id,
+      url: d.photo_base64,
+      user: d.user || "Inconnu",
+      votesTotal: d.votes_total || 0
+    }));
     // Tri décroissant sur les votes
     photos.sort((a, b) => b.votesTotal - a.votesTotal);
     return photos;
@@ -83,7 +161,7 @@ export async function getPhotosConcours() {
   }
 }
 
-// -- AFFICHAGE, VOTE, POPUP
+// ----------- AFFICHAGE, VOTE, POPUP -----------
 
 async function majVotesRestants() {
   votesToday = 3;
@@ -152,7 +230,6 @@ export async function afficherGalerieConcours() {
 }
 
 function creerCartePhoto(photo, isTop) {
-  // Si pas d’URL/base64 : RIEN ne s’affiche
   if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) {
     return null;
   }
@@ -180,10 +257,13 @@ function creerCartePhoto(photo, isTop) {
       btn.disabled = true;
       btn.querySelector("img").style.opacity = "0.43";
       try {
-        // Update votesTotal dans Firestore
-        await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
-          votesTotal: (photo.votesTotal || 0) + 1
-        });
+        // Update votesTotal dans Supabase
+        let { error } = await supabase
+          .from('photosconcours')
+          .update({ votes_total: (photo.votesTotal || 0) + 1 })
+          .eq('id', photo.id);
+        if (error) throw error;
+
         // Mets à jour localStorage
         dejaVotees.push(photo.id);
         localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
@@ -204,10 +284,8 @@ function creerCartePhoto(photo, isTop) {
   return div;
 }
 
-// POPUP ZOOM PHOTO
 function ouvrirPopupZoom(photo) {
-  if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) return; // rien si photo absente
-
+  if (!photo.url || typeof photo.url !== "string" || photo.url.trim().length < 5) return;
   let old = document.getElementById("popup-photo-zoom");
   if (old) old.remove();
 
@@ -249,9 +327,11 @@ function ouvrirPopupZoom(photo) {
       btnVote.disabled = true;
       btnVote.querySelector("img").style.opacity = "0.43";
       try {
-        await updateDoc(doc(db, "concours", getConcoursId(), "photos", photo.id), {
-          votesTotal: (photo.votesTotal || 0) + 1
-        });
+        let { error } = await supabase
+          .from('photosconcours')
+          .update({ votes_total: (photo.votesTotal || 0) + 1 })
+          .eq('id', photo.id);
+        if (error) throw error;
         dejaVotees.push(photo.id);
         localStorage.setItem("votesConcours-" + getConcoursId(), JSON.stringify(dejaVotees));
         btnVote.querySelector(".nbvotes").textContent = Number(btnVote.querySelector(".nbvotes").textContent) + 1;
