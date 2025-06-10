@@ -629,10 +629,12 @@ color: #000;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;    /* 👈 C'EST ÇA QUI CHANGE ! */
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   transition: transform 0.2s ease;
-  min-height: 160px;
+  min-height: 200px;              /* adapte la hauteur à tes besoins */
+  max-width: 220px;               /* ou ce que tu veux */
+  position: relative;
 }
 
 .cadre-item:hover {

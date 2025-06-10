@@ -16,13 +16,11 @@ function toast(msg, color = "#222") {
 document.addEventListener("DOMContentLoaded", async () => {
   userPseudo = await getPseudo();
   await loadUserData();
-  userProfile = await getUserDataCloud();
-
-  await afficherListesAmis(userProfile);
+  await rechargerAffichage();
 
   document.getElementById("btn-ajouter-ami")?.addEventListener("click", async () => {
     const pseudoAmi = document.getElementById("pseudo-ami").value.trim();
-    if (pseudoAmi) envoyerDemandeAmi(pseudoAmi);
+    if (pseudoAmi) await envoyerDemandeAmi(pseudoAmi);
   });
 
   document.getElementById("btn-lien-invit")?.addEventListener("click", () => {
@@ -36,8 +34,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   detecterInvitationParLien();
 });
 
+async function rechargerAffichage() {
+  userProfile = await getUserDataCloud();
+  await afficherListesAmis(userProfile);
+}
+
 async function afficherListesAmis(data) {
   const ulAmis = document.getElementById("liste-amis");
+  ulAmis.innerHTML = ""; // 🔁 nettoyage avant réinjection
   ulAmis.innerHTML = data.amis?.length
     ? data.amis.map(pseudo => `
       <li class="amis-li">
@@ -93,13 +97,10 @@ window.envoyerDemandeAmi = async function(pseudoAmi) {
   await supabase.from("users").update({ demandesRecues: newRec }).eq("id", ami.id);
 
   toast("Demande envoyée à " + pseudoAmi + " !");
-  userProfile = await getUserDataCloud();
-  await afficherListesAmis(userProfile);
+  await rechargerAffichage();
 };
 
 window.accepterDemande = async function(pseudoAmi) {
-  if (!userPseudo || !pseudoAmi) return;
-
   const { data: ami } = await supabase
     .from("users")
     .select("id, amis, demandesEnvoyees")
@@ -109,7 +110,6 @@ window.accepterDemande = async function(pseudoAmi) {
   if (!ami) return;
 
   userProfile = await getUserDataCloud();
-
   const newAmis = [...(userProfile.amis || []), pseudoAmi];
   const newDemandes = (userProfile.demandesRecues || []).filter(p => p !== pseudoAmi);
 
@@ -125,13 +125,10 @@ window.accepterDemande = async function(pseudoAmi) {
 
   await incrementFriendsInvited();
   toast("Vous êtes maintenant amis !");
-  userProfile = await getUserDataCloud();
-  await afficherListesAmis(userProfile);
+  await rechargerAffichage();
 };
 
 window.refuserDemande = async function(pseudoAmi) {
-  if (!userPseudo || !pseudoAmi) return;
-
   const { data: ami } = await supabase
     .from("users")
     .select("id, demandesEnvoyees")
@@ -151,13 +148,10 @@ window.refuserDemande = async function(pseudoAmi) {
   }).eq("id", ami.id);
 
   toast("Demande refusée.");
-  userProfile = await getUserDataCloud();
-  await afficherListesAmis(userProfile);
+  await rechargerAffichage();
 };
 
 window.supprimerAmi = async function(pseudoAmi) {
-  if (!userPseudo || !pseudoAmi) return;
-
   const { data: ami } = await supabase
     .from("users")
     .select("id, amis")
@@ -177,8 +171,7 @@ window.supprimerAmi = async function(pseudoAmi) {
   }).eq("id", ami.id);
 
   toast("Ami supprimé.");
-  userProfile = await getUserDataCloud();
-  await afficherListesAmis(userProfile);
+  await rechargerAffichage();
 };
 
 window.defierAmi = function(pseudoAmi) {
