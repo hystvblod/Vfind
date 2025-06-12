@@ -5,7 +5,10 @@ import {
   updateUserData, getCadreSelectionne,
   getJoursDefisRealises, getNbAmisInvites, getConcoursParticipationStatus,
   hasDownloadedVZone // (si besoin, à implémenter)
+  
 } from './userData.js';
+import { previewCadre } from './cadres_draw.js';
+window.previewCadre = previewCadre;
 
 // === IndexedDB cache boutique/cadres.json ===
 const BOUTIQUE_DB_NAME = 'VFindBoutiqueCache';
