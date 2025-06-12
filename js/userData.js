@@ -539,23 +539,32 @@ export {
 };
 export async function checkBlocageUtilisateur(userId) {
   const now = new Date().toISOString();
+
+  // Récupère l'utilisateur concerné
   const { data, error } = await supabase
-    .from('blocages_utilisateur')
-    .select('*')
-    .eq('user_id', userId)
-    .lte('date_debut', now)
-    .gte('date_fin', now)
-    .maybeSingle();
+    .from('users')
+    .select('banni, ban_date_debut, ban_date_fin, ban_motif')
+    .eq('id', userId)
+    .single();
 
   if (error) {
     console.error("Erreur blocage utilisateur :", error.message);
     return false;
   }
 
-  if (data) {
-    alert("🚫 Accès bloqué temporairement.\nMotif : " + (data.motif || "non spécifié") + "\nFin : " + new Date(data.date_fin).toLocaleString());
-    return true;
+  if (data && data.banni) {
+    // Vérifie que le ban est encore actif
+    if (
+      data.ban_date_debut &&
+      data.ban_date_fin &&
+      now >= data.ban_date_debut &&
+      now <= data.ban_date_fin
+    ) {
+      alert("🚫 Accès bloqué temporairement.\nMotif : " + (data.ban_motif || "non spécifié") + "\nFin : " + new Date(data.ban_date_fin).toLocaleString());
+      return true;
+    }
   }
 
   return false;
 }
+
