@@ -67,5 +67,16 @@
   { "id": "polaroid_903", "nom": "Liégois", "prix": 0,
     "unlock": "Participe à un concours : poste une photo et vote au moins 3 jours.",
     "condition": { "type": "participation_concours" }
-  }
+  },
+  { "id": "polaroid_990", "nom": "Étoiles vivantes", "prix": 2500, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_991", "nom": "Bulles douces", "prix": 1800, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_992", "nom": "Pixel Pop", "prix": 1600, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_993", "nom": "Néon fluo", "prix": 3000, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_994", "nom": "Vagues calmes", "prix": 1400, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_995", "nom": "Taches aquarelle", "prix": 2200, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_996", "nom": "Feuilles vertes", "prix": 2000, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_997", "nom": "Halo cosmique", "prix": 2800, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_998", "nom": "Pluie de lumière", "prix": 1900, "type": "draw", "script": "cadres_draw.js" },
+{ "id": "polaroid_999", "nom": "Feu mystique", "prix": 3200, "type": "draw", "script": "cadres_draw.js" }
+
 ]
