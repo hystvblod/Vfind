@@ -353,6 +353,13 @@ async function renderBoutique(categoryKey) {
       const item = document.createElement("div");
       item.classList.add("cadre-item");
 
+      const wrapper = document.createElement("div");
+wrapper.classList.add("cadre-preview");
+wrapper.style.width = "80px";
+wrapper.style.height = "100px";
+wrapper.style.position = "relative";
+wrapper.style.margin = "0 auto 10px";
+
    let cadreEl;
 if (cadre.type === "draw") {
   cadreEl = document.createElement("canvas");
