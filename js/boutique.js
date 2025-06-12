@@ -366,27 +366,20 @@ if (cadre.type === "draw") {
   cadreVisuel.width = 100;
   cadreVisuel.height = 100;
   cadreVisuel.className = "photo-cadre";
-  import(`../${cadre.script}`).then(mod => {
-    mod.previewCadre(cadreVisuel.getContext("2d"), cadre.id);
-  });
+  // On attend que le module cadres_draw soit global (déjà chargé par le HTML)
+  if (window.previewCadre) {
+    window.previewCadre(cadreVisuel.getContext("2d"), cadre.id);
+  } else {
+    console.warn("Fonction previewCadre non dispo");
+  }
 } else {
   cadreVisuel = document.createElement("img");
   cadreVisuel.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
   cadreVisuel.className = "photo-cadre";
 }
-
-  import(`../${cadre.script}`).then(mod => {
-    mod.previewCadre(cadreVisuel.getContext("2d"), cadre.id);
-  });
-}
+wrapper.appendChild(cadreVisuel);
 
 
-      const photo = document.createElement("img");
-      photo.src = "assets/img/exemple.jpg";
-      photo.className = "photo-user";
-
-     
-      wrapper.appendChild(photo);
 
       wrapper.addEventListener("click", () => {
         const popup = document.createElement("div");
@@ -454,7 +447,7 @@ if (cadre.type === "draw") {
     }
   }
   boutiqueContainer.appendChild(grid);
-
+}
 
 // === POPUP PREMIUM ===
 function activerPremium() {
