@@ -1,8 +1,19 @@
-
 // === cadres_draw.js ===
 // Gère tous les cadres dynamiques HTML/Canvas de VFind
 
 const DRAW_CADRES = {
+  // Mapping direct polaroid_xxx -> fonction de dessin
+  "polaroid_990": drawEtoiles,
+  "polaroid_991": drawBulles,
+  "polaroid_992": drawPixel,
+  "polaroid_993": drawNeon,
+  "polaroid_994": drawVagues,
+  "polaroid_995": drawAquarelle,
+  "polaroid_996": drawFeuilles,
+  "polaroid_997": drawCosmique,
+  "polaroid_998": drawPluie,
+  "polaroid_999": drawFlammes,
+  // Tu peux aussi garder les anciens noms courts si tu veux les réutiliser ailleurs :
   "etoiles": drawEtoiles,
   "bulles": drawBulles,
   "pixel": drawPixel,
