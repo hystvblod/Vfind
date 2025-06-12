@@ -360,9 +360,21 @@ async function renderBoutique(categoryKey) {
       wrapper.style.position = "relative";
       wrapper.style.margin = "0 auto 10px";
 
-      const cadreImg = document.createElement("img");
-      cadreImg.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
-      cadreImg.className = "photo-cadre";
+ let cadreVisuel;
+if (cadre.type === "draw") {
+  cadreVisuel = document.createElement("canvas");
+  cadreVisuel.width = 100;
+  cadreVisuel.height = 100;
+  cadreVisuel.className = "photo-cadre";
+  import(`../${cadre.script}`).then(mod => {
+    mod.previewCadre(cadreVisuel.getContext("2d"), cadre.id);
+  });
+} else {
+  cadreVisuel = document.createElement("img");
+  cadreVisuel.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
+  cadreVisuel.className = "photo-cadre";
+}
+
 
       const photo = document.createElement("img");
       photo.src = "assets/img/exemple.jpg";
