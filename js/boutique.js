@@ -353,23 +353,30 @@ async function renderBoutique(categoryKey) {
       const item = document.createElement("div");
       item.classList.add("cadre-item");
 
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("cadre-preview");
-      wrapper.style.width = "80px";
-      wrapper.style.height = "100px";
-      wrapper.style.position = "relative";
-      wrapper.style.margin = "0 auto 10px";
+   let cadreEl;
+if (cadre.type === "draw") {
+  cadreEl = document.createElement("canvas");
+  cadreEl.width = 80;  // ou 100, mais cohérent avec .cadre-preview
+  cadreEl.height = 100;
+  cadreEl.className = "photo-cadre";
+  if (window.previewCadre) {
+    window.previewCadre(cadreEl.getContext("2d"), cadre.id);
+  }
+} else {
+  cadreEl = document.createElement("img");
+  cadreEl.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
+  cadreEl.className = "photo-cadre";
+  cadreEl.style.width = "100%";
+  cadreEl.style.height = "100%";
+}
 
-      const cadreImg = document.createElement("img");
-      cadreImg.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
-      cadreImg.className = "photo-cadre";
+const photo = document.createElement("img");
+photo.src = "assets/img/exemple.jpg";
+photo.className = "photo-user";
 
-      const photo = document.createElement("img");
-      photo.src = "assets/img/exemple.jpg";
-      photo.className = "photo-user";
+wrapper.appendChild(cadreEl);
+wrapper.appendChild(photo);
 
-      wrapper.appendChild(cadreImg);
-      wrapper.appendChild(photo);
 
       wrapper.addEventListener("click", () => {
         const popup = document.createElement("div");
