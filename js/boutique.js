@@ -360,7 +360,7 @@ async function renderBoutique(categoryKey) {
       wrapper.style.position = "relative";
       wrapper.style.margin = "0 auto 10px";
 
-   let cadreVisuel;
+let cadreVisuel;
 if (cadre.type === "draw") {
   cadreVisuel = document.createElement("canvas");
   cadreVisuel.width = 100;
@@ -373,6 +373,11 @@ if (cadre.type === "draw") {
   cadreVisuel = document.createElement("img");
   cadreVisuel.src = `https://swmdepiukfginzhbeccz.supabase.co/storage/v1/object/public/cadres/${cadre.id}.webp`;
   cadreVisuel.className = "photo-cadre";
+}
+
+  import(`../${cadre.script}`).then(mod => {
+    mod.previewCadre(cadreVisuel.getContext("2d"), cadre.id);
+  });
 }
 
 
@@ -449,7 +454,7 @@ if (cadre.type === "draw") {
     }
   }
   boutiqueContainer.appendChild(grid);
-}
+
 
 // === POPUP PREMIUM ===
 function activerPremium() {
