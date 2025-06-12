@@ -31,6 +31,10 @@ function setCachedOwnedFrames(frames) {
 // --------- CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ----------
 async function loadUserData(force = false) {
   await ensureAuth();
+  // ✅ Vérifie si l'utilisateur est bloqué
+const isBlocked = await checkBlocageUtilisateur(userIdCache);
+if (isBlocked) throw new Error("Utilisateur bloqué temporairement.");
+
   if (userDataCache && !force) return userDataCache;
 
   const { data, error } = await supabase
@@ -533,3 +537,25 @@ export {
   loadUserData,
   incrementFriendsInvited
 };
+export async function checkBlocageUtilisateur(userId) {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from('blocages_utilisateur')
+    .select('*')
+    .eq('user_id', userId)
+    .lte('date_debut', now)
+    .gte('date_fin', now)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Erreur blocage utilisateur :", error.message);
+    return false;
+  }
+
+  if (data) {
+    alert("🚫 Accès bloqué temporairement.\nMotif : " + (data.motif || "non spécifié") + "\nFin : " + new Date(data.date_fin).toLocaleString());
+    return true;
+  }
+
+  return false;
+}
