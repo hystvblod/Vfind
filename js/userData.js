@@ -6,8 +6,10 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let userDataCache = null;
 let userIdCache = null;
+
+// POPUP ADMIN (une seule version !)
 export async function checkAndShowPopup(userId) {
-  const { data, error } = await supabase  // CORRECTION ICI
+  const { data, error } = await supabase
     .from('messages_popup')
     .select('*')
     .eq('userId', userId)
@@ -15,13 +17,12 @@ export async function checkAndShowPopup(userId) {
 
   if (data && data.length > 0) {
     alert(data[0].message);
-    await supabase   // CORRECTION ICI
+    await supabase
       .from('messages_popup')
       .update({ vue: true })
       .eq('id', data[0].id);
   }
 }
-
 
 // ---------- AUTH ANONYME AUTOMATIQUE SUPABASE ----------
 async function ensureAuth() {
@@ -47,9 +48,8 @@ function setCachedOwnedFrames(frames) {
 // --------- CHARGEMENT ET REFRESH DU CACHE UTILISATEUR ----------
 async function loadUserData(force = false) {
   await ensureAuth();
-  // ✅ Vérifie si l'utilisateur est bloqué
-const isBlocked = await checkBlocageUtilisateur(userIdCache);
-if (isBlocked) throw new Error("Utilisateur bloqué temporairement.");
+  const isBlocked = await checkBlocageUtilisateur(userIdCache);
+  if (isBlocked) throw new Error("Utilisateur bloqué temporairement.");
 
   if (userDataCache && !force) return userDataCache;
 
@@ -80,7 +80,6 @@ if (isBlocked) throw new Error("Utilisateur bloqué temporairement.");
       friendsInvited: 0,
       defiActifs: [],
       defiTimer: 0,
-      // PATCH AMIS - AJOUT DÉFINITIF !
       amis: [],
       demandesRecues: [],
       demandesEnvoyees: []
@@ -128,22 +127,6 @@ function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
 function hasDownloadedVZoneCached() { return userDataCache?.hasDownloadedVZone ?? false; }
 function hasDownloadedVBlocksCached() { return userDataCache?.hasDownloadedVBlocks ?? false; }
 function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
-
-export async function checkAndShowPopup(userId) {
-  const { data, error } = await supabase
-    .from('messages_popup')
-    .select('*')
-    .eq('userId', userId)
-    .eq('vue', false);
-
-  if (data && data.length > 0) {
-    alert(data[0].message);
-    await supabase
-      .from('messages_popup')
-      .update({ vue: true })
-      .eq('id', data[0].id);
-  }
-}
 
 // ---------- FONCTIONS CLOUD ----------
 async function getPseudo() { await loadUserData(); return getPseudoCached(); }
@@ -542,6 +525,7 @@ export async function ajouterDefiHistorique({ defi, type = 'solo', date = null }
   if (updateError) throw updateError;
 }
 
+// Fonctions EXPORTÉES
 export {
   getPseudo,
   setPseudo,
@@ -569,10 +553,10 @@ export {
   loadUserData,
   incrementFriendsInvited
 };
+
+// Vérifie le blocage utilisateur
 export async function checkBlocageUtilisateur(userId) {
   const now = new Date().toISOString();
-
-  // Récupère l'utilisateur concerné
   const { data, error } = await supabase
     .from('users')
     .select('banni, ban_date_debut, ban_date_fin, ban_motif')
@@ -599,4 +583,3 @@ export async function checkBlocageUtilisateur(userId) {
 
   return false;
 }
-

@@ -341,4 +341,3 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await afficherGalerieConcours();
 });
-
