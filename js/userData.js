@@ -7,7 +7,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 let userDataCache = null;
 let userIdCache = null;
 export async function checkAndShowPopup(userId) {
-  const { data, error } = await _supabase
+  const { data, error } = await supabase  // CORRECTION ICI
     .from('messages_popup')
     .select('*')
     .eq('userId', userId)
@@ -15,12 +15,13 @@ export async function checkAndShowPopup(userId) {
 
   if (data && data.length > 0) {
     alert(data[0].message);
-    await _supabase
+    await supabase   // CORRECTION ICI
       .from('messages_popup')
       .update({ vue: true })
       .eq('id', data[0].id);
   }
 }
+
 
 // ---------- AUTH ANONYME AUTOMATIQUE SUPABASE ----------
 async function ensureAuth() {
@@ -127,6 +128,22 @@ function getVotesConcoursCached(){ return userDataCache?.votesConcours ?? {}; }
 function hasDownloadedVZoneCached() { return userDataCache?.hasDownloadedVZone ?? false; }
 function hasDownloadedVBlocksCached() { return userDataCache?.hasDownloadedVBlocks ?? false; }
 function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; }
+
+export async function checkAndShowPopup(userId) {
+  const { data, error } = await supabase
+    .from('messages_popup')
+    .select('*')
+    .eq('userId', userId)
+    .eq('vue', false);
+
+  if (data && data.length > 0) {
+    alert(data[0].message);
+    await supabase
+      .from('messages_popup')
+      .update({ vue: true })
+      .eq('id', data[0].id);
+  }
+}
 
 // ---------- FONCTIONS CLOUD ----------
 async function getPseudo() { await loadUserData(); return getPseudoCached(); }
