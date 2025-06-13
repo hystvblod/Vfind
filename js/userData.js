@@ -6,6 +6,21 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let userDataCache = null;
 let userIdCache = null;
+export async function checkAndShowPopup(userId) {
+  const { data, error } = await _supabase
+    .from('messages_popup')
+    .select('*')
+    .eq('userId', userId)
+    .eq('vue', false);
+
+  if (data && data.length > 0) {
+    alert(data[0].message);
+    await _supabase
+      .from('messages_popup')
+      .update({ vue: true })
+      .eq('id', data[0].id);
+  }
+}
 
 // ---------- AUTH ANONYME AUTOMATIQUE SUPABASE ----------
 async function ensureAuth() {
