@@ -102,28 +102,23 @@ function getConcoursId() {
 
 // ----------- PHOTOS CONCOURS, TRI ET PAGINATION -----------
 async function getPhotosAPaginer() {
-  // Récupère toutes les photos
   const concoursId = getConcoursId();
   const { data: allPhotos } = await supabase
     .from('photosconcours')
     .select('*')
     .eq('concours_id', concoursId);
 
-  // TOP 6 du jour
   const top6Ids = getCachedTop6();
 
-  // Photo joueur (pseudo ou id user)
   const user = await supabase.auth.getUser();
   const userName = user.data?.user?.user_metadata?.pseudo || user.data?.user?.id;
   const photoJoueur = allPhotos.find(p => p.user === userName);
 
-  // Photos votées aujourd'hui
   const votedIds = getVotedPhotoIdsToday();
   let photosVotees = votedIds
     .map(id => allPhotos.find(p => p.id === id))
     .filter(Boolean);
 
-  // Ordre : photo joueur, photos votées, puis toutes les autres (sans doublon)
   let uniqueSet = new Set();
   let orderedPhotos = [];
   if (photoJoueur && !uniqueSet.has(photoJoueur.id)) {
@@ -151,19 +146,29 @@ function getPagePhotos(orderedPhotos, page = 1, pageSize = PAGE_SIZE) {
   return orderedPhotos.slice(start, start + pageSize);
 }
 
-// ----------- GÉNÉRATION ET AFFICHAGE DE LA GALERIE -----------
+// ----------- FILTRAGE RECHERCHE PSEUDO -----------
+function filtrerPhotosParPseudo(photos, search) {
+  if (!search) return photos;
+  const query = search.trim().toLowerCase();
+  return photos.filter(p => (p.user || "").toLowerCase().includes(query));
+}
+
 let currentPage = 1;
 
 export async function afficherGalerieConcours() {
   const galerie = document.getElementById("galerie-concours");
   galerie.innerHTML = "<div style='text-align:center;color:#888;'>Chargement...</div>";
 
-  // 1. TOP 6 (indépendant)
-  // Toujours en haut de la page
   let { allPhotos, top6Ids, orderedPhotos } = await getPhotosAPaginer();
-  const top6Photos = top6Ids.map(id => allPhotos.find(p => p.id === id)).filter(Boolean);
 
-  // Génération du TOP 6
+  // Recherche
+  const inputSearch = document.getElementById('recherche-pseudo-concours');
+  const resultatsElt = document.getElementById('resultats-recherche-concours');
+  let search = (inputSearch && inputSearch.value) || "";
+  let filteredOrderedPhotos = filtrerPhotosParPseudo(orderedPhotos, search);
+
+  // TOP 6
+  const top6Photos = top6Ids.map(id => allPhotos.find(p => p.id === id)).filter(Boolean);
   let html = "";
   if (top6Photos.length > 0) {
     html += `<div style="text-align:left;margin-bottom:6px;font-weight:bold;font-size:1.08em;color:#ffe04a;">🏆 TOP 6</div>`;
@@ -174,18 +179,17 @@ export async function afficherGalerieConcours() {
     html += `</div>`;
   }
 
-  // 2. Pagination (photo joueur, votes, autres, 30 par 30)
-  const paginatedPhotos = getPagePhotos(orderedPhotos, currentPage, PAGE_SIZE);
+  // Grille 3 colonnes
+  const paginatedPhotos = getPagePhotos(filteredOrderedPhotos, currentPage, PAGE_SIZE);
   if (paginatedPhotos.length > 0) {
     html += `<div style="text-align:left;margin:16px 0 6px 0;font-weight:bold;font-size:1.06em;">Toutes les photos</div>`;
-    html += `<div class="galerie-concours" style="margin-bottom:24px;display:flex;gap:10px;flex-wrap:wrap;">`;
+    html += `<div class="grid-photos-concours">`;
     for (const photo of paginatedPhotos) {
       html += creerCartePhotoHTML(photo, false);
     }
     html += `</div>`;
 
-    // Pagination boutons
-    const totalPages = Math.ceil(orderedPhotos.length / PAGE_SIZE);
+    const totalPages = Math.ceil(filteredOrderedPhotos.length / PAGE_SIZE);
     html += `<div style="text-align:center;margin-bottom:20px;">`;
     if (currentPage > 1)
       html += `<button id="btn-prev" class="main-button" style="margin-right:16px;">&larr; Précédent</button>`;
@@ -193,16 +197,22 @@ export async function afficherGalerieConcours() {
     if (currentPage < totalPages)
       html += `<button id="btn-next" class="main-button" style="margin-left:16px;">Suivant &rarr;</button>`;
     html += `</div>`;
+
+    if (resultatsElt)
+      resultatsElt.textContent = `(${filteredOrderedPhotos.length} résultat${filteredOrderedPhotos.length > 1 ? 's' : ''})`;
+  } else {
+    html += `<div style="text-align:center;color:#e44;margin:22px;">Aucune photo trouvée pour ce pseudo.</div>`;
+    if (resultatsElt) resultatsElt.textContent = "(0 résultat)";
   }
   galerie.innerHTML = html;
 
-  // Pagination événements
+  // Pagination events
   if (document.getElementById('btn-prev'))
     document.getElementById('btn-prev').onclick = () => { currentPage--; afficherGalerieConcours(); }
   if (document.getElementById('btn-next'))
     document.getElementById('btn-next').onclick = () => { currentPage++; afficherGalerieConcours(); }
 
-  // Ajoute les events cœur et zoom après l’injection HTML
+  // Events cœur et zoom
   Array.from(document.querySelectorAll('.btn-coeur-concours')).forEach(btn => {
     btn.onclick = async function(e) {
       e.stopPropagation();
@@ -225,9 +235,9 @@ function creerCartePhotoHTML(photo, isTop) {
   let coeurDisabled = dejaVotees.includes(photo.id) ? "disabled" : "";
   let coeurOpacity = dejaVotees.includes(photo.id) ? "0.43" : "1";
   return `
-    <div class="photo-concours-item${isTop ? ' top6-photo' : ''}" style="width:150px;display:inline-block;">
+    <div class="photo-concours-item${isTop ? ' top6-photo' : ''}">
       <div class="photo-concours-img-wrapper" data-photoid="${photo.id}" style="position:relative;cursor:pointer;">
-        <img src="${photo.url}" class="photo-concours-img" style="width:100%;border-radius:8px;"/>
+        <img src="${photo.url}" class="photo-concours-img" />
         <button class="btn-coeur-concours" data-photoid="${photo.id}" ${coeurDisabled} 
           style="position:absolute;right:7px;top:7px;background:rgba(30,30,30,0.87);border:none;border-radius:16px;padding:4px 10px;cursor:pointer;">
           <img src="assets/icons/coeur.svg" alt="Vote" style="width:22px;height:22px;vertical-align:middle;opacity:${coeurOpacity};">
@@ -239,11 +249,10 @@ function creerCartePhotoHTML(photo, isTop) {
   `;
 }
 
-// ----------- VOTE POUR PHOTO (gère vote + stockage local) -----------
+// ----------- VOTE POUR PHOTO -----------
 async function votePourPhoto(photoId) {
   const dejaVotees = getVotedPhotoIdsToday();
   if (dejaVotees.includes(photoId)) return;
-  // Incrémente votesTotal côté Supabase
   const { data, error } = await supabase
     .from('photosconcours')
     .select('votes_total')
@@ -257,7 +266,7 @@ async function votePourPhoto(photoId) {
     .eq('id', photoId);
   if (errUpdate) return;
   addVotedPhotoIdToday(photoId);
-  afficherGalerieConcours(); // refresh pour désactiver le coeur
+  afficherGalerieConcours();
 }
 
 // ----------- POPUP ZOOM -----------
@@ -311,7 +320,7 @@ export async function ajouterPhotoConcours(base64Image) {
   }
 }
 
-// ----------- INITIALISATION (timer minuit top6, infos concours, listener, etc) -----------
+// ----------- INITIALISATION -----------
 document.addEventListener("DOMContentLoaded", async () => {
   await chargerInfosConcours();
 
@@ -336,6 +345,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else {
         alert("Erreur lors de la capture de la photo !");
       }
+    });
+  }
+
+  // Barre recherche instantanée
+  const inputSearch = document.getElementById("recherche-pseudo-concours");
+  if (inputSearch) {
+    inputSearch.addEventListener('input', () => {
+      currentPage = 1;
+      afficherGalerieConcours();
     });
   }
 

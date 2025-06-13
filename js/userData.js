@@ -15,13 +15,14 @@ export async function checkAndShowPopup(userId) {
     .eq('userId', userId)
     .eq('vue', false);
 
-  if (data && data.length > 0) {
-    alert(data[0].message);
-    await supabase
-      .from('messages_popup')
-      .update({ vue: true })
-      .eq('id', data[0].id);
-  }
+if (data && data.length > 0) {
+  popupCustom(data[0].message);  // Affiche le popup custom stylé
+  await supabase
+    .from('messages_popup')
+    .update({ vue: true })
+    .eq('id', data[0].id);
+}
+
 }
 
 // ---------- AUTH ANONYME AUTOMATIQUE SUPABASE ----------

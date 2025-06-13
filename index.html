@@ -248,6 +248,15 @@
   </div>
   <!-- -------- FIN POPUP RGPD/CONSENT -------- -->
 
+  <!-- -------- POPUP CUSTOM VFindz -------- -->
+  <div id="popupCustom" style="display:none;">
+    <div class="popup-custom-content">
+      <div id="popupCustomMessage"></div>
+      <button onclick="closePopupCustom()">OK</button>
+    </div>
+  </div>
+  <!-- -------- FIN POPUP CUSTOM -------- -->
+
   <div class="page-container">
 
     <div class="top-buttons top-buttons-home">
@@ -351,19 +360,27 @@
       document.getElementById("consent-accept").onclick = () => handleConsent("accept");
       document.getElementById("consent-refuse").onclick = () => handleConsent("refuse");
     });
+
+    // ----------- POPUP CUSTOM REUTILISABLE -----------
+    window.popupCustom = function(msg) {
+      document.getElementById("popupCustomMessage").innerHTML = msg;
+      document.getElementById("popupCustom").style.display = "flex";
+    }
+    window.closePopupCustom = function() {
+      document.getElementById("popupCustom").style.display = "none";
+    }
+    // -----------------------------------------------
+
   </script>
 
   <!-- Appel unique pour initialiser l'utilisateur avec Supabase Auth anonyme -->
-  
-<script type="module">
-  import { loadUserData, getUserId, checkAndShowPopup } from './js/userData.js';
-  
-  (async () => {
-    await loadUserData(true);         // Auth et chargement user
-    await checkAndShowPopup(getUserId()); // Vérifie et affiche popup admin si besoin
-  })();
-</script>
-
+  <script type="module">
+    import { loadUserData, getUserId, checkAndShowPopup } from './js/userData.js';
+    (async () => {
+      await loadUserData(true);
+      await checkAndShowPopup(getUserId());
+    })();
+  </script>
 
 </body>
 </html>
