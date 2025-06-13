@@ -354,10 +354,16 @@
   </script>
 
   <!-- Appel unique pour initialiser l'utilisateur avec Supabase Auth anonyme -->
-  <script type="module">
-    import { loadUserData } from './js/userData.js';
-    loadUserData(true);
-  </script>
+  
+<script type="module">
+  import { loadUserData, getUserId, checkAndShowPopup } from './js/userData.js';
+  
+  (async () => {
+    await loadUserData(true);         // Auth et chargement user
+    await checkAndShowPopup(getUserId()); // Vérifie et affiche popup admin si besoin
+  })();
+</script>
+
 
 </body>
 </html>
