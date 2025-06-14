@@ -83,7 +83,8 @@ async function loadUserData(force = false) {
       defiTimer: 0,
       amis: [],
       demandesRecues: [],
-      demandesEnvoyees: []
+      demandesEnvoyees: [],
+      dateinscription: new Date().toISOString()
     };
     const { error: insertError } = await supabase.from('users').insert([userDataCache]);
     if (insertError) {
@@ -437,6 +438,7 @@ async function resetUserData() {
     defiTimer: 0,
     amis: [],
     demandesRecues: [],
+    dateinscription: new Date().toISOString(),
     demandesEnvoyees: []
   };
 

@@ -1,80 +1,48 @@
-import { doc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js";
-import { auth, db } from './firebase.js';
+import { getUserId, loadUserData } from './userData.js';
+
+// Packs disponibles côté client (affichage uniquement)
+export const PIECE_PACKS = {
+  pack_099: { prix: 0.99, base: 1500, bonus: 500 },
+  pack_199: { prix: 1.99, base: 4000, bonus: 1000 },
+  pack_249: { prix: 2.49, base: 12000, bonus: 3000 }
+};
+
+// ✅ URL de l'API de validation sécurisée (Vercel)
+const API_URL = 'https://vfindez-api.vercel.app/api/validate-receipt';
 
 /**
- * Gère l'achat d'un pack de pièces avec détection du bonus de premier achat.
- * @param {string} packId - Identifiant du pack ('pack_099', 'pack_199', 'pack_249')
+ * Effectue un achat sécurisé via l’API Vercel (pack ou premium)
+ * @param {string} achat - "pack_099" | "pack_199" | "pack_249" | "premium"
  */
-export async function acheterPack(packId) {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Veuillez vous connecter.");
+export async function validerAchat(achat) {
+  await loadUserData();
+  const userId = getUserId();
+  if (!userId) {
+    alert("Utilisateur non connecté.");
     return;
   }
 
-  const userRef = doc(db, "users", user.uid);
-
-  try {
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      alert("Profil utilisateur introuvable.");
-      return;
-    }
-
-    const userData = userSnap.data();
-
-    // Packs disponibles
-    const packs = {
-      pack_099: { prix: 0.99, base: 1500, bonus: 500, flag: "firstBuy_099" },
-      pack_199: { prix: 1.99, base: 4000, bonus: 1000, flag: "firstBuy_199" },
-      pack_249: { prix: 2.49, base: 12000, bonus: 3000, flag: "firstBuy_249" }
-    };
-
-    const pack = packs[packId];
-
-    if (!pack) {
-      alert("Pack inconnu.");
-      return;
-    }
-
-    let total = pack.base;
-
-    const updates = {};
-
-    if (!userData[pack.flag]) {
-      total += pack.bonus;
-      updates[pack.flag] = true;
-    }
-
-    updates.pieces = increment(total);
-
-    await updateDoc(userRef, updates);
-    alert(`+${total} pièces ajoutées à votre compte !`);
-
-  } catch (error) {
-    console.error("Erreur lors de l'achat :", error);
-    alert("Une erreur est survenue pendant l'achat.");
-  }
-}
-
-/**
- * Active le statut premium pour l'utilisateur.
- */
-export async function activerPremium() {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Veuillez vous connecter.");
-    return;
+  // On calcule la quantité de points si achat d'un pack
+  let quantite = 0;
+  if (achat.startsWith("pack_")) {
+    const pack = PIECE_PACKS[achat];
+    if (pack) quantite = pack.base + pack.bonus;
   }
 
-  const userRef = doc(db, "users", user.uid);
-
   try {
-    await updateDoc(userRef, { premium: true });
-    alert("Statut Premium activé avec succès !");
-  } catch (error) {
-    console.error("Erreur lors de l'activation du premium :", error);
-    alert("Une erreur est survenue lors de l'activation du premium.");
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, achat, quantite })
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      alert(result.message || "Achat validé !");
+    } else {
+      alert("Erreur : " + (result.error || "inconnue"));
+    }
+  } catch (err) {
+    alert("Erreur réseau ou serveur.");
   }
 }

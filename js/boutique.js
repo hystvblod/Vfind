@@ -399,40 +399,46 @@ wrapper.appendChild(photo);
 
       const button = document.createElement("button");
 
-      if (cadre.condition) {
-        const unlockInfo = await checkCadreUnlock(cadre);
-        if (unlockInfo.unlocked) {
-          if (!ownedFrames.includes(cadre.id)) {
-            button.textContent = cadre.prix ? "Acheter" : "Débloqué !";
-            button.disabled = !!cadre.prix ? false : true;
-            if (cadre.prix) {
-              button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
-            } else {
-              button.classList.add("btn-success");
-            }
-          } else {
-            button.textContent = "Débloqué !";
-            button.disabled = true;
-            button.classList.add("btn-success");
-          }
-        } else {
-          button.textContent = "Infos";
-          button.disabled = false;
-          button.classList.add("btn-info");
-          button.onclick = () => showUnlockPopup(cadre.nom, unlockInfo.texte);
-        }
-      } else if (categoryKey === "premium" && !(await isPremium())) {
-        button.textContent = "Premium requis";
-        button.disabled = true;
-        button.classList.add("disabled-premium");
-        button.title = "Ce cadre nécessite un compte premium";
-      } else if (ownedFrames.includes(cadre.id)) {
-        button.textContent = "Acheté";
-        button.disabled = true;
-      } else {
-        button.textContent = "Acheter";
-        button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+if (cadre.condition) {
+  const unlockInfo = await checkCadreUnlock(cadre);
+  if (unlockInfo.unlocked) {
+    if (!ownedFrames.includes(cadre.id)) {
+      // Si le cadre est à débloquer gratuitement via une condition, on l’ajoute direct
+      if (!cadre.prix) {
+        await acheterCadre(cadre.id);
+        ownedFrames = await getOwnedFrames(true);
+        showFeedback("🎉 Cadre débloqué !");
       }
+      button.textContent = cadre.prix ? "Acheter" : "Débloqué !";
+      button.disabled = !!cadre.prix ? false : true;
+      if (cadre.prix) {
+        button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+      } else {
+        button.classList.add("btn-success");
+      }
+    } else {
+      button.textContent = "Débloqué !";
+      button.disabled = true;
+      button.classList.add("btn-success");
+    }
+  } else {
+    button.textContent = "Infos";
+    button.disabled = false;
+    button.classList.add("btn-info");
+    button.onclick = () => showUnlockPopup(cadre.nom, unlockInfo.texte);
+  }
+} else if (categoryKey === "premium" && !(await isPremium())) {
+  button.textContent = "Premium requis";
+  button.disabled = true;
+  button.classList.add("disabled-premium");
+  button.title = "Ce cadre nécessite un compte premium";
+} else if (ownedFrames.includes(cadre.id)) {
+  button.textContent = "Acheté";
+  button.disabled = true;
+} else {
+  button.textContent = "Acheter";
+  button.addEventListener("click", () => acheterCadreBoutique(cadre.id, cadre.prix));
+}
 
       item.appendChild(wrapper);
       item.appendChild(title);
