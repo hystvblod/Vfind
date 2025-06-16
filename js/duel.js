@@ -465,40 +465,45 @@ async function renderDefis({ myID, advID }) {
     const advPhoto = advPhotoObj ? advPhotoObj.url : null;
     const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
 
-    if (advPhoto) {
-      const cadreDiv = document.createElement("div");
-      cadreDiv.className = "cadre-item cadre-duel-mini";
-      const preview = document.createElement("div");
-      preview.className = "cadre-preview";
-      const cadreImg = document.createElement("img");
-      cadreImg.className = "photo-cadre";
-      cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
-      const photoImg = document.createElement("img");
-      photoImg.className = "photo-user";
-      photoImg.src = advPhoto;
-      photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
-      preview.appendChild(cadreImg);
-      preview.appendChild(photoImg);
-      cadreDiv.appendChild(preview);
+   if (advPhoto) {
+  const cadreDiv = document.createElement("div");
+  cadreDiv.className = "cadre-item cadre-duel-mini";
 
-      // --- BOUTON SIGNALER SOUS LA PHOTO ---
-      const signalDiv = document.createElement("div");
-      signalDiv.style.display = "flex";
-      signalDiv.style.justifyContent = "center";
-      signalDiv.style.marginTop = "8px";
-      const signalBtn = document.createElement("button");
-      signalBtn.className = "btn-signal-photo";
-      signalBtn.title = "Signaler cette photo";
-      signalBtn.style.background = "none";
-      signalBtn.style.border = "none";
-      signalBtn.style.cursor = "pointer";
-      signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-      signalBtn.dataset.idx = idxStr;
-      signalDiv.appendChild(signalBtn);
-      cadreDiv.appendChild(signalDiv);
+  const preview = document.createElement("div");
+  preview.className = "cadre-preview";
 
-      colAdv.appendChild(cadreDiv);
-    }
+  const cadreImg = document.createElement("img");
+  cadreImg.className = "photo-cadre";
+  cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
+
+  const photoImg = document.createElement("img");
+  photoImg.className = "photo-user";
+  photoImg.src = advPhoto;
+  photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
+
+  preview.appendChild(cadreImg);
+  preview.appendChild(photoImg);
+  cadreDiv.appendChild(preview);
+
+  // --- BOUTON SIGNALER SOUS LA PHOTO ---
+  const signalDiv = document.createElement("div");
+  signalDiv.style.display = "flex";
+  signalDiv.style.justifyContent = "center";
+  signalDiv.style.marginTop = "8px";
+
+  const signalBtn = document.createElement("button");
+  signalBtn.className = "btn-signal-photo";
+  signalBtn.title = "Signaler cette photo";
+  signalBtn.style.background = "none";
+  signalBtn.style.border = "none";
+  signalBtn.style.cursor = "pointer";
+  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+  signalBtn.dataset.idx = idxStr;
+
+  signalDiv.appendChild(signalBtn);     // ✅ bouton dans une div centrée
+  cadreDiv.appendChild(signalDiv);      // ✅ sous la photo
+  colAdv.appendChild(cadreDiv);         // ✅ dans la colonne adversaire
+}
 
     row.appendChild(colJoueur);
     row.appendChild(colAdv);
