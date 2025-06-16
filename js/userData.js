@@ -69,6 +69,7 @@ async function loadUserData(force = false) {
       pseudo: randomPseudo,
       points: 100,
       jetons: 3,
+      nbChangementsPseudo: 0,
       cadres: ["polaroid_01", "polaroid_02"],
       cadreActif: "polaroid_01",
       historique: [],
@@ -134,21 +135,26 @@ function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; 
 async function getPseudo() { await loadUserData(); return getPseudoCached(); }
 async function setPseudo(pseudo) {
   await loadUserData();
-  userDataCache.pseudo = pseudo;
-  await supabase.from('users').update({ pseudo }).eq('id', userIdCache);
-}
+  const premium = isPremiumCached();
+  const nbChangements = userDataCache.nbChangementsPseudo || 0;
 
-async function getPoints() { await loadUserData(); return getPointsCached(); }
-async function addPoints(n) {
-  await loadUserData();
-  userDataCache.points += n;
-  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
-}
-async function removePoints(n) {
-  await loadUserData();
-  if (userDataCache.points < n) return false;
-  userDataCache.points -= n;
-  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
+  if (nbChangements >= 1 && !premium) {
+    if (userDataCache.points < 300) {
+      alert("Changer d'identifiant coûte 300 pièces. Tu n’en as pas assez.");
+      return false;
+    }
+    userDataCache.points -= 300;
+  }
+
+  userDataCache.pseudo = pseudo;
+  userDataCache.nbChangementsPseudo = nbChangements + 1;
+
+  await supabase.from('users').update({
+    pseudo,
+    nbChangementsPseudo: userDataCache.nbChangementsPseudo,
+    points: userDataCache.points
+  }).eq('id', userIdCache);
+
   return true;
 }
 
@@ -585,4 +591,9 @@ export async function checkBlocageUtilisateur(userId) {
   }
 
   return false;
+}
+export function renderID(pseudo) {
+  return isPremiumCached()
+    ? `<span style="color:gold;font-weight:bold;">${pseudo}</span>`
+    : `<span style="color:white;font-weight:bold;">${pseudo}</span>`;
 }

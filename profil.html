@@ -183,16 +183,17 @@ async function changeUserId(newPseudo) {
 }
 
 // Récupère toutes les infos du profil courant
+import { isPremium, renderID } from './js/userData.js';
 async function getProfile() {
   return await getUserDataCloud();
 }
 
-// Affiche le pseudo comme ID public
 async function refreshProfilDisplay() {
   const profil = await getProfile();
-  document.getElementById("idUserDisplay").textContent =
-    "ID : " + (profil?.pseudo || "???");
-  document.getElementById("idUserDisplay").style.color = "#fff";
+  const pseudo = profil?.pseudo || "???";
+  const premium = profil?.premium || false;
+
+  document.getElementById("idUserDisplay").innerHTML = "ID : " + renderID(pseudo);
   document.getElementById("vcoins").textContent = profil?.points || 0;
   document.getElementById("jetons").textContent = profil?.jetons || 0;
 }

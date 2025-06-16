@@ -17,14 +17,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userId = getUserId();
     if (!userId) return;
 
-    const { data } = await supabase
-      .from('users')
-      .select('historique, dateInscription')
-      .eq('id', userId)
-      .single();
+  const { data } = await supabase
+  .from('users')
+  .select('historique, dateinscription')
+  .eq('id', userId)
+  .single();
 
-    if (!data) return;
-    dateInscription = data.dateInscription ? new Date(data.dateInscription) : null;
+dateInscription = data.dateinscription ? new Date(data.dateinscription) : null;
+
     historique = (data.historique || []).map(e => ({
       date: e.date,
       defis: e.defis || e.defi || [],
