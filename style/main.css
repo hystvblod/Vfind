@@ -364,7 +364,7 @@ nav.nav-icons {
 .defi-photo-container {
   flex-shrink: 0;
   display: flex;
-  justify-content: center;   /* CENTRÉ !! */
+  justify-content: flex-end;   /* CENTRÉ !! */
   align-items: center;       /* ← centre verticalement dans le bloc */
   }
 
