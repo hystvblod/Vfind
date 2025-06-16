@@ -2450,3 +2450,7 @@ overflow-y: auto;
 @media (max-width: 700px) {
   .col-title { margin-bottom: 4px; }
 }
+.col-title.premium {
+  color: #FFD900 !important;
+  text-shadow: 0 0 8px #fff6, 0 1px 2px #4442;
+}

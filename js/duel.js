@@ -1,6 +1,16 @@
 import { supabase, getJetons, getPoints, getPseudo as getCurrentUser, getUserId, getCadreSelectionne, ajouterDefiHistorique, addJetons, removeJeton, addPoints, removePoints, isPremium } from './userData.js';
 
 // ========== IndexedDB cache ==========
+async function setColTitlePremium(element, pseudo) {
+  // Vérifie premium dans Supabase par pseudo
+  if (!pseudo) { element.classList.remove('premium'); return; }
+  const { data } = await supabase.from('users').select('premium').eq('pseudo', pseudo).single();
+  if (data && data.premium) {
+    element.classList.add('premium');
+  } else {
+    element.classList.remove('premium');
+  }
+}
 
 const VFindDuelDB = {
   db: null,
@@ -308,6 +318,9 @@ export async function initDuelGame() {
     }, 1000);
   }
 
+  // ===========================
+  // !!!!! CORRECTION RENDU ICI
+  // ===========================
   async function renderDefis({ myID, advID }) {
     const ul = $("duel-defi-list");
     if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
@@ -344,6 +357,7 @@ export async function initDuelGame() {
       titreJoueur.className = 'col-title';
       titreJoueur.textContent = myID ? myID : "Moi";
       colJoueur.appendChild(titreJoueur);
+      setColTitlePremium(titreJoueur, myID);
 
       // Photo joueur (cache optimisé)
       const myPhotoObj = await getPhotoDuel(roomId, myChamp, idxStr);
@@ -429,6 +443,7 @@ export async function initDuelGame() {
       titreAdv.className = 'col-title';
       titreAdv.textContent = advID ? advID : "Adversaire";
       colAdv.appendChild(titreAdv);
+      setColTitlePremium(titreAdv, advID);
 
       // Photo adversaire (cache optimisé)
       const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
@@ -475,6 +490,9 @@ export async function initDuelGame() {
       ul.appendChild(li);
     }
   }
+  // ===========================
+  // FIN correction
+  // ===========================
 }
 
 // =================== POPUP FIN DE DUEL ===================
@@ -560,9 +578,6 @@ async function finirDuel() {
   afficherPopupFinDuel(roomData);
 }
 
-// ... (tout le reste de tes fonctions inchangées)
-
-// ==== Fonctions Camera/Popup à exporter pour camera.js ====
 
 // POPUP PUB/PREMIUM
 function ouvrirPopupRepriseDuel(onPub) {
