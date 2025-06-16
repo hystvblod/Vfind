@@ -8,30 +8,23 @@
 </head>
 <body>
 
-<!-- ✅ Popup photo avec cœur et croix correctement alignés -->
+<!-- ✅ Popup photo avec cœur et croix alignés sans fond -->
 <div id="popup-photo" class="popup hidden">
   <div class="popup-inner">
-    <!-- Boutons flottants -->
-    <div class="photo-popup-buttons" style="display: flex; justify-content: space-between; align-items: center; padding: 0 8px;">
-      <button id="btn-aimer-photo" class="btn-photo-icon heart-icon">
-        <img src="assets/icons/coeur.svg" alt="Aimer" id="heart-icon" />
+    <!-- Boutons croix + cœur -->
+    <div class="photo-popup-buttons" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; position: absolute; top: 0; left: 0; right: 0; z-index: 10;">
+      <button id="btn-aimer-photo" style="background: none; border: none; padding: 0;">
+        <img src="assets/icons/coeur.svg" alt="Aimer" id="heart-icon" style="width: 32px; height: 32px;" />
       </button>
-      <button id="close-popup" class="btn-photo-icon close-icon">
-        <img src="assets/icons/croix.svg" alt="Fermer" />
+      <button id="close-popup" style="background: none; border: none; padding: 0;">
+        <img src="assets/icons/croix.svg" alt="Fermer" style="width: 32px; height: 32px;" />
       </button>
     </div>
 
-    <!-- Contenu -->
+    <!-- Contenu photo -->
     <div class="cadre-preview cadre-popup boutique-style">
       <img id="cadre-affiche" class="photo-cadre" src="" />
       <img id="photo-affichee" class="photo-user" src="" />
-    </div>
-
-    <!-- Bouton de téléchargement -->
-    <div style="text-align: center; margin-top: 8px;">
-      <button id="download-photo" class="btn-photo-icon">
-        <img src="assets/icons/download.svg" alt="Télécharger" style="width: 28px; height: 28px;" />
-      </button>
     </div>
   </div>
 </div>
@@ -47,9 +40,7 @@
     <div class="premium-list-pro" style="margin-bottom:18px;">
       <button class="btn-premium-pro" id="valider-jeton-btn">✅ Valider</button>
     </div>
-    <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">
-      Annuler
-    </button>
+    <button class="btn-annuler-premium-pro" onclick="fermerPopupJeton()">Annuler</button>
     <div id="solde-jeton" style="margin-top:10px;text-align:center;color:#ffe04a;font-weight:bold;"></div>
   </div>
 </div>
@@ -122,9 +113,7 @@
   <section id="game-section" class="hidden">
     <div class="timer-box">
       <img src="assets/icons/clock.svg" alt="Horloge" class="icon-svg" />
-      <span class="timer-text">
-        Temps restant&nbsp;: <span id="timer">--:--:--</span>
-      </span>
+      <span class="timer-text">Temps restant&nbsp;: <span id="timer">--:--:--</span></span>
     </div>
     <ul id="defi-list" class="defi-list"></ul>
   </section>
@@ -150,14 +139,13 @@
 <script type="module" src="js/camera.js"></script>
 <script type="module" src="js/solo.js"></script>
 
-<!-- ✅ Script cœur / favoris / téléchargement -->
+<!-- ✅ Script cœur / favoris -->
 <script type="module">
   import { openDB } from 'https://cdn.jsdelivr.net/npm/idb@7/+esm';
 
   const heartBtn = document.getElementById("btn-aimer-photo");
   const heartImg = document.getElementById("heart-icon");
   const photoAffichee = document.getElementById("photo-affichee");
-  const downloadBtn = document.getElementById("download-photo");
 
   heartBtn.addEventListener("click", async () => {
     heartImg.src = "assets/icons/coeur_rouge.svg";
@@ -186,19 +174,6 @@
     } catch (err) {
       console.error("Erreur de sauvegarde :", err);
     }
-  });
-
-  downloadBtn.addEventListener("click", async () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = photoAffichee.naturalWidth;
-    canvas.height = photoAffichee.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(photoAffichee, 0, 0);
-    const blob = await new Promise(res => canvas.toBlob(res, "image/webp", 0.9));
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "photo_aimee.webp";
-    a.click();
   });
 </script>
 
