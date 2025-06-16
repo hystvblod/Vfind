@@ -424,6 +424,22 @@ export async function initDuelGame() {
       imgPhoto.style.margin = "0 auto";
       imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
       imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
+      btnRow.appendChild(imgPhoto);
+
+      // --- Bouton signalement (SVG alerte)
+const alertBtn = document.createElement("button");
+alertBtn.className = "btn-signal-photo";
+alertBtn.title = "Signaler cette photo";
+alertBtn.style.background = "none";
+alertBtn.style.border = "none";
+alertBtn.style.cursor = "pointer";
+alertBtn.style.marginLeft = "12px";
+alertBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+alertBtn.dataset.idx = idxStr; // Pour lier au défi
+
+btnRow.appendChild(alertBtn);
+// ou btnRow.insertBefore(alertBtn, imgPhoto); pour le mettre à gauche
+
 
       // Appui long/clic droit → popup jeton
       imgPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
@@ -473,7 +489,6 @@ const cadreImg = document.createElement("img");
 cadreImg.className = "photo-cadre";
 cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
 preview.appendChild(cadreImg);
-
 if (advPhoto) {
   const cadreDiv = document.createElement("div");
   cadreDiv.className = "cadre-item cadre-duel-mini";
