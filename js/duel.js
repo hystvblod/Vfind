@@ -465,23 +465,42 @@ export async function initDuelGame() {
       const advPhoto = advPhotoObj ? advPhotoObj.url : null;
       const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
 
-      if (advPhoto) {
-        const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item cadre-duel-mini";
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-        const cadreImg = document.createElement("img");
-        cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
-        const photoImg = document.createElement("img");
-        photoImg.className = "photo-user";
-        photoImg.src = advPhoto;
-        photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
-        preview.appendChild(cadreImg);
-        preview.appendChild(photoImg);
-        cadreDiv.appendChild(preview);
-        colAdv.appendChild(cadreDiv);
-      }
+if (advPhoto) {
+  const cadreDiv = document.createElement("div");
+  cadreDiv.className = "cadre-item cadre-duel-mini";
+  const preview = document.createElement("div");
+  preview.className = "cadre-preview";
+  const cadreImg = document.createElement("img");
+  cadreImg.className = "photo-cadre";
+  cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
+  const photoImg = document.createElement("img");
+  photoImg.className = "photo-user";
+  photoImg.src = advPhoto;
+  photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
+  preview.appendChild(cadreImg);
+  preview.appendChild(photoImg);
+  cadreDiv.appendChild(preview);
+
+  // --- BOUTON SIGNALER SOUS LA PHOTO ---
+  const signalDiv = document.createElement("div");
+  signalDiv.style.display = "flex";
+  signalDiv.style.justifyContent = "center";
+  signalDiv.style.marginTop = "8px";
+  const signalBtn = document.createElement("button");
+  signalBtn.className = "btn-signal-photo";
+  signalBtn.title = "Signaler cette photo";
+  signalBtn.style.background = "none";
+  signalBtn.style.border = "none";
+  signalBtn.style.cursor = "pointer";
+  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+  // Stocke l'index pour savoir de quel défi il s'agit lors du signalement
+  signalBtn.dataset.idx = idxStr;
+  signalDiv.appendChild(signalBtn);
+  cadreDiv.appendChild(signalDiv);
+
+  colAdv.appendChild(cadreDiv);
+
+}
 
       row.appendChild(colJoueur);
       row.appendChild(colAdv);

@@ -14,7 +14,8 @@
     <!-- Boutons croix + cœur -->
     <div class="photo-popup-buttons" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; position: absolute; top: 0; left: 0; right: 0; z-index: 10;">
       <button id="btn-aimer-photo" style="background: none; border: none; padding: 0;">
-        <img src="assets/icons/coeur.svg" alt="Aimer" id="heart-icon" style="width: 32px; height: 32px;" />
+        <img src="assets/icons/coeur.svg" style="width:32px; height:32px; margin-top:-5px;" />
+        <img src="assets/icons/croix.svg" style="width:32px; height:32px;" />
       </button>
       <button id="close-popup" style="background: none; border: none; padding: 0;">
         <img src="assets/icons/croix.svg" alt="Fermer" style="width: 32px; height: 32px;" />
@@ -31,6 +32,7 @@
     </div>
   </div>
 </div>
+
   <!-- ✅ Popup validation de défi (Jeton) -->
   <div id="popup-jeton" class="popup hidden">
     <div class="popup-inner popup-premium-pro">
@@ -206,6 +208,18 @@
       }
     });
 
+    downloadBtn.addEventListener("click", async () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = photoAffichee.naturalWidth;
+      canvas.height = photoAffichee.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(photoAffichee, 0, 0);
+      const blob = await new Promise(res => canvas.toBlob(res, "image/webp", 0.9));
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "photo_aimee.webp";
+      a.click();
+    });
 
     // --- Logique ouverture/fermeture popup signalement (version minimaliste)
     document.body.addEventListener("click", function(e) {
