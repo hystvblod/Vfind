@@ -266,9 +266,6 @@ export async function initDuelGame() {
 
   subscribeRoom(roomId, (data) => {
     roomData = data;
-    console.log("ROOM DATA", roomData);
-console.log("ROOM DEFIS", roomData?.defis);
-
     updateDuelUI();
     checkFinDuel();
   });
