@@ -856,3 +856,5 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+import { initDuelGame } from "./js/duel.js";
+document.addEventListener("DOMContentLoaded", initDuelGame);
