@@ -200,18 +200,6 @@
       }
     });
 
-    downloadBtn.addEventListener("click", async () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = photoAffichee.naturalWidth;
-      canvas.height = photoAffichee.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(photoAffichee, 0, 0);
-      const blob = await new Promise(res => canvas.toBlob(res, "image/webp", 0.9));
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "photo_aimee.webp";
-      a.click();
-    });
 
     // --- Logique ouverture/fermeture popup signalement (version minimaliste)
     document.body.addEventListener("click", function(e) {
