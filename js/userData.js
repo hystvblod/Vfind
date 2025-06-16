@@ -135,8 +135,17 @@ function getFriendsInvitedCached() { return userDataCache?.friendsInvited ?? 0; 
 async function getPseudo() { await loadUserData(); return getPseudoCached(); }
 async function setPseudo(pseudo) {
   await loadUserData();
+
+  // PATCH fix : fallback sécurité
+  userDataCache.nbChangementsPseudo = Number.isFinite(userDataCache.nbChangementsPseudo)
+    ? userDataCache.nbChangementsPseudo
+    : 0;
+  userDataCache.points = Number.isFinite(userDataCache.points)
+    ? userDataCache.points
+    : 0;
+
   const premium = isPremiumCached();
-  const nbChangements = userDataCache.nbChangementsPseudo || 0;
+  const nbChangements = userDataCache.nbChangementsPseudo;
 
   if (nbChangements >= 1 && !premium) {
     if (userDataCache.points < 300) {
@@ -149,6 +158,14 @@ async function setPseudo(pseudo) {
   userDataCache.pseudo = pseudo;
   userDataCache.nbChangementsPseudo = nbChangements + 1;
 
+  // DEBUG LOG
+  console.log({
+    pseudo,
+    nbChangementsPseudo: userDataCache.nbChangementsPseudo,
+    points: userDataCache.points,
+    id: userIdCache
+  });
+
   await supabase.from('users').update({
     pseudo,
     nbChangementsPseudo: userDataCache.nbChangementsPseudo,
@@ -157,6 +174,7 @@ async function setPseudo(pseudo) {
 
   return true;
 }
+
 
 async function getJetons() { await loadUserData(); return getJetonsCached(); }
 async function addJetons(n) {
