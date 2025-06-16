@@ -265,21 +265,15 @@ export async function ouvrirCameraPour(defiId, mode = "solo", duelId = null, cad
 
       const previewDiv = document.createElement("div");
       previewDiv.className = "camera-photo-preview";
-previewDiv.innerHTML = `
-  <div class="camera-preview-content">
-    <img src="${canvas.toDataURL('image/webp', 0.85)}" style="width:90%;max-width:380px;border-radius:14px;box-shadow:0 2px 18px #0007;"/>
-    <div style="margin-top:18px;display:flex;gap:16px;justify-content:center;">
-      <button class="camera-btn" id="validerPhoto" title="Valider">
-        <img src="assets/icons/valider.svg" alt="Valider" width="38" height="38" />
-      </button>
-      <button class="camera-btn camera-btn-close" id="retakePhoto" title="Reprendre">
-        <img src="assets/icons/croix.svg" alt="Reprendre" width="38" height="38" />
-      </button>
-    </div>
-  </div>
-`;
-
-
+      previewDiv.innerHTML = `
+        <div style="text-align:center;">
+          <img src="${canvas.toDataURL('image/webp', 0.85)}" style="width:90%;max-width:400px;border-radius:14px;box-shadow:0 2px 18px #0007;"/>
+          <div style="margin-top:18px;display:flex;gap:16px;justify-content:center;">
+            <button class="camera-btn" id="validerPhoto">✅ Valider</button>
+            <button class="camera-btn camera-btn-close" id="retakePhoto">↩️ Reprendre</button>
+          </div>
+        </div>
+      `;
       container.querySelector(".camera-video-zone").style.display = "none";
       container.appendChild(previewDiv);
 

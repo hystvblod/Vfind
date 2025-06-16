@@ -12,18 +12,26 @@
 <div id="popup-photo" class="popup hidden">
   <div class="popup-inner">
     <!-- Boutons croix + cœur -->
-<div id="popup-photo" class="popup hidden">
-  <div class="popup-inner">
-    <!-- Boutons croix + cœur -->
     <div class="photo-popup-buttons" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; position: absolute; top: 0; left: 0; right: 0; z-index: 10;">
-<button id="btn-aimer-photo" style="background: none; border: none; padding: 0;">
-  <img src="assets/icons/coeur.svg" style="width:32px; height:32px;" />
-</button>
-<button id="close-popup" style="background: none; border: none; padding: 0;">
-  <img src="assets/icons/croix.svg" alt="Fermer" style="width: 32px; height: 32px;margin-top:-5px;" />
-</button>
-
+      <button id="btn-aimer-photo" style="background: none; border: none; padding: 0;">
+        <img src="assets/icons/coeur.svg" alt="Aimer" id="heart-icon" style="width: 32px; height: 32px;" />
+      </button>
+      <button id="close-popup" style="background: none; border: none; padding: 0;">
+        <img src="assets/icons/croix.svg" alt="Fermer" style="width: 32px; height: 32px;" />
+      </button>
     </div>
+    <div class="cadre-preview cadre-popup boutique-style">
+      <img id="cadre-affiche" class="photo-cadre" src="" />
+      <img id="photo-affichee" class="photo-user" src="" />
+    </div>
+    <div style="text-align: center; margin-top: 8px;">
+      <button id="download-photo" class="btn-photo-icon">
+        <img src="assets/icons/download.svg" alt="Télécharger" style="width: 28px; height: 28px;" />
+      </button>
+    </div>
+  </div>
+</div>
+
 
   <!-- ✅ Popup validation de défi (Jeton) -->
   <div id="popup-jeton" class="popup hidden">
@@ -143,26 +151,12 @@
     </div>
   </div>
 
-  <!-- ✅ POPUP SIGNALER PHOTO ADVERSAIRE -->
-  <div id="popup-signal-photo" class="popup hidden">
-    <div class="popup-inner" style="max-width:350px;text-align:center;">
-      <img src="assets/icons/alert.svg" alt="Alerte" width="50" style="margin-bottom:12px;" />
-      <h3>Signaler la photo</h3>
-      <div style="margin-bottom:18px;">
-        Pourquoi veux-tu signaler cette photo ?
-      </div>
-      <button class="btn-signal-type" data-type="inapproprie">Contenu inapproprié ou interdit</button>
-      <button class="btn-signal-type" data-type="triche" style="margin-top:12px;">Triche (faux, triche, hors sujet...)</button>
-      <button onclick="fermerPopupSignal()" class="btn-photo-icon" style="margin-top:20px;">
-        Annuler
-      </button>
-    </div>
-  </div>
-
   <!-- ✅ SCRIPTS -->
   <script type="module" src="js/userData.js"></script>
   <script type="module" src="js/duel.js"></script>
   <script type="module" src="js/camera.js"></script>
+
+  <!-- ✅ Script favoris + téléchargement -->
   <script type="module">
     import { openDB } from 'https://cdn.jsdelivr.net/npm/idb@7/+esm';
 
@@ -200,32 +194,18 @@
       }
     });
 
-
-    // --- Logique ouverture/fermeture popup signalement (version minimaliste)
-    document.body.addEventListener("click", function(e) {
-      const btn = e.target.closest(".btn-signal-photo");
-      if (!btn) return;
-      // Trouve la photo à signaler
-      const idxStr = btn.dataset.idx;
-      const photoImg = btn.closest('.cadre-item').querySelector('.photo-user');
-      if (!photoImg) return;
-      const photoUrl = photoImg.src;
-
-      // Ouvre la popup et stocke l’info
-      const popup = document.getElementById("popup-signal-photo");
-      popup.classList.remove("hidden");
-      popup.dataset.url = photoUrl;
-      popup.dataset.idx = idxStr;
+    downloadBtn.addEventListener("click", async () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = photoAffichee.naturalWidth;
+      canvas.height = photoAffichee.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(photoAffichee, 0, 0);
+      const blob = await new Promise(res => canvas.toBlob(res, "image/webp", 0.9));
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "photo_aimee.webp";
+      a.click();
     });
-
-    window.fermerPopupSignal = function() {
-      document.getElementById("popup-signal-photo").classList.add("hidden");
-      document.getElementById("popup-signal-photo").dataset.url = "";
-      document.getElementById("popup-signal-photo").dataset.idx = "";
-    };
-
-    // --- Gestion du signalement Supabase à compléter dans duel.js ---
-    // document.querySelectorAll(".btn-signal-type").forEach(...);
   </script>
 </body>
 </html>
