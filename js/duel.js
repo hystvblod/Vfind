@@ -497,7 +497,7 @@ async function renderDefis({ myID, advID }) {
   signalBtn.style.background = "none";
   signalBtn.style.border = "none";
   signalBtn.style.cursor = "pointer";
-  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="38" height="38" />`;
   signalBtn.dataset.idx = idxStr;
 
 signalDiv.appendChild(signalBtn);
