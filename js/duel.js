@@ -318,224 +318,199 @@ export async function initDuelGame() {
     }, 1000);
   }
 
-  // ===========================
-  // !!!!! CORRECTION RENDU ICI
-  // ===========================
-  async function renderDefis({ myID, advID }) {
-    const ul = $("duel-defi-list");
-    if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
-      if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
-      return;
-    }
-
-    const myChamp = isPlayer1 ? 'photosa' : 'photosb';
-    const advChamp = isPlayer1 ? 'photosb' : 'photosa';
-    const photosAimees = getPhotosAimeesDuel();
-
-    ul.innerHTML = '';
-    for (let idx = 0; idx < roomData.defis.length; idx++) {
-      const defi = roomData.defis[idx];
-      const idxStr = String(idx);
-      const li = document.createElement('li');
-      li.className = 'defi-item';
-
-      // Cartouche défi
-      const cartouche = document.createElement('div');
-      cartouche.className = 'defi-cartouche-center';
-      cartouche.textContent = defi;
-      li.appendChild(cartouche);
-
-      // Ligne deux colonnes
-      const row = document.createElement('div');
-      row.className = 'duel-defi-row';
-
-      // --- Colonne Joueur (gauche) ---
-      const colJoueur = document.createElement('div');
-      colJoueur.className = 'joueur-col';
-
-      const titreJoueur = document.createElement('div');
-      titreJoueur.className = 'col-title';
-      titreJoueur.textContent = myID ? myID : "Moi";
-      colJoueur.appendChild(titreJoueur);
-      setColTitlePremium(titreJoueur, myID);
-
-      // Photo joueur (cache optimisé)
-      const myPhotoObj = await getPhotoDuel(roomId, myChamp, idxStr);
-      const myPhoto = myPhotoObj ? myPhotoObj.url : null;
-      const myCadre = myPhotoObj && myPhotoObj.cadre ? myPhotoObj.cadre : getCadreDuel(roomId, idxStr);
-
-      if (myPhoto) {
-        const cadreDiv = document.createElement("div");
-        cadreDiv.className = "cadre-item cadre-duel-mini";
-        const preview = document.createElement("div");
-        preview.className = "cadre-preview";
-        const cadreImg = document.createElement("img");
-        cadreImg.className = "photo-cadre";
-        cadreImg.src = "./assets/cadres/" + myCadre + ".webp";
-        const photoImg = document.createElement("img");
-        photoImg.className = "photo-user";
-        photoImg.src = myPhoto;
-        photoImg.onclick = () => agrandirPhoto(myPhoto, myCadre);
-        // --- Appui long/chgt cadre ---
-        photoImg.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupChoixCadre(roomId, idxStr, myChamp); };
-        photoImg.ontouchstart = function(e) {
-          this._touchTimer = setTimeout(() => { ouvrirPopupChoixCadre(roomId, idxStr, myChamp); }, 500);
-        };
-        photoImg.ontouchend = function() { clearTimeout(this._touchTimer); };
-
-        preview.appendChild(cadreImg);
-        preview.appendChild(photoImg);
-
-        // --- Bouton coeur pour aimer la photo ---
-        const coeurBtn = document.createElement("img");
-        coeurBtn.src = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "assets/icons/coeur_plein.svg" : "assets/icons/coeur.svg";
-        coeurBtn.alt = "Aimer";
-        coeurBtn.style.width = "2em";
-        coeurBtn.style.cursor = "pointer";
-        coeurBtn.style.marginLeft = "0.6em";
-        coeurBtn.title = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "Retirer des photos aimées" : "Ajouter aux photos aimées";
-        coeurBtn.onclick = () => {
-          if (photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`)) {
-            retirerPhotoAimeeDuel(`${roomId}_${myChamp}_${idxStr}`);
-          } else {
-            aimerPhotoDuel(`${roomId}_${myChamp}_${idxStr}`);
-          }
-          renderDefis({ myID, advID });
-        };
-        preview.appendChild(coeurBtn);
-        cadreDiv.appendChild(preview);
-        colJoueur.appendChild(cadreDiv);
-      }
-
-      // ========== BOUTON PHOTO UNIQUEMENT ==========
-      const btnRow = document.createElement('div');
-      btnRow.className = "duel-btnrow-joueur";
-      btnRow.style.display = "flex";
-      btnRow.style.justifyContent = "center";
-      btnRow.style.marginTop = "10px";
-
-      // --- PHOTO
-      const imgPhoto = document.createElement('img');
-      imgPhoto.src = "assets/icons/photo.svg";
-      imgPhoto.alt = "Prendre une photo";
-      imgPhoto.style.width = "2.2em";
-      imgPhoto.style.cursor = "pointer";
-      imgPhoto.style.display = "block";
-      imgPhoto.style.margin = "0 auto";
-      imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-      imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
-      btnRow.appendChild(imgPhoto);
-
-      // --- Bouton signalement (SVG alerte)
-const alertBtn = document.createElement("button");
-alertBtn.className = "btn-signal-photo";
-alertBtn.title = "Signaler cette photo";
-alertBtn.style.background = "none";
-alertBtn.style.border = "none";
-alertBtn.style.cursor = "pointer";
-alertBtn.style.marginLeft = "12px";
-alertBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-alertBtn.dataset.idx = idxStr; // Pour lier au défi
-
-btnRow.appendChild(alertBtn);
-// ou btnRow.insertBefore(alertBtn, imgPhoto); pour le mettre à gauche
-
-
-      // Appui long/clic droit → popup jeton
-      imgPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
-      imgPhoto.ontouchstart = function(e) {
-        this._touchTimer = setTimeout(() => { ouvrirPopupValiderJeton(idxStr); }, 500);
-      };
-      imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
-
-      btnRow.appendChild(imgPhoto);
-
-      colJoueur.appendChild(btnRow);
-
-      // --- Colonne Adversaire (droite) ---
-      const colAdv = document.createElement('div');
-      colAdv.className = 'adversaire-col';
-      const titreAdv = document.createElement('div');
-      titreAdv.className = 'col-title';
-      titreAdv.textContent = advID ? advID : "Adversaire";
-      colAdv.appendChild(titreAdv);
-      setColTitlePremium(titreAdv, advID);
-
-      // Photo adversaire (cache optimisé)
-      const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
-      // On force la mise à jour du cache si cadre changé côté serveur
-      if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
-        let obj = roomData[advChamp][idxStr];
-        let url, cadre;
-        if (typeof obj === "object") {
-          url = obj.url;
-          cadre = obj.cadre;
-        } else {
-          url = obj;
-          cadre = "polaroid_01";
-        }
-        // On rafraîchit l'entrée cache même si déjà présente
-        await VFindDuelDB.set(`${roomId}_${advChamp}_${idxStr}`, { url, cadre });
-      }
-
-      const advPhoto = advPhotoObj ? advPhotoObj.url : null;
-      const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
-
-      const cadreDiv = document.createElement("div");
-cadreDiv.className = "cadre-item cadre-duel-mini";
-const preview = document.createElement("div");
-preview.className = "cadre-preview";
-const cadreImg = document.createElement("img");
-cadreImg.className = "photo-cadre";
-cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
-preview.appendChild(cadreImg);
-if (advPhoto) {
-  const cadreDiv = document.createElement("div");
-  cadreDiv.className = "cadre-item cadre-duel-mini";
-  const preview = document.createElement("div");
-  preview.className = "cadre-preview";
-  const cadreImg = document.createElement("img");
-  cadreImg.className = "photo-cadre";
-  cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
-  const photoImg = document.createElement("img");
-  photoImg.className = "photo-user";
-  photoImg.src = advPhoto;
-  photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
-  preview.appendChild(cadreImg);
-  preview.appendChild(photoImg);
-  cadreDiv.appendChild(preview);
-
-  // --- BOUTON SIGNALER SOUS LA PHOTO ---
-  const signalDiv = document.createElement("div");
-  signalDiv.style.display = "flex";
-  signalDiv.style.justifyContent = "center";
-  signalDiv.style.marginTop = "8px";
-  const signalBtn = document.createElement("button");
-  signalBtn.className = "btn-signal-photo";
-  signalBtn.title = "Signaler cette photo";
-  signalBtn.style.background = "none";
-  signalBtn.style.border = "none";
-  signalBtn.style.cursor = "pointer";
-  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-  // Stocke l'index pour savoir de quel défi il s'agit lors du signalement
-  signalBtn.dataset.idx = idxStr;
-  signalDiv.appendChild(signalBtn);
-  cadreDiv.appendChild(signalDiv);
-
-  colAdv.appendChild(cadreDiv);
-
-}
-
-      row.appendChild(colJoueur);
-      row.appendChild(colAdv);
-
-      li.appendChild(row);
-      ul.appendChild(li);
-    }
+// ===========================
+// !!!!! CORRECTION RENDU ICI
+// ===========================
+async function renderDefis({ myID, advID }) {
+  const ul = $("duel-defi-list");
+  if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
+    if (ul) ul.innerHTML = `<li>Aucun défi.</li>`;
+    return;
   }
-  // ===========================
-  // FIN correction
-  // ===========================
+
+  const myChamp = isPlayer1 ? 'photosa' : 'photosb';
+  const advChamp = isPlayer1 ? 'photosb' : 'photosa';
+  const photosAimees = getPhotosAimeesDuel();
+
+  ul.innerHTML = '';
+  for (let idx = 0; idx < roomData.defis.length; idx++) {
+    const defi = roomData.defis[idx];
+    const idxStr = String(idx);
+    const li = document.createElement('li');
+    li.className = 'defi-item';
+
+    // Cartouche défi
+    const cartouche = document.createElement('div');
+    cartouche.className = 'defi-cartouche-center';
+    cartouche.textContent = defi;
+    li.appendChild(cartouche);
+
+    // Ligne deux colonnes
+    const row = document.createElement('div');
+    row.className = 'duel-defi-row';
+
+    // --- Colonne Joueur (gauche) ---
+    const colJoueur = document.createElement('div');
+    colJoueur.className = 'joueur-col';
+
+    const titreJoueur = document.createElement('div');
+    titreJoueur.className = 'col-title';
+    titreJoueur.textContent = myID ? myID : "Moi";
+    colJoueur.appendChild(titreJoueur);
+    setColTitlePremium(titreJoueur, myID);
+
+    // Photo joueur (cache optimisé)
+    const myPhotoObj = await getPhotoDuel(roomId, myChamp, idxStr);
+    const myPhoto = myPhotoObj ? myPhotoObj.url : null;
+    const myCadre = myPhotoObj && myPhotoObj.cadre ? myPhotoObj.cadre : getCadreDuel(roomId, idxStr);
+
+    if (myPhoto) {
+      const cadreDiv = document.createElement("div");
+      cadreDiv.className = "cadre-item cadre-duel-mini";
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      const cadreImg = document.createElement("img");
+      cadreImg.className = "photo-cadre";
+      cadreImg.src = "./assets/cadres/" + myCadre + ".webp";
+      const photoImg = document.createElement("img");
+      photoImg.className = "photo-user";
+      photoImg.src = myPhoto;
+      photoImg.onclick = () => agrandirPhoto(myPhoto, myCadre);
+      // --- Appui long/chgt cadre ---
+      photoImg.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupChoixCadre(roomId, idxStr, myChamp); };
+      photoImg.ontouchstart = function(e) {
+        this._touchTimer = setTimeout(() => { ouvrirPopupChoixCadre(roomId, idxStr, myChamp); }, 500);
+      };
+      photoImg.ontouchend = function() { clearTimeout(this._touchTimer); };
+
+      preview.appendChild(cadreImg);
+      preview.appendChild(photoImg);
+
+      // --- Bouton coeur pour aimer la photo ---
+      const coeurBtn = document.createElement("img");
+      coeurBtn.src = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "assets/icons/coeur_plein.svg" : "assets/icons/coeur.svg";
+      coeurBtn.alt = "Aimer";
+      coeurBtn.style.width = "2em";
+      coeurBtn.style.cursor = "pointer";
+      coeurBtn.style.marginLeft = "0.6em";
+      coeurBtn.title = photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`) ? "Retirer des photos aimées" : "Ajouter aux photos aimées";
+      coeurBtn.onclick = () => {
+        if (photosAimees.includes(`${roomId}_${myChamp}_${idxStr}`)) {
+          retirerPhotoAimeeDuel(`${roomId}_${myChamp}_${idxStr}`);
+        } else {
+          aimerPhotoDuel(`${roomId}_${myChamp}_${idxStr}`);
+        }
+        renderDefis({ myID, advID });
+      };
+      preview.appendChild(coeurBtn);
+      cadreDiv.appendChild(preview);
+      colJoueur.appendChild(cadreDiv);
+    }
+
+    // ========== BOUTON PHOTO UNIQUEMENT ==========
+    const btnRow = document.createElement('div');
+    btnRow.className = "duel-btnrow-joueur";
+    btnRow.style.display = "flex";
+    btnRow.style.justifyContent = "center";
+    btnRow.style.marginTop = "10px";
+
+    // --- PHOTO
+    const imgPhoto = document.createElement('img');
+    imgPhoto.src = "assets/icons/photo.svg";
+    imgPhoto.alt = "Prendre une photo";
+    imgPhoto.style.width = "2.2em";
+    imgPhoto.style.cursor = "pointer";
+    imgPhoto.style.display = "block";
+    imgPhoto.style.margin = "0 auto";
+    imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+    imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
+
+    // Appui long/clic droit → popup jeton
+    imgPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
+    imgPhoto.ontouchstart = function(e) {
+      this._touchTimer = setTimeout(() => { ouvrirPopupValiderJeton(idxStr); }, 500);
+    };
+    imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
+
+    btnRow.appendChild(imgPhoto);
+
+    colJoueur.appendChild(btnRow);
+
+    // --- Colonne Adversaire (droite) ---
+    const colAdv = document.createElement('div');
+    colAdv.className = 'adversaire-col';
+    const titreAdv = document.createElement('div');
+    titreAdv.className = 'col-title';
+    titreAdv.textContent = advID ? advID : "Adversaire";
+    colAdv.appendChild(titreAdv);
+    setColTitlePremium(titreAdv, advID);
+
+    // Photo adversaire (cache optimisé)
+    const advPhotoObj = await getPhotoDuel(roomId, advChamp, idxStr);
+    // On force la mise à jour du cache si cadre changé côté serveur
+    if (roomData && roomData[advChamp] && roomData[advChamp][idxStr]) {
+      let obj = roomData[advChamp][idxStr];
+      let url, cadre;
+      if (typeof obj === "object") {
+        url = obj.url;
+        cadre = obj.cadre;
+      } else {
+        url = obj;
+        cadre = "polaroid_01";
+      }
+      // On rafraîchit l'entrée cache même si déjà présente
+      await VFindDuelDB.set(`${roomId}_${advChamp}_${idxStr}`, { url, cadre });
+    }
+
+    const advPhoto = advPhotoObj ? advPhotoObj.url : null;
+    const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
+
+    if (advPhoto) {
+      const cadreDiv = document.createElement("div");
+      cadreDiv.className = "cadre-item cadre-duel-mini";
+      const preview = document.createElement("div");
+      preview.className = "cadre-preview";
+      const cadreImg = document.createElement("img");
+      cadreImg.className = "photo-cadre";
+      cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
+      const photoImg = document.createElement("img");
+      photoImg.className = "photo-user";
+      photoImg.src = advPhoto;
+      photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
+      preview.appendChild(cadreImg);
+      preview.appendChild(photoImg);
+      cadreDiv.appendChild(preview);
+
+      // --- BOUTON SIGNALER SOUS LA PHOTO ---
+      const signalDiv = document.createElement("div");
+      signalDiv.style.display = "flex";
+      signalDiv.style.justifyContent = "center";
+      signalDiv.style.marginTop = "8px";
+      const signalBtn = document.createElement("button");
+      signalBtn.className = "btn-signal-photo";
+      signalBtn.title = "Signaler cette photo";
+      signalBtn.style.background = "none";
+      signalBtn.style.border = "none";
+      signalBtn.style.cursor = "pointer";
+      signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+      signalBtn.dataset.idx = idxStr;
+      signalDiv.appendChild(signalBtn);
+      cadreDiv.appendChild(signalDiv);
+
+      colAdv.appendChild(cadreDiv);
+    }
+
+    row.appendChild(colJoueur);
+    row.appendChild(colAdv);
+
+    li.appendChild(row);
+    ul.appendChild(li);
+  }
+}
+// ===========================
+// FIN correction
+// ===========================
+
 }
 
 // =================== POPUP FIN DE DUEL ===================
