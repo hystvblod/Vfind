@@ -2454,11 +2454,25 @@ overflow-y: auto;
 .col-title.premium {
   color: #FFD900 !important;
   text-shadow: 0 0 8px #fff6, 0 1px 2px #4442;
+
 }
-.camera-photo-preview {
-    display: flex;
+.camera-container-fullscreen {
+    display: flex !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    min-height: 100vh;
+}
+.camera-photo-preview {
+    position: static !important;
+    background: none !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+    left: unset !important;
+    right: unset !important;
+    top: unset !important;
+    bottom: unset !important;
 }
