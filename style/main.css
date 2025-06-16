@@ -362,10 +362,10 @@ nav.nav-icons {
   }
 
 .defi-photo-container {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: flex-end;  /* ← garde l’alignement à droite */
-    align-items: center;        /* ← centre verticalement dans le bloc */
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;   /* CENTRÉ !! */
+  align-items: center;       /* ← centre verticalement dans le bloc */
   }
 
 .main-buttons a {
