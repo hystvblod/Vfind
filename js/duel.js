@@ -485,26 +485,24 @@ async function renderDefis({ myID, advID }) {
   preview.appendChild(photoImg);
   cadreDiv.appendChild(preview);
 
-  // --- BOUTON SIGNALER SOUS LA PHOTO ---
-  const signalDiv = document.createElement("div");
-  signalDiv.style.display = "flex";
-  signalDiv.style.justifyContent = "center";
-  signalDiv.style.marginTop = "8px";
+colAdv.appendChild(cadreDiv);    // Ajoute le cadre adversaire
 
-  const signalBtn = document.createElement("button");
-  signalBtn.className = "btn-signal-photo";
-  signalBtn.title = "Signaler cette photo";
-  signalBtn.style.background = "none";
-  signalBtn.style.border = "none";
-  signalBtn.style.cursor = "pointer";
-  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-  signalBtn.dataset.idx = idxStr;
-signalDiv.appendChild(signalBtn);
-colAdv.appendChild(cadreDiv);    // ✅ cadre seul
-colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
+// --- Ligne du bouton signaler, même logique que bouton photo ---
+const btnRowAdv = document.createElement('div');
+btnRowAdv.className = "duel-btnrow-adversaire"; // à définir dans ton CSS
 
+const signalBtn = document.createElement("button");
+signalBtn.className = "btn-signal-photo";
+signalBtn.title = "Signaler cette photo";
+signalBtn.style.background = "none";
+signalBtn.style.border = "none";
+signalBtn.style.cursor = "pointer";
+signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+signalBtn.dataset.idx = idxStr;
 
-}
+btnRowAdv.appendChild(signalBtn);
+colAdv.appendChild(btnRowAdv); // Le bouton sera sur une ligne séparée, comme l'appareil photo
+
 
     row.appendChild(colJoueur);
     row.appendChild(colAdv);
