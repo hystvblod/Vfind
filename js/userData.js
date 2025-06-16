@@ -533,7 +533,10 @@ export async function ajouterDefiHistorique({ defi, type = 'solo', date = null }
 
   if (updateError) throw updateError;
 }
-
+async function getPoints() {
+  await loadUserData();
+  return getPointsCached();
+}
 // Fonctions EXPORTÉES
 export {
   getPseudo,
