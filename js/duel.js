@@ -285,6 +285,7 @@ export async function initDuelGame() {
   updateDuelUI();
   await checkFinDuel();
 
+
   function subscribeRoom(roomId, callback) {
     supabase
       .channel('duel_room_' + roomId)
