@@ -500,9 +500,10 @@ async function renderDefis({ myID, advID }) {
   signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
   signalBtn.dataset.idx = idxStr;
 
-  signalDiv.appendChild(signalBtn);     // ✅ bouton dans une div centrée
-  cadreDiv.appendChild(signalDiv);      // ✅ sous la photo
-  colAdv.appendChild(cadreDiv);         // ✅ dans la colonne adversaire
+signalDiv.appendChild(signalBtn);       // OK
+colAdv.appendChild(cadreDiv);          // ✅ d’abord le cadre
+colAdv.appendChild(signalDiv);         // ✅ puis le bouton "signaler" en-dessous
+
 }
 
     row.appendChild(colJoueur);
