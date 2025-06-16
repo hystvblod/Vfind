@@ -433,6 +433,20 @@ export async function initDuelGame() {
       imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
 
       btnRow.appendChild(imgPhoto);
+      // --- Bouton signalement (SVG alerte)
+const alertBtn = document.createElement("button");
+alertBtn.className = "btn-signal-photo";
+alertBtn.title = "Signaler cette photo";
+alertBtn.style.background = "none";
+alertBtn.style.border = "none";
+alertBtn.style.cursor = "pointer";
+alertBtn.style.marginLeft = "12px";
+alertBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+alertBtn.dataset.idx = idxStr; // Pour lier au défi
+
+btnRow.appendChild(alertBtn);
+// ou btnRow.insertBefore(alertBtn, imgPhoto); pour le mettre à gauche
+
 
       colJoueur.appendChild(btnRow);
 
