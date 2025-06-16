@@ -2329,6 +2329,7 @@ overflow-y: auto;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start; /* top align! */
+  align-self: flex-start;
   position: absolute;
   top: 10px; /* optionnel, sinon laisse par défaut */
   left: 0;
