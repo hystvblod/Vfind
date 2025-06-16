@@ -465,6 +465,15 @@ export async function initDuelGame() {
       const advPhoto = advPhotoObj ? advPhotoObj.url : null;
       const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
 
+      const cadreDiv = document.createElement("div");
+cadreDiv.className = "cadre-item cadre-duel-mini";
+const preview = document.createElement("div");
+preview.className = "cadre-preview";
+const cadreImg = document.createElement("img");
+cadreImg.className = "photo-cadre";
+cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
+preview.appendChild(cadreImg);
+
 if (advPhoto) {
   const cadreDiv = document.createElement("div");
   cadreDiv.className = "cadre-item cadre-duel-mini";
@@ -876,3 +885,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Gestion du signalement photo vers Supabase Storage
+document.body.addEventListener("click", async function(e) {
+  // Ouverture de la popup (déjà fait plus haut)
+  // ...
+
+  // Gestion du clic sur un motif de signalement
+  const signalTypeBtn = e.target.closest(".btn-signal-type");
+  if (!signalTypeBtn) return;
+
+  const popup = document.getElementById("popup-signal-photo");
+  const photoUrl = popup.dataset.url;
+  const idx = popup.dataset.idx || "";
+  const motif = signalTypeBtn.dataset.type;
+
+  if (!photoUrl || !motif) {
+    alert("Erreur : impossible de retrouver la photo ou le motif.");
+    return;
+  }
+
+  try {
+    // Télécharge la photo en blob
+    const response = await fetch(photoUrl);
+    const blob = await response.blob();
+
+    // Crée un nom unique pour le fichier signalé
+    const fileName = `defi${idx}_${motif}_${Date.now()}.webp`;
+
+    // Envoie la photo dans le bucket "signalements"
+    const { data, error } = await supabase
+      .storage
+      .from('signalements')
+      .upload(fileName, blob, { contentType: 'image/webp' });
+
+    if (error) {
+      alert("Erreur d’envoi : " + error.message);
+    } else {
+      alert("Signalement envoyé à la modération.");
+      window.fermerPopupSignal();
+    }
+  } catch (err) {
+    alert("Erreur lors de l'envoi : " + err.message);
+  }
+});
