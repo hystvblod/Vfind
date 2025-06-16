@@ -204,19 +204,7 @@ export async function findOrCreateRoom() {
     await new Promise(r => setTimeout(r, 1200));
   }
 
-const { data: defisData, error: defisError } = await supabase
-  .from('defis')
-  .select('intitule')
-  .order('id', { ascending: false })
-  .limit(20); // on prend plus large pour random
-
-if (defisError || !defisData || defisData.length < 3) {
-  alert("Erreur de chargement des défis");
-  return;
-}
-const shuffled = defisData.map(d => d.intitule).sort(() => Math.random() - 0.5);
-const defis = shuffled.slice(0, 3);
-console.log("Défis choisis :", defis);
+  const defis = await getDefisDuelFromSupabase(3);
   const roomObj = {
     player1: pseudo,
     player2: null,
@@ -278,13 +266,15 @@ export async function initDuelGame() {
 
   subscribeRoom(roomId, (data) => {
     roomData = data;
+    console.log("ROOM DATA", roomData);
+console.log("ROOM DEFIS", roomData?.defis);
+
     updateDuelUI();
     checkFinDuel();
   });
   roomData = await getRoom(roomId);
   updateDuelUI();
   await checkFinDuel();
-
 
   function subscribeRoom(roomId, callback) {
     supabase
@@ -446,20 +436,6 @@ export async function initDuelGame() {
       imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
 
       btnRow.appendChild(imgPhoto);
-      // --- Bouton signalement (SVG alerte)
-const alertBtn = document.createElement("button");
-alertBtn.className = "btn-signal-photo";
-alertBtn.title = "Signaler cette photo";
-alertBtn.style.background = "none";
-alertBtn.style.border = "none";
-alertBtn.style.cursor = "pointer";
-alertBtn.style.marginLeft = "12px";
-alertBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-alertBtn.dataset.idx = idxStr; // Pour lier au défi
-
-btnRow.appendChild(alertBtn);
-// ou btnRow.insertBefore(alertBtn, imgPhoto); pour le mettre à gauche
-
 
       colJoueur.appendChild(btnRow);
 
@@ -492,43 +468,23 @@ btnRow.appendChild(alertBtn);
       const advPhoto = advPhotoObj ? advPhotoObj.url : null;
       const advCadre = advPhotoObj && advPhotoObj.cadre ? advPhotoObj.cadre : "polaroid_01";
 
- if (advPhoto) {
-  const cadreDiv = document.createElement("div");
-  cadreDiv.className = "cadre-item cadre-duel-mini";
-  const preview = document.createElement("div");
-  preview.className = "cadre-preview";
-  const cadreImg = document.createElement("img");
-  cadreImg.className = "photo-cadre";
-  cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
-  const photoImg = document.createElement("img");
-  photoImg.className = "photo-user";
-  photoImg.src = advPhoto;
-  photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
-  preview.appendChild(cadreImg);
-  preview.appendChild(photoImg);
-  cadreDiv.appendChild(preview);
-
-  // --- AJOUTE ICI LE BOUTON SIGNALER ---
-  const signalDiv = document.createElement("div");
-  signalDiv.style.display = "flex";
-  signalDiv.style.justifyContent = "center";
-  signalDiv.style.marginTop = "8px";
-  const signalBtn = document.createElement("button");
-  signalBtn.className = "btn-signal-photo";
-  signalBtn.title = "Signaler cette photo";
-  signalBtn.style.background = "none";
-  signalBtn.style.border = "none";
-  signalBtn.style.cursor = "pointer";
-  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
-  // Ajoute un attribut data pour retrouver la photo à signaler plus tard :
-  signalBtn.dataset.idx = idxStr;
-  signalDiv.appendChild(signalBtn);
-  // Ajoute ce bloc juste après la photo :
-  cadreDiv.appendChild(signalDiv);
-
-  colAdv.appendChild(cadreDiv);
-}
-
+      if (advPhoto) {
+        const cadreDiv = document.createElement("div");
+        cadreDiv.className = "cadre-item cadre-duel-mini";
+        const preview = document.createElement("div");
+        preview.className = "cadre-preview";
+        const cadreImg = document.createElement("img");
+        cadreImg.className = "photo-cadre";
+        cadreImg.src = "./assets/cadres/" + advCadre + ".webp";
+        const photoImg = document.createElement("img");
+        photoImg.className = "photo-user";
+        photoImg.src = advPhoto;
+        photoImg.onclick = () => agrandirPhoto(advPhoto, advCadre);
+        preview.appendChild(cadreImg);
+        preview.appendChild(photoImg);
+        cadreDiv.appendChild(preview);
+        colAdv.appendChild(cadreDiv);
+      }
 
       row.appendChild(colJoueur);
       row.appendChild(colAdv);
@@ -873,45 +829,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   });
-});
-// Gestion signalement photo vers Supabase Storage
-document.body.addEventListener("click", async function(e) {
-  const signalTypeBtn = e.target.closest(".btn-signal-type");
-  if (!signalTypeBtn) return;
-
-  const popup = document.getElementById("popup-signal-photo");
-  const photoUrl = popup.dataset.url;
-  const idx = popup.dataset.idx || "";
-  const motif = signalTypeBtn.dataset.type;
-
-  if (!photoUrl || !motif) {
-    alert("Erreur : impossible de retrouver la photo ou le motif.");
-    return;
-  }
-
-  try {
-    // Télécharge la photo en blob
-    const response = await fetch(photoUrl);
-    const blob = await response.blob();
-
-    // Nom de fichier unique
-    const fileName = `defi${idx}_${motif}_${Date.now()}.webp`;
-
-    // Envoie dans le bucket "signalements"
-    const { data, error } = await supabase
-      .storage
-      .from('signalements')
-      .upload(fileName, blob, { contentType: 'image/webp' });
-
-    if (error) {
-      alert("Erreur d’envoi : " + error.message);
-    } else {
-      alert("Signalement envoyé à la modération.");
-      window.fermerPopupSignal();
-    }
-  } catch (err) {
-    alert("Erreur lors de l'envoi : " + err.message);
-  }
 });
 
 // =========== PATCH ULTRA IMPORTANT =============
