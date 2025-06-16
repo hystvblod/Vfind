@@ -560,6 +560,7 @@ export {
   getDefisFromSupabase,
   getOwnedFrames,
   loadUserData,
+  renderID,
   incrementFriendsInvited
 };
 
