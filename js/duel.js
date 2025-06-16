@@ -499,7 +499,7 @@ async function renderDefis({ myID, advID }) {
   signalBtn.style.cursor = "pointer";
   signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
   signalBtn.dataset.idx = idxStr;
-
+signalDiv.appendChild(signalBtn);
 colAdv.appendChild(cadreDiv);    // ✅ cadre seul
 colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
 
