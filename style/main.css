@@ -2485,4 +2485,28 @@ overflow-y: auto;
   align-items: center;
   justify-content: center;
 }
+.btn-signal-photo img {
+  filter: drop-shadow(0 0 2px #0006);
+  transition: transform 0.16s;
+}
+.btn-signal-photo:hover img {
+  transform: scale(1.1) rotate(-10deg);
+}
+.btn-signal-type {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 11px 0;
+  border-radius: 9px;
+  background: #ffc107;
+  color: #222;
+  font-weight: 700;
+  font-size: 1.13em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.btn-signal-type:hover {
+  background: #ffab00;
+}
 
