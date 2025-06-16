@@ -500,9 +500,9 @@ async function renderDefis({ myID, advID }) {
   signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
   signalBtn.dataset.idx = idxStr;
 
-signalDiv.appendChild(signalBtn);       // OK
-colAdv.appendChild(cadreDiv);          // ✅ d’abord le cadre
-colAdv.appendChild(signalDiv);         // ✅ puis le bouton "signaler" en-dessous
+colAdv.appendChild(cadreDiv);    // ✅ cadre seul
+colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
+
 
 }
 
