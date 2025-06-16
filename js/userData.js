@@ -537,6 +537,19 @@ async function getPoints() {
   await loadUserData();
   return getPointsCached();
 }
+// (ajoute dans ton fichier, vers la zone des fonctions points)
+async function addPoints(n) {
+  await loadUserData();
+  userDataCache.points += n;
+  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
+}
+async function removePoints(n) {
+  await loadUserData();
+  userDataCache.points -= n;
+  if (userDataCache.points < 0) userDataCache.points = 0;
+  await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
+}
+
 // Fonctions EXPORTÉES
 export {
   getPseudo,
