@@ -847,6 +847,45 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 });
+// Gestion signalement photo vers Supabase Storage
+document.body.addEventListener("click", async function(e) {
+  const signalTypeBtn = e.target.closest(".btn-signal-type");
+  if (!signalTypeBtn) return;
+
+  const popup = document.getElementById("popup-signal-photo");
+  const photoUrl = popup.dataset.url;
+  const idx = popup.dataset.idx || "";
+  const motif = signalTypeBtn.dataset.type;
+
+  if (!photoUrl || !motif) {
+    alert("Erreur : impossible de retrouver la photo ou le motif.");
+    return;
+  }
+
+  try {
+    // Télécharge la photo en blob
+    const response = await fetch(photoUrl);
+    const blob = await response.blob();
+
+    // Nom de fichier unique
+    const fileName = `defi${idx}_${motif}_${Date.now()}.webp`;
+
+    // Envoie dans le bucket "signalements"
+    const { data, error } = await supabase
+      .storage
+      .from('signalements')
+      .upload(fileName, blob, { contentType: 'image/webp' });
+
+    if (error) {
+      alert("Erreur d’envoi : " + error.message);
+    } else {
+      alert("Signalement envoyé à la modération.");
+      window.fermerPopupSignal();
+    }
+  } catch (err) {
+    alert("Erreur lors de l'envoi : " + err.message);
+  }
+});
 
 // =========== PATCH ULTRA IMPORTANT =============
 // Appelle automatiquement l'init Duel sur la bonne page
