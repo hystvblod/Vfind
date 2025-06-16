@@ -204,7 +204,19 @@ export async function findOrCreateRoom() {
     await new Promise(r => setTimeout(r, 1200));
   }
 
-  const defis = await getDefisDuelFromSupabase(3);
+const { data: defisData, error: defisError } = await supabase
+  .from('defis')
+  .select('intitule')
+  .order('id', { ascending: false })
+  .limit(20); // on prend plus large pour random
+
+if (defisError || !defisData || defisData.length < 3) {
+  alert("Erreur de chargement des défis");
+  return;
+}
+const shuffled = defisData.map(d => d.intitule).sort(() => Math.random() - 0.5);
+const defis = shuffled.slice(0, 3);
+console.log("Défis choisis :", defis);
   const roomObj = {
     player1: pseudo,
     player2: null,
