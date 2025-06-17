@@ -486,23 +486,24 @@ async function renderDefis({ myID, advID }) {
   cadreDiv.appendChild(preview);
 
   // --- BOUTON SIGNALER SOUS LA PHOTO ---
-// --- Ligne du bouton signaler, même structure que l’appareil photo ---
-const btnRowAdv = document.createElement('div');
-btnRowAdv.className = "duel-btnrow-adversaire"; // à mettre dans ton CSS !
+  const signalDiv = document.createElement("div");
+  signalDiv.style.display = "flex";
+  signalDiv.style.justifyContent = "center";
+  signalDiv.style.marginTop = "8px";
 
-const imgSignal = document.createElement('img');
-imgSignal.src = "assets/icons/alert.svg";
-imgSignal.alt = "Signaler";
-imgSignal.style.width = "2.2em";
-imgSignal.style.cursor = "pointer";
-imgSignal.style.display = "block";
-// Pour l’aligner à droite (pas centré)
-imgSignal.style.margin = "0 0 0 auto";
-imgSignal.title = "Signaler cette photo";
-imgSignal.onclick = () => ouvrirPopupSignalement(idxStr, advPhoto); // Adapte cette fonction à ton app
+  const signalBtn = document.createElement("button");
+  signalBtn.className = "btn-signal-photo";
+  signalBtn.title = "Signaler cette photo";
+  signalBtn.style.background = "none";
+  signalBtn.style.border = "none";
+  signalBtn.style.cursor = "pointer";
+  signalBtn.style.width = "2.2em";
+  signalBtn.innerHTML = `<img src="assets/icons/alert.svg" alt="Signaler" width="32" height="32" />`;
+  signalBtn.dataset.idx = idxStr;
 
-btnRowAdv.appendChild(imgSignal);
-colAdv.appendChild(btnRowAdv);
+signalDiv.appendChild(signalBtn);
+colAdv.appendChild(cadreDiv);    // ✅ cadre seul
+colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
 
 
 }
