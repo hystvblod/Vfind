@@ -499,29 +499,31 @@ colJoueur.appendChild(btnRow);
 
   // --- BOUTON SIGNALER SOUS LA PHOTO ---
   const signalDiv = document.createElement("div");
-signalDiv.style.display = "flex";
-signalDiv.style.justifyContent = "center";
-signalDiv.style.marginTop = "8px";
+  signalDiv.style.display = "flex";
+  signalDiv.style.justifyContent = "center";
+  signalDiv.style.marginTop = "8px";
 
-const signalBtn = document.createElement("button");
-signalBtn.className = "btn-signal-photo";
-signalBtn.title = "Signaler cette photo";
-signalBtn.style.background = "none";
-signalBtn.style.border = "none";
-signalBtn.style.cursor = "pointer";
-// PAS de width ici !
+  const signalBtn = document.createElement("button");
+  signalBtn.className = "btn-signal-photo";
+  signalBtn.title = "Signaler cette photo";
+  signalBtn.style.background = "none";
+  signalBtn.style.border = "none";
+  signalBtn.style.cursor = "pointer";
 
-const signalImg = document.createElement("img");
-signalImg.src = "assets/icons/alert.svg";
-signalImg.alt = "Signaler";
-signalImg.style.width = "2.8em"; // largeur identique au bouton photo
+  const signalImg = document.createElement("img");
+  signalImg.src = "assets/icons/alert.svg";
+  signalImg.alt = "Signaler";
+  signalImg.style.width = "2.8em";
 
-signalBtn.appendChild(signalImg);
-signalBtn.dataset.idx = idxStr;
+  signalBtn.appendChild(signalImg);
+  signalBtn.dataset.idx = idxStr;
+  signalBtn.onclick = function() {
+    ouvrirPopupSignal(advPhoto, idxStr);
+  };
+  signalDiv.appendChild(signalBtn);
 
-signalDiv.appendChild(signalBtn);
-colAdv.appendChild(cadreDiv);    // ✅ cadre seul
-colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
+  colAdv.appendChild(cadreDiv);    // ✅ cadre seul
+  colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
 
 }
 

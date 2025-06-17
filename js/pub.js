@@ -1,46 +1,47 @@
-import { isPremium, addPoints, getPoints } from './userData.js'; // adapte si besoin !
+import { isPremium, addPoints, getPoints } from './userData.js';
 
-export async function showAd(type) {
-  // Vérifie si Premium une seule fois
+const SDK_KEY = "TA_CLÉ_APPLOVIN_SDK_ICI"; // 👉 à remplacer par ta vraie clé dans le dashboard AppLovin
+const AD_UNIT_REWARDED = "ID_REWARDED_ICI"; // 👉 à remplacer par ton ad unit rewarded
+const AD_UNIT_INTERSTITIAL = "ID_INTERSTITIAL_ICI"; // 👉 à remplacer par ton ad unit interstitielle
+
+// Initialisation AppLovin au lancement de l'app
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await Capacitor.Plugins.AppLovinPlugin.initialize({ sdkKey: SDK_KEY });
+    await Capacitor.Plugins.AppLovinPlugin.loadRewardedAd(AD_UNIT_REWARDED);
+    await Capacitor.Plugins.AppLovinPlugin.loadInterstitialAd(AD_UNIT_INTERSTITIAL);
+  } catch (error) {
+    console.warn("Erreur initialisation AppLovin :", error);
+  }
+});
+
+// Fonction principale pour afficher une pub selon le type demandé
+export async function showAd(type = "rewarded") {
   const premium = await isPremium();
   if (premium) {
-    if (type === "rewarded") {
-      await addPoints(10);
-      alert("🎁 Bonus Premium : 10 pièces sans pub !");
-    } else if (type === "interstitial") {
-      alert("✨ Premium actif : aucune pub !");
-    } else if (type === "premium") {
-      alert("✅ Tu es déjà Premium !");
-    }
+    if (type === "rewarded") await addPoints(10);
     await updatePointsDisplay();
     return;
   }
 
-  // Vérifie le consentement RGPD/publicités avant de lancer la pub réelle
+  // RGPD : on vérifie si l'utilisateur a accepté les pubs
   const consent = window.userConsent || localStorage.getItem("rgpdConsent");
-  if (consent !== "accept") {
-    alert("⚠️ Tu dois accepter les publicités personnalisées dans les paramètres pour profiter de cette fonctionnalité.");
-    return;
+  if (consent !== "accept") return;
+
+  try {
+    if (type === "rewarded") {
+      await Capacitor.Plugins.AppLovinPlugin.showRewardedAd(AD_UNIT_REWARDED);
+    } else if (type === "interstitial") {
+      await Capacitor.Plugins.AppLovinPlugin.showInterstitialAd(AD_UNIT_INTERSTITIAL);
+    }
+  } catch (e) {
+    console.warn("Erreur pub :", e);
   }
 
-  // PUB RÉELLE (AppLovin/Lovapp/AdMob) À INTÉGRER ICI si besoin :
-  // if (type === "rewarded") { showRealRewardedAd(); ... }
-
-  // Simulé pour l'instant :
-  if (type === "rewarded") {
-    alert("🎁 Pub vue ! Tu gagnes 100 pièces.");
-    await addPoints(100);
-    await updatePointsDisplay();
-  } else if (type === "interstitial") {
-    alert("📺 Merci d'avoir vu la pub ! Le duel va commencer.");
-  } else if (type === "premium") {
-    alert("✨ Cette option est disponible dans la version Premium.");
-  } else {
-    console.warn("Type de pub inconnu :", type);
-  }
+  await updatePointsDisplay();
 }
 
-// Fonction utilitaire pour MAJ affichage points si besoin
+// Met à jour l'affichage du score (optionnel)
 export async function updatePointsDisplay() {
   const pointsSpan = document.getElementById("points");
   if (pointsSpan) pointsSpan.textContent = await getPoints();
