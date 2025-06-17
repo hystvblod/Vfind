@@ -487,25 +487,29 @@ async function renderDefis({ myID, advID }) {
 
   // --- BOUTON SIGNALER SOUS LA PHOTO ---
   const signalDiv = document.createElement("div");
-  signalDiv.style.display = "flex";
-  signalDiv.style.justifyContent = "center";
-  signalDiv.style.marginTop = "8px";
+signalDiv.style.display = "flex";
+signalDiv.style.justifyContent = "center";
+signalDiv.style.marginTop = "8px";
 
-  const signalBtn = document.createElement("button");
-  signalBtn.className = "btn-signal-photo";
-  signalBtn.title = "Signaler cette photo";
-  signalBtn.style.background = "none";
-  signalBtn.style.border = "none";
-  signalBtn.style.cursor = "pointer";
-  signalBtn.style.width = "2.2em";
-  signalBtn.appendChild(signalImg);
+const signalBtn = document.createElement("button");
+signalBtn.className = "btn-signal-photo";
+signalBtn.title = "Signaler cette photo";
+signalBtn.style.background = "none";
+signalBtn.style.border = "none";
+signalBtn.style.cursor = "pointer";
+// PAS de width ici !
 
-  signalBtn.dataset.idx = idxStr;
+const signalImg = document.createElement("img");
+signalImg.src = "assets/icons/alert.svg";
+signalImg.alt = "Signaler";
+signalImg.style.width = "2.2em"; // largeur identique au bouton photo
+
+signalBtn.appendChild(signalImg);
+signalBtn.dataset.idx = idxStr;
 
 signalDiv.appendChild(signalBtn);
 colAdv.appendChild(cadreDiv);    // ✅ cadre seul
 colAdv.appendChild(signalDiv);   // ✅ bouton en-dessous
-
 
 }
 
