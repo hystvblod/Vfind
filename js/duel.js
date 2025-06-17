@@ -321,6 +321,20 @@ export async function initDuelGame() {
 // ===========================
 // !!!!! CORRECTION RENDU ICI
 // ===========================
+// Fonction pour ouvrir la popup de signalement
+function ouvrirPopupSignal(photoUrl, idxStr) {
+  const popup = document.getElementById("popup-signal-photo");
+  if (!popup) {
+    alert("Erreur : popup de signalement introuvable !");
+    return;
+  }
+  popup.dataset.url = photoUrl;
+  popup.dataset.idx = idxStr;
+  popup.classList.remove("hidden");
+  popup.classList.add("show");
+}
+window.ouvrirPopupSignal = ouvrirPopupSignal; // optionnel, mais utile pour accès global
+
 async function renderDefis({ myID, advID }) {
   const ul = $("duel-defi-list");
   if (!ul || !roomData || !roomData.defis || roomData.defis.length === 0) {
