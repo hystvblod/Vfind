@@ -886,6 +886,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 });
+window.fermerPopupSignal = function() {
+  const popup = document.getElementById("popup-signal-photo");
+  if (popup) {
+    popup.classList.add("hidden");
+    popup.classList.remove("show");
+    popup.dataset.url = "";
+    popup.dataset.idx = "";
+  }
+};
 
 // =========== PATCH ULTRA IMPORTANT =============
 // Appelle automatiquement l'init Duel sur la bonne page
