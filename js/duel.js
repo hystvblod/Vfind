@@ -408,33 +408,45 @@ async function renderDefis({ myID, advID }) {
     }
 
     // ========== BOUTON PHOTO UNIQUEMENT ==========
-    const btnRow = document.createElement('div');
-    btnRow.className = "duel-btnrow-joueur";
-    btnRow.style.display = "flex";
-    btnRow.style.justifyContent = "center";
-    btnRow.style.marginTop = "10px";
+const btnRow = document.createElement('div');
+btnRow.className = "duel-btnrow-joueur";
+btnRow.style.display = "flex";
+btnRow.style.justifyContent = "center";
+btnRow.style.marginTop = "10px";
 
-    // --- PHOTO
-    const imgPhoto = document.createElement('img');
-    imgPhoto.src = "assets/icons/photo.svg";
-    imgPhoto.alt = "Prendre une photo";
-    imgPhoto.style.width = "2.2em";
-    imgPhoto.style.cursor = "pointer";
-    imgPhoto.style.display = "block";
-    imgPhoto.style.margin = "0 auto";
-    imgPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
-    imgPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
+// --- PHOTO (dans un <button>)
+const btnPhoto = document.createElement('button');
+btnPhoto.className = "btn-photo";
+btnPhoto.title = myPhoto ? "Reprendre la photo" : "Prendre une photo";
+btnPhoto.style.background = "none";
+btnPhoto.style.border = "none";
+btnPhoto.style.padding = "0";
+btnPhoto.style.cursor = "pointer";
+btnPhoto.style.display = "flex";
+btnPhoto.style.alignItems = "center";
 
-    // Appui long/clic droit → popup jeton
-    imgPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
-    imgPhoto.ontouchstart = function(e) {
-      this._touchTimer = setTimeout(() => { ouvrirPopupValiderJeton(idxStr); }, 500);
-    };
-    imgPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
+// Image de l'appareil photo dans le bouton
+const imgPhoto = document.createElement('img');
+imgPhoto.src = "assets/icons/photo.svg";
+imgPhoto.alt = "Prendre une photo";
+imgPhoto.style.width = "2.2em";
+imgPhoto.style.display = "block";
+imgPhoto.style.margin = "0 auto";
 
-    btnRow.appendChild(imgPhoto);
+btnPhoto.appendChild(imgPhoto);
 
-    colJoueur.appendChild(btnRow);
+btnPhoto.onclick = () => gererPrisePhotoDuel(idxStr, myCadre);
+// Appui long/clic droit → popup jeton
+btnPhoto.oncontextmenu = (e) => { e.preventDefault(); ouvrirPopupValiderJeton(idxStr); };
+btnPhoto.ontouchstart = function(e) {
+  this._touchTimer = setTimeout(() => { ouvrirPopupValiderJeton(idxStr); }, 500);
+};
+btnPhoto.ontouchend = function() { clearTimeout(this._touchTimer); };
+
+btnRow.appendChild(btnPhoto);
+
+colJoueur.appendChild(btnRow);
+
 
     // --- Colonne Adversaire (droite) ---
     const colAdv = document.createElement('div');
@@ -502,7 +514,7 @@ signalBtn.style.cursor = "pointer";
 const signalImg = document.createElement("img");
 signalImg.src = "assets/icons/alert.svg";
 signalImg.alt = "Signaler";
-signalImg.style.width = "2.2em"; // largeur identique au bouton photo
+signalImg.style.width = "2.8em"; // largeur identique au bouton photo
 
 signalBtn.appendChild(signalImg);
 signalBtn.dataset.idx = idxStr;
