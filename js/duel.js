@@ -945,26 +945,3 @@ document.body.addEventListener("click", async function(e) {
     alert("Erreur lors de l'envoi : " + err.message);
   }
 });
-const signalBtn = document.createElement("button");
-signalBtn.className = "btn-signal-photo";
-signalBtn.title = "Signaler cette photo";
-signalBtn.style.background = "none";
-signalBtn.style.border = "none";
-signalBtn.style.cursor = "pointer";
-// PAS de width ici !
-
-const signalImg = document.createElement("img");
-signalImg.src = "assets/icons/alert.svg";
-signalImg.alt = "Signaler";
-signalImg.style.width = "2.8em";
-
-signalBtn.appendChild(signalImg);
-signalBtn.dataset.idx = idxStr;
-
-// >>>>> AJOUT OBLIGATOIRE <<<<<
-signalBtn.onclick = function() {
-  ouvrirPopupSignal(advPhoto, idxStr);
-};
-
-signalDiv.appendChild(signalBtn);
-
