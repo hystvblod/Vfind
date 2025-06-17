@@ -563,10 +563,12 @@ async function addPoints(n) {
 }
 async function removePoints(n) {
   await loadUserData();
+  if (userDataCache.points < n) return false; // Pas assez de pièces !
   userDataCache.points -= n;
-  if (userDataCache.points < 0) userDataCache.points = 0;
   await supabase.from('users').update({ points: userDataCache.points }).eq('id', userIdCache);
+  return true;
 }
+
 
 // Fonctions EXPORTÉES
 export {

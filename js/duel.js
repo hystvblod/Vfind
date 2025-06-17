@@ -497,7 +497,7 @@ async function renderDefis({ myID, advID }) {
   signalBtn.style.background = "none";
   signalBtn.style.border = "none";
   signalBtn.style.cursor = "pointer";
-  signalBtn.style.width = "2.2em";
+  signalBtn.style.width = "2.6em";
 
   signalBtn.dataset.idx = idxStr;
 
