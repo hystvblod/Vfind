@@ -2,6 +2,7 @@ import { supabase, getPseudo, loadUserData, getUserDataCloud, incrementFriendsIn
 
 let userPseudo = null;
 let userProfile = null;
+let lastAmiRequest = 0; // Anti-spam
 
 function toast(msg, color = "#222") {
   let t = document.createElement("div");
@@ -18,9 +19,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadUserData();
   await rechargerAffichage();
 
-  document.getElementById("btn-ajouter-ami")?.addEventListener("click", async () => {
+  const btnAjouter = document.getElementById("btn-ajouter-ami");
+  btnAjouter?.addEventListener("click", async () => {
     const pseudoAmi = document.getElementById("pseudo-ami").value.trim();
-    if (pseudoAmi) await envoyerDemandeAmi(pseudoAmi);
+    if (!pseudoAmi) return;
+    // --- Loader + Anti-spam (1 demande toutes les 3s)
+    const now = Date.now();
+    if (now - lastAmiRequest < 3000) return toast("Patiente un peu avant de refaire une demande.", "#b93f3f");
+    lastAmiRequest = now;
+    btnAjouter.disabled = true;
+    btnAjouter.textContent = "Ajout en cours...";
+    try {
+      await envoyerDemandeAmi(pseudoAmi);
+    } finally {
+      btnAjouter.disabled = false;
+      btnAjouter.textContent = "Ajouter un ami";
+    }
   });
 
   document.getElementById("btn-lien-invit")?.addEventListener("click", () => {
@@ -74,7 +88,8 @@ async function afficherListesAmis(data) {
 }
 
 window.envoyerDemandeAmi = async function(pseudoAmi) {
-  if (!userPseudo || !pseudoAmi || pseudoAmi === userPseudo) return toast("Tu ne peux pas t'ajouter toi-même !", "#b93f3f");
+  if (!userPseudo || !pseudoAmi || pseudoAmi === userPseudo)
+    return toast("Tu ne peux pas t'ajouter toi-même !", "#b93f3f");
 
   const { data: ami, error } = await supabase
     .from("users")
@@ -189,3 +204,4 @@ function detecterInvitationParLien() {
     }
   }
 }
+
